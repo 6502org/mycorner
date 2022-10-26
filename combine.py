@@ -61,7 +61,7 @@ for filename, remote_filename in cur:
     dest_filename = os.path.join(combined_dir, remote_filename)
     dest_dir = os.path.dirname(dest_filename)
     os.makedirs(dest_dir, exist_ok=True)
-    print("%s -> %s" % (src_filename, dest_filename))
+    print("Copy: %s -> %s" % (src_filename, dest_filename))
     shutil.copyfile(src_filename, dest_filename)
 
     if dest_filename.endswith(".html"):

@@ -88,13 +88,15 @@ def remove_corrupt_archived_files(archived_files):
 
         corrupt_sha1s = (
             "6e6e84f5080ed877809debddfafb6367f6c5f399",
+            "3751c64f38d46b73dde9c37989cf80e214768413",
         )
         if af.sha1 in corrupt_sha1s:
             corrupt = True
 
         for ext in ('.png', '.jpg', '.jpeg', '.gif', '.bmp'):
             if af.filename.lower().endswith(ext):
-                if "HTML" in analyze_file(af.filename):
+                analysis = analyze_file(af.filename)
+                if ("image data" not in analysis) and ("PC bitmap" not in analysis):
                     print("Corrupt image: %s" % af.filename)
                     corrupt = True
 
@@ -109,8 +111,15 @@ def remove_corrupt_archived_files(archived_files):
         with open(af.filename, 'rb') as f:
             data = f.read()
             if b'HiringJobTweets' in data:
-                print("Corrupt file: %s" % af.filename)
+                print("Corrupt file (HiringJobTweets): %s" % af.filename)
                 corrupt = True
+
+            if af.filename.endswith(".html"):
+                if (b'<body' in data) or (b'<BODY' in data):
+                    if (b'</body' not in data) and (b'</BODY' not in data):
+                        print("Corrupt HTML file (truncated): %s" % af.filename)
+                        corrupt = True
+
 
         if not corrupt:
             uncorrupted_files.append(af)
