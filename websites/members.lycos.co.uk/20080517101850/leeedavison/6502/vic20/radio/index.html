@@ -1,0 +1,91 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>VIC 20 FM radio</TITLE>
+<META name="description" content="VIC 20 FM radio"></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=25%>
+<A HREF="../index.html#radio"><IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD ALIGN=CENTER><B><FONT SIZE=+1>VIC 20 FM radio </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT></TD><TD WIDTH=25%><A HREF="../../../index.html">
+<IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction</U></B>
+<A HREF="closeup.html"><IMG SRC="radio_t.jpg" ALIGN=RIGHT BORDER=1 ALT="VIC 20 with FM
+ radio card" HSPACE=8></A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sorting through the various ISA cards I've collected over the years I found three Aztech
+ ISA FM radio cards. As I have an eight bit <A HREF="../isa/index.html">ISA slot</A> on
+ my VIC 20 and these cards are eight bit (actually five writeable bits and only two
+ readable bits) I thought I'd make an application to use them.
+<P ALIGN=JUSTIFY>
+ Apart from the VIC with the <A HREF="../isa/index.html">ISA slot</A> and the Aztech card
+ you will need either speakers or some way to mix the audio out from the radio with the
+ VIC audio. You will also need a VHF FM antenna or VHF FM signal source.
+<BR CLEAR=ALL>
+</BLOCKQUOTE>
+<B><U>ISA slot modification.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The pins used by the radio card are shown in the diagram. All are present except for the
+ +12V supply pin as, up until now, only 5V only cards have been used.
+</BLOCKQUOTE>
+<IMG SRC="isa12v.png" ALIGN=RIGHT BORDER=1 ALT="+/-12V supply" HSPACE=8>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ To provide the +12V for the radio card and -12V for future use a monolithic DC-DC
+ convertor, with two isolated 12 volt outputs arranged as a +/-12V supply, is connected
+ to the ISA bus, as shown in red in the diagram. This is not connected directly to the
+ VIC ISA interface but on a backplane extender, this is to make the +/-12V modification
+ easily removeable and give another ISA slot.
+</BLOCKQUOTE>
+<B><U>The hardware.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The radio card is addressed over two I/O ranges depending on whether <TT><B>J3</B></TT>
+ is fitted or not. If <TT><B>J3</B></TT> is present then the card responds at addresses
+ <TT><B>$350</B></TT> to <TT><B>$357</B></TT>, if <TT><B>J3</B></TT> is removed then the
+ card responds at addresses <TT><B>$358</B></TT> to <TT><B>$35F</B></TT>.
+<P ALIGN=JUSTIFY>
+ There is what looks to be another jumper labeled <TT><B>VT</B></TT> near the top of the
+ board. This is not a jumper, both pins are connected together, but is a test point for
+ the VCO and TRF tuning voltage. If needed this could be connected to an analogue meter
+ to provide a visual tuning indicator.
+<P ALIGN=JUSTIFY>
+ The main components on the card are a TEA5712T AM/FM radio circuit and an LM7001 direct
+ PLL frequency synthesizer. The TEA5712T is controlled by the LM7001 which in turn is
+ controlled by the host machine via it's three wire serial bus. The AM part of the
+ TEA5712T is not used, the card is FM only.
+<P ALIGN=JUSTIFY>
+ Also on the card is a TL072C dual low noise J-FET op amp and an MC14052 dual channel
+ analogue multiplexer. These make up a line level audio output driver and a four level
+ volume control. The volume level is controlled by two of the data bits from the data
+ write latch.
+<P ALIGN=JUSTIFY>
+ Lastly there is a PALCE16V8 that does the address decoding and a 74LS174 that forms the
+ data write latch.
+<BR CLEAR=ALL>
+</BLOCKQUOTE>
+<B><U>Software.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The software provides an automatic station search, manual tuning, eight user defineable
+ presets, stereo/mono selection and a four step volume control. This is contained in an
+ autostart ROM that begins running the moment the VIC is powered.<BR><BR>
+<TABLE><TR ALIGN=CENTER><TD><IMG SRC="rx_stereo.png" BORDER=1 ALT="Stereo receive,
+low volume" HSPACE=8

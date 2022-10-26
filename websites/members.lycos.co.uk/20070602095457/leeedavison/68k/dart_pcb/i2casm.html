@@ -1,0 +1,311 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>68008 Dartboard control pcb, I2C assembly source.</TITLE>
+<META name="description" content="Content.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="i2c.html#link_1">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>I2C assembly source. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>I2C Assembly source.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is the code that drives the I2C bus on the dart control board. The routine
+ <B>Getadrak</B> is to allow access to the bus via the <B>USR()</B> function in <A
+ HREF="softw.html">EhBASIC</A>.
+<P ALIGN=JUSTIFY>
+ An example of it's use can be found <A HREF="i2cbas.html">here</A>.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+* I2C bus scan assembly code.
+
+* This code is fully relocatable so no ORG address is given
+
+* Once the code is loaded into memory it needs the user vector to be set
+* to the address of Getadrak. It is then called with USR(ad) where ad is
+* the I2C bus device address to test. The value returned is 0 for no ack,
+* -1 for ack.
+
+URT_BASE	EQU	$80000		* UART base address
+
+URT_IP		EQU	URT_BASE+$1B	* input port
+URT_OPbs	EQU	URT_BASE+$1D	* output port set bit
+URT_OPbc	EQU	URT_BASE+$1F	* output port clear bit
+
+* these values correct for version 1.10 of EhBASIC68
+
+LAB_EVBY	EQU	$2536		* evaluate byte parameter
+LAB_24D5	EQU	$2760		* normalise FAC1
+FAC1_m		EQU	$40594		* FAC1 mantissa
+FAC1_e		EQU	$40598		* FAC1 exponent
+FAC1_s		EQU	$40599		* FAC1 sign
+
+* address device and get ack as true/false
+
+Getadrak
+	BSR.s	I2C_start	* generate I2C start
+	JSR	LAB_EVBY	* get byte parameter
+	BSR.s	I2C_wrby	* write I2C byte, returns /ack in d0
+	MOVE.w	d0,FAC1_e	* possibly clear exponent & sign
+	BEQ.s	LAB_noak	* branch if there was no ack
+
+	MOVE.w	#$A080,FAC1_e	* set exponent & sign for -1
+LAB_noak
+	MOVE.l	d0,FAC1_m	* save mantissa
+	BSR.s	I2C_stop	* generate I2C stop
+	JMP	LAB_24D5	* normalise FAC1 & return
+
+* generate I2C start
+
+I2C_start
+	BSR.s	I2C_dast	* set I2C data (UART op bit 7)
+	BSR.s	delay_01	* count 1 delay
+	BSR.s	I2C_ckst	* set I2C clock (UART op bit 6)
+	BSR.s	delay_01	* count 1 delay
+	BSR.s	I2C_dacl	* clear I2C data (UART op bit 7)
+	BSR.s	delay_01	* count 1 delay
+	BSR.s	I2C_ckcl	* clear I2C clock (UART op bit 6)
+	BRA.s	delay_01	* count 1 delay
+
+* generate I2C stop
+
+I2C_stop
+	BSR.s	I2C_dacl	* clear I2C data (UART op bit 7)
+	BSR.s	delay_01	* count 1 delay
+	BSR.s	I2C_ckst	* set I2C clock (UART op bit 6)
+	BSR.s	delay_01	* count 1 delay
+	BSR.s	I2C_dast	* set I2C data (UART op bit 7)
+
+* count 1 delay (approx 106 cycles)
+
+delay_01
+	MOVE.l	d7,-(sp)	* save d7
+	MOVE.l	(sp)+,d7	* restore d7
+	MOVE.l	d7,-(sp)	* save d7
+	MOVE.l	(sp)+,d7	* restore d7
+	RTS
+
+* set I2C clock bit (UART op bit 6)
+
+I2C_ckst
+	MOVE.b	#$40,URT_OPbs	* set I2C clock (UART op bit 6)
+	RTS
+
+* clear I2C data bit (UART op bit 7)
+
+I2C_dacl
+	MOVE.b	#$80,URT_OPbc	* clear I2C data (UART op bit 7)
+	RTS
+
+* set I2C data bit (UART op bit 7)
+
+I2C_dast
+	MOVE.b	#$80,URT_OPbs	* set I2C data (UART op bit 7)
+	RTS
+
+* clear I2C clock bit (UART op bit 6)
+
+I2C_ckcl
+	MOVE.b	#$40,URT_OPbc	* clear I2C clock (UART op bit 6)
+	RTS
+
+* wait for I2C clock bit to rise (UART ip bit 4)
+
+I2C_wccl
+	BTST	#4,URT_IP	* read UART input port
+	BEQ.s	I2C_wccl	* loop if clock bit low
+
+	BRA.s	delay_01	* now do delay
+
+* write I2C byte, returns /ack in d0
+
+I2C_wrby
+	MOVE.l	d1,-(sp)	* save d1
+	MOVEQ	#7,d1		* eight (0 - 7) bits to do
+LAB_3172
+	BTST	d1,d0		* test bit n of byte
+	BEQ.s	LAB_317E	* branch if bit = 0
+
+	BSR.s	I2C_dast	* set I2C data (UART op bit 7)
+	BRA.s	LAB_3184	* skip clear
+
+LAB_317E
+	BSR.s	I2C_dacl	* clear I2C data (UART op bit 7)
+LAB_3184
+	BSR.s	delay_01	* count 1 delay
+	BSR.s	I2C_ckst	* set I2C clock (UART op bit 6)
+	BSR.s	I2C_wccl	* wait for I2C clock bit to rise
+	BSR.s	I2C_ckcl	* clear I2C clock (UART op bit 6)
+	BSR.s	delay_01	* count 1 delay
+	DBF	d1,LAB_3172	* decrement bit count and loop until done
+
+	BSR.s	I2C_dast	* set I2C data (UART op bit 7)
+	BSR.s	delay_01	* count 1 delay
+	BSR.s	I2C_ckst	* set I2C clock (UART op bit 6)
+	BSR.s	I2C_wccl	* wait for I2C clock bit to rise
+	MOVEQ	#0,d0		* clear sent byte
+	BSR.s	I2C_rdbi	* read I2C data into d0 bit 0
+	BSR.s	I2C_ckcl	* clear I2C clock (UART op bit 6)
+	BSR.s	delay_01	* count 1 delay
+	MOVE.l	(sp)+,d1	* restore d1
+	BCHG	#0,d0		* test and change ack I2C bit
+	RTS
+
+* read I2C data into d0 bit 0
+
+I2C_rdbi
+	BTST	#5,URT_IP	* read UART input port
+	BEQ.s	LAB_3136	* branch if data bit low
+
+	ADDQ.b	#1,d0		* set bit 0 if I2C bit set
+LAB_3136
+	RTS
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<P>
+<B><U>I2C Waveforms.</U></B>
+<P>
+<CENTER>
+ <IMG SRC="i2cstart.jpg" BORDER=1 ALT="I2C start waveform
+generated by I2C_start.">
+ <IMG SRC="i2cstop.jpg" BORDER=1 ALT="I2C stop waveform
+generated by I2C_stop.">
+</CENTER></P>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 4th May, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&CC=uk"></script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=530de5e9&adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="//secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

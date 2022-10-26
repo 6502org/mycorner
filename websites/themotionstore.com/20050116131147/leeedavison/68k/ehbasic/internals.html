@@ -1,0 +1,244 @@
+<HTML>
+<HEAD>
+<TITLE>Enhanced 68k BASIC, internals</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 680x0 family of
+ microprocessors.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#link_1">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Internals. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Floating point numbers.</U></B>
+<BR>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Floating point numbers are stored in memory in four bytes. The format of the numbers is
+ as follows.
+</BLOCKQUOTE>
+<CENTER>
+<TABLE BGCOLOR="white" CELLPADDING=5 CELLSPACING=0 BORDER=2>
+<TR>
+ <TD>Exponent</TD><TD>S</TD><TD>Mantissa 1</TD><TD>Mantissa 2</TD><TD>Mantissa 3</TD> 
+</TR>
+</TABLE>
+</CENTER>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B>Exponent</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is the power of two to which the mantissa is to be raised. This number is biased to
+ +$80 i.e. 2^0 is represented by $80, 2^1 by $81 etc. Zero is a special case and is used
+ to represent the value zero for the whole of the number.
+</BLOCKQUOTE>
+<B>S</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sign bit. This bit (b7 of mantissa 1) is one if the number is negative.
+</BLOCKQUOTE>
+<B>Mantissa 1/2/3</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is the 24 bit mantissa of the number and is normalised to make the highest bit (b7
+ of mantissa 1) always one. So the absolute value of the mantissa varies between 0.5 and
+ 0.9999999403954 . As we know that the highest bit is always one it is replaced by the
+ sign bit in memory.
+</BLOCKQUOTE>
+<BR>
+<B><I><U>Example.</U></I></B><P>
+<TABLE ALIGN = CENTER CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+$82,$49,$0F,$DB = +3.14159274	nearest floating equivalent to pi
+ |   ||  |   |  
+ |   |\--+---+- = 0.785398185	absolute value of mantissa  
+ |   |
+ |   \--------- = +		b7 of mantissa 1 is zero
+ |
+ \------------- = x 2^2 = 4	mantissa to be multiplied by 4
+</PRE>
+</TD></TR></TABLE><BR>
+ Values represented in this way range between + and - 1.70141173x10^38
+</BLOCKQUOTE>
+<B><U>Integer numbers.</U></B>
+<BR>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Integer numbers are stored in memory in four bytes. They are stored as twos' complement
+ longwords with the most significant byte first.
+</BLOCKQUOTE>
+<BR>
+<B><U>BASIC program memory use.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ A BASIC program is stored in memory from Ram_base upwards. It's format is ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ $0000 Start of program marker word
+</BLOCKQUOTE>
+ .. then each BASIC program line which is stored as ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+	start of next line pointer lowngword
+<BR>  line number longword
+<BR>  code byte(s)
+<BR>  $00 End of line marker byte
+<BR>  $00 Optional pad byte (only if this address is odd)
+</BLOCKQUOTE>
+ .. and finally ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ $00000000 End of program marker longword
+</BLOCKQUOTE>
+ If there is no program in memory only the start and end markers are present.
+</BLOCKQUOTE>
+<BR>
+<B><U>BASIC functions and variables memory use.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ After the program come the function references, all ten bytes long, which are stored as
+ ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+	1st chr of function name (+$80 for FN name)
+<BR>	2nd chr of function name (+$80 if string function)
+<BR>	3rd chr of function name (+$80 if integer function)
+<BR>	4th chr of function name
+</BLOCKQUOTE>
+ Then comes ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+	Longword BASIC execute pointer
+<BR>	Longword function variable name
+</BLOCKQUOTE>
+ After The function references come the numeric variables which are stored as ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+	1st chr of variable name
+<BR>	2nd chr of variable name
+<BR>	3rd chr of variable name (+$80 if integer variable)
+<BR>	4th chr of variable name
+</BLOCKQUOTE>
+ Then comes ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=4 CELLSPACING=0 BORDER=0>
+<TR>
+ <TD><B><U>Floating</U></B></TD>
+ <TD><B><U>Integer</U></B></TD> 
+</TR>
+<TR>
+ <TD>Exponent</TD><TD>Most significant byte</TD> 
+</TR>
+<TR>
+ <TD>Sign (bit 7) + first mantissa byte</TD><TD>Next most significant byte</TD> 
+</TR>
+<TR>
+ <TD>Second mantissa byte</TD><TD>Next most significant byte</TD> 
+</TR>
+<TR> 
+ <TD>Third mantissa byte</TD><TD>Least significant byte</TD> 
+</TR>
+</TABLE>
+<P>
+</BLOCKQUOTE>
+ After the numeric variables come the strings, which are stored as ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+	1st chr of variable name
+<BR>	2nd chr of variable name (+$80 for string variable)
+<BR>	3rd chr of variable name
+<BR>	4th chr of variable name
+</BLOCKQUOTE>
+ Then comes ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+	String pointer longword
+<BR>	String length word (0 to 65535)
+</BLOCKQUOTE>
+<P>
+ After the string variables come the arrays, which are stored as ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+	1st chr of variable name
+<BR>	2nd chr of variable name (+$80 for string variable)
+<BR>	3rd chr of variable name (+$80 for integer variable)
+<BR>	4th chr of variable name
+<BR>  array size in bytes longword (size includes this header)
+<BR>  number of dimensions word
+<BR>  [dimension 3 size word] (lowest element is zero)
+<BR>  [dimension 2 size word] (lowest element is zero)
+<BR>  dimension 1 size word (lowest element is zero)
+</BLOCKQUOTE>
+ .. and then each element ..
+<P>
+<TABLE CELLPADDING=4 CELLSPACING=0 BORDER=0>
+<TR>
+ <TD><B><U><CENTER>Floating</CENTER></U></B></TD>
+ <TD><B><U><CENTER>Integer</CENTER></U></B></TD>
+ <TD><B><U><CENTER>String</CENTER></U></B></TD>
+</TR>
+<TR>
+ <TD>Longword float</TD>
+ <TD>Longword integer</TD>
+ <TD>String Pointer longword</TD>
+</TR>
+<TR>
+ <TD><I>(as for variables)</I></TD>
+ <TD><I>(as for variables)</I></TD>
+ <TD>String length word</TD>
+</TR>
+</TABLE>
+<P>
+ The elements of every array are stored in the order ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ index1 [0-n], index2 [0-n], index3 [0-n]
+</BLOCKQUOTE>
+ i.e. element (1,2,3) in an array of (3,4,5) would be the ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ 1 + 1 + 2*(3+1) + 3*(3+1)*(4+1) = 70th element
+</BLOCKQUOTE>
+<I>(As array dimensions range from 0 to n element n will always be the (n+1)th element
+ in memory.)</I>
+<BR>
+<BR>
+<BR>
+</BLOCKQUOTE>
+<B><U>String placement in memory.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Strings are generally stored from the top of available RAM, Ram_top, working down,
+ however if the interpreter encounters a line such as ..
+<PRE>
+	100 A$ = "This is a string"
+</PRE>
+ .. then the pointer in the A$ descriptor will point to the string in program memory and
+ will not make a copy of the string in the string memory.
+</BLOCKQUOTE>
+<BR>
+<B><U>String descriptors in BASIC.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ A string descriptor is a six byte table that describes a string, it is of the format ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+	base = String pointer longword
+<BR>	base+4 = String length word (0 to 65535)
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<BR>
+<B><U>Stack use in BASIC.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ GOSUB and DO both push on the stack ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+      BASIC execute pointer longword
+<BR>  current line number longword
+<BR>  command token word (TK_GOSUB or TK_DO)
+</BLOCKQUOTE>
+ FOR pushes on the stack ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+      BASIC execute pointer longword
+<BR>  FOR line number longword
+<BR>	FOR variable data type word
+<BR>  TO value mantissa longword
+<BR>  TO value exponent & sign word
+<BR>  STEP value mantissa longword
+<BR>  STEP value exponent & sign word
+<BR>  FOR variable pointer longword
+<BR>  token for FOR word (TK_FOR)
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 3rd May, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,44 @@
+<HTML><HEAD><TITLE>LED flash</TITLE></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Use a buffer. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../../index.html">
+<IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<IMG SRC="buffer.png" ALIGN=RIGHT TITLE="What I should have done" BORDER=1 HSPACE=8>
+<B><U>Potentially fatal.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ You know when you say things like ..
+<BLOCKQUOTE>
+<I><B>Even I can't mess that up</B></I>
+</BLOCKQUOTE>
+ &nbsp;.. well that is usually just what happens next.
+<P ALIGN=JUSTIFY>
+ Long, long ago when TTL was king there was only one supply voltage, 5 volts. Everything
+ in the land of logic was 5 volts, processors were 5 volts, memory was 5 volts, all the
+ myriad of chips in your design were 5 volts. It was only when you wanted your logic to
+ communicate with the outside world that you ever had to think about other voltages.
+ Now there are all sorts of logic families and all sorts of supply voltages from less
+ than a volt, for ultra low-power devices, upwards.
+<P ALIGN=JUSTIFY>
+ The EPM3064 used on the 8 Bit Baby is a 3.3 volt device with 5 volt tolerant I/O. What
+ this means is that you put a little 3.3 volt regulator in next to it and forget about it.
+ Until that is you do something like put an LED on an output pin.
+<P ALIGN=JUSTIFY>
+ The output, while tolerant of 5 volts, is clamped at a little over 3 volts by protection
+ circuits built into the chip. The result is that an LED connected to the 5 volt supply
+ has just under 2 volts across it even when it is suposed to be off and so it glows ever
+ so dimly.
+<P ALIGN=JUSTIFY>
+ What I should have done was either connect the LED from the output to ground, modern
+ logic is much better at sourcing current than TTL ever was, or have used a transistor as
+ a buffer as in the diagram above. Either way the sense of the LED would be inverted, on
+ when the output is high, but as long as we remember this it isn't a problem
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 3rd March, 2006.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

@@ -1,0 +1,159 @@
+<HTML><HEAD><TITLE>VIC 20 FM radio</TITLE>
+<META name="description" content="VIC 20 FM radio"></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=25%>
+<A HREF="../index.html#radio"><IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD ALIGN=CENTER><B><FONT SIZE=+1>VIC 20 FM radio </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT></TD><TD WIDTH=25%><A HREF="../../../index.html">
+<IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction</U></B>
+<A HREF="closeup.html"><IMG SRC="radio_t.jpg" ALIGN=RIGHT BORDER=1 ALT="VIC 20 with FM
+ radio card" HSPACE=8></A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sorting through the various ISA cards I've collected over the years I found three Aztech
+ ISA FM radio cards. As I have an eight bit <A HREF="../isa/index.html">ISA slot</A> on
+ my VIC 20 and these cards are eight bit (actually five writeable bits and only two
+ readable bits) I thought I'd make an application to use them.
+<P ALIGN=JUSTIFY>
+ Apart from the VIC with the <A HREF="../isa/index.html">ISA slot</A> and the Aztech card
+ you will need either speakers or some way to mix the audio out from the radio with the
+ VIC audio. You will also need a VHF FM antenna or VHF FM signal source.
+<BR CLEAR=ALL>
+</BLOCKQUOTE>
+<B><U>ISA slot modification.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The pins used by the radio card are shown in the diagram. All are present except for the
+ +12V supply pin as, up until now, only 5V only cards have been used.
+</BLOCKQUOTE>
+<IMG SRC="isa12v.png" ALIGN=RIGHT BORDER=1 ALT="+/-12V supply" HSPACE=8>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ To provide the +12V for the radio card and -12V for future use a monolithic DC-DC
+ convertor, with two isolated 12 volt outputs arranged as a +/-12V supply, is connected
+ to the ISA bus, as shown in red in the diagram. This is not connected directly to the
+ VIC ISA interface but on a backplane extender, this is to make the +/-12V modification
+ easily removeable and give another ISA slot.
+</BLOCKQUOTE>
+<B><U>The hardware.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The radio card is addressed over two I/O ranges depending on whether <TT><B>J3</B></TT>
+ is fitted or not. If <TT><B>J3</B></TT> is present then the card responds at addresses
+ <TT><B>$350</B></TT> to <TT><B>$357</B></TT>, if <TT><B>J3</B></TT> is removed then the
+ card responds at addresses <TT><B>$358</B></TT> to <TT><B>$35F</B></TT>.
+<P ALIGN=JUSTIFY>
+ There is what looks to be another jumper labeled <TT><B>VT</B></TT> near the top of the
+ board. This is not a jumper, both pins are connected together, but is a test point for
+ the VCO and TRF tuning voltage. If needed this could be connected to an analogue meter
+ to provide a visual tuning indicator.
+<P ALIGN=JUSTIFY>
+ The main components on the card are a TEA5712T AM/FM radio circuit and an LM7001 direct
+ PLL frequency synthesizer. The TEA5712T is controlled by the LM7001 which in turn is
+ controlled by the host machine via it's three wire serial bus. The AM part of the
+ TEA5712T is not used, the card is FM only.
+<P ALIGN=JUSTIFY>
+ Also on the card is a TL072C dual low noise J-FET op amp and an MC14052 dual channel
+ analogue multiplexer. These make up a line level audio output driver and a four level
+ volume control. The volume level is controlled by two of the data bits from the data
+ write latch.
+<P ALIGN=JUSTIFY>
+ Lastly there is a PALCE16V8 that does the address decoding and a 74LS174 that forms the
+ data write latch.
+<BR CLEAR=ALL>
+</BLOCKQUOTE>
+<B><U>Software.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The software provides an automatic station search, manual tuning, eight user defineable
+ presets, stereo/mono selection and a four step volume control. This is contained in an
+ autostart ROM that begins running the moment the VIC is powered.<BR><BR>
+<TABLE><TR ALIGN=CENTER><TD><IMG SRC="rx_stereo.png" BORDER=1 ALT="Stereo receive,
+low volume" HSPACE=8></TD>
+<TD><IMG SRC="rx_mono.png" BORDER=1 ALT="Mono receive" HSPACE=8></TD></TR>
+<TR><TD>&nbsp;</TD></TR><TR><TD COLSPAN=2><P ALIGN=JUSTIFY>
+ <I>The default setting is to allow stereo reception but mono only reception can be
+ toggled on and off using the <B>m</B> key. When mono only mode is selected the
+ mono/stereo status indicator changes colour. <I></I></TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The radio functions are controlled with the folowing keys.
+<P ALIGN=JUSTIFY>
+<TABLE CELLSPACING=4>
+<TR><TD VALIGN=TOP WIDTH=120><TT><B>[F1]</B></TT> to <TT><B>[F8]</B></TT></TD>
+<TD><P ALIGN=JUSTIFY>
+ Sets the current frequency to that of the corresponding preset and sets the mode to
+ receive.</TD></TR>
+<TR><TD VALIGN=TOP><TT><B>[SPACE]</B></TT></TD>
+<TD><P ALIGN=JUSTIFY>
+ Toggles between receive and scan modes. In scan mode the frequency is automatically
+ incremented in steps of 25KHz until a carrier is detected.</TD></TR>
+<TR><TD VALIGN=TOP><TT><B>[CSR RT]</B></TT> and<BR> <TT><B>[CSR LT]</B></TT></TD>
+<TD><P ALIGN=JUSTIFY>
+ Manually increments or decrements the frequency in steps of 25KHz. If either of the band
+ limits are reached then the frequency wraps round to the other end of the band. This
+ function only works in receive mode.</TD></TR>
+<TR><TD VALIGN=TOP><TT><B>[CTRL]</B>+<B>[S]</B></TT></TD>
+<TD><P ALIGN=JUSTIFY>
+ Save the current frequency to a preset. Once the save dialogue is entered
+ <TT><B>[F1]</B></TT> to <TT><B>[F8]</B></TT> select the preset to overwrite, the
+ currently selected preset being shown in red. To confirm the save <TT><B>y</B></TT> must
+ be pressed once a preset has been selected, any other key will abandon the save. This
+ function only works in receive mode.</TD></TR>
+<TR><TD VALIGN=TOP><TT><B>[CSR UP]</B></TT> and<BR> <TT><B>[CSR DN]</B></TT></TD>
+<TD><P ALIGN=JUSTIFY>
+ Increments and decrements the volume. There are only four levels, off, low, mid and
+ high. The current volume level is displayed as a two colour bar near the top left of
+ the screen</TD></TR>
+<TR><TD VALIGN=TOP><TT><B>[m]</B></TT></TD>
+<TD><P ALIGN=JUSTIFY>
+ Toggles between stereo/mono reception and mono only reception. In mono only mode the
+ stereo/mono status indicator changes colour from blue/cyan to red/yellow.</TD></TR>
+</TABLE><BR>
+<TABLE>
+<TR ALIGN=CENTER><TD><IMG SRC="rx_save.png" BORDER=1 ALT="Saving a preset" HSPACE=8></TD>
+<TD><IMG SRC="rx_saved.png" BORDER=1 ALT="New preset saved" HSPACE=8></TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD COLSPAN=2><P ALIGN=JUSTIFY>
+ <I>To save a frequency to a preset press <TT><B>[CTRL+S]</B></TT> to enter the save
+ dialogue, select the required preset using the corresponding <TT><B>F</B></TT> key,
+ then confirm the save by pressing <TT><B>y</B></TT> or abandon the save by pressing any
+ other key.</I></TD></TR>
+</TABLE>
+<P ALIGN=JUSTIFY>
+ Reception of a signal is shown by the stereo/mono status indicator. If a signal is
+ detected the stereo/mono status will be blue, or red if in mono only mode. If no signal
+ is detected then the stereo/mono status will be cyan, or yellow if in mono only mode.
+<P ALIGN=JUSTIFY>
+ The eight presets are displayed in the middle of the screen. The number on the left
+ corresponds to the <TT><B>F</B></TT> key that selects that preset. The number on the
+ right is the preset frequency in MHz. Presets that have not yet been set are displayed
+ as <TT><B>xxx.xxx</B></TT> and cannot be selected.
+<P ALIGN=JUSTIFY>
+ The version number of the software is displayed in the bottom left corner of the screen,
+ in the bottom right corner is a scrolling character. This is there just to show that the
+ software is actaully running.
+<P ALIGN=JUSTIFY>
+ You can download the latest <A HREF="radio.zip">software <IMG
+ SRC="../../../zip_sm.png" ALT="Download" border=0></A> with both the source and a binary
+ ROM image in the .zip. The current version is 0.42
+</BLOCKQUOTE>
+<A NAME="aztech"></A>
+<B><U>Conclusion</U></B>
+<A HREF="aztech.html"><IMG SRC="aztech_t.jpg" ALIGN=RIGHT BORDER=1
+ ALT="Aztech radio card" HSPACE=8></A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ As radio receivers these PC radio cards are rubbish. The last place you want to put a
+ radio receiver is in a big metal box, or even near a small plastic box, with lots of
+ digital signals flying about inside.
+<P ALIGN=JUSTIFY>
+ The two cards I have that work are deaf. Without at least a dipole antenna they couldn't
+ even hear the local FM radio relay and that is less than two miles away. Even with a
+ dipole the stereo reception is still noisy, though in mono only it is listenable.
+<P ALIGN=JUSTIFY>
+ Perhaps these cards would be better suited with a nice, quiet low power CMOS
+ microcontroller, an LCD and a few control buttons rather than a power hungry, noisy,
+ quater century old NMOS home computer and monitor. 
+</BLOCKQUOTE><BR CLEAR=ALL>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 22nd May, 2006.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

@@ -1,0 +1,77 @@
+<HTML>
+<HEAD>
+<TITLE>
+  SuprDupr driver for LCD port
+</TITLE>
+<META name="description" content="An LCD driver for the SuprDupr.">
+</HEAD>
+<BODY
+  BACKGROUND="../../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>LCD port driver </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="../index.html#lcd">[Back]</A>
+<BR clear=all><P>
+<HR>
+<P>
+<IMG SRC="sdpr_lcd.jpg" ALIGN=RIGHT BORDER=1 ALT="SuprDupr with graphics LCD" HSPACE=8 width="320" height="240">
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE>
+ The SuprDupr has a port wired to enable use of many inteligent LC displays. The
+ display, pictured right, is an LC7980 type though most of the other graphics and
+ text types are similarly driven.
+<P>
+ One change needed to be made to the SuprDupr to use this display and that was to
+ disconnect the earthy end of the contrast pot from 0v and connect it to the -ve
+ charge pump output on the MAX232 chip. This is because the greater multiplex on
+ these graphics displays requires a more -ve bias to maintain the viewing angle.
+<P>
+ A down side to this is that display contrast is effected by the loading on the
+ RS232 port and use of such things as a RS232 line monitor can have an adverse
+ effect on the display. Also if the load from the display is to great then the
+ MAX232 charge pump will not start. However this <I>should</I> not be a problem in
+ normal use.
+<P>
+ Another change made to the SuprDupr was to wire +12v to the spare pin on the LCD
+ port to provide power for the backlight. This could be connected through a PNP
+ transistor and controlled by software via one of the port pins.
+</BLOCKQUOTE>
+<P>
+<B><U>Software.</U></B>
+<BLOCKQUOTE>
+ The software is unfinished and provided as a starting point for anyone who wishes
+ to make their own. It is usable and was used to produce the displays pictured above
+ and below.
+<P>
+</BLOCKQUOTE>
+<A NAME="source"></A>
+<B><U>The source</U></B>
+<BLOCKQUOTE>
+ <A HREF="asm.html">View</A> or <A HREF="asm.zip">download <IMG
+ SRC="../../../zip_sm.png" BORDER=0 alt="[Download]"></A> driver .asm file<BR>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<CENTER>
+<B><U>Example displays</U></B><P>
+<IMG SRC="demo_01.png" BORDER=1 ALT="30 x 5 text" HSPACE=8 VSPACE=8>
+<IMG SRC="demo_02.png" BORDER=1 ALT="34 x 5 text" HSPACE=8 VSPACE=8><BR clear=all>
+<IMG SRC="demo_03.png" BORDER=1 ALT="40 x 5 text" HSPACE=8 VSPACE=8>
+<IMG SRC="demo_04.png" BORDER=1 ALT="240 x 40 graphics" HSPACE=8 VSPACE=8>
+<BR clear=all>
+</CENTER>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 4th June, 2003.</FONT>
+</BODY>
+</HTML>

@@ -1,0 +1,185 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>PetSpeed 64 manual</TITLE></HEAD>
+<BODY BACKGROUND="cover.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>PetSpeed 64 Manual.</FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Index</U></B>
+<P ALIGN=JUSTIFY>
+<TABLE ALIGN=CENTER BORDER=0>
+<TR>
+<TH COLSPAN=3 WIDTH=300><U>C O N T E N T S</U></TH><TD WIDTH=40></TD>
+<TH COLSPAN=3 WIDTH=300><U>C O N T E N T S</U></TH><TR>
+<TR>
+<TD>Copyright Notice & Disclaimer        </TD><TD>--</TD><TD ALIGN=RIGHT>1</TD><TD></TD>
+<TD>Extra programming facilities         </TD><TD>--</TD><TD ALIGN=RIGHT>6</TD><TD></TD>
+<TR>
+<TD>Hardware Requirements                </TD><TD>--</TD><TD ALIGN=RIGHT>1</TD><TD></TD>
+<TD>Errors                               </TD><TD>--</TD><TD ALIGN=RIGHT>8</TD></TR>
+<TR>
+<TD>Product Description                  </TD><TD>--</TD><TD ALIGN=RIGHT>1</TD><TD></TD>
+<TD>Compile time errors                  </TD><TD>--</TD><TD ALIGN=RIGHT>8</TD></TR>
+<TR>
+<TD>Diskette Care                        </TD><TD>--</TD><TD ALIGN=RIGHT>1</TD><TD></TD>
+<TD>Run time errors                      </TD><TD>--</TD><TD ALIGN=RIGHT>8</TD></TR>
+<TR>
+<TD>Introduction                         </TD><TD>--</TD><TD ALIGN=RIGHT>2</TD><TD></TD>
+<TD>The ERRORS utility program           </TD><TD>--</TD><TD ALIGN=RIGHT>8</TD></TR>
+<TR>
+<TD>Preparing Petspeed for Use           </TD><TD>--</TD><TD ALIGN=RIGHT>2</TD><TD></TD>
+<TD>Interfacing Petspeed and Machine code</TD><TD>--</TD><TD ALIGN=RIGHT>9</TD></TR>
+<TR>
+<TD>Running Petspeed                     </TD><TD>--</TD><TD ALIGN=RIGHT>3</TD><TD></TD>
+<TD>The Memory Map                       </TD><TD>--</TD><TD ALIGN=RIGHT>9</TD></TR>
+<TR>
+<TD>3Dimensional Arrays                  </TD><TD>--</TD><TD ALIGN=RIGHT>4</TD><TD></TD> 
+<TD>Accessing Variables                  </TD><TD>--</TD><TD ALIGN=RIGHT>9</TD></TR>
+<TR>
+<TD>Compatibility with BASIC 2.0         </TD><TD>--</TD><TD ALIGN=RIGHT>5</TD><TD></TD>
+<TD>Variable Formats                     </TD><TD>--</TD><TD ALIGN=RIGHT>10</TD></TR>
+<TR>
+<TD>Facilities not available             </TD><TD>--</TD><TD ALIGN=RIGHT>5</TD></TR>
+</TABLE><P>
+<A NAME=PAGE1></A>
+<B><U>Copyright</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Petspeed 64 is copyrighted and all rights to it are reserved by SYSTEMS SOFTWARE (OXFORD)
+ LTD. The product is intended for use by the original purchaser only. The purchaser of
+ Petspeed 64 is hereby licensed only to read the software from its medium into the memory
+ of the Commodore 64 computer solely for the purpose of executing it therein. Duplicating,
+ copying (other than for backup purposes), selling or otherwise distributing this product
+ is a violation of the law. It is the policy of the manufacturers to vigorously pursue
+ litigation against all infringements of their copyright. Having said this we hope you
+ will enjoy using Petspeed and that you will find it the useful utility that it is
+ intended to be. 
+</BLOCKQUOTE>
+<B><U>Disclaimer</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Although Petspeed 64 has been thoroughly tested, no claim is made by the authors or
+ manufacturers concerning the adherence of the software to any particular specification
+ or the suitability of Petspeed 64 for any particular purpose.
+</BLOCKQUOTE>
+<B><U>Hardware</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ In order to run Petspeed 64 you will need<BR><BR>
+<TABLE BORDER=0>
+<TR VALIGN=TOP><TD WIDTH=20><LI>1</LI></TD><TD WIDTH=10></TD><TD>A Commodore 64
+ computer</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>2</LI></TD><TD WIDTH=10></TD><TD>A Commodore Disk
+ drive</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+<B><U>Product description</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+The Petspeed 64 product comprises the following<BR><BR>
+<TABLE BORDER=0>
+<TR VALIGN=TOP><TD WIDTH=20><LI>1</LI></TD><TD WIDTH=10></TD><TD>This manual</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>2</LI></TD><TD WIDTH=10></TD><TD>A 5.25 inch floppy
+ diskette (known as the system disk) containing the compiler and associated files.</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>3</LI></TD><TD WIDTH=10></TD><TD>A protection sheet
+ showing a matrix of coloured squares. This sheet is either enclosed in the manual or
+ printed on the front inside cover of the manual.</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+<B><U>Diskette care</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The method used to protect Petspeed (sorry but we must do this), unlike other protection
+ methods, does at least allow you to make backup copies of the system disk. You are
+ advised to make backups and to keep them in a safe place. All the usual rules apply to
+ the care of the system disk; don't sit on it, don't eat lunch on it and so on. 
+</BLOCKQUOTE>
+<A NAME=PAGE2></A>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Petspeed was first released in the early days of Commodore computing and has been
+ implemented on most of the major Commodore machines. Petspeed offers a very high level
+ of compatibility with BASIC 2.0. It has always been and continues to be the BASIC
+ compiler which produces the fastest running compiled programs.
+<P ALIGN=JUSTIFY>
+ A section of the manual devoted to the technical details of Petspeed compiled programs
+ provides all information needed to interface machine code routines.
+<P ALIGN=JUSTIFY>
+ Readers of this manual are expected to be familiar with BASIC 2.0 and its resident
+ interpreter. No attempt is made to teach BASIC programming to the novice. The manual
+ only discusses aspects of BASIC which are affected by compilation.
+</BLOCKQUOTE>
+<B><U>Preparing PetSpeed for use</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The system disk supplied with this manual cannot itself be used to compile programs.
+ Before Petspeed can be used it is necessary to create two Master disks, a Petspeed
+ Master and a Utilities Master. When these have been created using the instructions
+ below, they should be backed up (using the program supplied) and thereafter kept, along
+ with the system disk, in a safe place. When further Petspeed or utility disks are
+ required, they should be made from the Masters and not the system disk. The system disk
+ should only be used in the event of the Masters becoming corrupt. To create the Masters,
+ proceed as follows:<BR><BR>
+<TABLE BORDER=0>
+<TR VALIGN=TOP><TD WIDTH=20><LI>1</LI></TD><TD WIDTH=10></TD><TD>Format four disks and
+ mark them <TT><B>PETSPEED MASTER, UTILITIES MASTER, PETSPEED WORK</B></TT> and
+ <TT><B>UTILITIES WORK</B></TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>2</LI></TD><TD WIDTH=10></TD><TD>Place the system
+ disk in the disk drive, <TT><B>LOAD"BACKUP",8</B></TT> and <TT><B>RUN</B></TT>.<BR>
+ The <TT><B>BACKUP</B></TT> program displays five menu options. When one of these is
+ selected the menu will remain on the screen and the selected option will light up in
+ reverse field. When the processing associated with that option terminates, the menu
+ will be restored to standard video.<BR></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>3</LI></TD><TD WIDTH=10></TD><TD>From the five menu
+ options displayed, select <TT><b>MAKE PETSPEED MASTER</B></TT> and follow the
+ instructions given in the program.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>4</LI></TD><TD WIDTH=10></TD><TD>When the menu
+ reappears, select <TT><B>MAKE UTILITIES MASTER</B></TT> and again follow the
+ instructions displayed the system disk may now be put away.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>5</LI></TD><TD WIDTH=10></TD><TD>Select <TT><B>BACKUP
+ PETSPEED</B></TT> and follow the instructions to make a Petspeed work disk.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>6</LI></TD><TD WIDTH=10></TD><TD>Select <TT><B>BACKUP
+ UTILITIES</B></TT> and follow the instructions to make a utilities work disk.</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+<A NAME=PAGE3></A>
+<IMG SRC="fig1.png" ALIGN=RIGHT BORDER=1 HSPACE=8 TITLE="Figure 1">
+<B><U>Running  PetSpeed</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Before using Petspeed it is necessary to follow a brief protection sequence to establish
+ you as an authorised user of the software. We hope that you will not find the protection
+ too tiresome: software does have to be protected and this method does at least allow you
+ to make backup copies of the system disk. Proceed as follows:<BR><BR>
+<TABLE BORDER=0>
+<TR VALIGN=TOP><TD WIDTH=20><LI>1</LI></TD><TD WIDTH=10></TD><TD>Save the program to be
+ compiled on the Petspeed <TT><B>WORK</B></TT> disk.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>2</LI></TD><TD WIDTH=10></TD><TD>Type
+ <TT><B>LOAD"PETSPEED",8</B></TT> followed by <TT><B>[RETURN]</B></TT> and then
+ <TT><B>RUN</B></TT>.</TD></TR>
+</TABLE>
+<BR CLEAR=ALL>
+<A HREF="chart.html">
+<IMG SRC="chart.jpg" ALIGN=RIGHT BORDER=1 HSPACE=8 VSPACE=8
+ TITLE="Click for bigger image"></A>
+<P ALIGN=JUSTIFY>
+ At this point, Petspeed makes the protection check. On the inside cover of this manual
+ or on a separate sheet, <I>or by clicking on the image on the left</I>, will be found a
+ matrix of coloured squares. Each square can be iden

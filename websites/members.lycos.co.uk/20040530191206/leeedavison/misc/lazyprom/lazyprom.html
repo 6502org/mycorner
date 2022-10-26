@@ -1,0 +1,159 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>
+  LazyPROM - The idle person's EPROM emulator.
+</TITLE>
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>LazyPROM </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="index.html">[Back]</A>
+<BR clear=all><P>
+<HR>
+<BR clear=all>
+<CENTER>
+<IMG SRC="lazyprom.jpg" ALT="LazyPROM in use." BORDER=1>
+</CENTER>
+<BR clear=all>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 20th February, 2003.</FONT>
+</BODY>
+</HTML>
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.10 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=812950c7&adpref="></script>

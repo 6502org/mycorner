@@ -1,0 +1,98 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD><TITLE>I2C Bus interface - Driver assembly source file.</TITLE>
+<META name="description" content="An I2C bus interface for the 6502.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_2"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>I2C Driver source file. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<A HREF="i2c_drv_asm.zip">Download this file <IMG SRC="../../zip_sm.png" ALT="Download"
+ border=0></A><P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+;------------------------------------------------------------------------------------
+;
+; The following is 6502 code for an I2C driver. It acts only as master.
+;
+; I2C uses two bi-directional (OC) lines: clock and data. The maximum bit rate for
+; slow mode is 100kbits/sec (fast mode is not supported) but with a 1.8MHz 6502 the
+; best you will get is about 43kbits/sec. As the 6502, which is the master, controls
+; the clock line, the processor speed should not be a problem.
+;
+; To work as a slave the 6502 would need extra hardware to detect the start condition,
+; the stop condition and extra code to handle collisions.
+; This is saved for a later project.
+;
+; Devices are accessed using the following four subroutines.
+;
+; SendAddr
+;	This routine sends the slave address to the I2C bus. It can also send any
+;	required register address bytes by setting them up as you would data to be sent.
+;	No stop is sent so you can either read or write after calling this routine.
+; SendData
+;	Send data byte(s) to an addressed device. Set the count in I2cCountL/H and
+;	point to the data with TxBuffL/H. No stop is sent after calling this routine.
+; ReadData
+;	Read data byte(s) from an addressed device. Set the count in I2cCountL/H and
+;	point to the buffer with RxBuffL/H. No stop is sent after calling this routine.
+; StopI2c
+;	generates a stop condition on the i2c bus
+;
+; Each device has an 8 bit address, the lowest bit of which is a read/write bit.
+;
+;------------------------------------------------------------------------------------
+
+I2CPort	=	$F121			; i2c bus port, o.c. outputs, tristate inputs
+					; bit 0 is data  [SDA]
+					; bit 1 is clock [SLC]
+					; bits 2 to 7 are unused
+RxBuffL		=	$F1		; receive buffer pointer low byte
+TxBuffL		=	RxBuffL		; the same (can't do both at once!)
+RxBuffH		=	$F2		; receive buffer pointer high byte
+TxBuffH		=	RxBuffH		; the same (can't do both at once!)
+ByteBuff	=	$F3		; byte buffer for Tx/Rx routines
+I2cAddr		=	$F4		; Tx/Rx address
+I2cCountL	=	$F5		; Tx/Rx byte count low byte
+I2cCountH	=	$F6		; Tx/Rx byte count high byte
+
+
+;------------------------------------------------------------------------------------
+
+		*=	$2000
+
+	JMP	SendData		; vector to send data
+	JMP	ReadData		; vector to read data
+	JMP	SendAddr		; vector to send slave address
+	JMP	StopI2c			; vector to send stop
+
+;------------------------------------------------------------------------------------
+;
+; send the slave address for an i2c device. if I2cCountL is non zero then that number
+; of bytes will be sent after the address (to allow register addressing, required on
+; some devices). RxBuff is a pointer, in page zero, to the transmit buffer exits with
+; the clock low and Cb=0 if

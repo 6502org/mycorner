@@ -1,0 +1,318 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>Vic 20 network interface - software</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=25%><A HREF="source.html#interrupt">
+ <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>Vic 20 network - software </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT>
+</TD><TD WIDTH=25%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Interrupts</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Without setting about the Vic with a screwdriver there is no way to change the lowest
+ level handling of the Vic interrupts, so some of this code is to deal with the way
+ interrupts are handled by the kernal.
+<P ALIGN=JUSTIFY>
+ Before the interrupts can be used the three vectors for IRQ, NMI and BRK handling need
+ to be set up. This is done during the initialisation by this loop.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	LDX	#$05			; set 6 vector bytes	
+int_loop
+	LDA	i_table,X		; get byte from vector table		
+	STA	IRQ_vec_l,X		; save to vector	
+	DEX				; decrement count
+	BPL	int_loop		; loop if more to do
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ These are the vector words that are copied to the vectors.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; default values for the interrupt vectors
+
+i_table
+	.word	iIRQ			; IRQ routine address
+	.word	iBRK			; BRK routine address
+	.word	iNMI			; NMI routine address
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The NMI routine disables IRQ interrupts and saves any registers used, it could also
+ clear the D flag if needed at this point. The next thing done is to reset the NMI
+ latch, this ensures that longer than the minimum period needed elapses before the NMI
+ line can become active again. After this it reads the status from the network card,
+ the only source of NMI interrupts as set up, and copies any set bits into the interrupt
+ flag byte. Lastly the registers are restored and the routine exits.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; NMI interrupt routine - the NIC /should/ trigger this
+
+iNMI
+	SEI				; disable interrupts
+	PHA				; save A
+
+	LDA	NMI_res			; reset NMI latch
+	LDA	com_reg_l		; read status byte
+	AND	#$FE			; mask wanted bits
+	ORA	IB			; OR with interrupt flag byte
+	STA	IB			; save new interrupt flag byte
+
+	PLA				; restore A
+	RTI
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ This, commented out, code is what goes on in the kernal ROM when either an IRQ or a BRK
+ opcode generate an interrupt. It's included as a reminder of what goes on before code
+ execution gets to our code.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+;; *********************************************************************	
+;; IRQ interrupt routine - this part is in the kernal ROM and is here
+;; only to show what happens before we get to our code.
+;;
+;;IRQ
+;;	PHA				; save A
+;;	TXA				; copy X
+;;	PHA				; save X
+;;	TYA				; copy Y
+;;	PHA				; save Y
+;;	TSX				; copy stack pointer
+;;	LDA	stack+4,X		; get stacked status register	
+;;	AND	#$10			; mask BRK flag
+;;	BEQ	do_IRQ			; branch if not BRK
+;;
+;;	JMP	(BRK_vec_l)		; else do BRK vector (iBRK)
+;;
+;;do_IRQ					
+;;	JMP	(IRQ_vec_l)		; do IRQ vector (iIRQ)
+;;
+;; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The only IRQ interrupt we expect is the timer implemented with VIA 2's timer 1. If it
+ was timer 1 then a call is made to the countdown routine after which the routine exits.
+ If timer 1 was not the source, or a BRK was the cause of the interrupt, then the routine
+ just exits.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; IRQ interrupt routine
+
+iIRQ
+	LDA	VIA_2+IFR		; check VIA 2 interrupt flags
+	BPL	IRQexit			; exit if wasn't VIA 2
+
+	AND	#$40			; mask timer 1 time-out flagged
+	BEQ	IRQexit			; exit if not timer 1 time-out
+
+	STA	VIA_2+IFR		; clear timer 1 time-out flag
+	JSR	LAB_12000		; do timeout countdowns
+
+; *********************************************************************
+; BRK interrupt routine - does nothing at the moment
+
+iBRK
+IRQexit
+	PLA				; pull byte
+	TAY				; restore Y
+	PLA				; pull byte
+	TAX				; restore X
+	PLA				; restore A
+	RTI
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ This is the system timer code and it implements three independant, re-triggerable,
+ single shot count down timers. At present only the TCP timer and one other is used.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; does the timeout counting down, called on TIMER 1 timeout (1mS)
+; decrement the TCP timeout counter if <> 0
+
+LAB_12000
+	LDA	tcp_toc			; test TCP timeout count
+	BEQ	LAB_12005		; skip decrement if zero
+
+	DEC	tcp_toc			; else decrement it
+LAB_12005
+	LDA	cdtb_l			; get countdown timer b low byte
+	BEQ	LAB_12010		; skip decrement if zero
+
+	DEC	cdtb_l			; else decrement it
+LAB_12010
+	LDA	cdtf_l			; get countdown timer f low byte
+	BEQ	LAB_12015		; skip decrement if zero
+
+	DEC	cdtf_l			; else decrement it
+LAB_12015
+	RTS
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 29th February, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=ce5978a&adpref="></script>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.12 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 

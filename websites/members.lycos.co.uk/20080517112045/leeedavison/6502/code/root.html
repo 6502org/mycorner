@@ -1,0 +1,82 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>
+ 6502 Code - Square Root Calculator
+</TITLE>
+<META name="description" content="How to calculate 8-bit square roots in 6502 assembly.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Square Root Calculator. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<U><B>Introduction.</B></U>
+<BLOCKQUOTE>
+ This routine calculates the 8-bit integer square root and 9 bit integer remainder of
+ an unsigned 16-bit integer.
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; Calculates the 8 bit root and 9 bit remainder of a 16 bit unsigned integer in	
+; Numberl/Numberh. The result is always in the range 0 to 255 and is held in
+; Root, the remainder is in the range 0 to 511 and is held in Reml/Remh
+;
+; partial results are held in templ/temph
+;
+; This routine is the complement to the integer square program.
+;
+; Destroys A, X registers.
+
+; variables - must be in RAM
+
+Numberl		= $F0		; number to find square root of low byte
+Numberh		= Numberl+1	; number to find square root of high byte
+Reml		= $F2		; remainder low byte
+Remh		= Reml+1	; remainder high byte
+templ		= $F4		; temp partial low byte
+temph		= templ+1	; temp partial high byte
+Root		= $F6		; square root
+
+	*= $8000		; can be anywhere, ROM or RAM
+
+SqRoot
+	LDA	#$00		; clear A
+	STA	Reml		; clear remainder low byte
+	STA	Remh		; clear remainder high byte
+	STA	Root		; clear Root
+	LDX	#$08		; 8 pairs of bits to do
+Loop
+	ASL	Root		; Root = Root * 2
+
+	ASL	Numberl		; shift high

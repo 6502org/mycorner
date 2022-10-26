@@ -1,0 +1,92 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish11289a55{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if IE]>
+<style>
+#catfish11289a55{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip11289a55{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad11289a55"></div>
+<HTML><HEAD><TITLE>68008 Dartboard control pcb, I2C bus.</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>I2C Bus. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ On the top right hand side of the board is a four pin connector labeled LED DISPLAYS and
+ numbered as P4.
+</BLOCKQUOTE>
+<CENTER>
+ <IMG SRC="p4.png" BORDER=1 ALT="Dart board I2C connector.">
+ <IMG SRC="p4.jpg" BORDER=1 ALT="Dart board I2C connector.">
+</CENTER>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This connector was used as an I2C bus port and has the necessary open collector drivers
+ and pull up resistors, all that's needed is some software.
+</BLOCKQUOTE>
+<B><U>I2C Bus hardware.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ For the purpose of having something to drive a small board was made up with a RAMTROM
+ FM30C256 'data collector' chip. This chip has 32k bytes of non volatile RAM, a real time
+ clock, a reset generator (not used in this application) and a tamper detector input which
+ is active even when the system is powered down.
+</BLOCKQUOTE>
+<CENTER>
+ <IMG SRC="i2cboard.png" BORDER=1 ALT="FM30C256 circuit.">
+ <IMG SRC="i2cbyte.jpg" BORDER=1 ALT="SDA upper trace,
+SCL lower trace.">
+</CENTER>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The board consists of the chip plus a 32768 Hz watch XTAL, a 3V lithium backup battery,
+ connector for the I2C bus and a header for the selectable address and tamper inputs.
+ There is also a test tag for ground and the calibration output.
+<P ALIGN=JUSTIFY>
+ The whole lot fits on a piece of stripboard less than 2" by 1.4". The FM30C256, being a
+ surface mount device, is mounted on the copper side of the board.
+</BLOCKQUOTE>
+<CENTER>
+ <IMG SRC="30c256top.jpg" BORDER=1 ALT="FM30C256 board top side.">
+ <IMG SRC="30c256bot.jpg" BORDER=1 ALT="FM30C256 board track side.">
+</CENTER>
+<B><U>Software.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There are two demonstration programs, the first is an assembly program to allow you to
+ interrogate the I2C bus from <A HREF="softw.html">EhBASIC</A>, the second is a short
+ BASIC program that loads this code then uses it to interrogate all the I2C bus write
+ addresses and display the results.
+<P ALIGN=JUSTIFY><A NAME=link_1></A>
+<LI><A HREF="i2casm.html">View</A> assembly code.
+<LI><A HREF="i2cbas.html">View</A> EhBASIC code.
+<LI><A HREF="i2ccode.zip">Download</A> both as a zip file. <A
+ HREF="i2ccode.zip"><IMG SRC="../../zip_sm.png" ALT="Download" BORDER=0></A>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 4th May, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish11289a55" style="display:none"></div>
+<script src="http://ads.mmania.com/displaycf.js.php?r=11289a55&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

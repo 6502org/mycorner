@@ -1,0 +1,111 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish32564261{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if IE]>
+<style>
+#catfish32564261{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip32564261{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad32564261"></div>
+<HTML><HEAD><TITLE>VFD PSU revisited</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Associated circuits. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<TABLE WIDTH=100%><TR><TD ALIGN=LEFT><B><A HREF="index.html">Previous</A></B></TD>
+<TD ALIGN=RIGHT><B><A HREF="idents.html">Next</A></B></TD></TR></TABLE>
+<BR CLEAR=ALL>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ These are the associated circuits used to make the demonstration VFD light up with
+ something interesting. These circuits are in place of whatever you would use to drive
+ the display be it discrete logic, a dedicated chip or a processor of some kind.
+</BLOCKQUOTE>
+<IMG SRC="osc.png" ALIGN=RIGHT BORDER=1 ALT="Oscillator diagram" HSPACE=8></A>
+<B><U>Oscillator.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The oscillator is just a 555 timer IC configured to run as a multivibrator. None of the
+ circuit values are critical though it needs to be fast enough to avoid flicker.
+<P ALIGN=JUSTIFY>
+ The diode is there to make the output ratio closer to 50:50, without it the ratio would
+ be nearer 66:33, though it is probably not needed in this case.
+<P ALIGN=JUSTIFY>
+ The output of the oscilator goes on to drive the binary counter.
+</BLOCKQUOTE>
+<BR CLEAR=ALL><BR>
+<IMG SRC="counx.png" ALIGN=RIGHT BORDER=1 ALT="Counter diagram" HSPACE=8></A>
+<B><U>Counter.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The counter is a three bit binary up counter and is set to free run. The 74LS161, which
+ is actually a four bit counter, was chosen just because I had one on the bench, any
+ three bit binary counter would do in its place.
+<P ALIGN=JUSTIFY>
+ The A, B and C outputs from the counter go on to drive both the grid and anode decoders.
+</BLOCKQUOTE>
+<BR CLEAR=ALL><BR>
+<IMG SRC="grids.png" ALIGN=RIGHT BORDER=1 ALT="Grid decoder diagram" HSPACE=8></A>
+<B><U>Grid decoder.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The outputs from the counter are decoded into eight active low grid drives and wired so
+ that a count of 000 drives the rightmost digit while a count of 111 drives the leftmost
+ digit.
+<P ALIGN=JUSTIFY>
+ The outputs go to eight of the anode/grid drive circuits and then to the display grids.
+</BLOCKQUOTE>
+<BR CLEAR=ALL><BR>
+<IMG SRC="anodes.png" ALIGN=RIGHT BORDER=1 ALT="Anode decoder diagram" HSPACE=8></A>
+<A NAME=anodes></A>
+<B><U>Anode decoder.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I would have used a 74LS47 BCD to seven segment decoder for this but I didn't have one
+ available so I programmed a GAL16V8A as a hex to seven segment decoder instead. The pld
+ file for this decoder can be seen <A HREF="7seg.html">here</A> and both this and the
+ resultant jed file can be downloaded <A HREF="7seg.zip">here <IMG SRC="../../zip_sm.png"
+ ALT="Download" BORDER=0></A>.
+<P ALIGN=JUSTIFY>
+ The outputs from the counter are decoded into seven active low anode drives and wired so
+ that a count of 000 displays a 0 while a count of 111 displays a 7 so the whole display
+ will read 7 6 5 4 3 2 1 0.
+<P ALIGN=JUSTIFY>
+ If the D input on pin 4 is taken high a count of 000 now displays an 8 while a count of
+ 111 now displays an F so the whole display now reads F E d C b A 9 8.
+<P ALIGN=JUSTIFY>
+ The outputs go to seven of the anode/grid drive circuits and then to the display anodes.
+</BLOCKQUOTE>
+<BR CLEAR=ALL>
+<TABLE WIDTH=100%><TR><TD ALIGN=LEFT><B><A HREF="index.html">Previous</A></B></TD>
+<TD ALIGN=RIGHT><B><A HREF="idents.html">Next</A></B></TD></TR></TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 28th July, 2009.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish32564261" style="display:none"></div>
+<script src="http://ads.mmania.com/displaycf.js.php?r=32564261&cc=uk" type=text/javascript></script>
+<!-- begin ZEDO for channel: Mmania.com , publisher: Mmania.com , Ad Dimension: Slider - 1 x 1 -->
+<script language="JavaScript">
+var zflag_nid="1070"; var zflag_cid="147"; var zflag_sid="106"; var zflag_width="1"; var zflag_height="1"; var zflag_sz="94"; 
+</script>
+<script language="JavaScript" src="http://d2.zedo.com/jsc/d2/fo.js"></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

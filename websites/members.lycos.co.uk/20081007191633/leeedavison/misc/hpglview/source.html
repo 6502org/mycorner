@@ -1,0 +1,359 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=93e736f9&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>HP-GL viewer</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#softw"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>HP-GL Viewer. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+'------------------------------------------------------------------------------------
+'
+' HPGL file viewer Ver 2.08 - Quick BASIC 4.5 (c) L.Davison 2007
+
+' this was written as an excercise in coding an HPGL data viewer and is mostly a
+' quick hack to get my thoughts sorted out. supports most common HP-GL and some
+' HP-GL2 drawing commands and those it doesn't support probably have some commented
+' out code that forms the start of what is needed. where I ran out of enthusiasm
+' you'll find the note "need code"
+
+' there is very little error or bounds checking done during the actual commands,
+' chances are that most HP-GL files you try will work, many HP-GL2 files also work
+' to some degree though your mileage may vary. some files may cause BASIC errors
+' such ar overflow or division by zero though I've not seen those yet.
+
+' does auto scale to fit the mode 12 (640 x 480) screen by processing the file twice,
+' the first time no picture is output, but errors and warnings (if any) are generated
+' and the maximum and minimum values are found. these are used on the second pass to
+' offset and scale the image so it /just/ fits the 640 x 480 screen along it's longest
+' dimension. the original aspect ratio /should/ be maintained.
+
+' added in 2007 is the ability to save the screen by hitting the [S] key. this can
+' take some time so be patient. the image will be saved as filename.bmp where filename
+' was the name, minus any extension, of the loaded file.
+
+' comments, suggestions, additions, offers of monetary reward etc to ..
+'
+' leeedavison@lycos.co.uk
+
+
+'------------------------------------------------------------------------------------
+
+CONST false = 0, true = -1			' define these
+CONST absolute = true, relative = false		' for the drawmode
+CONST AtoZ$ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"	' "A" to "Z" characters
+CONST nmrc$ = "+-.01234567890 "			' numeric characters
+CONST convangle = 180 / 3.14159264		' degrees to radians to degrees
+
+' picture frame (hard clip) limits. these should be set to what the hardware will
+' physically allow
+
+CONST minimumx = 0, minimumy = 0		' set for the table minimum
+CONST maximumx = 32767, maximumy = 32767	' set for the table maximum
+
+' calculate the angle to a point on a circle given the centre and the point. 0 degrees
+' is the 12 o'clock position. this may change.
+
+DECLARE FUNCTION CalcAngle(xcentre, ycentre, xpoint, ypoint)
+
+' calculate the radius of a circle given the centre and a point on the circle. this
+' actually calculates the linear distance between any two points
+
+DECLARE FUNCTION CalcRadius(xcentre, ycentre, xpoint, ypoint)
+
+'------------------------------------------------------------------------------------
+
+DIM fo$(95)					' holds the font plot data
+
+esc$ = CHR$(27)					' define ESCAPE
+quote$ = CHR$(34)				' " as a string
+separator$ = ";"				' these can end command strings
+ignore$ = " " + CHR$(13) + CHR$(10)		' these are ignored
+
+home$ = CHR$(0) + CHR$(71)			' INKEY$ for [Home] key
+pgup$ = CHR$(0) + CHR$(73)			' INKEY$ for [PgUp] key
+pgdn$ = CHR$(0) + CHR$(81)			' INKEY$ for [PgDn] key
+eend$ = CHR$(0) + CHR$(79)			' INKEY$ for [End] key
+crrt$ = CHR$(0) + CHR$(77)			' INKEY$ for [cursor right] key
+crlt$ = CHR$(0) + CHR$(75)			' INKEY$ for [cursor left] key
+crup$ = CHR$(0) + CHR$(72)			' INKEY$ for [cursor up] key
+crdn$ = CHR$(0) + CHR$(80)			' INKEY$ for [cursor down] key
+
+SCREEN 12					' 640 x 480 x 16
+
+DO
+  GOSUB main					' go do main processing loop
+
+  CLS						' clear the screen
+  LOCATE 2,2					' set cursor
+  PRINT "Process another file [y/N]"		' set prompt
+
+  DO						' just wait ..
+    key$ = INKEY$				'   get key presses
+  LOOP WHILE key$ = ""				' .. for a key press
+
+LOOP WHILE UCASE$(key$) = "Y"			' loop if another file to do
+
+END						' all done, bye.
+
+
+'------------------------------------------------------------------------------------
+'
+' main loop
+
+main:
+
+CLS						' clear the screen
+
+minimumxused = 32767				' set minimum and
+minimumyused = 32767				' maximum used for
+maximumxused = -32768				' auto scale feature
+maximumyused = -32768				' (yes these are correct)
+
+LOCATE 2,2					' set cursor
+INPUT "Enter HPGL file name "; filename$	' any name, doesn't have to be *.plt
+IF filename$ = "" THEN END
+
+warningcount = 0				' no warnings yet
+errorcount = 0					' no errors yet
+
+GOSUB InitFont					' initialsie the font array
+
+fromstring = false				' getbyte is from the file
+pretend = true					' pretend to plot first time
+GOSUB DoFile					' process the file
+
+IF (errorcount OR warningcount) THEN		' if there were some errors/warnings
+  COLOR 15					' white
+  PRINT errorcount; "error";			' n error
+  IF errorcount &lt;&gt; 1 THEN
+    PRINT "s";					'        s
+  END IF
+  PRINT " and"; warningcount; "warning";	'          and m warning
+  IF warningcount &lt;&gt; 1 THEN
+    PRINT "s"					'                       s
+  ELSE
+    PRINT
+  END IF
+  LOCATE 30,1					' bottom line
+  PRINT "Press any key to continue";		' indicate not just stalled
+  DO						' just wait ..
+  LOOP WHILE INKEY$ = ""			' .. for a key press
+END IF
+
+xsize = maximumxused - minimumxused		' x size of plot
+ysize = maximumyused - minimumyused		' y size of plot
+IF (ysize / xsize) &gt; .75 THEN			' use the maximum (reduction) scale
+  scale = ysize / 239				' scale is y scale (0 to 239)
+ELSE
+  scale = xsize / 319				' scale is x scale (0 to 319)
+END IF
+
+fromstring = false				' getbyte is from the file
+pretend = false					' plot for real this time
+zoom = 1					' set zoom for zoom 1
+drawscale = scale / 2				' drawscale for zoom 1
+drawxcentre = xsize / 2				' drawing x centre
+drawycentre = ysize / 2				' drawing y centre
+GOSUB CalcXYOffset				' calculate offsets
+
+DO						' redraw loop ..
+
+  IF redraw THEN				' only if new pan/zoom
+    CLS						' clear screen for plotting
+    COLOR 15					' default to white
+    GOSUB DoFile				' process the file (again)
+  END IF
+
+  DO						' just wait ..
+    key$ = INKEY$				' get key presses
+  LOOP WHILE key$ = ""				' .. for a key press
+
+  redraw = false				' assume no redraw
+  IF key$ = home$ THEN				' [Home] key
+    IF (zoom &lt;&gt; 1) OR (drawxcentre - (xsize / 2)) OR (drawycentre - (ysize / 2)) THEN
+						' only if zoomed or not centred
+      zoom = 1					' zoom for fully zoomed out
+      drawscale = scale / 2			' drawscale for fully zoomed out
+      drawxcentre = xsize / 2			' reset drawing x centre
+      drawycentre = ysize / 2			' reset drawing y centre
+      GOSUB CalcXYOffset			' calculate offsets
+    END IF
+  ELSEIF key$ = pgup$ THEN			' [PgUp] key
+    IF zoom THEN				' if not fully zoomed out
+      zoom = zoom - 1				' zoom out
+      drawscale = scale / (2 ^ zoom)		' drawscale for zoom level
+      GOSUB CalcXYOffset			' calculate offsets
+    END IF
+  ELSEIF key$ = pgdn$ THEN			' [PgDn] key
+    IF drawscale &gt; 1 THEN			' if not fully zoomed in
+      zoom = zoom + 1				' zoom in
+      drawscale = scale / (2 ^ zoom)		' drawscale for zoom level
+      IF drawscale &lt; 1 THEN			' check not beyond maximum zoom
+        drawscale = 1				' maximum zoom allowed
+      END IF
+      GOSUB CalcXYOffset			' calculate offsets
+    END IF
+  ELSEIF key$ = eend$ THEN			' [End] key
+    DO WHILE drawscale &gt; 1			' while not fully zoomed in
+      zoom = zoom + 1				' zoom in
+      drawscale = scale / (2 ^ zoom)		' drawscale for zoom level
+      IF drawscale &lt; 1 THEN			' check not beyond maximum zoom
+        drawscale = 1				' maximum zoom allowed
+      END IF
+      GOSUB CalcXYOffset			' calculate offsets
+    LOOP
+  ELSEIF key$ = crrt$ THEN			' [cursor right] key
+    drawxcentre = drawxcentre + 159 * drawscale	' shift x centre 1/4 screen left
+    GOSUB CalcXYOffset				' calculate offsets
+  ELSEIF key$ = crlt$ THEN			' [cursor left] key
+    drawxcentre = drawxcentre - 159 * drawscale	' shift x centre 1/4 screen right
+    GOSUB CalcXYOffset				' calculate offsets
+  ELSEIF key$ = crup$ THEN			' [cursor up] key
+    drawycentre = drawycentre + 119 * drawscale	' shift y centre 1/4 screen down
+    GOSUB CalcXYOffset				' calculate offsets
+  ELSEIF key$ = crdn$ THEN			' [cursor down] key
+    drawycentre = drawycentre - 119 * drawscale	' shift y centre 1/4 screen up
+    GOSUB CalcXYOffset				' calculate offsets
+  ELSEIF UCASE$(key$) = "S" THEN		' [S] key
+    GOSUB SaveScreen				' save the screen
+  END IF
+
+LOOP WHILE key$ &lt;&gt; esc$				' until [ESC] is pressed
+
+COLOR 15					' white
+
+RETURN
+
+'------------------------------------------------------------------------------------
+'
+' calculate offsets
+
+CalcXYOffset:
+  offsetx = minimumxused - 319 * drawscale + drawxcentre
+						' set x offset
+  offsety = minimumyused - 239 * drawscale + drawycentre
+						' set y offset
+
+  minxbound = minimumxused &gt; offsetx		' true if violates minimum x
+  maxxbound = ((maximumxused - offsetx) / drawscale) &lt; 639
+						' true if violates maximum x
+  IF minxbound AND NOT maxxbound THEN
+    invert = (xsize / drawscale) &lt; 640
+    GOSUB CorrectXOffset			' correct the x offset
+  ELSEIF maxxbound AND NOT minxbound THEN
+    invert = (xsize / drawscale) =&gt; 640
+    GOSUB CorrectXOffset			' correct the x offset
+  END IF
+
+  minybound = minimumyused &gt; offsety		' true if violates minimum y
+  maxybound = ((maximumyused - offsety) / drawscale) &lt; 479
+						' true if violates maximum y
+  IF minybound AND NOT maxybound THEN
+    invert = (ysize / drawscale) &lt; 480
+    GOSUB CorrectYOffset			' correct the y offset
+  ELSEIF maxybound AND NOT minybound THEN
+    invert = (ysize / drawscale) =&gt; 480
+    GOSUB CorrectYOffset			' correct the y offset
+  END IF
+  redraw = true					' always redraw after new offsets
+RETURN
+
+
+'------------------------------------------------------------------------------------
+'
+' correct the x offset
+
+CorrectXOffset:
+  IF invert THEN
+    drawxcentre = xsize - 320 * drawscale	' shift x centre
+    offsetx = maximumxused - 639 * drawscale	' set x offset
+  ELSE
+    drawxcentre = 319 * drawscale		' shift x centre
+    offsetx = minimumxused			' set x offset
+  END IF
+RETURN
+
+
+'------------------------------------------------------------------------------------
+'
+' correct the y offset
+
+CorrectYOffset:
+  IF invert THEN
+    drawycentre = ysize - 240 * drawscale	' shift y centre
+    offsety = maximumyused - 479 * drawscale	' set y offset
+  ELSE
+    drawycentre = 239 * drawscale		' shift y centre
+    offsety = minimumyused			' set y offset
+  END IF
+RETURN
+
+
+'------------------------------------------------------------------------------------
+'
+' process file
+
+DoFile:
+  OPEN filename$ FOR INPUT AS #1		' open the file
+  GOSUB Initialise				' initialise the plot values
+  GOSUB DoStream				' process the stream
+  CLOSE						' close the file
+RETURN
+
+
+'------------------------------------------------------------------------------------
+'
+' process a stream of bytes until no input remains
+
+DoStream:
+  cmdstrin$ = ""				' initialise the command string
+  GOSUB Getbyte					' get byte from input stream
+  DO WHILE LEN(byte$)				' loop until no bytes to do
+    IF atozchr THEN				' all commands are two A to Z chrs
+      cmdstrin$ = cmdstrin$ + byte$		' add to command string
+      cmdlength = LEN(cmdstrin$)		' get command string length
+      GOSUB Getbyte				' get next byte
+      IF cmdlength = 2 THEN			' if two characters
+        GOSUB DoCommand				' go interpret command
+        cmdstrin$ = ""				' clear the executed command
+      END IF
+    ELSEIF INSTR(separator$, byte$) THEN	' if separator character
+      cmdstrin$ = ""				' clear command string
+      GOSUB Getbyte				' get next byte
+    ELSEIF INSTR(ignore$, byte$) THEN		' if ignore character
+      GOSUB Getbyte				' just get the next byte
+    ELSEIF byte$ = esc$ THEN			' ignore ESC sequences
+      cmdstrin$ = ""				' clear the command string
+      DO WHILE INSTR(ignore$, byte$) = 0	' all end ESC sequences
+        GOSUB GetByte				' get a byte
+      LOOP
+      GOSUB Getbyte				' get next byte
+    ELSE
+      cmdstrin$ = ""				' clear the command string
+      IF pretend THEN				' only print if not drawing
+        COLOR 15				' white
+        PRINT "Error : Unexpected byte "; byte$; ASC(byte$)
+        errorcount = errorcount + 1
+      END IF
+      GOSUB Getbyte				' get next byte
+    END IF
+    IF INKEY$ = esc$ THEN END			' end if [ESCAPE] pressed
+  LOOP
+RETURN
+
+
+'------------------------------------------------------------------------------------
+'
+' get a byte from the input stream. if the stream is empty (i.e. the whole file or
+' character definition string has been read) then return a null string. set atozchr
+' and numeric accordingly.
+
+Getbyte:
+  IF fromstring THEN				' reading from font string
+    byte$ = MID$(fo$(lbchar), lbindex, 1)	' get next byte from string
+    lbindex = lbindex + 1			' increment the index
+  ELSEIF NOT EOF(1) THEN			' if no bytes from fil

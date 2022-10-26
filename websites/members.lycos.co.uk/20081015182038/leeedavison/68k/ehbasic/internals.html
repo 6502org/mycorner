@@ -1,0 +1,47 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=4edc8427&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>Enhanced 68k BASIC, internals</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 680x0 family of
+ microprocessors."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_1"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Internals. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>BASIC program memory use.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ A BASIC program is stored in memory as follows ..
+<P><CENTER><IMG SRC="basic.gif" TITLE="BASIC program storage"></CENTER>
+<P ALIGN=JUSTIFY>
+ The start of memory is held in Smeml which is at RAMBASE+$2E. Each BASIC program line
+ is stored as a longword pointer to the next line, a longword line number, the tokenised
+ line text and an end of line byte. Optionally, if the next byte is at an odd address,
+ there is a null pad byte.
+<P ALIGN=JUSTIFY>
+ This repeats for each line until the pointer after the last line which is null, this is
+ the end of program marker.
+<P ALIGN=JUSTIFY>
+ If there is no program in memory only the end marker will be present.
+</BLOCKQUOTE>
+<B><U>BASIC functions, variables and arrays.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ After the program comes the functions, variables and arrays. Each has a name of up to
+ four characters in length and may have b7 of the second character set if the type is
+ string, and b7 of the third character set if the type is integer. Characters that are
+ not defined are left as zero.
+<P><CENTER><IMG SRC="name.gif" TITLE="BASIC function, variable and array names"></CENTER>
+<P ALIGN=JUSTIFY>
+ Directly following the name is the data, this is as follows ..
+<P ALIGN=JUSTIFY>
+<B>Functions</B>
+<TABLE ALIGN=CENTER BGCOLOR="white" CELLPADDING=3 CELLSPACING=0 BORDER=2>
+<TR ALIGN=CENTER><TD WIDTH=135>Function name</TD>
+<TD WIDTH=134>Execute pointer</TD>
+<TD WIDTH=135>Variable name</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ A function is twelve bytes in length made up of its name, a longword pointer to the
+ BASIC code of the function and the name of the function variable. The type of function
+ variable is independant of the type of function so a string function can have a numeric
+ variable and vice versa.
+<P

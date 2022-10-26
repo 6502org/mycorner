@@ -1,0 +1,61 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=79830a1b&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>Z80 intel hex loader</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="../index.html">
+<IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Z80 intel hex loader. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD>
+<TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<U><B>Introduction</B></U>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This short peice of code is an intel hex loader. Before the loader is called for the
+ first time the serial port must be set up, in this case by calling SETBD. The main
+ routine is INTLIN and never quits, you'll need to reset the Z80 to exit.
+<P ALIGN=JUSTIFY>
+ It was originally written to allow me to download code to my MPF 1B.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; This is a very short Intel hex loader. It assumes the record starts
+; with ':' , that hex chars are 0-9 and A-F (not a-f) and does NO
+; error checking whatsoever. It was shoehorned into the uProfessor ROM
+; in the 86 free bytes between $06E1 and $0737 and is 86 bytes long.
+
+; IO/M Addresses
+
+; Assumes the uPF IO/M card is fitted. The UART is an 8251AF and the CTC
+; is the standard Z80 type.
+
+URTDA	EQU	60h		;8251 UART Data Port
+URTCNT	EQU	61h		;8251 UART Control Port
+
+CTC2	EQU	66h		;CTC Channel 2, Baud rate generator for UART
+
+; Setup 8251 9600 baud 8N1
+
+SETBD:
+	LD	A,#47h		;Counter mode, TC follows, Reset channel
+	OUT	(CTC2),A	;CTC2 is baud rate gen for 8251
+	LD	A,#03h		;Time const for 9600 baud
+	OUT	(CTC2),A	;
+	LD	HL,RESTAB	;Reset sequence for 8251
+	LD	B,#TABEND-RESTAB;Table length
+	LD	C,#URTCNT	;Point to control port
+	OTIR			;OUT and loop until done
+
+; Get Intel hex record
+; Short version - no checksum calculation.
+
+INTLIN:
+	CALL	CHRRD		;Get chr
+	CP	#':'		;Is it ':'?
+	JR	NZ,INTLIN	;If not then next
+	CALL	BYTERD		;Get record length
+	LD	B,A		;Put in B
+	CALL	BYTERD		;Get record address hi byte
+	LD	H,A		;Put in H

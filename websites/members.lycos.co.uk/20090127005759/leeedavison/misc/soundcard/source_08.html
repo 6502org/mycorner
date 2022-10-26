@@ -1,0 +1,299 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=1d6cb671&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>ADPCM to 8 bit .wav convert</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#softw"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>ADPCM to 8 bit .wav convert. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+' ADPCM decoder. this code decompresses the contents of a speech chip sound ROM set that
+' is 4 bit ADPCM encoded. A table of addresses at the start of the ROM is used to find
+' the start of the individual samples, the end, and the sample length, is calculated from
+' the sample block sizes. this version saves the decompressed samples as eight bit 16ksps
+' mono .wav files with the hex start address of the sample as the file name
+
+' 05/04/06
+
+SCREEN 12						' 640 x 480 x 16
+CLS							' clear it
+
+DEFINT A-Z						' all integers except where defined
+
+DIM stepadj(7)						' step index adjust, 0 to 7
+DIM steptable(48)					' step size table, 0 to 48
+DIM wavaddr&amp;(127)					' sample start addresses
+adrcount% = 0						' number of sample addresses found
+
+RESTORE stepadj						' read the step index adjust table
+FOR i = 0 TO 7
+  READ stepadj(i)
+NEXT
+
+RESTORE steptable					' read the step size table
+FOR i = 0 TO 48
+  READ steptable(i)
+NEXT
+
+OPEN "snd_2.rom" FOR BINARY AS #1			' open input file
+
+i&amp;amp; = 3						' skip unknown start bytes
+
+DO
+  GOSUB GetLong						' get address longword
+  wavaddr&amp;(adrcount%) = llong&amp;				' save address
+  adrcount% = adrcount% + 1				' increment address count
+  PRINT RIGHT$("00000" + HEX$(llong&amp;), 6); "  ";	' display address
+LOOP WHILE llong&amp;
+
+PRINT
+PRINT  adrcount% - 1; "addresses found";
+adrcount% = adrcount% - 2				' correct for zero term and zero
+							' count start
+
+FOR wavfiles% = 0 to adrcount%				' for each sample
+  filename$ = RIGHT$("00000" + HEX$(wavaddr&amp;(wavfiles%)), 6) + ".wav"
+  OPEN filename$ FOR OUTPUT AS #2			' open output file
+  PRINT
+  PRINT "File "; filename$;				' show file name
+  GOSUB GetLength					' get the sample length
+  GOSUB WriteRIFF					' write the header chunk
+  GOSUB WriteFORMAT					' write the format chunk
+  GOSUB WriteDATA					' write the data chunk
+  CLOSE #2						' close output file
+NEXT
+
+CLOSE #1						' close input file
+
+PRINT
+PRINT "Done. Any key to exit."				' show file name
+
+DO
+LOOP WHILE INKEY$=""					' wait for a key
+
+END
+
+
+' get the sample size. the sample is arranged into blocks, the first byte of the block
+' is the byte count for the remainder of the block + $80. the sample is terminated by
+' a block count of zero
+
+GetLength:
+  sslength&amp; = 0						' reset length
+  i&amp; = wavaddr&amp;(wavfiles%)				' sample start address
+  DO
+    GOSUB GetByte					' read block length
+    byte% = byte% AND 127				' mask block length
+    sslength&amp; = sslength&amp; + byte%			' add this chunk length
+    i&amp; = i&amp; + byte%					' index to next chunk length
+  LOOP WHILE byte%					' zero length is end marker
+RETURN
+
+
+' write RIFF header chunk
+
+WriteRIFF:
+  PRINT #2, "RIFF";					' always there
+  samplength&amp; = sslength&amp; * 2				' length of output in bytes
+  llong&amp; = samplength&amp; + 36				' length of rest of file
+  GOSUB WriteLongword					' write file length
+  PRINT #2, "WAVE";					' always there
+RETURN
+
+
+' write FORMAT chunk
+
+WriteFORMAT:
+  PRINT #2, "fmt ";					' always there
+  llong&amp; = 16 : GOSUB WriteLongword			' length of chunk, always 16
+  llong&amp; = 1 : GOSUB WriteWord				' always 1
+  llong&amp; = 1 : GOSUB WriteWord				' mono
+  llong&amp; = 16000 : GOSUB WriteLongword			' sample rate
+  llong&amp; = 16000 : GOSUB WriteLongword			' bytes/second
+  llong&amp; = 1 : GOSUB WriteWord				' 1 byte/sample
+  llong&amp; = 8 : GOSUB WriteWord				' 8 bits/sample
+RETURN
+
+
+' write DATA chunk
+
+WriteDATA:
+  PRINT #2, "data";					' always there
+  llong&amp; = samplength&amp; : GOSUB WriteLongword		' data chunk length
+  sstart&amp; = wavaddr&amp;(wavfiles%)				' sample start address
+  send&amp; = wavaddr&amp;(wavfiles% + 1)			' sample end address
+  GOSUB Decompress					' decompress the sample
+RETURN
+
+
+' write llong&amp; as word to file, little endian format
+
+WriteWord:
+  PRINT #2, CHR$(llong&amp; AND 255&amp;);			' write low byte
+  llong&amp; = llong&amp; \ 256&amp;
+  PRINT #2, CHR$(llong&amp; AND 255&amp;);			' write high byte
+RETURN
+
+
+' write llong&amp; as longword to file, little endian format
+
+WriteLongword:
+  GOSUB WriteWord					' write low word
+  llong&amp; = llong&amp; \ 256&amp;
+  GOSUB WriteWord					' write high word
+RETURN
+
+
+' decompress ADPCM sample data to .wav data. first get the blocksize, if it's zero then
+' all done so exit else for each byte in the block umpack the high then the low nibbles
+' into 12 bit samples
+
+' This routine could be greatly simplified but is given in this form as it more closely
+' represents how it would be implemented in assembly code or directly in hardware
+
+Decompress:
+  stepindex = 0						' reset decompression variables
+  stepsize = 16						' initialise index
+  sample&amp; = 2048					' set 50% for unsigned value
+
+  i&amp; = sstart&amp;						' set start of sample
+  eflag% = 0						' clear end flag
+  DO
+    GOSUB GetByte					' get this sample blocklength
+    blklength% = byte% AND 127				' mask and copy block length
+    IF blklength% THEN					' if there are samples
+      DO
+        GOSUB GetByte					' get two compressed nibbles
+        FOR nib% = 0 TO 1				' for each nibble
+          IF nib% THEN
+            nibble% = byte% AND 15			' second sample is low nibble
+          ELSE
+            nibble% = byte% \ 16			' first sample is high nibble
+          END IF
+
+          newsample = nibble% AND 7			' compressed sample magnitude
+
+          difference = stepsize \ 8			' effectively add 0.5 to difference
+
+          IF newsample AND 4 THEN
+            difference = difference + stepsize		' + stepsize / 4 * 4
+          END IF
+          IF newsample AND 2 THEN
+            difference = difference + stepsize \ 2	' + stepsize / 4 * 2
+          END IF
+          IF newsample AND 1 THEN
+            difference = difference + stepsize \ 4	' + stepsize / 4 * 1
+          END IF
+
+          IF (nibble% AND 8) THEN			' if -ve compressed sample
+            sample&amp; = sample&amp; - difference		'  subtract the difference
+          ELSE						' else compressed sample was +ve
+            sample&amp; = sample&amp; + difference		'  so add the difference
+          END IF
+
+          IF sample&amp; &gt; 4095 THEN			' if &gt; than unsigned 12 bit max
+            PRINT " +clip ";				'  print a warning
+            sample&amp; = 4095				'  clamp to 4095
+          ELSEIF sample&amp; &lt; 0 THEN			' if &lt; than unsigned 12 bit min
+            PRINT " -clip ";				'  print a warning
+            sample&amp; = 0					'  clamp to 0
+          END IF
+
+          PRINT #2, CHR$(sample&amp; \ 16&amp;);		' scale &amp; save decompressed sample
+          stepindex = stepindex + stepadj(newsample)	' new decompress step index
+          IF stepindex &gt; 48 THEN			' if &gt; than step table max
+            stepindex = 48				'  clamp to step table max
+          ELSEIF stepindex &lt; 0 THEN			' if &lt; than step table min
+            stepindex = 0				'  clamp to step table min
+          END IF
+
+          stepsize = steptable(stepindex)		' get step size for next sample
+
+        NEXT nib%					' do other nibble
+        blklength% = blklength% - 1%			' decrement count
+      LOOP WHILE blklength%				' loop if more to do
+    ELSE
+      eflag% = -1%					' else set end flag
+    END IF
+  LOOP UNTIL eflag%					' loop until end
+RETURN
+
+
+' get an indexed byte from the input stream. return the value as a string and a number
+
+GetByte:
+  byte$ = " "						' one byte long string
+  i&amp; = i&amp; + 1&amp;						' increment the index
+  GET #1, (i&amp;), byte$					' get LEN(byte$) bytes
+  byte% =  ASC(byte$)					' get numeric byte value
+RETURN
+
+
+' get a big endian longword from the input stream. return the value in llong&amp;
+
+GetLong:
+  GOSUB GetByte						' get MS byte
+  llong&amp; = byte%					' copy it
+  GOSUB GetByte						' get next byte
+  llong&amp; = llong&amp; * 256&amp; + byte%			' convert and add it
+  GOSUB GetByte						' get next byte
+  llong&amp; = llong&amp; * 256&amp; + byte%			' convert and add it
+  GOSUB GetByte						' get next byte
+  llong&amp; = llong&amp; * 256&amp; + byte%			' convert and add it
+RETURN
+
+
+' dialogic modified IMA tables
+
+steptable:
+	DATA	 16,  17,  19,  21,   23,   25,   28,   31,   34,  37
+	DATA	 41,  45,  50,  55,   60,   66,   73,   80,   88,  97
+	DATA	107, 118, 130, 143,  157,  173,  190,  209,  230, 253
+	DATA	279, 307, 337, 371,  408,  449,  494,  544,  598, 658
+	DATA	724, 796, 876, 963, 1060, 1166, 1282, 1411, 1552
+
+stepadj:
+	DATA	-1,-1,-1,-1,2,4,6,8
+</PRE>
+</TD></TR></TABLE>
+<BR clear=all>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 6th April, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="//secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

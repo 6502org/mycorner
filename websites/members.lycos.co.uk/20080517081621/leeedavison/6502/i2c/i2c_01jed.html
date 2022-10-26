@@ -1,0 +1,59 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD><TITLE>I2C Bus interface - GAL logic fuse file.</TITLE>
+<META name="description" content="An I2C bus interface for the 6502.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_1"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>GAL logic fuse file. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<A HREF="i2c_01_jed.zip">Download this file <IMG SRC="../../zip_sm.png" ALT="Download"
+ BORDER=0></A><P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+CUPL(WM)        4.7b  Serial# XX-xxxxxxxx
+Device          g16v8as  Library DLIB-h-36-2	
+Created         Fri Mar 23 10:30:16 2001
+Name            I2C_01 
+Partno          00 
+Revision        01 
+Date            19/03/01 
+Designer        Lee 
+Company         
+Assembly        None 
+Location        
+*QP20 
+*QF2194 
+*G0 
+*F0 
+*L00000 10101011011110110111011010010110
+*L00256 10101011011110110111101010010110
+*L02048 00000000001100000011000000100000
+*L02112 00000000001111111111111111111111
+*L02144 11111111111111111111111111111111
+*L02176 1111111111

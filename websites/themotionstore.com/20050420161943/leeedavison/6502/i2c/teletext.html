@@ -1,0 +1,156 @@
+<HTML>
+<HEAD><TITLE>I2C Bus interface</TITLE>
+<META name="description" content="An I2C bus interface for the 6502.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>EhBASIC Teletext page viewer. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+ This is a simple page select driver for the SAA5243 + SAA5231 teletext chipset. X is
+ valid as a wildcard digit.
+<BR>
+<A HREF="teletext.zip">Download this file <IMG SRC="../../zip_sm.png" ALT="Download"
+ BORDER=0></A><P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+1 REM set memory size to 8192 for this program
+
+5 REM simple teletext decoder page driver
+6 REM there is no page read, output is via
+7 REM teletext chip video out
+
+10 REM set I2C interface values
+20 TT = 34 : REM teletext chip 12c address
+30 SB = $2000 : REM send byte
+40 RB = £2003 : REM read byte (not used)
+50 CL = $F5 : REM # bytes low (i2ccountL)
+60 BL = $F1 : REM buffer ptr low  (rxbuffl)
+70 AD = $F4 : REM device address (i2caddr)
+80 BF = $4000 : REM buffer address
+90 DIM TR(10) : REM register buffer
+
+110 GOSUB 800 : REM setup chip
+120 TR(8) = 0 : REM no clear display
+130 TR(9) = 0 : REM set row
+140 TR(10) = 0 : REM set column
+
+150 GOSUB 838 : REM set registers 8 to 10
+160 P3 = 49 : REM 1
+161 P2 = 48 : REM 0
+162 P1 = 48 : REM 0
+170 GOSUB 370 : REM set search page
+
+200 REM main program loop
+210 DO
+220 GOSUB 300 : REM select page
+230 LOOP
+299 END : REM never gets here
+
+300 REM Select page
+
+310 INPUT "Page no.";P$
+320 IF LEN(P$)<>3 THEN 310
+330 P$ = UCASE$(P$) : REM "x" to "X"
+
+340 P1=ASC(RIGHT$(P$,1)) : REM 1s character ASCII value
+350 P2=ASC(MID$(P$,2,1)) : REM 10s character ASCII value
+360 P3=ASC(LEFT$(P$,1)) : REM 100s character ASCII value
+
+365 REM dispaly the searched for page number
+370 POKE BF,8 : REM register address
+380 POKE BF+1,0 : REM set x value
+390 POKE BF+3,0 : REM set y value
+400 POKE BF+3,2 : REM set white
+410 POKE BF+4,P3 : REM display page 100s
+420 POKE BF+5,P2 : REM display page 10s
+430 POKE BF+6,P1 : REM display page 1s
+440 POKE AD,TT : REM set device address
+450 DOKE BL,BF : REM set the buffer address
+460 DOKE CL,7 : REM seven bytes to send
+470 CALL SB : REM send byte(s)
+
+475 REM set the page to search for
+480 P1=P1-32 : REM calsulate page 1s (ASCII - 48 + 16)
+490 P2=P2-32 : REM calculate page 10s (ASCII - 48 + 16)
+500 P3=P3-24 : REM calculate page 100s (ASCII - 48 + 24)	
+510 IF P1=56 THEN P1 = 0 : REM allow wildcard "X"
+520 IF P2=56 THEN P2 = 0 : REM allow wildcard "X"
+530 IF P3=64 THEN P3 = 8 : REM allow wildcard "X"
+540 POKE BF,2 : REM register address
+550 POKE BF+1,0
+560 POKE BF+2,P3
+570 POKE BF+3,P2
+580 POKE BF+4,P1
+590 POKE AD,TT : REM set device address
+600 DOKE BL,BF : REM set the buffer address
+610 DOKE CL,5 : REM five bytes to send
+620 CALL SB : REM send byte(s)
+630 RETURN
+
+799 END
+
+800 REM setup teletext registers
+
+801 RESTORE 910
+802 FOR X = 1 TO 5
+804 READ TR(X)
+806 POKE BF+X,TR(X)
+808 NEXT
+810 POKE BF,1 : REM register address
+812 POKE AD,TT : REM set device address
+814 DOKE BL,BF : REM set the buffer address
+816 DOKE CL,6 : REM six bytes to send
+818 CALL SB : REM send byte
+
+819 RESTORE 935
+820 FOR X = 4 TO 7
+822 READ TR(X)
+824 POKE BF-3+X,TR(X)
+826 NEXT
+828 POKE BF,4 : REM register address
+830 POKE AD,TT : REM set device address
+832 DOKE BL,BF : REM set the buffer address
+834 DOKE CL,5 : REM five bytes to send
+836 CALL SB : REM send byte
+
+838 RESTORE 980
+839 FOR X = 8 TO 10
+840 READ TR(X)
+842 POKE BF-7+X,TR(X)
+844 NEXT
+846 POKE BF,8 : REM register address
+848 POKE AD,TT : REM set device address
+850 DOKE BL,BF : REM set the buffer address
+852 DOKE CL,4 : REM four bytes to send
+854 CALL SB : REM send byte
+
+856 RETURN
+
+900 REM default values for registers 1 - 3 
+910 DATA 4 
+920 DATA 0
+930 DATA 25,16,16
+
+935 REM default values for registers 4 - 7
+940 DATA 0
+950 DATA 207
+960 DATA 0
+970 DATA 39
+
+975 REM default values for registers 8 - 10
+980 DATA 16
+985 DATA 0
+990 DATA 0
+</PRE>
+</TD></TR></TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 4th May, 2002.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>

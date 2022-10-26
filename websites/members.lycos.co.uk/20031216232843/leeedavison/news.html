@@ -1,0 +1,423 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>
+  News and site updates
+</TITLE>
+<META name="description" content="My corner news & updates.">
+</HEAD>
+<BODY BACKGROUND="back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="index.html">
+  <IMG SRC="up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Latest site news and updates. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="index.html">
+ <IMG SRC="epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=5>
+<TR>
+<TD WIDTH=150></TD><TD></TD>
+</TR>
+<TR>
+<TD><B>12th December 2003.</B></TD>
+<TD>Nearly another year gone and far too long since the last update. Just some minor
+ tweaks here and there this time, the most noticeable being to the <A
+ HREF="z80/mpf1/index.html">Microprofessor MPF-1B</A> pages. Enjoy.
+</TD>
+</TR>
+<TR>
+<TD><B>7th September 2003.</B></TD>
+<TD>An update to the <A HREF="6502/suprchips/network/index.html">PC network card</A> page
+ sees support for the 3Com 3C509B added. This also needed a small change to the <A
+ HREF="6502/suprchips/isa/index.html">ISA interface</A>.
+</TD>
+</TR>
+<TR>
+<TD><B>28th August 2003.</B></TD>
+<TD>Added another page to <A HREF="6502/shorts/index.html">Shorts</A> .. Another
+ short code bit. <A HREF="6502/shorts/bin2bcd.html">Binary to BCD</A>.<BR>
+ Added the <A HREF="6502/code/index.html">6502 code</A> section for those slightly
+ longer routines.
+</TD>
+</TR>
+<TR>
+<TD><B>18th August 2003.</B></TD>
+<TD>The <A HREF="6502/suprchips/network/index.html">PC network card</A> got <A
+ HREF="http://slashdot.org/article.pl?sid=03/08/16/1226253&mode=thread&tid=126&tid=156&tid=95&tid=96&tid=99">Slashdotted</A>
+ this weekend. Fame at last!
+</TD>
+</TR>
+<TR>
+<TD><B>15th August 2003.</B></TD>
+<TD>The <A HREF="6502/suprchips/network/index.html">PC network card</A> software has been
+ updated. It can now serve four web pages and a small graphic, and includes code that shows
+ how a response can be returned from the browser.
+</TD>
+</TR>
+<TR>
+<TD><B>11th August 2003.</B></TD>
+<TD>This is something I've wanted to do for ages, a microprocessor on my network. Using
+ a <A HREF="6502/suprchips/index.html">38067 microcontroller</A> and an <A
+ HREF="6502/suprchips/isa/index.html">ISA interface</A> I managed to drive a <A
+ HREF="6502/suprchips/network/index.html">PC network card</A>.
+</TD>
+</TR>
+<TR>
+<TD><B>28th July 2003.</B></TD>
+<TD>An update to the <A HREF="baking/index.html">baking</A> section adds <A
+ HREF="baking/icing/index.html">jam filling and butter icing</A> to the chocolate
+ sponge. Easier than writing an embedded web server, trust me on this.
+</TD>
+</TR>
+<TR>
+<TD><B>14th July 2003.</B></TD>
+<TD>Long awaited, the update to <A HREF="6502/ehbasic/index.html">EhBASIC</A> is finally
+ here. Not a huge functional change but quite a bit of internal change has been made.
+ Details are <A HREF="6502/ehbasic/update.html#030714">here</A>
+</TD>
+</TR>
+<TR>
+<TD><B>7th July 2003.</B></TD>
+<TD>Added a <A HREF="baking/index.html">baking</A> section. A bit of a change from the
+ usual fare on offer but something I do from time to time. First up is <A
+ HREF="baking/chocolatesponge/index.html">chocolate sponge</A> cake.
+</TD>
+</TR>
+<TR>
+<TD><B>During July 2003.</B></TD>
+<TD>There will be some <I>minor</I> changes to page layouts, graphics and the like. I'm
+ trying to get the 'look and feel' standard across the whole site. It's tended to drift
+ a bit as I've had new ideas.
+</TD>
+</TR>
+<TR>
+<TD><B>26th June 2003.</B></TD>
+<TD>Added a new section to the <A HREF="misc/index.html">miscellania</A> section.
+ <A HREF="misc/panocam/index.html">PanoCAM</A> is an idea for a 360 degree panoramic
+ camera.
+</TD>
+</TR>
+<TR>
+<TD><B>19th June 2003.</B></TD>
+<TD>An update to the Mitsubishi 740 series  version of <A
+ HREF="6502/suprchips/ehbasic/index.html">EhBASIC</A> introduces an interrupt driven
+ input buffer. It also has some changes to the underlying BASIC code which have not
+ yet migrated to the generic version. They will.
+</TD>
+</TR>
+<TR>
+<TD><B>4th June 2003.</B></TD>
+<TD>Added a new subsection to the <A HREF="6502/index.html">6502</A> page. The
+ Mitsubishi 740 series are 6502 cored microcontrollers and this page <A
+ HREF="6502/suprchips/index.html">here</A> describes projects for two boards that use
+ the 38067 chip from that family.
+</TD>
+</TR>
+<TR>
+<TD><B>23rd May 2003.</B></TD>
+<TD>Added the <A HREF="z80/mpf1/iom/index.html">input/output</A> board to the <A
+ HREF="z80/mpf1/index.html">Microprofessor</A> page.
+</TD>
+</TR>
+<TR>
+<TD><B>22nd May 2003.</B></TD>
+<TD>Small diagram corrections on the <A HREF="z80/mpf1/index.html">Microprofessor</A>
+ page.
+</TD>
+</TR>
+<TR>
+<TD><B>12th May 2003.</B></TD>
+<TD>Added ROM images to the <A HREF="z80/mpf1/index.html">Microprofessor</A> page. Also
+ corrected a small error in the EPROM pin assignments on the <A
+ HREF="z80/mpf1/epb/index.html">EPROM programmer</A> page.
+</TD>
+</TR>
+<TR>
+<TD><B>25th April 2003.</B></TD>
+<TD>An update to <A HREF="68k/ehbasic/index.html">EhBASIC68</A> including the <A
+ HREF="68k/dart_pcb/softw.html">68008 SBC</A> and the <A
+ HREF="68k/simbasic/index.html">EASy68k</A> vesrions. Version is now 1.10. Details are
+ <A HREF="68k/ehbasic/update.html#030425">here</A>.
+ Another change to the EASy68k specific version adds a new function. Version is now
+ 1.10/1.01 and details of that are <A HREF="68k/simbasic/update.html#030425">here</A>.
+</TD>
+</TR>
+<TR>
+<TD><B>20th April 2003.</B></TD>
+<TD>Added an <A HREF="68k/dart_pcb/i2c.html">I2C Bus</A> section to the <A
+ HREF="68k/dart_pcb/index.html">68008 SBC</A> pages.
+</TD>
+</TR>
+<TR>
+<TD><B>17th April 2003.</B></TD>
+<TD>An update to <A HREF="68k/simbasic/index.html">EhBASIC68</A> for EASy68k. Version is
+ now 1.09/1.00. Details are <A HREF="68k/simbasic/update.html#030417">here</A>.
+</TD>
+</TR>
+<TR>
+<TD><B>16th April 2003.</B></TD>
+<TD>Another update to <A HREF="68k/ehbasic/index.html">EhBASIC68</A>. Version is now
+ 1.09. Details are <A HREF="68k/ehbasic/update.html#030416">here</A>. There are also
+ minor updates to many of the pages in the <A HREF="68k/index.html">68k</A> section plus
+ the version of EhBASIC68 specifically for the EASY68k Assembly tool now has it's own
+ page <A HREF="68k/simbasic/index.html">here</A>.
+</TD>
+</TR>
+<TR>
+<TD><B>14th April 2003.</B></TD>
+<TD>An update to <A HREF="68k/ehbasic/index.html">EhBASIC68</A> in the <A
+ HREF="68k/index.html">68k</A> section.  Version is now 1.08. Details are <A
+ HREF="68k/ehbasic/update.html#030414">here</A>.
+</TD>
+</TR>
+<TR>
+<TD><B>12th April 2003.</B></TD>
+<TD>Updates to the <A HREF="68k/dart_pcb/index.html">68008 SBC</A> in the <A
+ HREF="68k/index.html">68k</A> section. There is the latest binary for EhBASIC68 and
+ the COM port connection cable details.
+</TD>
+</TR>
+<TR>
+<TD><B>11th April 2003.</B></TD>
+<TD>Another update to <A HREF="68k/ehbasic/index.html">EhBASIC68</A>. Version is now
+ 1.07. Details are <A HREF="68k/ehbasic/update.html#030411">here</A>.
+</TD>
+</TR>
+<TR>
+<TD><B>9th April 2003.</B></TD>
+<TD>A small update to <A HREF="68k/ehbasic/index.html">EhBASIC68</A>. Details are <A
+ HREF="68k/ehbasic/update.html#030409">here</A>.
+</TD>
+</TR>
+<TR>
+<TD><B>4th April 2003.</B></TD>
+<TD>A small update to <A HREF="68k/ehbasic/startrek.html">Startrek</A> in the <A
+ HREF="68k/ehbasic/index.html">EhBASIC68</A> <A HREF="68k/ehbasic/examples.html">example
+ programs</A> section. This fixes a rounding error in the photon torpedo routine.
+</TD>
+</TR>
+<TR>
+<TD><B>28th March 2003.</B></TD>
+<TD>An update to <A HREF="68k/ehbasic/index.html">EhBASIC68</A>. This fixes a problem
+ with SQR(). Details are <A HREF="68k/ehbasic/update.html#030328">here</A>.<BR>
+ Also an update to startrek.bas in the <A HREF="68k/ehbasic/examples.html">example
+ programs</A> section.
+</TD>
+</TR>
+<TR>
+<TD><B>14th March 2003.</B></TD>
+<TD>Amazing.bas has been added to the <A HREF="68k/ehbasic/index.html">EhBASIC68</A> 
+<A HREF="68k/ehbasic/examples.html">example programs</A> section.<BR>
+ Also added a <A HREF="68k/dart_pcb/softw.html">ROM image</A> for EhBASIC for the
+ <A HREF="68k/dart_pcb/index.html">dartboard control PCB</A>.
+</TD>
+</TR>
+<TR>
+<TD><B>13th March 2003.</B></TD>
+<TD>An update to <A HREF="68k/ehbasic/index.html">EhBASIC68</A>. This changes a few
+ internal routines and fixed DEEK() and LEEK(). Details are <A
+ HREF="68k/ehbasic/update.html#030313">here</A>. The <A
+ HREF="68k/ehbasic/language.html">language reference</A> has also been updated.
+</TD>
+</TR>
+<TR>
+<TD><B>7th March 2003.</B></TD>
+<TD>Another version of <A HREF="68k/ehbasic/index.html">EhBASIC68</A>. This changes the
+ string functions as well as a few internal routines. Details are <A
+ HREF="68k/ehbasic/update.html#030307">here</A>. Also startrek.bas in the <A
+ HREF="68k/ehbasic/examples.html">example programs</A> section has been updated.
+</TD>
+</TR>
+<TR>
+<TD><B>5th March 2003.</B></TD>
+<TD>This version of <A HREF="68k/ehbasic/index.html">EhBASIC68</A> changes slightly the
+ way the power function works, details are <A
+ HREF="68k/ehbasic/update.html#030305">here</A>. Also startrek.bas has been added to the
+<A HREF="68k/ehbasic/examples.html">example programs</A> section.
+</TD>
+</TR>
+<TR>
+<TD><B>4th March 2003.</B></TD>
+<TD>Another new version of <A HREF="68k/ehbasic/index.html">EhBASIC68</A>. Details are
+ <A HREF="68k/ehbasic/update.html#030304">here</A>.
+</TD>
+</TR>
+<TR>
+<TD><B>3rd March 2003.</B></TD>
+<TD>Added ASCII LOAD and SAVE for the simulator version of <A
+ HREF="68k/ehbasic/index.html">EhBASIC68</A>. Details are <A
+ HREF="68k/ehbasic/update.html#030303">here</A>.
+</TD>
+</TR>
+<TR>
+<TD><B>1st March 2003.</B></TD>
+<TD>Added some documentation to the <A HREF="68k/ehbasic/index.html">EhBASIC68</A>
+ section.
+</TD>
+</TR>
+<TR>
+<TD><B>28th February 2003.</B></TD>
+<TD>Update time again and this one has been a while comming. In the
+ <A HREF="68k/index.html">68k</A> section you will find that
+ <A HREF="68k/ehbasic/index.html">EhBASIC68</A> now has a source file available for
+ download.
+</TD>
+</TR>
+<TR>
+<TD><B>20th February 2003.</B></TD>
+<TD>Update time again but this time it's in the <A HREF="misc/index.html">Misc</A>
+ section (along with a new workshop photo). I always wanted an EPROM emulator and
+ <A HREF="misc/lazyprom/index.html">this</A> is in some ways a better solution.
+</TD>
+</TR>
+<TR>
+<TD><B>27th January 2003.</B></TD>
+<TD>Added another page to <A HREF="6502/shorts/index.html">Shorts</A> .. Another
+ short code bit. <A HREF="6502/shorts/bcd2bin.html">BCD to binary</A>.
+</TD>
+</TR>
+<TR>
+<TD><B><A HREF="news2002.html">2002</A></B></TD><TD></TD>
+</TR>
+<TR>
+<TD><B><A HREF="news2001.html">2001</A></B></TD><TD></TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 12th December, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.10 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=3fdf952b&adpref="></script>

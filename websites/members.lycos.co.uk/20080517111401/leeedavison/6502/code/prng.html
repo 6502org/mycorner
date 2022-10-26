@@ -1,0 +1,108 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>6502 pseudo random number generator</TITLE>
+<META name="description" content="Content."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>6502 8 bit PRNG.</FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is a short peice of code that generates a maximal length, 8 bit, pseudo random
+ number sequence. This is the 6502 version of <A HREF="../../z80/prng/index.html">Z80
+ random</A>. A 32 bit 68k version can be found
+ <A HREF="../../68k/prng/index.html">here</A>.
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This routine is no great shakes in the speed stakes, it's just a demo of a usefull
+ technique.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; returns pseudo random 8 bit number in A. Affects A, X and Y.
+; (r_seed) is the byte from which the number is generated and MUST be
+; initialised to a non zero value or this function will always return
+; zero. Also r_seed must be in RAM, you can see why......
+
+rand_8
+	LDA	r_seed		; get seed
+	AND	#$B8		; mask non feedback bits
+				; for maximal length run with 8 bits we need
+				; taps at b7, b5, b4 and b3
+	LDX	#$05		; bit count (shift top 5 bits)
+	LDY	#$00		; clear feedback count
+F_loop
+	ASL	A		; shift bit into carry
+	BCC	bit_clr		; branch if bit = 0
+
+	INY			; increment feedback count (b0 is XOR all the	
+				; shifted bits from A)
+bit_clr
+	DEX			; decrement count
+	BNE	F_loop		; loop if not all done
+
+no_clr
+	TYA			; copy feedback count
+	LSR	A		; bit 0 into Cb
+	LDA	r_seed		; get seed back
+	ROL	A		; rotate carry into byte
+	STA	r_seed		; save number as next seed
+	RTS			; done
+
+r_seed
+	.byte	1		; prng seed byte (must not be zero)
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<B><U>Other number lengths.</U></B>
+<BLOCKQUOTE>
+ A maximal length pseudo random number generator is basically just a shif register with
+ feedback from the later stages to generate the next input bit. The form for a generator
+ of length <I>n</I> with feedback from <I>t</I> is shown below.
+</BLOCKQUOTE>
+<CENTER>
+<B>Pseudo random sequence generator.</B>
+<P>
+ <IMG SRC="shift.png" TITLE="n length pseudo random sequence generator" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE>
+ You don't have to limit the length to only 8 bits, any number of bits from two upwards
+ will work if you chose the right feedback tap(s). Here is a table of some values.
+<P>
+<TABLE BGCOLOR="white" ALIGN=CENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 WIDTH=80%>
+<TD WIDTH=10% ALIGN=CENTER><B><I>Bits [n]</I></B></TD>
+<TD WIDTH=20% ALIGN=CENTER><B><I>Tap(s) [t]</I></B></TD>
+<TD WIDTH=20% ALIGN=CENTER><B><I>Length</I></B></TD>
+<TD WIDTH=10% ALIGN=CENTER><B><I>Bits [n]</I></B></TD>
+<TD WIDTH=20% ALIGN=CENTER><B><I>Tap(s) [t]</I></B></TD>
+<TD WIDTH=20% ALIGN=CENTER><B><I>Length</I></B></TD></TR>
+<TR><TD ALIGN=CENTER>2</TD><TD ALIGN=CENTER>1</TD><TD ALIGN=RIGHT>3&nbsp;</TD>
+<TD ALIGN=CENTER>3</TD><TD ALIGN=CENTER>2</TD><TD ALIGN=RIGHT>7&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>4</TD><TD ALIGN=CENTER>3</TD><TD ALIGN=RIGHT>15&nbsp;</TD>
+<TD ALIGN=CENTER>5</TD><TD ALIGN=CENTER>3</TD><TD ALIGN=RIGHT>31&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>6</TD><TD ALIGN=CENTER>5</TD><TD ALIGN=RIGHT>63&nbsp

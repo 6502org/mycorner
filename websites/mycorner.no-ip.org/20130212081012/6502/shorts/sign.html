@@ -1,0 +1,36 @@
+<HTML><HEAD><TITLE>6502 Shorts - Extending sign bits</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 TITLE="Up one"></A>
+</TD><TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Extending sign bits. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sometimes you end up with a signed value that is not in a multiple of 8 bits, the
+ problem then is to extend the sign to fill the most significant byte.
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ For example, a signed value is in bits 4 to 0 of the Accumulator and is to be extended to
+ to fill all eight ..<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	AND	#$1F		; clear any unused bits	
+	CLC			; clear the carry for an add
+	ADC	#$F0		; set top bits clear if -ve, set if +ve		
+	EOR	#$F0		; toggle bits to the correct state
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Using a suitable mask, if needed, and add value this works to extend the sign for any bit
+ in the byte.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 23rd April, 2006.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

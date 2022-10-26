@@ -1,0 +1,117 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=261ca06a&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC74 language reference</TITLE>
+<META name="description"
+ content="An advanced BASIC interpreter for the 740 series microprocessor family">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=25%>
+<A HREF="index.html#lang">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>Enhanced BASIC, language reference. </FONT></B><FONT SIZE=-1>by Lee
+ Davison</FONT>
+</TD>
+<TD WIDTH=25%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<P>
+<B><U>Introduction</B></U>
+<BLOCKQUOTE>
+ Most of EhBASIC74 is identical in operation to <A HREF="../../ehbasic/index.html">6502
+ EhBASIC</A> so this page will just describe the keywords that differ from that version.
+ Code that doesn't use the features of one version should run identically on the other.
+</BLOCKQUOTE>
+<B><U>BASIC Keywords</B></U>
+<BLOCKQUOTE>
+ Here is a list of BASIC keywords that differ from the 6502 version of EhBASIC. They
+ are only valid when entered in upper case as shown and spaces may not be included
+ in them. So, for example, TIMER1 is valid but TIMER 1 is not.
+
+  <P>
+  <CENTER>
+    <TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+    <TR>
+      <TD><A href="#A2D">A2D</A></TD>
+      <TD><A href="#CLEAR">CLEAR</A></TD>
+      <TD><A href="#CNTRx">CNTR0</A></TD>
+      <TD><A href="#CNTRx">CNTR1</A></TD>
+      <TD><A href="#TIMERpM">COUNT</A></TD>
+      <TD><A href="#D2Ax">D2A1</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#D2Ax">D2A2</A></TD>
+      <TD><A href="#EVENT">EVENT</A></TD>
+      <TD><A href="#FLUSH">FLUSH</A></TD>
+      <TD><A href="#INTx">INT0</A></TD>
+      <TD><A href="#INTx">INT1</A></TD>
+      <TD><A href="#INTx">INT2</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#INTx">INT3</A></TD>
+      <TD><A href="#INTx">INT4</A></TD>
+      <TD><A href="#IRQ">IRQ</A></TD>
+      <TD><A href="#NMI">NMI</A></TD>
+      <TD><A href="#ON">ON</A></TD>
+      <TD><A href="#OFF">OFF</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#PRESq">PRES12</A></TD>
+      <TD><A href="#PRESq">PRESX</A></TD>
+      <TD><A href="#PRESq">PRESY</A></TD>
+      <TD><A href="#TIMERpM">PULSE</A></TD>
+      <TD><A href="#TIMERpM">PWM</A></TD>
+      <TD><A href="#RETIRQ">RETIRQ</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#RETNMI">RETNMI</A></TD>
+      <TD><A href="#RETURN">RETURN</A></TD>
+      <TD><A href="#TIMERqSS">START</A></TD>
+      <TD><A href="#TIMERqSS">STOP</A></TD>
+      <TD><A href="#TIMERpM">TIMER</A></TD>
+      <TD><A href="#TIMERq">TIMER1</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#TIMERq">TIMER2</A></TD>
+      <TD><A href="#TIMERpM">TIMERX</A></TD>
+      <TD><A href="#TIMERpM">TIMERY</A></TD>
+      <TD><A href="#PLUS">+</A></TD>
+      <TD><A href="#MINUS">-</A></TD>
+    </TR>
+    </TABLE>
+  </CENTER>
+ </BLOCKQUOTE>
+ 
+  <UL>
+    <LI>Anything in upper case is part of the command/function structure and must be
+        present
+    <LI>Anything in lower case enclosed in < > is to be supplied by the user
+    <LI>Anything enclosed in [ ] is optional
+    <LI>Anything enclosed in { } and separated by | characters are multi choice options
+    <LI>Any items followed by an ellipsis, ... , may be repeated any number of times
+    <LI>Any punctuation and symbols, except those above, are part of the structure and
+        must be included
+  </UL>
+
+  <BLOCKQUOTE>
+  <TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0>
+  <TR><TD>var</TD><TD>is a valid variable name</TD></TR>
+  <TR><TD>var$</TD><TD>is a valid string variable name</TD></TR>
+  <TR><TD>var()</TD><TD>is a valid array name</TD></TR>
+  <TR><TD>var$()</TD><TD>is a valid string array name</TD></TR>
+  <TR><TD>&nbsp;</TD></TR>
+  <TR><TD>expression</TD><TD>is any expression returning a result</TD></TR>
+  <TR><TD>expression$&nbsp;&nbsp;&nbsp;</TD><TD>is any expression returning a string
+ result</TD></TR>
+  <TR><TD>&nbsp;</TD></TR>
+  <TR><TD>addr</TD><TD>is an unsigned integer in the range +/- 16777215 that will be
+ wrapped to the range 0 to 65535</TD></TR>
+  <TR><TD>b</TD><TD>is a byte value 0 to 255</TD></TR>
+  <TR><TD>n</TD><TD>is an integer in the range 0 to 63999</TD></TR>
+  <TR><TD>w</TD><TD>is an integer in the range -32768 to 32767</TD></TR>
+  <TR><TD>i</TD><TD>is a +ve

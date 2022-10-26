@@ -1,0 +1,67 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=25a6ae31&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC, extending CALL</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="index.html#link_1">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Enhanced BASIC, extending CALL </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<P>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE>
+  CALL &#60;address&#62; calls a machine code routine at location address. While this
+  in itself is useful it can be extended by adding parameters to the CALL and parsing
+  them from within the routine.<BR>
+
+  This technique can also be used to pass extra parameters to the USR() function.
+</BLOCKQUOTE>
+<P>
+<B><U>How to.</U></B>
+<BLOCKQUOTE>
+  First you need to define the parameters for your CALL. This example is for an
+  imaginary bitmapped graphic device.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=3 CELLSPACING=0 BORDER=0>
+  <TR>
+    <TD><B>CALL PLOT,x,y</B></TD>
+    <TD>Set the pixel at x,y</TD>
+  <TR>
+    <TD></TD>
+    <TD>&nbsp;PLOT&nbsp;</TD>
+    <TD>routine address</TD>
+  </TR>
+  <TR>
+    <TD></TD>
+    <TD>&nbsp;x</TD>
+    <TD>x axis value, range 0 to 255</TD>
+  </TR>
+  <TR>
+    <TD></TD>
+    <TD>&nbsp;y</TD>
+    <TD>y axis value, range 0 to 64</TD>
+  </TR>
+</TABLE>
+</BLOCKQUOTE>
+ This will then be the form that the call will always take.
+<P>
+ Now you need to write the code.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.include BASIC.DIS	; include the BASIC labels file. this allows you
+			; easy access to the internal routines you need
+			; to parse the com

@@ -1,0 +1,1462 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD><TITLE>HP-GL viewer</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%>
+<A HREF="index.html#softw">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>HP-GL Viewer. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>The source.</U></B>
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+' HPGL file viewer Ver 1.17 - Quick BASIC 4.5 (c) L.Davison 2004
+
+' this was written as an excercise in coding an HPGL data viewer and is mostly a
+' quick hack to get my thoughts sorted out. supports most common HP-GL and some
+' HP-GL2 drawing commands and those it doesn't support probably have some commented
+' out code that forms the start of what is needed. where I ran out of enthusiasm
+' you'll find the note "need code"
+
+' there is very little error or bounds checking done during the actual commands,
+' chances are that most HP-GL files you try will work, many HP-GL2 files also work
+' to some degree though your mileage may vary. some files may cause BASIC errors
+' such ar overflow or division by zero though I've not seen those yet.
+
+' does auto scale to fit the mode 12 (640 x 480) screen by processing the file twice,
+' the first time no picture is output, but errors and warnings (if any) are generated
+' and the maximum and minimum values are found. these are used on the second pass to
+' offset and scale the image so it /just/ fits the 640x480 screen along it's longest
+' dimension. the original aspect ratio /should/ be maintained.
+
+' comments, suggestions, additions, offers of monetary reward etc to ..
+'
+' leeedavison@lycos.co.uk
+'
+
+CONST false = 0, true = -1				' define these
+CONST absolute = true, relative = false			' for the drawmode
+CONST AtoZ$ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"		' "A" to "Z" characters
+CONST nmrc$ = "-.01234567890 "				' numeric characters
+CONST convangle = 180 / 3.14159264			' degrees to radians to degrees
+
+' picture frame (hard clip) limits. these should be set to what the hardware will
+' physically allow
+
+CONST minimumx = 0, minimumy = 0			' set for the table minimum
+CONST maximumx = 32767, maximumy = 32767		' set for the table maximum
+
+' calculate the angle to a point on a circle given the centre and the point. 0 degrees
+' is the 12 o'clock position. this may change.
+
+DECLARE FUNCTION CalcAngle(xcentre, ycentre, xpoint, ypoint)
+
+' calculate the radius of a circle given the centre and a point on the circle. this
+' actually calculates the linear distance between any two points
+
+DECLARE FUNCTION CalcRadius(xcentre, ycentre, xpoint, ypoint)
+
+DIM fo$(95)						' holds the font plot data
+
+esc$ = CHR$(27)						' define ESCAPE
+quote$ = CHR$(34)					' " as a string
+separator$ = ";"					' these can end command strings
+ignore$ = " " + CHR$(13) + CHR$(10)			' these are ignored
+
+home$ = CHR$(0) + CHR$(71)				' INKEY$ for [Home] key
+pgup$ = CHR$(0) + CHR$(73)				' INKEY$ for [PgUp] key
+pgdn$ = CHR$(0) + CHR$(81)				' INKEY$ for [PgDn] key
+eend$ = CHR$(0) + CHR$(79)				' INKEY$ for [End] key
+crrt$ = CHR$(0) + CHR$(77)				' INKEY$ for [cursor right] key
+crlt$ = CHR$(0) + CHR$(75)				' INKEY$ for [cursor left] key
+crup$ = CHR$(0) + CHR$(72)				' INKEY$ for [cursor up] key
+crdn$ = CHR$(0) + CHR$(80)				' INKEY$ for [cursor down] key
+
+SCREEN 12						' 640 x 480 x 16
+CLS							' clear it
+
+minimumxused = 32767					' set minimum and
+minimumyused = 32767					' maximum used for
+maximumxused = -32768					' auto scale feature
+maximumyused = -32768					' (yes these are correct)
+
+INPUT "Enter HPGL file name "; filename$		' doesn't have to be *.plt
+IF filename$ = "" THEN END
+
+warningcount = 0					' no warnings yet
+errorcount = 0						' no errors yet
+
+GOSUB InitFont						' initialsie the font array
+
+fromstring = false					' getbyte is from the file
+pretend = true						' pretend to plot first time
+GOSUB DoFile						' process the file
+
+IF (errorcount OR warningcount) THEN			' if there were errors/warnings
+	COLOR 15					' white
+	PRINT errorcount; "error";			' n error
+	IF errorcount &lt;&gt; 1 THEN
+		PRINT "s";				'        s
+	END IF
+	PRINT " and"; warningcount; "warning";		'          and m warning
+	IF warningcount &lt;&gt; 1 THEN
+		PRINT "s"				'                       s
+	ELSE
+		PRINT
+	END IF
+	LOCATE 30,1					' bottom line
+	PRINT "Press any key to continue";		' indicate not just stalled
+	DO						' just wait ..
+	LOOP WHILE INKEY$ = ""				' .. for a key press
+END IF
+
+xsize = maximumxused - minimumxused			' x size of plot
+ysize = maximumyused - minimumyused			' y size of plot
+IF (ysize / xsize) &gt; .75 THEN				' use the maximum scale
+	scale = ysize / 479				' scale is y scale (0 to 479)
+ELSE
+	scale = xsize / 639				' scale is x scale (0 to 639)
+END IF
+
+fromstring = false					' getbyte is from the file
+pretend = false						' plot for real this time
+zoom = 0						' set zoom for zoomed out
+drawscale = scale					' drawscale for zoomed out
+drawxcentre = xsize / 2					' drawing x centre
+drawycentre = ysize / 2					' drawing y centre
+GOSUB CalcXYOffset					' calculate offsets
+
+DO							' redraw loop ..
+
+	IF redraw THEN					' only of new pan/zoom
+		CLS					' clear screen for plotting
+		COLOR 15				' default to white
+		GOSUB DoFile				' process the file (again)
+	END IF
+
+	DO						' just wait ..
+		key$ = INKEY$				' get key presses
+	LOOP WHILE key$ = ""				' .. for a key press
+
+	redraw = false					' assume no redraw
+	IF key$ = home$ THEN				' [Home] key
+		IF zoom OR (drawxcentre - (xsize / 2))_
+		   OR (drawycentre - (ysize / 2)) THEN	' only if zoomed or not centred
+			zoom = 0			' zoom for fully zoomed out
+			drawscale = scale		' drawscale for fully zoomed out
+			drawxcentre = xsize / 2		' reset drawing x centre
+			drawycentre = ysize / 2		' reset drawing y centre
+			GOSUB CalcXYOffset		' calculate offsets
+		END IF
+	ELSEIF key$ = pgup$ THEN			' [PgUp] key
+		IF zoom THEN				' if not fully zoomed out
+			zoom = zoom - 1			' zoom out
+			drawscale = scale / (2 ^ zoom)	' drawscale for zoom level
+			GOSUB CalcXYOffset		' calculate offsets
+		END IF
+	ELSEIF key$ = pgdn$ THEN			' [PgDn] key
+		IF drawscale &gt; 1 THEN			' if not fully zoomed in
+			zoom = zoom + 1			' zoom in
+			drawscale = scale / (2 ^ zoom)	' drawscale for zoom level
+			IF drawscale &lt; 1 THEN		' check not beyond maximum zoom
+				drawscale = 1		' maximum zoom allowed
+			END IF
+			GOSUB CalcXYOffset		' calculate offsets
+		END IF
+	ELSEIF key$ = eend$ THEN			' [End] key
+		DO WHILE drawscale &gt; 1			' while not fully zoomed in
+			zoom = zoom + 1			' zoom in
+			drawscale = scale / (2 ^ zoom)	' drawscale for zoom level
+			IF drawscale &lt; 1 THEN		' check not beyond maximum zoom
+				drawscale = 1		' maximum zoom allowed
+			END IF
+			GOSUB CalcXYOffset		' calculate offsets
+		LOOP
+	ELSEIF key$ = crrt$ THEN			' [cursor right] key
+		drawxcentre = drawxcentre + 159 * drawscale
+							' shift x centre 1/4 screen left
+		GOSUB CalcXYOffset			' calculate offsets
+	ELSEIF key$ = crlt$ THEN			' [cursor left] key
+		drawxcentre = drawxcentre - 159 * drawscale
+							' shift x centre 1/4 screen right
+		GOSUB CalcXYOffset			' calculate offsets
+	ELSEIF key$ = crup$ THEN			' [cursor up] key
+		drawycentre = drawycentre + 119 * drawscale
+							' shift y centre 1/4 screen down
+		GOSUB CalcXYOffset			' calculate offsets
+	ELSEIF key$ = crdn$ THEN			' [cursor down] key
+		drawycentre = drawycentre - 119 * drawscale
+							' shift y centre 1/4 screen up
+		GOSUB CalcXYOffset			' calculate offsets
+	END IF
+
+LOOP WHILE key$ &lt;&gt; esc$					' until [ESC] is pressed
+
+COLOR 15						' white
+END							' all done, bye.
+
+
+' calculate offsets
+
+CalcXYOffset:
+	offsetx = minimumxused - 319 * drawscale + drawxcentre
+							' set x offset
+	offsety = minimumyused - 239 * drawscale + drawycentre
+							' set y offset
+
+	minxbound = minimumxused &gt; offsetx		' true if violates minimum x
+	maxxbound = ((maximumxused - offsetx) / drawscale) &lt; 639
+							' true if violates maximum x
+	IF minxbound AND NOT maxxbound THEN
+		invert = (xsize / drawscale) &lt; 640
+		GOSUB CorrectXOffset			' correct the x offset
+	ELSEIF maxxbound AND NOT minxbound THEN
+		invert = (xsize / drawscale) &gt; 639
+		GOSUB CorrectXOffset			' correct the x offset
+	END IF
+
+	minybound = minimumyused &gt; offsety		' true if violates minimum y
+	maxybound = ((maximumyused - offsety) / drawscale) &lt; 479
+							' true if violates maximum y
+	IF minybound AND NOT maxybound THEN
+		invert = (ysize / drawscale) &lt; 480
+		GOSUB CorrectYOffset			' correct the y offset
+	ELSEIF maxybound AND NOT minybound THEN
+		invert = (ysize / drawscale) &gt; 479
+		GOSUB CorrectYOffset			' correct the y offset
+	END IF
+	redraw = true					' always redraw after new offsets
+RETURN
+
+
+' correct the x offset
+
+CorrectXOffset:
+	IF invert THEN
+		drawxcentre = xsize - 320 * drawscale	' shift x centre
+		offsetx = maximumxused - 639 * drawscale' set x offset
+	ELSE
+		drawxcentre = 319 * drawscale		' shift x centre
+		offsetx = minimumxused			' set x offset
+	END IF
+RETURN
+
+
+' correct the y offset
+
+CorrectYOffset:
+	IF invert THEN
+		drawycentre = ysize - 240 * drawscale	' shift y centre
+		offsety = maximumyused - 479 * drawscale' set y offset
+	ELSE
+		drawycentre = 239 * drawscale		' shift y centre
+		offsety = minimumyused			' set y offset
+	END IF
+RETURN
+
+
+' process file
+
+DoFile:
+	OPEN filename$ FOR INPUT AS #1			' open the file
+	GOSUB Initialise				' initialise the plot values
+	GOSUB DoStream					' process the stream
+	CLOSE						' close the file
+RETURN
+
+
+' process a stream of bytes until no input remains
+
+DoStream:
+	cmdstrin$ = ""					' initialise the command string
+	GOSUB Getbyte					' get byte from input stream
+	DO WHILE byte$ &lt;&gt; ""				' loop until no bytes to do
+		IF atozchr THEN				' all commands are two A to Z chrs
+			cmdstrin$ = cmdstrin$ + byte$	' add to command string
+			cmdlength = LEN(cmdstrin$)	' get command string length
+			GOSUB Getbyte			' get next byte
+			IF cmdlength = 2 THEN		' if two characters
+				GOSUB DoCommand		' go interpret command
+				cmdstrin$ = ""		' clear the executed command
+			END IF
+		ELSEIF INSTR(separator$, byte$) THEN	' if separator character
+			cmdstrin$ = ""			' clear command string
+			GOSUB Getbyte			' get next byte
+		ELSEIF INSTR(ignore$, byte$) THEN	' if ignore character
+			GOSUB Getbyte			' just get the next byte
+		ELSEIF byte$ = esc$ THEN		' ignore ESC sequences
+			cmdstrin$ = ""			' clear the command string
+			DO WHILE INSTR(ignore$, byte$) = 0
+							' all end ESC sequences
+				GOSUB GetByte		' get a byte
+			LOOP
+			GOSUB Getbyte			' get next byte
+		ELSE
+			cmdstrin$ = ""			' clear the command string
+			IF pretend THEN			' only print if not drawing
+				COLOR 15		' white
+				PRINT "Error : Unexpected byte "; byte$; ASC(byte$)
+				errorcount = errorcount + 1
+			END IF
+			GOSUB Getbyte			' get next byte
+		END IF
+		IF INKEY$ = esc$ THEN END		' end if [ESCAPE] pressed
+	LOOP
+RETURN
+
+' get a byte from the input stream. if the stream is empty (i.e. the whole file or
+' character definition string has been read) then return a null string. set atozchr
+' and numeric accordingly.
+
+Getbyte:
+	IF fromstring THEN				' reading from font string
+		byte$ = MID$(fo$(lbchar), lbindex, 1)	' get next byte from string
+		lbindex = lbindex + 1			' increment the index
+	ELSEIF NOT EOF(1) THEN				' if no bytes from file to get
+		byte$ = INPUT$(1, 1)			' get a byte from the file
+	ELSE
+		byte$ = ""				' else set no byte
+	END IF
+
+	IF byte$ = "" THEN				' if no byte got then
+		atozchr = false				' not "A" to "Z"
+		numeric = false				' not "-.01234567890 "
+	ELSE						' else there was a byte got
+		atozchr = (INSTR(AtoZ$, byte$) &lt;&gt; 0)	' true if "A" to "Z"
+		numeric = (INSTR(nmrc$, byte$) &lt;&gt; 0)	' true if "-.01234567890 "
+	END IF
+RETURN
+
+
+' interpret commands. big mess of IF .. THEN ELSEIFs. like Topsy this just growed
+
+DoCommand:
+	IF cmdstrin$="PU" THEN				' pen up
+		pendown = false				' set pen mode
+		GOSUB DoCoords				' do any co-ordiantes
+	ELSEIF cmdstrin$="PD" THEN			' pen down
+		pendown = true				' set pen mode
+		GOSUB DoCoords				' do any co-ordiantes
+	ELSEIF cmdstrin$="PA" THEN			' pen absolute
+		drawmode = absolute			' set draw mode
+		GOSUB DoCoords				' do any co-ordiantes
+	ELSEIF cmdstrin$="PR" THEN			' pen relative
+		drawmode = relative			' set draw mode
+		GOSUB DoCoords				' do any co-ordiantes
+	ELSEIF cmdstrin$="SP" THEN			' select pen
+		GOSUB GetNumber				' get pen number
+		COLOR VAL(number$)			' set the colour
+	ELSEIF cmdstrin$="AA" THEN			' arc absolute
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetArc			' get the arc parameters
+			arcx = absolutex		' set arc centre x
+			arcy = absolutey		' set arc centre y
+			GOSUB DoArc			' go do the arc
+		END IF
+	ELSEIF cmdstrin$="AT" THEN			' absolute arc three point
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair			' get the centre X,Y
+			interx = absolutex		' set arc intermediate x
+			intery = absolutey		' set arc intermediate y
+			GOSUB GetXYPair			' get the centre X,Y
+			endx = absolutex		' set arc end x
+			endy = absolutey		' set arc end y
+			GOSUB DrawArcThreePoint		' do the arc
+		END IF
+	ELSEIF cmdstrin$="AR" THEN			' arc relative
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetArc			' get the arc parameters
+			arcx = currentx + absolutex	' set arc centre x
+			arcy = currenty + absolutey	' set arc centre x
+			GOSUB DoArc			' go do the arc
+		END IF
+	ELSEIF cmdstrin$="RT" THEN			' relative arc three point
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair			' get the centre X,Y
+			interx = currentx + absolutex	' set arc intermediate x
+			intery = currenty + absolutey	' set arc intermediate y
+			GOSUB GetXYPair			' get the centre X,Y
+			endx = currenty + absolutex	' set arc end x
+			endy = currenty + absolutey	' set arc end y
+			GOSUB DrawArcThreePoint		' do the arc
+		END IF
+	ELSEIF cmdstrin$="CI" THEN			' circle
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetNumber			' get the radius
+			radius = VAL(number$)		' set the radius
+			GOSUB GetChord			' get the chord angle
+
+			arcx = currentx			' circle centre is the ..
+			arcy = currenty			' .. current pen position
+			currentangle = 0		' 12'o clock
+			arcangle = 360			' do a full circle
+
+			stackpen = pendown		' save pen mode
+			pendown = false			' lift pen
+			stackdraw = drawmode		' save draw mode
+			drawmode = absolute		' set draw mode
+			absolutex = currentx		' move the pen to the ..
+			absolutey = currenty + radius	' .. 12'o clock position
+			GOSUB DoDraw			' move pen
+			pendown = true			' always draw the circle
+
+			GOSUB DrawArc			' go draw the arc
+
+			pendown = false			' lift pen
+			absolutex = arcx		' move pen back to the ..
+			absolutey = arcy		' .. centre of the circle
+			GOSUB DoDraw			' move pen
+			pendown = stackpen		' restore the pen mode
+			drawmode = stackdraw		' restore the draw mode
+		END IF
+	ELSEIF cmdstrin$="EW" THEN			' edge wedge
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair			' get wedge radius and start angle
+			radius = absolutex		' set the radius
+			currentangle = 90 - absolutey	' set the start angle
+			GOSUB GetNumber			' get wedge arc angle
+			arcangle = VAL(number$)		' set the wedge arc angle
+			GOSUB GetChord			' get the chord angle
+			GOSUB DoWedgeEdge		' go draw the wedge edge
+		END IF
+	ELSEIF cmdstrin$="WG" THEN			' fill wedge
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair			' get wedge radius and start angle
+			radius = absolutex		' set the radius
+			currentangle = 90 - absolutey	' set the start angle
+			GOSUB GetNumber			' get wedge arc angle
+			arcangle = VAL(number$)		' set the wedge arc angle
+			GOSUB GetChord			' get the chord angle
+			GOSUB DoWedgeEdge		' go draw the wedge edge (for now)
+		END IF
+	ELSEIF cmdstrin$="EA" THEN			' edge rectangle absolute
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair			' get rectangle opposite corner
+			deltax = absolutex - currentx	' calculate x size
+			deltay = absolutey - currenty	' calculate y size
+			GOSUB DoRectEdge		' go draw rectangle edge
+		END IF
+	ELSEIF cmdstrin$="ER" THEN			' edge rectangle relative
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair			' get rectangle opposite corner
+			deltax = absolutex		' get x size
+			deltay = absolutey		' get y size
+			GOSUB DoRectEdge		' go draw rectangle edge
+		END IF
+	ELSEIF cmdstrin$="RA" THEN			' fill rectangle absolute
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair			' get rectangle opposite corner
+			deltax = absolutex - currentx	' calculate x size
+			deltay = absolutey - currenty	' calculate y size
+			GOSUB DoRectEdge		' go draw rectangle edge (for now)
+		END IF
+	ELSEIF cmdstrin$="RR" THEN			' fill rectangle relative
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair			' get rectangle opposite corner
+			deltax = absolutex		' get x size
+			deltay = absolutey		' get y size
+			GOSUB DoRectEdge		' go draw rectangle edge (for now)
+		END IF
+	ELSEIF cmdstrin$="IN" THEN			' initialise graphics mode
+		GOSUB Initialise
+	ELSEIF cmdstrin$="DF" THEN			' set graphics defaults
+		GOSUB Defaults				' note - subset of "IN"
+	ELSEIF cmdstrin$="IP" THEN			' input scale points
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair			' get IP1
+			IF numeric THEN			' if more numbers then
+'				p1x = absolutex		' set P1 x
+'				p1y = absolutey		' set P1 y
+				GOSUB GetXYPair		' get P2
+'				p2x = absolutex		' set P2 x
+'				p2y = absolutey		' set P2 y
+'			ELSE				' no P2 so relative scale
+'				p2x = p1x - p2x + absolutex
+							' maintain P2 x relative to P1 x
+'				p2y = p1y - p2y + absolutey
+							' maintain P2 y relative to P1 y
+'				p1x = absolutex		' set P1 x
+'				p1y = absolutey		' set P1 y
+			END IF
+'		ELSE					' no numbers so set default values
+'			GOSUB IPDefault			' set default scaling points
+		END IF
+	ELSEIF cmdstrin$="DI" THEN			' absolute direction
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair
+'			IF (absolutex &lt;&gt; 0) OR (absolutey &lt;&gt; 0) THEN
+'				directionrun = absolutex
+'				directionrise = absolutey
+'			END IF
+'		ELSE					' no numbers so set default values
+'			GOSUB DIDefault			' default direction run and rise
+		END IF
+	ELSEIF cmdstrin$="DR" THEN			' relative direction
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair
+'			IF (absolutex &lt;&gt; 0) OR (absolutey &lt;&gt; 0) THEN
+'				directionrun = absolutex * (p2x - p1x) / 100
+'				directionrise = absolutey * (p2y - p1y) / 100
+'			END IF
+'		ELSE					' no numbers so set default values
+'			GOSUB DIDefault			' default direction run and rise
+		END IF
+	ELSEIF cmdstrin$="IW" THEN			' input window
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair			' get lower left corner x,y
+'			iw1x = absolutex		' set lower left x
+'			iw1y = absolutey		' set lower left y
+			GOSUB GetXYPair			' get upper right corner x,y
+'			iw2x = absolutex		' set upper right x
+'			iw2y = absolutey		' set upper right y
+'			IF iw1x &gt; iw2x THEN		' make sure max &amp; min x are correct
+'				iw2x = iw1x
+'				iw1x = absolutex
+'			END IF
+'			IF iw1y &gt; iw2y THEN		' make sure max &amp; min y are correct
+'				iw2y = iw1y
+'				iw1y = absolutey
+'			END IF
+'		ELSE					' no numbers so set default values
+'			GOSUB IWDefault			' so go set defaults
+		END IF
+	ELSEIF cmdstrin$="SI" THEN			' absolute character size
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair			' get them
+'			characterwidth = absolutex	' set width (needs range check)
+'			characterheight = absolutey	' set height (needs range check)
+'		ELSE					' no numbers so ..
+'			GOSUB SIDefault			' .. set default values
+		END IF
+	ELSEIF cmdstrin$="CP" THEN			' character plot
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetXYPair
+'		ELSE					' no numbers so set default values
+'			absolutex = 0
+'			absolutey = -1
+		END IF
+'							' need code here
+	ELSEIF cmdstrin$="LT" THEN			' line type
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetNumber			' get it
+'			linenumber = VAL(number$)	' set line type (needs range check)
+			IF numeric THEN			' another number ?
+				GOSUB GetNumber		' if so get it
+'				linepattern = VAL(number$)
+							' set pattern (needs range check)
+			END IF
+'		ELSE					' no numbers so ..
+'			GOSUB LTDefault			' .. set default
+		END IF
+	ELSEIF cmdstrin$="FT" THEN			' fill type
+		IF numeric THEN				' make sure number(s) there
+			GOSUB GetNumber			' get fill type
+'			filltype = VAL(number$)		' set fill type (needs range check)
+			IF numeric THEN			' if option 1 present
+				GOSUB GetNumber		' get fill interval
+'				fillinterval = VAL(number$)
+							' set fill interval
+				IF numeric THEN		' if option 2 present
+					GOSUB GetNumber	' get fill angle
+'					fillangle = VAL(number$)
+							' set fill angle
+				END IF
+'			ELSE
+'				GOSUB FTDefault		' set default fill type
+			END IF
+		END IF
+	ELSEIF cmdstrin$="LB" THEN			' label
+		stackpen = pendown			' save pen mode
+		pendown = false				' lift pen
+		stackdraw = drawmode			' save draw mode
+		drawmode = relative			' set draw mode
+		DO WHILE byte$ &lt;&gt; terminator$ AND byte$ &lt;&gt; ""
+							' while not at the string end
+			lbchar = ASC(byte$) - 32	' get index to font array
+			IF lbchar &lt; 0 OR lbchar &gt; 95 THEN
+				lbchar = 0		' [SPACE] if not in range
+			END IF
+			lbindex = 1			' initialise index
+			fromstring = true		' reading from the font string
+			GOSUB DoStream			' process the character string
+			fromstring = false		' back to the file
+			absolutex = 10			' move pen to the ..
+			absolutey = 0			' .. next character start
+			GOSUB DoDraw			' move pen
+			GOSUB Getbyte			' get the next label byte
+		LOOP
+		pendown = stackpen			' restore the pen mode
+		drawmode = stackdraw			' restore the draw mode
+		GOSUB Getbyte				' get the byte after the terminator
+	ELSEIF cmdstrin$="CO" THEN			' comment string
+		IF byte$ = quote$ THEN			' if there really is a comment
+			DO
+				GOSUB GetByte		' get bytes
+			LOOP WHILE byte$ &lt;&gt; "" AND byte$ &lt;&gt; quote$
+							' until the end
+			GOSUB GetByte			' get the next byte
+		END IF
+	ELSEIF cmdstrin$="DT" THEN			' define (label) terminator
+		IF byte$ &lt;&gt;";" THEN			' make sure there's a byte there
+			terminator$ = byte$		' set label terminator character
+			GOSUB DTDefaultmode		' set default terminator mode only
+			GOSUB GetByte			' get the next byte
+			IF byte$ = "," THEN		' if second parameter
+				GOSUB Getbyte		' skip the ","
+				IF numeric THEN		' if really a number then
+					GOSUB GetNumber	' get terminator mode
+					terminatormode = VAL(number$)
+							' set terminator mode
+				END IF
+			END IF
+		ELSE
+			GOSUB DTDefault			' set default character and mode
+		END IF
+	ELSEIF cmdstrin$="PG" THEN			' page feed
+		currentx = 0				' home the pen x
+		currenty = 0				' home the pen y
+	ELSEIF cmdstrin$="PT" THEN			' pen thickness
+		GOSUB UnsupportedCommand		' not supported
+	ELSEIF cmdstrin$="SC" THEN			' scale
+		GOSUB UnsupportedCommand		' not supported
+	ELSEIF cmdstrin$="CA" THEN			' alternate character set
+		GOSUB UnsupportedCommand		' not supported
+	ELSEIF cmdstrin$="VS" THEN			' velocity set (pen speed in cm/s)
+		GOSUB UnsupportedCommand		' not supported
+	ELSEIF cmdstrin$="SM" THEN			' symbol mode
+		GOSUB UnsupportedCommand		' not supported
+		DO WHILE byte$ &lt;&gt; "" AND byte$ &lt;&gt; ";"	' until the end
+			GOSUB GetByte			' get bytes
+		LOOP
+'	ELSEIF cmdstrin$="" THEN
+'		GOSUB DumpNumber
+	ELSE
+		IF pretend THEN				' only print if not drawing
+			COLOR 15			' white
+			PRINT "Error : Unexpected command "; cmdstrin$
+			errorcount = errorcount + 1
+		END IF
+		GOSUB DumpNumber
+	END IF
+RETURN
+
+
+' do the arc
+
+DoArc:
+	currentangle = CalcAngle(arcx, arcy, currentx, currenty)
+	radius = CalcRadius(arcx, arcy, currentx, currenty)
+	stackdraw = drawmode				' save draw mode
+	drawmode = absolute				' set draw mode
+	GOSUB DrawArcDirection				' set direction &amp; draw the arc
+	drawmode = stackdraw				' restore the draw mode
+RETURN
+
+
+' calculate the values and draw the three point arc. if the points are in line then a
+' single line is drawn from start to end. no check is done to see if the intermediate
+' point really is between the start and end points.
+
+DrawArcThreePoint:
+	GOSUB GetChord					' get the arc chord angle
+
+	chorddx = (interx - currentx) / 2		' dx/2 from current to intermediate
+	chorddy = (intery - currenty) / 2		' dy/2 from current to intermediate
+
+	centrex = currentx + chorddx			' chord 1 centre x
+	centrey = currenty + chorddy			' chord 1 centre y
+
+	perp1x1 = centrex - chorddy			' chord 1 perpendicular x1
+	perp1y1 = centrey + chorddx			' chord 1 perpendicular y1
+
+	perp1x2 = centrex + chorddy			' chord 1 perpendicular x2
+	perp1y2 = centrey - chorddx			' chord 1 perpendicular y2
+
+	chorddx = (endx - interx) / 2			' dx/2 from intermediate to end
+	chorddy = (endy - intery) / 2			' dy/2 from intermediate to end
+
+	centrex = interx + chorddx			' chord 2 centre x
+	centrey = intery + chorddy			' chord 2 centre y
+
+	perp2x1 = centrex - chorddy			' chord 2 perpendicular x1
+	perp2y1 = centrey + chorddx			' chord 2 perpendicular y1
+
+	perp2x2 = centrex + chorddy			' chord 2 perpendicular x2
+	perp2y2 = centrey - chorddx			' chord 2 perpendicular y2
+
+	deltaxp1 = perp1x2 - perp1x1			' dx for chord 1 perpendicular
+	deltayp1 = perp1y2 - perp1y1			' dy for chord 1 perpendicular
+	deltaxp2 = perp2x2 - perp2x1			' dx for chord 2 perpendicular
+	deltayp2 = perp2y2 - perp2y1			' dy for chord 2 perpendicular
+
+	deltax12 = perp1x1 - perp2x1			' start x difference
+	deltay12 = perp1y1 - perp2y1			' start y difference
+
+	unknown = (deltaxp2 * deltay12) - (deltayp2 * deltax12)
+	divergence = (deltayp2 * deltaxp1) - (deltaxp2 * deltayp1)
+							' zero if parallel
+
+	IF divergence THEN				' not parallel so do arc
+		unknown = unknown / divergence		' scale unknown
+
+		arcx = perp1x1 + unknown * deltaxp1	' find x centre
+		arcy = perp1y1 + unknown * deltayp1	' find y centre
+
+		currentangle = CalcAngle(arcx, arcy, currentx, currenty)
+							' angle to current point
+		interangle = CalcAngle(arcx, arcy, interx, intery) - currentangle
+							' angle to inter point from current
+		endangle = CalcAngle(arcx, arcy, endx, endy) - currentangle
+							' angle to end from current
+
+		interangle = interangle - 360 * (interangle &lt; 0)
+							' ensure 0 to 360
+		endangle = endangle - 360 * (endangle &lt; 0)
+							' ensure 0 to 360
+		IF interangle &gt; endangle THEN		' if anticlockwise
+			arcangle = 360 - endangle
+		ELSE					' else clockwise
+			arcangle = - endangle
+		END IF
+
+		radius = CalcRadius(arcx, arcy, currentx, currenty)
+
+		stackdraw = drawmode			' save draw mode
+		drawmode = absolute			' set draw mode
+		GOSUB DrawArcDirection			' set direction &amp; draw the arc
+		drawmode = stackdraw			' restore the draw mode
+	ELSE
+		absolutex = endx			' set arc end x
+		absolutey = endy			' set arc end y
+		stackdraw = drawmode			' save draw mode
+		drawmode = absolute			' set draw mode
+		GOSUB DoDraw				' set direction &amp; draw the line
+		drawmode = stackdraw			' restore the draw mode
+	END IF
+RETURN
+
+
+' most of the default settings are done as subroutines so that the code only has
+' to be modified the once if the defaults are changed. this saves searching out
+' every instance where the defaults can be set by changing them acc to GOSUBs
+' and putting the subroutines (mostly) here. commented out code is not needed
+' just yet
+
+
+' set default scaling points P1 and P2
+'
+'IPDefault:
+'	p1x = iw1x					' set P1 x default to window x min
+'	p1y = iw1y					' set P1 y default to window y min
+'	p2x = iw2x					' set P2 x default to window x max
+'	p2y = iw2y					' set P2 y default to window y max
+'RETURN
+
+
+' set default input window (soft clip limits)
+'
+'IWDefault:
+'	iw1x = minimumx					' set lower left x default
+'	iw1y = minimumy					' set lower left y default
+'	iw2x = maximumx					' set upper right x default
+'	iw2y = maximumy					' set upper right y default
+'RETURN
+
+
+' set default label terminator character
+
+DTDefault:
+	terminator$ = CHR$(3)				' LB command terminator character
+DTDefaultmode:
+	terminatormode = 1				' terminator is non printing
+RETURN
+
+
+' set default direction run and rise
+'
+'DIDefault:
+'	directionrun = 1				' default is for horizontal text
+'	directionrise = 0				' default is for horizontal text
+'RETURN
+
+
+' set default pattern anchor point
+'
+'ACDefault:
+'	anchorx = minimumx				' set anchor default x
+'	anchory = minimumy				' set anchor default y
+'RETURN
+
+
+' set default text path
+'
+'DVDefault:
+'	text path = 0					' default is for left to right text
+'RETURN
+
+
+' set default text extra space
+'
+'ESDefault:
+'	eswidth = 0					' default is for no extra width
+'	esheight = 0					' default is for no extra height
+'RETURN
+
+
+' set default label origin
+'
+'LODefault:
+'	labelorigin = 1					' default label origin
+'RETURN
+
+
+' set default fill type
+'
+'FTDefault:
+'	filltype = 1					' default fill type (solid black)
+'	fillinterval = CalcRadius(p1x, p1y, p2x, p2y) / 100
+'							' default fill interval is 1% P2-P1
+'	fillangle = 45					' default fill angle
+'RETURN
+
+
+' set default line type
+'
+'LTDefault:
+'	linetype = 32767				' default line type (solid black)
+'	patternlength = CalcRadius(p1x, p1y, p2x, p2y) / 25
+'							' default length is 4% P2-P1
+'	linemode = 0					' default line mode
+'RETURN
+
+
+' set default scale (none)
+'
+'SCDefault:
+'							' need code
+'RETURN
+
+
+' set default character size
+'
+'SIDefault:
+'	characterwidth = 0.1875				' default width (cm) 75 units
+'	characterheight = 0.2625			' default height (cm) 105 units
+'RETURN
+
+
+' initialise plot values, this falls through to the set plot defaults routine
+
+Initialise:
+' PU
+	pendown = false					' lift the pen
+' PA0,0
+	drawmode = absolute				' absolute draw mode
+	currentx = 0					' home the pen x
+	currenty = 0					' home the pen y
+'	absolutex = 0					' set x
+'	absolutey = 0					' set y
+'	GOSUB DoDraw					' home the pen - do this on real hw
+' IP
+'	GOSUB IPDefault					' set default scaling points
+' WU							' not done
+' PW							' not done
+
+
+' set plot defaults
+
+Defaults:
+' AC
+'	GOSUB ACDefault					' set pattern anchor default
+' DI 1,0
+'	GOSUB DIDefault					' default direction run and rise
+' DT
+	GOSUB DTDefault					' default label terminator
+' DV
+'	GOSUB DVDefault					' set default text path
+' ES
+'	GOSUB ESDefault					' set default text extra space
+' FT
+'	GOSUB FTDefault					' set default fill type
+' IW
+'	GOSUB IWDefault					' set table window defaults
+' LO 1
+'	GOSUB LODefault					' default label origin
+' LT
+'	GOSUB LTDefault					' default line type
+' PA
+	drawmode = absolute				' set absolute drawmode
+' SC
+'	GOSUB SCDefault					' default scale (none)
+' SI
+'	GOSUB SIDefault					' set default character size
+' AD							' not done
+' CF							' not done
+' LA							' not done
+' PM							' not done
+' RF							' not done
+' SB 0							' not done
+' SV							' not done
+' SD							' not done
+' SL							' not done
+' SM							' not done
+' SS							' not done
+RETURN
+
+
+' flag an unsupported command, falls through to DumpNumber - not good but doesn't
+' hurt any
+
+UnsupportedCommand:
+	IF pretend THEN					' only print if not drawing
+		COLOR 15				' white
+		PRINT "Warning : Unsupported command "; cmdstrin$
+		warningcount = warningcount + 1
+	END IF
+
+
+' get a number(s) and ignore it(them)
+
+DumpNumber:
+	DO WHILE numeric				' while the next is a number
+		GOSUB GetNumber				' just read it
+	LOOP
+RETURN
+
+
+' get an xy pair of co-ordinates
+
+GetXYPair:
+	GOSUB GetNumber					' get first number
+	absolutex = VAL(number$)			' save to x
+	GOSUB GetNumber					' get second number
+	absolutey = VAL(number$)			' save to y
+RETURN
+
+
+' get x,y co-ordinate pair(s) and draw them, thsi does most of the work for the PA,
+' PR, PD and PU commands
+
+DoCoords:
+	DO WHILE numeric
+		GOSUB GetXYPair				' get X,Y co-ordiantes
+		GOSUB DoDraw				' go draw them
+	LOOP
+RETURN
+
+
+' gets a number string from the input stream. valid characters are " " and -.01234567890
+
+GetNumber:
+	number$ = ""					' clear the number string
+	DO WHILE numeric				' while a numeric character
+		number$ = number$ + byte$		' add the character to the string
+		GOSUB Getbyte				' and get the next character
+	LOOP
+	IF NOT atozchr THEN				' if not "A" to "Z"
+		GOSUB Getbyte				' skip ",;"
+	END IF
+RETURN
+
+
+' get the parameters for an arc
+
+GetArc:
+	GOSUB GetXYPair					' get the centre X,Y
+	GOSUB GetNumber					' get the arc angle
+	arcangle = VAL(number$)				' set the arc angle
+
+
+' get the chord angle if present, else set to the default value of 5 degrees
+
+GetChord:
+	IF numeric THEN					' if another number
+		GOSUB GetNumber				' get the chord angle
+		chordangle = VAL(number$)		' set the cord angle
+	ELSE
+		chordangle = 5				' else set the default angle
+	END IF
+RETURN
+
+
+' set the arc direction and draw the arc
+
+DrawArcDirection:
+	IF arcangle &lt; 0 THEN				' if clockwise
+		chordangle = - chordangle		' invert the chord angle
+	END IF
+
+
+' draw the segments of an arc
+
+DrawArc:
+	DO WHILE ABS(arcangle) &gt; ABS(chordangle)	' while more than chordangle to do
+		currentangle = currentangle - chordangle' reduce the remaining angle
+		arcangle = arcangle - chordangle	' calculate the next point angle
+		absolutex = SIN(currentangle / convangle) * radius + arcx
+							' calculate the next x
+		absolutey = COS(currentangle / convangle) * radius + arcy
+							' calculate the next y
+		GOSUB DoDraw				' and draw it
+	LOOP
+'	IF arcangle THEN						
+		currentangle = currentangle - arcangle
+		absolutex = SIN(currentangle / convangle) * radius + arcx
+		absolutey = COS(currentangle / convangle) * radius + arcy
+		GOSUB DoDraw
+'	END IF
+RETURN
+
+
+' draws a wedge edge
+
+DoWedgeEdge:
+	arcx = currentx					' wedge centre is the ..
+	arcy = currenty					' .. current pen position
+
+	stackpen = pendown				' save pen mode
+	pendown = true					' drop pen
+	stackdraw = drawmode				' save draw mode
+	drawmode = absolute				' set draw mode
+	absolutex = SIN(currentangle / convangle) * radius + arcx
+	absolutey = COS(currentangle / convangle) * radius + arcy
+	GOSUB DoDraw					' move pen
+
+	GOSUB DrawArcDirection				' set direction &amp; draw the arc
+
+	absolutex = arcx				' move pen back to the ..
+	absolutey = arcy				' .. centre of the wedge
+	GOSUB DoDraw					' move pen
+	pendown = stackpen				' restore the pen mode
+	drawmode = stackdraw				' restore the draw mode
+RETURN
+
+
+' draws a rectangle edge
+
+DoRectEdge:
+	stackpen = pendown				' save pen mode
+	pendown = true					' drop pen
+	stackdraw = drawmode				' save draw mode
+	drawmode = absolute				' set draw mode
+
+	arcx = currentx					' remember origin x
+	arcy = currenty					' remember origin y
+
+	absolutex = arcx + deltax			' horizontal edge
+	absolutey = arcy				' no change
+	GOSUB DoDraw					' draw edge
+
+	absolutex = arcx + deltax			' no change
+	absolutey = arcy + deltay			' vertical edge
+	GOSUB DoDraw					' draw edge
+
+	absolutex = arcx				' horizontal edge
+	absolutey = arcy + deltay			' no change
+	GOSUB DoDraw					' draw edge
+
+	absolutex = arcx				' no change
+	absolutey = arcy				' vertical edge
+	GOSUB DoDraw					' draw edge
+
+	pendown = stackpen				' restore the pen mode
+	drawmode = stackdraw				' restore the draw mode
+RETURN
+
+
+' do draw/move to next co-ordinate pair. _ALL_ HPGL commands end up drawing straight
+' lines with the pen either up or down so this is the _ONLY_ routine that does any
+' actuall drawing. if this were driving a real plotter table then this would be the
+' routine that generates the very basic pen+move commands that the (hopefully)
+' interrupt driven lowest level routine understands.
+
+' the bit after IF pretend THEN is used only to autoscale the output for drawing
+' on the screen, a real plotter would expect the user to know what the heck they
+' are doing and just plot the drawing.
+
+DoDraw:
+	oldx = currentx					' old position x
+	oldy = currenty					' old position y
+
+	IF drawmode THEN				' draw absolute
+		currentx = absolutex			' set current x
+		currenty = absolutey			' set current y
+	ELSE						' draw relative
+		currentx = currentx + absolutex		' set current x
+		currenty = currenty + absolutey		' set current y
+	ENDIF
+
+	IF pretend THEN					' if not really drawing
+		IF currentx &gt; maximumxused THEN maximumxused = currentx
+		IF currenty &gt; maximumyused THEN maximumyused = currenty
+		IF currentx &lt; minimumxused THEN minimumxused = currentx
+		IF currenty &lt; minimumyused THEN minimumyused = currenty
+	ELSEIF pendown THEN				' if pen down
+		oldx = (oldx - offsetx) / drawscale	' scale x start
+		oldy = (oldy - offsety) / drawscale	' scale y start
+		drawx = (currentx - offsetx) / drawscale' scale x end
+		drawy = (currenty - offsety) / drawscale' scale y end
+		LINE (oldx, 479 - oldy) - (drawx, 479 - drawy)
+							' draw line
+	ENDIF
+RETURN
+
+
+' set up the strings that define the font for character plotting
+
+InitFont:
+	fo$(0)  = "PR40,0;"				' " "
+	fo$(1)  = "PR20,0;PD;AR0,5,360;PU0,20;PD5,35;AR-5,0,180;PR5,-35;PU20,-20;"
+							' "!"
+	fo$(2)  = "PR10,40;PD5,15;AR-5,0,180;PR5,-15;PU20,0;PD5,15;AR-5,0,180;PR5,"+_
+		  "-15;PU10,-40;"			' """
+	fo$(3)  = "PR10,0;PD0,60;PU20,0;PD0,-60;PU10,20;PD-40,0;PU0,20;PD40,0;PU0,-40;"
+							' "#"
+	fo$(4)  = "PR20,0;PD0,60;PU20,-20;PD;AR-10,0,90;PR-20,0;AR0,-10,180;PR20,0"+_
+		  ";AR0,-10,-180;PR-20,0;AR0,10,-90;PU40,-20;"
+							' "$"
+	fo$(5)  = "PD40,60;PU-30,-15;PD;AR-5,0,360;PU30,-30;PD;AR-5,0,360;PU0,-15;"
+							' "%"
+	fo$(6)  = "PU40,15;PD;AR-15,0,-90;PR-10,0;AR0,15,-180;AR0,15,315;PR35.7,-34.3;PU;"
+							' "&amp;"
+	fo$(7)  = "PU10,40;PD10,15;AR-5,0,180;PR0,-15;PU30,-40;"
+							' "'"
+	fo$(8)  = "PR25,0;PD;AR40,30,-73.74;PU15,-60;"	' "("
+	fo$(9)  = "PR15,0;PD;AR-40,30,73.74;PU25,-60;"	' ")"
+	fo$(10) = "PR0,30;PD40,0;PU-10,20;PD-20,-40;PU0,40;PD20,-40;PU10,-10;"
+							' "*"
+	fo$(11) = "PU0,30;PD40,0;PU-20,20;PD0,-40;PU20,-10;"
+							' "+"
+	fo$(12) = "PU10,-10;PD15,10;PR0,5;AR-5,0,180;PR0,-5,-5,-10;PU30,10;"
+							' ","
+	fo$(13) = "PU0,30;PD40,0;PU0,-30;"		' "-"
+	fo$(14) = "PU20,0;PD;AR0,5,360;PU20,0;"		' "."
+	fo$(15) = "PD40,60;PU0,-60;"			' "/"
+	fo$(16) = "PD40,60;PU-40,-45;PD;AR15,0,90;PR10,0;AR0,15,90;PR0,30;AR-15,0,90"+_
+		  ";PR-10,0;AR0,-15,90;PR0,-30;PU40,-15;"
+							' "0"
+	fo$(17) = "PR10,0;PD20,0;PU-10,0;PD0,60;PD-10,-10;PU30,-50;"
+							' "1"
+	fo$(18) = "PR0,45;PD;AR15,0,-90;PR10,0;AR0,-15,-90;PR0,-5;PR-40,-40;PR40,0;PU;"
+							' "2"
+	fo$(19) = "PR0,15;PD;AR15,0,90;PR10,0;AR0,15,180;PR-5,0,5,0;AR0,15,180;PR-10"+_
+		  ",0;AR0,-15,90;PU40,-45;"		' "3"
+	fo$(20) = "PR40,20;PD-40,0;PD20,40;PU10,0;PD0,-60;PU10,0;"
+							' "4"
+	fo$(21) = "PR0,15;PD;AR15,0,90;PR10,0;AR0,15,90;PR0,10;AR-15,0,90;PR-10,0;AR0"+_
+		  ",-15,90;PR0,35;PR40,0;PU0,-60;"
+							' "5"
+	fo$(22) = "PR40,45;PD;AR-15,0,90;PR-10,0;AR0,-15,90;PR0,-30;AR15,0,90;PR10,0"+_
+		  ";AR0,15,180;PR-10,0;AR0,-15,90;PU40,-15;"
+							' "6"
+	fo$(23) = "PD40,60;PD-40,0;PU40,-60;"		' "7"
+	fo$(24) = "PR15,30;PD;AR0,-15,180;PR10,0;AR0,15,180;AR0,15,180;PR-10,0;AR0,"+_
+		  "-15,180;PR10,0;PU15,-30;"		' "8"
+	fo$(25) = "PR0,15;PD;AR15,0,90;PR10,0;AR0,15,90;PR0,30;AR-15,0,90;PR-10,0;"+_
+		  "AR0,-15,180;PR10,0;AR0,15,90;PU0,-45;"
+							' "9"
+	fo$(26) = "PR20,0;PD;AR0,5,360;PU0,30;PD;AR0,5,360;PU20,-30;"
+							' ":"
+	fo$(27) = "PR10,-10;PD15,10;PR0,5;AR-5,0,180;PR0,-5,-5,-10;PU10,40;PD;AR0,5"+_
+		  ",360;PU20,-30;"			' ";"
+	fo$(28) = "PR40,60;PD-40,-30;PD40,-30;PU;"	' "&lt;"
+	fo$(29) = "PR0,20;PD40,0;PU0,20;PD-40,0;PU40,-40;"
+							' "="
+	fo$(30) = "PR0,60;PD40,-30;PD-40,-30;PU40,0;"	' "&gt;"
+	fo$(31) = "PR20,10;PD;AR0,-5,360;PU0,10;PD20,20;PR0,5;AR-15,0,90;PR-10,0;AR0"+_
+		  ",-15,90;PU40,-45;"			' "?"
+	fo$(32) = "PR30,5;PD-10,0;AR0,20,-90;PR0,10;AR20,0,-180;PR0,-10;AR-5,0,-180"+_
+		  ";PR0,17,0,-7;AR-10,0,180;PR0,-10;AR10,0,180;PU10,-25;"
+							' "@"
+	fo$(33) = "PD20,60;PR20,-60;PU-33.33,20;PD26.67,0;PU6.66,-20;"
+							' "A"
+	fo$(34) = "PD25,0;AR0,15,180;PR-20,0;PU20,0;PD;AR0,15,180;PR-25,0;PU5,0;PD0"+_
+		  ",-60;PU35,0;"			' "B"
+	fo$(35) = "PR40,45;PD;AR-15,0,90;PR-10,0;AR0,-15,90;PR0,-30;AR15,0,90;PR10,0"+_
+		  ";AR0,15,90;PU0,-15;"			' "C"
+	fo$(36) = "PD25,0;AR0,15,90;PR0,30;AR-15,0,90;PR-25,0;PU5,0;PD0,-60;PU35,0;"
+							' "D"
+	fo$(37) = "PD0,60;PD40,0;PU-10,-30;PD-30,0;PU0,-30;PD40,0;PU;"
+							' "E"
+	fo$(38) = "PD0,60;PD40,0;PU-10,-30;PD-30,0;PU40,-30;"
+							' "F"
+	fo$(39) = "PR40,45;PD;AR-15,0,90;PR-10,0;AR0,-15,90;PR0,-30;AR15,0,90;PR10,"+_
+		  "0;AR0,15,90;PR0,15;PR-20,0;PU20,-30;"
+							' "G"
+	fo$(40) = "PD0,60;PU0,-30;PD40,0;PU0,30;PD0,-60;PU;"
+							' "H"
+	fo$(41) = "PR10,0;PD20,0;PU-10,0;PD0,60;PU-10,0;PD20,0;PU10,-60;"
+							' "I"
+	fo$(42) = "PR0,15;PD;AR15,0,180;PR0,45;PU-10,0;PD20,0;PU0,-60;"
+							' "J"
+	fo$(43) = "PD0,60;PU0,-30;PD40,30;PU-40,-30;PD40,-30;PU;"
+							' "K"
+	fo$(44) = "PR0,60;PD0,-60;PD40,0;PU;"		' "L"
+	fo$(45) = "PD0,60;PD20,-30;PD20,30;PD0,-60;PU;"	' "M"
+	fo$(46) = "PD0,60;PR40,-60;PR0,60;PU0,-60;"	' "N"
+	fo$(47) = "PR0,15;PD;AR15,0,90;PR10,0;AR0,15,90;PR0,30;AR-15,0,90;PR-10,0;"+_
+		  "AR0,-15,90;PR0,-30;PU40,-15;"	' "O"
+	fo$(48) = "PR5,0;PD0,60;PU0,-30;PD20,0;AR0,15,180;PR-25,0;PU40,-60;"
+							' "P"
+	fo$(49) = "PR0,15;PD;AR15,0,90;PR10,0;AR0,15,90;PR0,30;AR-15,0,90;PR-10,0;"+_
+		  "AR0,-15,90;PR0,-30;PU20,5;PD20,-20;PU;"
+							' "Q"
+	fo$(50) = "PR5,0;PD0,60;PU0,-30;PD20,0;AR0,15,180;PR-25,0;PU20,-30;PD20,-30;PU;"
+							' "R"
+	fo$(51) = "PR0,15;PD;AR15,0,90;PR10,0;AR0,15,180;PR-10,0;AR0,15,-180;PR10,0"+_
+		  ";AR0,-15,-90PU0,-45;"		' "S"
+	fo$(52) = "PR20,0;PD0,60;PU-20,0;PD40,0;PU0,-60;"
+							' "T"
+	fo$(53) = "PR0,60;PD0,-45;AR15,0,90;PR10,0;AR0,15,90;PR0,45;PU0,-60;"
+							' "U"
+	fo$(54) = "PR0,60;PD20,-60;PD20,60;PU0,-60;"	' "V"
+	fo$(55) = "PR0,60;PD10,-60;PR10,20;PR10,-20;PR10,60;PU0,-60;"
+							' "W"
+	fo$(56) = "PR0,60;PD40,-60;PU0,60;PD-40,-60;PU40,0;"
+							' "X"
+	fo$(57) = "PR0,60;PD20,-30;PD0,-30;PU0,30;PD20,30;PU0,-60;"
+							' "Y"
+	fo$(58) = "PR0,60;PD40,0;PD-40,-60;PD40,0;PU;"	' "Z"
+	fo$(59) = "PR25,0;PD-10,0;PR0,60;PD10,0;PU15,-60;"
+							' "["
+	fo$(60) = "PR0,60;PD40,-60;PU;"			' "\"
+	fo$(61) = "PR15,0;PD10,0;PR0,60;PR-10,0;PU25,-60;"
+							' "]"
+	fo$(62) = "PR0,40;PD20,20;PD20,-20;PU0,-40;"	' "^"
+	fo$(63) = "PR0,-10;PD40,0;PU0,10;"		' "_"
+	fo$(64) = "PR30,40;PD0,15;AR-5,0,180;PR10,-15;PU10,-40;"
+							' "`"
+	fo$(65) = "PR5,30;PD;AR10,0,-90;PR15,0;AR0,-10,-90;PR0,-20;AR-10,0,-90;PR"+_
+		  "-20,0;AR0,10,-180;PR30,0;PR0,-20;PU;"' "a"
+	fo$(66) = "PD0,60;PU0,-45;PD;AR15,0,90;PR10,0;AR0,15,90;PR0,10;AR-15,0,90;"+_
+		  "PR-10,0;AR0,-15,90;PU40,-25;"	' "b"
+	fo$(67) = "PR40,25;PD;AR-15,0,90;PR-10,0;AR0,-15,90;PR0,-10;AR15,0,90;PR10"+_
+		  ",0;AR0,15,90;PU0,-15;"		' "c"
+	fo$(68) = "PR40,25;PD;AR-15,0,90;PR-10,0;AR0,-15,90;PR0,-10;AR15,0,90;PR10"+_
+		  ",0;AR0,15,90;PU0,45;PD0,-60;PU;"	' "d"
+	fo$(69) = "PR0,20;PD30,0;AR0,10,180;PD-20,0;AR0,-10,90;PR0,-20;AR10,0,90;"+_
+		  "PR20,0;AR0,10,90;PU0,-10;"		' "e"
+	fo$(70) = "PR15,0;PD0,45;AR15,0,-90;PR5,0;PU-30,-30;PD20,0;PU15,-30;"
+							' "f"
+	fo$(71) = "PR40,15;PD;AR-15,0,-90;PR-10,0;AR0,15,-90;PR0,10;AR15,0,-90;PR10"+_
+		  ",0;AR0,-15,-90;PR0,-30;AR-15,0,-90;PR-10,0;AR0,15,-90;PU40,5;"
+							' "g"
+	fo$(72) = "PD0,60;PU0,-35;PDAR15,0,-90;PR10,0;AR0,-15,-90;PR0,-25;PU;"
+							' "h"
+	fo$(73) = "PR15,0;PD10,0;PU-5,0;PD0,40;PU0,10;PDAR0,5,360;PU20,-50;"
+							' "i"
+	fo$(74) = "PR5,-20;PD5,0;AR0,15,90;PD0,45;PU0,10;PDAR0,5,360;PU15,-50;"
+							' "j"
+	fo$(75) = "PR5,60;PD0,-60;PU0,20;PD30,20;PU-30,-20;PD30,-20;PU5,0;"
+							' "k"
+	fo$(76) = "PR15,0;PD;PR10,0;PU-5,0;PD0,55;AR-5,0,90;PU25,-60;"
+							' "l"
+	fo$(77) = "PD0,40;PU0,-10;PD;AR10,0,-180;PU0,-30;PD0,30;AR10,0,-180;PR0,-30;PU;"
+							' "m"
+	fo$(78) = "PD0,40;PU0,-15;PD;AR15,0,-90;PR10,0;AR0,-15,-90;PR0,-25;PU;"
+							' "n"
+	fo$(79) = "PR0,15;PD;AR15,0,90;PR10,0;AR0,15,90;PR0,10;AR-15,0,90;PR-10,0;"+_
+		  "AR0,-15,90;PR0,-10;PU40,-15;"	' "o"
+	fo$(80) = "PR0,-20;PD0,60;PU0,-25;PD;AR15,0,90;PR10,0;AR0,15,90;PR0,10;AR"+_
+		  "-15,0,90;PR-10,0;AR0,-15,90;PU40,-25;"
+							' "p"
+	fo$(81) = "PR40,25;PD;AR-15,0,90;PR-10,0;AR0,-15,90;PR0,-10;AR15,0,90;PR10"+_
+		  ",0;AR0,15,90;PU0,25;PD0,-60;PU0,20;"	' "q"
+	fo$(82) = "PD0,40;PU0,-15;PD;AR15,0,-90;PR10,0;AR0,-15,-90;PU0,-25;"
+							' "r"
+	fo$(83) = "PR0,10;PD;AR10,0,90;PR20,0;AR0,10,180;PR-20,0;AR0,10,-180;PR20,0"+_
+		  ";AR0,-10,-90;PU0,-30;"		' "s"
+	fo$(84) = "PU5,30;PD20,0;PU-10,30;PD0,-45;AR15,0,90;PD5,0;PU5,0;"
+							' "t"
+	fo$(85) = "PR0,40;PD0,-25;AR15,0,90;PR10,0;AR0,15,90;PU0,25;PD0,-40;PU;"
+							' "u"
+	fo$(86) = "PR0,40;PD20,-40;PD20,40;PU0,-40;"	' "v"
+	fo$(87) = "PR0,40;PD10,-40;PR10,20;PR10,-20;PR10,40;PU0,-40;"
+							' "w"
+	fo$(88) = "PD40,40;PU-40,0;PD40,-40;PU;"	' "x"
+	fo$(89) = "PR0,40;PD20,-40;PU20,40;PD-30,-60;PU30,20;"
+							' "y"
+	fo$(90) = "PR0,40;PD40,0;PD-40,-40;PD40,0;PU;"	' "z"
+	fo$(91) = "PR25,60;PD;AR0,-5,90;PR0,-20;PR-5,-5;PR5,-5;PR0,-20;AR5,0,90;PU15,0;"
+							' "{"
+	fo$(92) = "PR20,0;PD0,60;PU20,-60;"		' "|"
+	fo$(93) = "PR15,0;PD;AR0,5,90;PR0,20;PR5,5;PR-5,5;PR0,20;AR-5,0,90;PU25,-60;"
+							' "}"
+	fo$(94) = "PR0,30;PD;AR10,0,-180;AR10,0,180;PU0,-30;"
+							' "~"
+	fo$(95) = "PD40,0;PD0,60;PD-40,0;PD0,-60;PU40,0;"
+							' "[DEL]"
+RETURN
+
+' calculates the radius of an arc given the certre and a point on the arc
+
+FUNCTION CalcRadius(xcentre, ycentre, xpoint, ypoint) STATIC
+
+ CalcRadius = SQR((xpoint - xcentre) ^ 2 + (ypoint - ycentre) ^ 2)
+
+END FUNCTION
+
+
+' calculates the angle of a point on an arc from the certre of an arc
+
+FUNCTION CalcAngle(xcentre, ycentre, xpoint, ypoint) STATIC
+
+	xdelta = xpoint - xcentre			' calculate relative x
+	ydelta = ypoint - ycentre			' calculate relative y
+
+	IF xdelta &gt; 0 THEN				' if we're in the right semicircle
+		CalcAngle = 90 - ATN(ydelta / xdelta) * convangle
+							' start at 90 degrees
+	ELSEIF xdelta &lt; 0 THEN				' if we're in the left semicircle
+		CalcAngle = 270 - ATN(ydelta / xdelta) * convangle
+							' start at 270 degrees
+	ELSE
+		CalcAngle = - 180 * (ydelta &lt; 0)	' else 0 or 180 degrees
+	END IF
+
+END FUNCTION
+</PRE>
+</TD></TR></TABLE>
+<BR clear=all>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 23rd January, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.11 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=588dfc3d&adpref="></script>

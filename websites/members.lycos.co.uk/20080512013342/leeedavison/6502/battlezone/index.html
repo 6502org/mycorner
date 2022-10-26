@@ -1,0 +1,99 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>Adventures in the Battlezone</TITLE></HEAD>
+<BODY BACKGROUND="bzbg.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR VALIGN=TOP><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><IMG SRC="logo.gif" TITLE="Battlezone" BORDER=0><BR>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<map name="Map"> 
+  <area shape="poly" href="tank_01.html"		coords="0,0, 320,0, 0,240"
+   ALT="On to a gallery of 2D images
+rendered using game data
+from Atari vector games">
+  <area shape="poly" href="3d_logo_01.html"	coords="320,0, 320,240, 0,240"
+   ALT="On to a gallery of 3D images
+rendered using game data
+from Atari vector games">
+</map>
+<IMG SRC="attract.png" TITLE="On to a gallery of images
+rendered using game data
+from Atari vector games" USEMAP="#Map" BORDER=0 HSPACE=8 ALIGN=RIGHT>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ I've had one of these machines, a full size periscope model, for many years now. The
+ smaller cabiret model was picked up a few years later. The first one, bought from a
+ second hand shop, cost twice as much to ship as it did to buy. The second, rescued
+ from ending up in a skip after the wiring loom had caught fire, was a freebie but was
+ in a pretty sorry state when I got it.
+</BLOCKQUOTE>
+<B><U>The Battlezone world</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Battlezone is essentially a 2D tank game with a 3D first person perspective view. A 360
+ degree background made from eight 2D tiles provides the illusion of distant mountains
+ with a cresent lit Earth in the sky. This background is infinitely far away, actually
+ outside the game area, and never gets any closer no matter how long you continue in one
+ direction.
+<P ALIGN=JUSTIFY>
+ The game area itself is a square that wraps round in both axes, the player can see
+ <I>almost</I> half way across this area. There are twenty one objects populating this
+ otherwise featureless world, eleven pyramids and ten cuboids. These are scattered in
+ an apparently random but fixed pattern across the <A HREF="world.html">game area</A>.
+<P ALIGN=JUSTIFY>
+ As well as the passive scenery there are also objects for the player to interact with.
+ Tanks that move like the player's, missiles that appear to drop from the sky and super
+ tanks that turn and move quicker than the player's tank can. As well as these hostile
+ objects there are saucers that only distract the player by offering a high point score
+ for their destruction.
+<P ALIGN=JUSTIFY>
+ There are some objects that, though they never appear for long, add to the game. These
+ are the objects that make up the fragments of tank, super tank or missile that you see
+ fly apart in gracefull parabolic paths.
+<P ALIGN=JUSTIFY>
+ Finally there is the huge Battlezone logo that is only seen on the attract screen that
+ is really three objects with a common origin that are always seen together.
+</BLOCKQUOTE>
+<B><U>Nice touches</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There are some really good effects in the game, some of them are easy to overlook. The
+ most noticeable is the volcano with it's random spew of glowing rocks, it's pleasant just
+ to watch it sometimes, until you get killed for daydreaming that is.
+<P ALIGN=JUSTIFY>
+ The crescent lit Earth in the sky shows Eastern Australia and part of Alaska, I think, in
+ the lit part. That's a nice touch that gives the play area a <B>really <I>really</I></B>
+ big feel to it.
+<P ALIGN=JUSTIFY>
+ When you kill something it explodes. But each enemy, tank, super tank and missile,
+ explodes into different bits. No two explosions are quite the same either.
+<P ALIGN=JUSTIFY>
+ The player's gunsight changes when a target is near the centre of view, the new sight has
+ fine central lines for that genuine 'enemy in your sights' feel, this little touch adds
+ quite a bit to the feel of the game. Also the player's gunsight flashes while a player's
+ shell is in flight. This continues until the shell hits something and explodes, which is
+ itself an animated event, or the shell runs out of range, then the player can fire again.
+<P ALIGN=JUSTIFY>
+ The missile has an animated 'shadow' that it casts on the ground even when it's too high
+ up to be seen. This gives the player an 'it's over there'

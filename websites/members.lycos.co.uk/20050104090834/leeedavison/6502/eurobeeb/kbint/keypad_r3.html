@@ -1,0 +1,631 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>
+  Euro Beeb - Keypad interface assembly listing
+</TITLE>
+<META name="description" content="Content.">
+</HEAD>
+<BODY
+  BACKGROUND="../../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<B>
+<FONT SIZE=+1>BBC micro compatible - Keypad interface assembly listing. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+<BR clear=all>
+<A HREF="index.html">Back</A>
+<P>
+<HR>
+</BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; assembly code for CUBE keyboard interface
+
+; notes for R6501AQ ....
+
+; internal RAM is from $0040 to $00FF
+; the contents of the 32 bytes from $0040 to $005F may be maintained
+; by battery (not used)
+; the stack pointer is 8 bits and ranges from $00FF down to $0040
+
+LAB_00	= $00				; port A
+					; bit	function
+					; ---	--------
+					; 7	serial Rx
+					; 6	serial Tx
+					; 5	enable serial Tx buffer
+					; 0	buzzer driver
+					; other bits unused
+
+LAB_01	= $01				; port B
+					; bit	function
+					; ---	--------
+					; 7	watchdog timer reset
+					; other bits unused
+
+LAB_02	= $02				; port C
+
+LAB_12	= $12				; interrupt enable register
+LAB_14	= $14				; mode control register
+LAB_15	= $15				; serial comms control register
+LAB_16	= $16				; serial comms status register
+LAB_17	= $17				; serial comms Tx/Rx byte
+LAB_18	= $18				; lower latch A
+LAB_1A	= $1A				; upper latch A
+LAB_1C	= $1C				; lower latch B
+LAB_1E	= $1E				; upper latch B
+
+LAB_40	= $40				; keyboard matrix p (written)
+LAB_41	= $41				; keyboard matrix q (read)
+LAB_42	= $42				; this key
+LAB_43	= $43				; last key
+LAB_44	= $44				; key held flag (bit 0 only)
+LAB_45	= $45				; 1/2 cycle count low byte
+LAB_46	= $46				; 1/2 cycle count high byte
+
+					; $47 to $FF is the available stack space
+	.ORG	$F000
+
+; reset vector gets here
+
+LAB_F000
+	JMP	LAB_F00C		; go do reset
+
+; IRQ vector gets here
+
+LAB_F003
+	JMP	LAB_F070		; go do IRQ
+
+; NMI vector gets here
+
+LAB_F006
+	JMP	LAB_F00C		; go do NMI
+
+; start main code from here
+
+LAB_F009
+	JMP	LAB_F09E		; go do main
+
+; reset vector gets here - eventually
+; NMI vector gets here - eventually
+
+LAB_F00C
+	LDX	#$40			; set index
+	LDA	#$00			; set byte
+LAB_F010
+	STA	LAB_00,X		; clear memory byte
+	INX				; increment index
+	CPX	#$00			; all done? (redundant compare)
+	BNE	LAB_F010		; loop if not
+
+	LDX	#$FF			; set X
+	TXS				; set stack
+
+					; note that the 6501 stack grows down from $00FF
+					; not $01FF as on the 6502!
+
+	CLD				; clear decimal flag
+	JSR	LAB_F02B		; set A, B and C ports as inputs (floating)
+	JSR	LAB_F038		; set serial comms control & status
+	JSR	LAB_F041		; set A and B timer values
+	JSR	LAB_F052		; set modes and interrupts
+	CLI				; enable interrupts
+	JMP	LAB_F009		; go do main loop (goes to LAB_F09E)
+
+; set A, B and C ports as inputs
+
+LAB_F02B
+	LDA	#$FF			; byte all 1's
+	STA	LAB_00			; float port A
+	LDA	#$FF			; byte all 1's
+	STA	LAB_01			; float port B
+	LDA	#$FF			; byte all 1's
+	STA	LAB_02			; float port C
+	RTS
+
+; set serial comms control & status
+
+LAB_F038
+	LDA	#$C0			; set for enable Tx/Rx, ASYNC, 8NO
+	STA	LAB_15			; set serial comms control register
+	LDA	#$00			; disable wake-up and EOTx
+	STA	LAB_16			; set serial comms status register
+	RTS
+
+; set A and B timer values
+
+LAB_F041
+	LDA	#$19			; set 4800 baud for 2MHz clock
+	STA	LAB_18			; save to lower latch A
+	LDA	#$00			; set 4800 baud for 2MHz clock
+	STA	LAB_1A			; save to upper latch A, init counter, clr flag
+	LDA	#$D0			; set 1mS timeout low byte
+	STA	LAB_1C			; save to lower latch B
+	LDA	#$07			; set 1mS timeout high byte
+	STA	LAB_1E			; save to upper latch B, init counter, clr flag
+	RTS
+
+; the 6501 is set in 'normal' mode which means 14 bit addressing only
+; A13 and A14 are not present.
+
+; set modes and interrupts
+
+LAB_F052
+	LDA	#$40			; normal, tristate D, input B, timer B, timer A
+	STA	LAB_14			; set mode control register
+	LDA	#$20			; counter B underflow only
+	STA	LAB_12			; set interrupt enable register
+	RTS
+
+; serial Tx byte
+
+LAB_F05B
+	RMB	#5,LAB_00		; enable Tx buffer
+	PHA				; save A
+	STA	LAB_17			; Tx serial comms byte
+LAB_F060
+	BBR	#6,LAB_16,LAB_F060	; wait for Tx empty
+
+LAB_F063
+	BBR	#7,LAB_16,LAB_F063	; wait for Tx under run
+
+	SMB	#5,LAB_00		; disable Tx buffer
+	PLA				; restore A
+	CLC				; clear carry
+	JMP	LAB_F06F		; exit (RTS would be better)
+
+; unreferenced code
+
+	PLA				; restore A
+	SEC				; set carry
+LAB_F06F
+	RTS
+
+; IRQ vector gets here - eventually
+
+LAB_F070
+	PHA				; save A
+	TXA				; copy X
+	PHA				; save X
+	TYA				; copy Y
+	PHA				; save Y
+	LDA	LAB_1C			; read lower counter B, clear flag
+	SMB	#7,LAB_01		; watchdog bit high
+	RMB	#7,LAB_01		; watchdog bit low
+	SMB	#7,LAB_01		; watchdog bit high (reset watchdog)
+	LDA	LAB_45			; get 1/2 cycle count low byte
+	ORA	LAB_46			; OR with 1/2 cycle count high byte
+	BEQ	LAB_F098		; exit if zero
+
+	SEC				; set carry for subtract
+	LDA	LAB_45			; get 1/2 cycle count low byte
+	SBC	#$01			; decrement it
+	STA	LAB_45			; save new 1/2 cycle count low byte
+	BCS	LAB_F08E		; branch if no underflow
+
+	DEC	LAB_46			; decrement 1/2 cycle count high byte
+LAB_F08E
+	BBS	#0,LAB_00,LAB_F096	; go reset sounder bit if set
+
+	SMB	#0,LAB_00		; else set sounder bit if reset
+	JMP	LAB_F098		; skip reset
+
+LAB_F096
+	RMB	#0,LAB_00		; reset sounder bit
+LAB_F098
+	PLA				; get A
+	TAY				; restore Y
+	PLA				; get A
+	TAX				; restore X
+	PLA				; restore A
+	RTI
+
+; after setup we get here
+; main keyboard poll loop
+
+LAB_F09E
+	JSR	LAB_F0CD		; poll keyboard, Cb=1 if key pressed
+	BCS	LAB_F0AC		; branch if key pressed
+
+	RMB	#0,LAB_44		; flag no key held
+	LDA	#$00			; clear A
+	STA	LAB_43			; clear last key
+	JMP	LAB_F09E		; loop
+
+; detected key pressed
+
+LAB_F0AC
+	JSR	LAB_F0E8		; get byte from table
+	LDA	LAB_42			; read this key (was in A already)
+	CMP	LAB_43			; compare with last key
+	BEQ	LAB_F0BF		; branch if same
+
+	STA	LAB_43			; else make last key this key
+	RMB	#0,LAB_44		; reset key held flag
+	JSR	LAB_F113		; do 28.6715mS delay
+	JMP	LAB_F09E		; loop
+
+; is same key as last key
+
+LAB_F0BF
+	BBS	#0,LAB_44,LAB_F09E	; loop if key held
+
+					; same key as last key and held for ??mS
+	SMB	#0,LAB_44		; set key held flag
+	JSR	LAB_F126		; set cycle time & count from A
+	JSR	LAB_F10F		; serial Tx byte
+	JMP	LAB_F09E		; loop
+
+; poll keyboard, Cb=1 if key pressed
+
+LAB_F0CD
+	LDA	#$FE			; set start bit pattern
+	STA	LAB_40			; save keyboard matrix p
+LAB_F0D1
+	LDA	LAB_40			; get keyboard matrix p bit pattern
+	STA	LAB_01			; to port B
+	LDA	LAB_02			; get port C
+	EOR	#$FF			; invert it
+	BEQ	LAB_F0E0		; branch if no bits set
+
+	STA	LAB_41			; else save keyboard matrix q bit pattern
+	SEC				; set carry (flag key)
+	BCS	LAB_F0E7		; branch always (exit)
+
+LAB_F0E0
+	SEC				; set carry (to move into b0)
+	ROL	LAB_40			; rotate keyboard matrix p bit pattern
+	BBS	#4,LAB_40,LAB_F0D1	; loop if not all done
+
+	CLC				; clear carry (flag no key)
+LAB_F0E7
+	RTS
+
+; get byte from table,00pq where ..
+; p is # of first bit set in LAB_40 * 8 (keyboard matrix p)
+; q is # of first bit set in LAB_41 (keyboard matrix q)
+; byte saved in LAB_42 (this key)
+
+LAB_F0E8
+	LDA	LAB_41			; get keyboard matrix q
+	JSR	LAB_F104		; get # of first A bit set in Y
+	STY	LAB_42			; save bit # temp
+	LDA	LAB_40			; get keyboard matrix p
+	EOR	#$FF			; invert it
+	JSR	LAB_F104		; get # of first A bit set in Y
+	TYA				; copy # to A
+	ASL				; *2
+	ASL				; *4
+	ASL				; *8
+	CLC				; clear carry for add (is always clear here!)
+	ADC	LAB_42			; add bit # temp
+	TAY				; copy to index
+	LDA	LAB_F1F1,Y		; get key from table
+	STA	LAB_42			; save this key
+	RTS
+
+; get # of first A bit set in Y
+
+LAB_F104
+	CLC				; clear carry
+	LDY	#$00			; clear bit #
+LAB_F107
+	LSR				; bit into carry
+	BCS	LAB_F10E		; branch if set
+
+	INY				; increment bit #
+	JMP	LAB_F107		; loop
+
+LAB_F10E
+	RTS
+
+; serial Tx byte
+
+LAB_F10F
+	JSR	LAB_F05B		; serial Tx byte
+	RTS
+
+; do 28.6715mS delay (57343 cycles @ 2MHz)
+
+LAB_F113
+	PHA				; save A
+	TYA				; copy Y
+	PHA				; save Y
+	LDY	#$20			; set outer loop count
+LAB_F118
+	LDA	#$FF			; set inner loop count
+LAB_F11A
+	SEC				; set carry for subtract
+	SBC	#$01			; -1
+	BNE	LAB_F11A		; loop if not = 0
+
+	DEY				; decrement count
+	BNE	LAB_F118		; loop if not = 0
+
+	PLA				; get A
+	TAY				; restore Y
+	PLA				; restore A
+	RTS
+
+; set cycle time & count from A
+
+LAB_F126
+	PHP				; push status
+	SEI				; disable interrupts
+	STA	LAB_45			; save in temp
+	PHA				; push A
+	TYA				; copy Y
+	PHA				; save Y
+	SEC				; set carry for subtract
+	LDA	LAB_45			; restore from temp
+	SBC	#$30			; subtract "0"
+	ASL				; *2 (2 bytes per word)
+	TAY				; copy to index
+	LDA	LAB_F14D,Y		; get timer word low byte
+	STA	LAB_1C			; save to lower latch B
+	LDA	LAB_F14E,Y		; get timer word high byte
+	STA	LAB_1E			; save to upper latch B, init counter, clr flag
+	LDA	LAB_F19F,Y		; get timer cycles word low byte
+	STA	LAB_45			; save 1/2 cycle count low byte
+	LDA	LAB_F1A0,Y		; get timer cycles word high byte
+	STA	LAB_46			; save 1/2 cycle count high byte
+	PLA				; pull A
+	TAY				; restore Y
+	PLA				; restore A
+	PLP				; restore status
+	RTS
+
+; timer B 1/2 cycle time words
+
+LAB_F14D
+LAB_F14E	= LAB_F14D+1		; product	frequency (Hz)	duration (S)
+	.word	$0341			; 30CF0		1200.48		0.09996
+	.word	$030D			; 30D00		1280.41		0.099968
+	.word	$02DF			; 30CF0		1360.54		0.09996
+	.word	$02B6			; 30CC0		1440.92		0.099936
+	.word	$0291			; 30C30		1522.07		0.099864
+	.word	$0271			; 30D40		1600.00		0.1
+	.word	$0253			; 30CF0		1680.67		0.09996
+	.word	$0238			; 30D00		1760.56		0.099968
+	.word	$021F			; 30C90		1841.62		0.099912
+	.word	$0208			; 30C00		1923.08		0.09984
+	.word	$01F4			; 30D40		2000.00		0.1
+	.word	$01E0			; 30C00		2083.33		0.09984
+	.word	$01CE			; 30BA0		2164.50		0.099792
+	.word	$01BE			; 30C80		2242.15		0.099904
+	.word	$01AF			; 30D30		2320.19		0.099992
+	.word	$01A0			; 30C00		2403.85		0.09984
+	.word	$0193			; 30CD0		2481.39		0.099944
+	.word	$0186			; 30C00		2564.10		0.09984
+	.word	$017A			; 30BA0		2645.50		0.099792
+	.word	$016F			; 30BE0		2724.80		0.099824
+	.word	$0165			; 30CF0		2801.12		0.09996
+	.word	$015B			; 30CC0		2881.84		0.099936
+	.word	$0151			; 30B50		2967.36		0.099752
+	.word	$0148			; 30B00		3048.78		0.099712
+	.word	$0140			; 30C00		3125.00		0.09984
+	.word	$0138			; 30C00		3205.13		0.09984
+	.word	$0130			; 30B00		3289.47		0.099712
+	.word	$0129			; 30BA0		3367.00		0.099792
+	.word	$0122			; 30B60		3448.28		0.09976
+	.word	$011C			; 30D00		3521.13		0.099968
+	.word	$0115			; 30B10		3610.11		0.09972
+	.word	$010F			; 30B20		3690.04		0.099728
+	.word	$0109			; 30A70		3773.58 	0.09964
+	.word	$0104			; 30C00		3846.15		0.09984
+	.word	$00FF			; 30CF0		3921.57		0.09996
+	.word	$00FA			; 30D40		4000.00		0.1
+	.word	$00F5			; 30CF0		4081.63		0.09996
+	.word	$00F0			; 30C00		4166.67		0.09984
+	.word	$00EB			; 30A70		4255.32 	0.09964
+	.word	$00E7			; 30BA0		4329.00		0.099792
+	.word	$00E3			; 30C50		4405.29		0.09988
+
+; 1/2 cycle count words
+; see above for frequencies and durations
+
+LAB_F19F
+LAB_F1A0	= LAB_F19F+1
+	.word	$00F0
+	.word	$0100
+	.word	$0110
+	.word	$0120
+	.word	$0130
+	.word	$0140
+	.word	$0150
+	.word	$0160
+	.word	$0170
+	.word	$0180
+	.word	$0190
+	.word	$01A0
+	.word	$01B0
+	.word	$01C0
+	.word	$01D0
+	.word	$01E0
+	.word	$01F0
+	.word	$0200
+	.word	$0210
+	.word	$0220
+	.word	$0230
+	.word	$0240
+	.word	$0250
+	.word	$0260
+	.word	$0270
+	.word	$0280
+	.word	$0290
+	.word	$02A0
+	.word	$02B0
+	.word	$02C0
+	.word	$02D0
+	.word	$02E0
+	.word	$02F0
+	.word	$0300
+	.word	$0310
+	.word	$0320
+	.word	$0330
+	.word	$0340
+	.word	$0350
+	.word	$0360
+	.word	$0370
+
+; keyboard matrix decode table
+
+LAB_F1F1
+	.byte	"QRST","ABCD","7890","EFGH"
+	.byte	"456U","IJKL","123V","MNOP"
+
+; vector words at top of ROM
+
+	.ORG	$FFFA
+
+	.word	LAB_F006		; NMI vector
+	.word	LAB_F000		; reset vector
+	.word	LAB_F003		; IRQ vector
+
+	.END
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 6th September, 2002.</FONT>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=120ed97b&adpref="></script>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.12 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 

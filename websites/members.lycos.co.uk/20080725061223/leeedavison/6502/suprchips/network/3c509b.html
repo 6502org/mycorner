@@ -1,0 +1,316 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=8f0bfc0d&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>Network interface - 3Com EhBASIC driver</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=25%><A HREF="index.html#source">
+ <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>3Com EhBASIC driver. </FONT></B><FONT SIZE=-1>by Lee Davison</FONT>
+</TD><TD WIDTH=25%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>3Com EhBASIC source</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This code is a re-write of the <A HREF="source.html">code</A> for the Realtek 8019AS. It
+ provides exactly the same functions, ARP, ICMP and TCP/IP function enough to be PINGed
+ and to serve the four embedded web pages. While the card initialisation is a bit more
+ complex most of the low level NIC parts are much simpler, with more of the housekeeping
+ being handled by the hardware itself. Most of the high level code remains unchanged from
+ the Realtek version.
+<P ALIGN=JUSTIFY>
+ This is not a finished product by any means, it is just a proof of concept, and is
+ presented only as a starting point for anyone else.
+<P ALIGN=JUSTIFY>
+<B>Things to note.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Lines that start with a colon are completely ignored by the interpreter.<P ALIGN=JUSTIFY>
+ Strings in DATA statements do not need quotes round them as long as they don't contain
+ colons or commas, and do not start with spaces. Strings without quotes start with the
+ first non space character after the DATA keyword or comma.
+</BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+: *********************************************************************		
+: 3Com 3C509B Ethernet card driver in EhBASIC
+
+: supports ARP, ICMP echo, passive TCP/IP &amp; very basic HTTP
+
+: changes
+
+:03/09/04
+: assumes card present, no check made
+
+:03/09/02
+: original version from generic NEx000 driver
+
+10 DIM mm(5) : REM NIC MAC address
+12 DIM ip(1513) : REM packet buffer
+15 DIM mi(3) : REM my ip address
+16 mi(0)=169 : mi(1)=254 : REM get last digits from MAC address
+17 cr$ = CHR$($0D) : lf$ = CHR$($0A) : el$ = cr$+lf$
+
+: 38067 port equates
+
+20 p4 = $08 : REM port 4 data
+21 d4 = $09 : REM port 4 direction
+22 p6 = $0C : REM port 6 data
+23 d6 = $0D : REM port 6 direction
+
+: assembly routines to read and write to NIC
+
+30 DOKE $44,$EF20 : REM USR(n) = read from NIC register n
+31 rr = $EF00 : REM write to NIC call address
+
+: initialise ports
+
+40 POKE p4,PEEK(p4) OR $83 : REM no read, nowrite and reset
+41 POKE d4,PEEK(d4) OR $83 : REM port bits to outputs
+42 POKE d6,PEEK(d6) OR $5F : REM address bits to outputs
+43 FOR w=1 TO 6 : NEXT : REM delay for at least 1.6mS
+44 POKE p4,PEEK(p4) AND $7F : REM no reset
+
+: vp flags that a potentially valid packet is being processed
+
+51 vp = 0 : REM no valid packet received
+
+: Command/status register is available on all pages.
+
+60 cr = $0E : cR = cr+1 : REM 3C509 command/status register
+61 dr = $00 : REM 3C509 Tx/Rx data register
+62 ed = $0C : eD = ed+1: REM 3C509 EEPROM data register
+63 ec = $0A : eC = ec+1 : REM 3C509 EEPROM command register
+
+: TCP arrays &amp; variables
+
+70 ts = 1 : REM TCP state = listen
+71 DIM rn(3) : REM received TCP sequence number
+72 DIM mq(3) : REM our TCP sequence number
+73 DIM si(3) : REM senders ip address
+
+110 GOSUB 10500 : REM initialise NIC
+
+125 PRES12 249 : TIMER1 199 : REM set for approx 100mS
+130 ON TIMER1 12000 : REM go do countdown
+
+: *********************************************************************
+: main program loop
+
+200 DO
+
+205 DO: LOOP UNTIL IB : REM wait for interrupt to be flagged
+
+210 DO
+215 IF (IB AND $02) THEN GOSUB 20300 : REM do adapter fail interrupt
+220 IF (IB AND $04) THEN GOSUB 20200 : REM do tx interrupt
+225 IF (IB AND $10) THEN GOSUB 20100 : REM do rx interrupt
+
+300 IF vp=0 THEN 985 : REM skip packet check if no valid packet
+
+: now decipher packet info
+
+305 IF ip($0C)&lt;&gt;8 THEN ? "Unrecognised packet type" : GOTO 980
+310 IF ip($0D)=6 THEN GOSUB 21000 : GOTO 980: REM ARP packet
+315 IF ip($0D) THEN ? "Unknown IP packet type" : GOTO 980
+
+: only type left is known IP type
+
+320 GOSUB 21500 : REM handle known IP packet type
+
+
+980 vp = 0
+
+985 LOOP WHILE IB : REM loop while still interrupts to service
+
+990 CALL rr,cr,$41 : CALL rr,cR,$68 : REM now ack the interrupt(s)
+995 LOOP
+
+999 END : REM should never get here
+
+
+: *********************************************************************
+: initialize the 3C509
+
+: jump through 3Com hoops - don't ask
+
+10500 POKE p6,$00 : REM address $01xx on ISA slot
+
+: initialise id sequence state machine
+
+10505 CALL rr,$10,$00 : CALL rr,$10,$00
+
+: send id sequence to NIC id port
+
+10510 id=$FF
+10515 FOR i=0 TO $FF
+10520 CALL rr,$10,id
+10525 id=id&lt;&lt;1
+10530 IF (id AND $100) THEN id=(id EOR $1CF)
+10535 NEXT
+
+: set tag to 1 and I/O base to $0300, no contention check, only 1 card!
+
+10540 CALL rr,$10,$D1 : CALL rr,$10,$F0 : REM set the NIC I/O
+
+10545 POKE p6,$40 : REM set ISA address to $03xx
+
+10550 CALL rr,cr,$00 : CALL rr,cR,$08 : REM page 0
+
+: get our MAC address, the $80 is the EEPROM read command
+
+10555 FOR i=0 TO 2
+10560 CALL rr,ec,$80+i : CALL rr,eC,$00 : REM EEPROM address
+10565 REM wait for at least 162 uS
+10570 mm(i+i+1) = USR(ed)
+10575 mm(i+i) = USR(eD)
+10580 NEXT
+
+: enable the adaptor.
+
+10585 CALL rr,$04,$01 : CALL rr,$05,$00 : REM set config &amp; control
+
+: reset the Tx and Rx and suspend status
+
+10590 CALL rr,cr,$00 : CALL rr,cR,$58 : REM Tx reset
+10595 CALL rr,cr,$00 : CALL rr,cR,$28 : REM Rx reset
+10600 CALL rr,cr,$00 : CALL rr,cR,$78 : REM mask all status bits
+
+: set IRQ3
+
+10605 CALL rr,$08,$00 : CALL rr,$09,$3F : REM resource config
+	
+: set our MAC address
+
+10610 CALL rr,cr,$02 : CALL rr,cR,$08 : REM page 2
+10615 FOR i=0 TO 5 : CALL rr,i,mm(i) : NEXT
+10620 mi(2)=mm(4) : mi(3)=mm(5)
+
+: enable link beat &amp; jabber for TP
+
+10630 CALL rr,cr,$04 : CALL rr,cR,$08 : REM page 4
+10635 CALL rr,$0A,$C0 : REM media type &amp; status (low byte only)
+
+: clear all of the statistics by reading them
+
+10645 CALL rr,cr,$00 : CALL rr,cR,$B0 : REM stats disable
+10650 CALL rr,cr,$06 : CALL rr,cR,$08 : REM page 6
+10655 FOR i=0 TO $0D : by = USR(i) : NEXT
+
+10670 CALL rr,cr,$00 : CALL rr,cR,$A8 : REM stats enable
+
+: set to receive host address and broadcasts
+
+10675 CALL rr,cr,$01 : CALL rr,cR,$08 : REM page 1
+10680 CALL rr,cr,$05 : CALL rr,cR,$80 : REM set Rx filter
+
+: enable Rx and Tx
+
+10685 CALL rr,cr,$00 : CALL rr,cR,$20 : REM Rx enable
+10690 CALL rr,cr,$00 : CALL rr,cR,$48 : REM Tx enable
+
+: allow status bits
+
+10695 CALL rr,cr,$57 : CALL rr,cR,$78 : REM set status mask
+
+: ack any pending interrupts and enable those that we want
+: Rx complete, Tx complete, adapter failure
+
+10700 CALL rr,cr,$69 : CALL rr,cR,$68 : REM ack interrupts
+10705 CALL rr,cr,$17 : CALL rr,cR,$70 : REM set interrupt mask
+
+: post the IP address
+
+10710 ? "Card OK - IP address 169 . 254 .";mi(2);" .";mi(3)
+
+10715 RETURN
+
+: *********************************************************************
+: does the timeout counting down, called on TIMER 1 timeout (100mS)
+
+11999 REM decrement the TCP rimeout counter if &lt;&gt; 0
+
+12000 IF sc THEN DEC sc
+12005 RETURN
+
+
+: *********************************************************************
+: on NIC interrupt do this
+
+19999 REM NIC interrupt
+
+20000 ib = (USR(cr) OR (USR(cR)&lt;&lt;8)) AND $105E : REM get &amp; mask status
+20005 IB = IB OR ib : REM reflect in main status
+20010 RETURN
+
+
+: *********************************************************************
+: handle Rx interrupt flagged
+: get the ethernet packet from the NIC
+: exit with length in rl, payload in ip(i), vp flags packet status
+
+20100 CALL rr,cr,$01 : CALL rr,cR,$08 : REM page 1
+20105 st = USR($08) OR (USR($09)&lt;&lt;8) : REM get Rx status
+20110 vp = 0 : REM clear valid packet flag
+20115 IF (st &gt; $7FFF) THEN 20150 : REM Rx empty
+20120 IF (st AND $4000) THEN 20145 : REM Rx error
+20125 rl = st AND $7FF : REM packet length
+20130 IF rl&gt;1500 THEN 20145 : REM ignore too big packets
+
+20135 DEC vp : REM flag this packet good
+20140 FOR i=0 TO rl-1 : ip(i) = USR(dr) : NEXT : REM read packet
+
+20145 CALL rr,cr,$00 : CALL rr,cR,$40 : REM discard top packet
+20150 IB = IB AND -$11 : REM clear Rx interrupt flag
+
+20155 RETURN
+
+: *********************************************************************
+: handle Tx interrupt flagged
+
+20200 CALL rr,cr,$01 : CALL rr,cR,$08 : REM page 1
+20205 st = USR($0B) : REM get Tx status
+
+: do a Tx reset if jabber indicated
+
+20210 IF (st AND $30) THEN  CALL rr,cr,$0 : CALL rr,cR,$58 : REM jabber
+
+: do a Tx enable if any errors indicated
+
+20215 IF (st AND $3C) THEN  CALL rr,cr,$0 : CALL rr,cR,$48 : REM enable
+20220 CALL rr,$0B,$00 : REM ack Tx interrupts by writing to status
+20225 IB = IB AND -$05 : REM clear Tx interrupt flag
+
+20230 RETURN
+
+
+: *********************************************************************
+: handle adapter fail interrupt flagged
+
+20300 CALL rr,cr,$04 : CALL rr,cR,$08 : REM page 4
+20305 st = USR($05) : REM get fail reason
+20310 CALL rr,cr,$01 : CALL rr,cR,$08 : REM page 1
+20315 IF (st AND $20)=0 THEN 20330 : REM check Rx underflow bit
+
+: was Rx underflow so reset &amp; restart receiver
+
+20320 CALL rr,cr,$00 : CALL rr,cR,$28 : ? "Rx underflow"
+20325 CALL rr,cr,$00 : CALL rr,cR,$20 : IB = IB AND -$11
+
+20330 IF (st AND $04)=0 THEN 20345 : REM check Tx overflow bit
+
+: was Tx overflow so reset &amp; restart transmitter
+
+20335 CALL rr,cr,$00 : CALL rr,cR,$58 : ? "Tx overflow"
+20340 CALL rr,cr,$00 : CALL rr,cR,$48
+
+20345 IB = IB AND -$3 : REM clear adapter fail interrupt flag
+20350 RETURN
+
+
+: *********************************************************************
+: construct a reply to an ARP request aimed at us
+

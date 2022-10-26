@@ -1,0 +1,111 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=9cd1f65&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>ADPCM to 8 bit .wav convert</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#softw"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>ADPCM to 8 bit .wav convert. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+' ADPCM decoder. this code decompresses the contents of a speech chip sound ROM set that
+' is 4 bit ADPCM encoded. A table of addresses at the start of the ROM is used to find
+' the start of the individual samples, the end, and the sample length, is calculated from
+' the sample block sizes. this version saves the decompressed samples as eight bit 16ksps
+' mono .wav files with the hex start address of the sample as the file name
+
+' 05/04/06
+
+SCREEN 12						' 640 x 480 x 16
+CLS							' clear it
+
+DEFINT A-Z						' all integers except where defined
+
+DIM stepadj(7)						' step index adjust, 0 to 7
+DIM steptable(48)					' step size table, 0 to 48
+DIM wavaddr&amp;(127)					' sample start addresses
+adrcount% = 0						' number of sample addresses found
+
+RESTORE stepadj						' read the step index adjust table
+FOR i = 0 TO 7
+  READ stepadj(i)
+NEXT
+
+RESTORE steptable					' read the step size table
+FOR i = 0 TO 48
+  READ steptable(i)
+NEXT
+
+OPEN "snd_2.rom" FOR BINARY AS #1			' open input file
+
+i&amp;amp; = 3						' skip unknown start bytes
+
+DO
+  GOSUB GetLong						' get address longword
+  wavaddr&amp;(adrcount%) = llong&amp;				' save address
+  adrcount% = adrcount% + 1				' increment address count
+  PRINT RIGHT$("00000" + HEX$(llong&amp;), 6); "  ";	' display address
+LOOP WHILE llong&amp;
+
+PRINT
+PRINT  adrcount% - 1; "addresses found";
+adrcount% = adrcount% - 2				' correct for zero term and zero
+							' count start
+
+FOR wavfiles% = 0 to adrcount%				' for each sample
+  filename$ = RIGHT$("00000" + HEX$(wavaddr&amp;(wavfiles%)), 6) + ".wav"
+  OPEN filename$ FOR OUTPUT AS #2			' open output file
+  PRINT
+  PRINT "File "; filename$;				' show file name
+  GOSUB GetLength					' get the sample length
+  GOSUB WriteRIFF					' write the header chunk
+  GOSUB WriteFORMAT					' write the format chunk
+  GOSUB WriteDATA					' write the data chunk
+  CLOSE #2						' close output file
+NEXT
+
+CLOSE #1						' close input file
+
+PRINT
+PRINT "Done. Any key to exit."				' show file name
+
+DO
+LOOP WHILE INKEY$=""					' wait for a key
+
+END
+
+
+' get the sample size. the sample is arranged into blocks, the first byte of the block
+' is the byte count for the remainder of the block + $80. the sample is terminated by
+' a block count of zero
+
+GetLength:
+  sslength&amp; = 0						' reset length
+  i&amp; = wavaddr&amp;(wavfiles%)				' sample start address
+  DO
+    GOSUB GetByte					' read block length
+    byte% = byte% AND 127				' mask block length
+    sslength&amp; = sslength&amp; + byte%			' add this chunk length
+    i&amp; = i&amp; + byte%					' index to next chunk length
+  LOOP WHILE byte%					' zero length is end marker
+RETURN
+
+
+' write RIFF header chunk
+
+WriteRIFF:
+  PRINT #2, "RIFF";					' always there
+  samplength&amp; = sslength&amp; * 2				' length of output in bytes
+  llong&amp; = samplength&amp; + 36				' length of rest of file
+  GOSUB WriteLongword					' write file length
+  PRINT #2, "WAVE";					' always there
+RETURN
+
+
+' write FORMAT chunk
+
+WriteFORMAT:
+  PRINT #2, "fmt ";					' 

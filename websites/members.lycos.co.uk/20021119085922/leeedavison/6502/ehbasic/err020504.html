@@ -1,0 +1,116 @@
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC, errata for 4th May 2002</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>Enhanced BASIC, errata for 4th May 2002 </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="errata.html">[Back]</A>
+<BR clear=all><P>
+<HR>
+<B>Symptoms</B>
+<BLOCKQUOTE>
+ Assigning a string in immediate mode doesn't work properly, i.e. doing ..
+<B><PRE>
+ A$="TESTING"
+ ?A$
+</PRE></B>
+ .. gives either ..
+<B><PRE>
+ TSTING
+</PRE></B>
+ .. or ..
+<B><PRE>
+ T STING
+</PRE></B>
+ .. depending on how your console handles null characters (ASCII 0)
+</BLOCKQUOTE>
+<B>Cause</B>
+<BLOCKQUOTE>
+ When BASIC assigns a value to a string it tests to see if the string is in the program
+ code. If it isn't then the string is copied to string memory (if the string is in program
+ memory no copy is made and the string pointer points to the string embedded in the
+ program code). In this case moving the input buffer out of page zero meant that this test
+ fails to copy a string from the input buffer to string memory. The string can then be
+ overwritten by any following commands.
+</BLOCKQUOTE>
+<B>The fix</B>
+<BLOCKQUOTE>
+ One small change is needed to fix this, just after LAB_20DC was ..
+<PRE>
+LAB_20DC
+	STX	Sendh			; save string end high byte
+	LDA	ssptr_h			; get string start high byte
+	BNE	LAB_RTST		; branch if not in utility area
+</PRE>
+ .. this needs to test if the string start is &#60;Ram_base so it becomes ..
+<PRE>
+LAB_20DC
+	STX	Sendh			; save string end high byte
+	LDA	ssptr_h			; get string start high byte
+	CMP	#>Ram_base		; compare with start of program memory
+	BCS	LAB_RTST		; branch if not in utility area
+</PRE>
+ .. This is done in version 1.03.<P>
+ If you move the input buffer from before the start of program memory be carefull that
+ this test is changed to suit or the problem will recurr.
+</BLOCKQUOTE>
+ Thanks to <A HREF="http://65c02.tripod.com/">Daryl</A> for finding that "feature".
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 4th May, 2002.</FONT>
+</BODY>
+</HTML>
+
+</xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.2 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+</noscript><script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3dd9fd2e&adpref="></script>

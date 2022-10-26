@@ -1,0 +1,50 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>What's that smell?</TITLE>
+<META name="description" content="Modulator, video"></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=25%>
+<A HREF="../index.html#goboom"><IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER><B><FONT SIZE=+1>Smoke signals </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT></TD><TD WIDTH=25%><A HREF="../../../index.html">
+<IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<A HREF="caps.html" NAME=caps><IMG SRC="caps_t.jpg" ALIGN=RIGHT BORDER=1
+ ALT="Smoking or non smoking?" HSPACE=8></A>
+<B><U>Force ale ..</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ .. two, slightly used, mains filter capacitors.
+<P ALIGN=JUSTIFY>
+ I was playing 'Space Invasion', lamenting the lack of sound - so far, and struggling
+ with the sideways hex keyboard for the controls when the thought 'you know you can almost
+ <I>smell</I> the smoke' intruded on my play. In fact I could smell the smoke, it was gently
+ rising from both the front and back of the rack and seemed to be getting thicker
+<P ALIGN=JUSTIFY>
+ Good sense eventually won out over the desire to finish <I>just one more</I> wave of the
+ relentless invaders and the power was killed. What was found was this pair in the power
+ supply unit. They are the mains filter capacitors and the least damaged looking one is
+ short circuit.
+<P ALIGN=JUSTIFY>
+ The other one is toast.
+<P ALIGN=JUSTIFY>
+ Both were replaced and the power supply is once more a smoke free z

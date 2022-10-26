@@ -1,0 +1,68 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>Vic 20 .prg file reader</TITLE>
+<META name="description" content="Vic 20 lister"></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=25%>
+<A HREF="../index.html"><IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER><B><FONT SIZE=+1>Vic 20 .prg file reader </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT></TD><TD WIDTH=25%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<IMG SRC="prgread.png" ALIGN=RIGHT BORDER=1 ALT="Vic 20 listing" HSPACE=8>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ Want an easy way to convert a Vic 20 <TT><B>.prg</B></TT> file into something a little
+ more platform independant? I did, so I cobbled this together and added bits until I got
+ bored.
+</BLOCKQUOTE>
+<B><U>Use</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The program takes a standard Vic 20 <TT><B>.prg</B></TT> file and reads it. Optionally
+ it will produce a text and/or html version of that file. An example html output is <A
+ HREF="example1.html">here</A>.
+<P ALIGN=JUSTIFY>
+ On running <TT><B>prgread.exe</B></TT> you will be prompted for a filename, as this is
+ a QuickBASIC program you need to enter the DOS filename, without the <TT><B>.prg</B></TT>
+ extension. If the filename contains spaces you'll have to enclose it in quotes, e.g.
+ <TT><B>"demo 1"</B></TT>. If you enter a null filename the program will just exit at
+ this point.
+<P ALIGN=JUSTIFY>
+ Any time while the files are being written output can be aborted by pressing the [ESC]
+ key.
+<P ALIGN=JUSTIFY>
+ After the filename you will be asked if you want a text output file. If you answer yes,
+ or just press return, an ASCII file with the same name as the input file but with a
+ <TT><B>.txt</B></TT> extension will be output. In this file special Commodore characters
+ will be rendered as ASCII surrounded by curly braces, e.g. [CTRL] 1, which is the colour
+ control for black, will be replaced by {BLK}. An example of this type of output is
+ <A HREF="example.txt">here</A>.
+<P ALIGN=JUSTIFY>
+ After the text output prompt you will be asked if you want an html output file. If you
+ answer yes, or just press return, an html file with the same name as the input file but
+ with an <TT><B>.htm</B></TT> extension will be output. As well as this you will be asked
+ if you want html graphics, if you answer yes to this then the special Commodore
+ characters will be rendered as 8 by 8 graphics instead of as ASCII names, e.g.[CTRL] 1,
+ which is the colour control for black, will be replaced by "<IMG SRC=d0.bmp ALT={BLK}>".
+ An example of this type of output is <A

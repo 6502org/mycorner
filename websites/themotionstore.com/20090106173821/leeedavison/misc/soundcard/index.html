@@ -1,0 +1,138 @@
+<HTML><HEAD><TITLE>Sampled sound card</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Sampled sound card. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+ <IMG SRC="soundcard.jpg" HSPACE=8 ALIGN=RIGHT TITLE="Unknown sound card" BORDER=1>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Another found at a radio rally for not very much money thing. The legend on the card says
+ <I><B>BWB NEWARK LTD. VSS3 SAMPLED SOUND PROGRAM CARD MK3</B></I> but apart from that I
+ have no real info. I grabbed this because I thought the <TT>27C4000</TT> EPROMs would
+ come in handy and there were some other interesting chips on the board. One of the first
+ things I did with the card was to read out the programmable logic devices and the EPROMs.
+<P ALIGN=JUSTIFY>
+ Four of the EPROMS, labeled <TT>MGD_SND_.2_A, B, C</TT> and <TT>D</TT>, are connected to
+ an <TT>OKI MSM6376</TT> speech chip and I wanted to know what sounds there were in these
+ EPROMs. While I could find datasheets for similar chips, including chips from the
+ <TT>MSM6375</TT> family, they all lacked any information of the format of the stored
+ data, apart from that it is ADPCM encoded.
+</BLOCKQUOTE>
+<B><U>Finding sounds</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Looking at the contents of the sound ROMs in turn, the A ROM seemed to start with some
+ sort of table then just random data, sound ROMs B and C seemed to be just random data
+ and ROM D differed from B and C only in that most of the last half of it is unprogrammed.
+<P ALIGN=JUSTIFY>
+ It seemed to make some sense to combine the ROMs to make one big data image and this was
+ done with the ROMs in the order A, B, C and D.
+</BLOCKQUOTE>
+<B><U>Addresses</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ With the ROMS combined to form one data image it quickly became evident that the table
+ at the start is a table of addresses as all the values fall within the range of the data.
+ Starting at the fourth byte in they were taken as a series of longword addresses in
+ big-endian format, high bytes first. The address of the first sample is shown in
+ <B>bold</B>.
+<P ALIGN=JUSTIFY>
+ <IMG SRC="addresses.png" HSPACE=8 TITLE="Start addresses start" BORDER=1>
+<P ALIGN=JUSTIFY>
+ These continue until a longword zero is encountered, this marks the end of the sample
+ addresses. This again is shown in <B>bold</B>.
+<P ALIGN=JUSTIFY>
+ <IMG SRC="addresend.png" HSPACE=8 TITLE="Start addresses end" BORDER=1>
+<P ALIGN=JUSTIFY>
+ Each address points to the start of a sample, this is the start of the sample pointed
+ to by the first address ...
+<P ALIGN=JUSTIFY>
+ <IMG SRC="samplesrt.png" HSPACE=8 TITLE="Sample start" BORDER=1>
+<P ALIGN=JUSTIFY>
+ Before I discovered that the data was ADPCM encoded I did try to play the samples as just
+ binary data. For the first sample that produced this awfull noise.
+<BLOCKQUOTE>
+<A HREF="000220_raw.wav">000220.wav <IMG SRC="icon.gif" TITLE=Sample ALIGN=CENTER 
+BORDER=0></A> raw data as a .wav file.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>ADPCM Samples</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Once I found some data on the voice chip I realised that the samples would need further
+ work before they sounded correctly. Using ADPCM decode algorithms made the sounds more
+ coherent but something wasn't right. The sample DC levels would drift leading to positive
+ or negative clipping and there were discontinuities in the output waveform. Looking
+ closer at the data I realised that not all of it was sample sound data.
+<P ALIGN=JUSTIFY>
+ Samples are made up of blocks, a block consists of a length byte with bit 7 set followed
+ by a number of sample bytes ...
+<P ALIGN=JUSTIFY>
+ <IMG SRC="sampleblk.png" HSPACE=8 TITLE="Sample blocks" BORDER=1>
+<P ALIGN=JUSTIFY>
+ The end of a sample is signified by a null block length byte with bit 7 clear. In the
+ case of the first sample the last block, from address <TT>$004020</TT>, has a length of
+ <TT>$16</TT> bytes and is followed by the zero end marker. The next byte is the start
+ of the second sample's first block.
+<P ALIGN=JUSTIFY>
+ <IMG SRC="sampleend.png" HSPACE=8 TITLE="Sample end" BORDER=1>
+<P ALIGN=JUSTIFY>
+ Without the block length bytes in the data stream the samples began to sound much better
+ but there was still drift in the DC levels and the samples would either clip badly when
+ decoded as eight bit, or would be very quiet when decoded as 16 bit. No ammount of
+ adjusting the decoder gain and offset would cure everything, I even managed to get some
+ samples mostly too quiet with clipping in the loud sections.
+<P ALIGN=JUSTIFY>
+ It had to be easier than this, so back to the web and further trawling found this bit of
+ information ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ <B><I>"Dialogic ADPCM is a variation of the standard IMA ADPCM algorithm that is
+ optimized for monaural voice data. The encoder operates on 12-bit input samples and
+ outputs 4-bit encoding for each sample."</I></B>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ .. it also gave the modified IMA decode tables. These were plugged in to the decode
+ program and the limits set to clip on 12 bit data, this worked with no appreciable DC
+ drift and almost zero clipping. The data thus generated was then scalled up to 16 bit,
+ and down to eight bit, to give <TT>.WAV</TT> format data.
+</BLOCKQUOTE>
+<B><U>Samples</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Here is the first sample as an 8 bit, and 16 bit, <TT>.WAV</TT> file.
+<BLOCKQUOTE>
+<A HREF="000220_08.wav">000220.wav <IMG SRC="icon.gif" TITLE=Sample ALIGN=CENTER 
+BORDER=0></A> <TT>&nbsp;</TT>8 bit <TT>.WAV</TT> sample.<TT>&nbsp;&nbsp;</TT>
+<A HREF="000220_16.wav">000220.wav <IMG SRC="icon.gif" TITLE=Sample ALIGN=CENTER 
+BORDER=0></A> 16 bit <TT>.WAV</TT> sample.<BR>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<A NAME="softw"></A>
+<B><U>Decode software</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Both versions of the software are very similar, the main difference is that for the 8 bit
+ .wav data is scaled from unsigned 12 bit uncompressed data whereas the 16 bit .wav data
+ is scaled from signed 12 bit uncompressed data.
+<P ALIGN=JUSTIFY>
+ The input file name for the program is fixed as <TT>snd_2.rom</TT>, there was only ever
+ the one input file. The output file names are the start addresses, in hex, of each sample
+ within the input file with <TT>.wav</TT> appended to them.
+<P ALIGN=JUSTIFY>
+ View the <A HREF="source_08.html">8 bit</A> conversion source, view the <A
+ HREF="source_16.html">16 bit</A> conversion source or <A HREF="source.zip">download
+ <IMG SRC="../../zip_sm.png" ALT="Download" ALIGN=CENTER border=0></A> both sources as
+ a .zip file
+</BLOCKQUOTE>
+<B><U>Future</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I now have the datasheet for the <TT>OKI MSM6376</TT> speech chip but it doesn't give
+ any information about the ROM data format. So what still remains to do is to find out
+ what the remaining bytes, between the end of the address table and the start of the
+ first sample, in the sound ROM are. After that it should be fairly easy to generate new
+ data for a new set of sound ROMs.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 29th March, 2007.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

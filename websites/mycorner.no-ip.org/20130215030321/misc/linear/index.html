@@ -1,0 +1,263 @@
+<HTML><HEAD><TITLE>A simple, regulated PSU</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Simple, regulated PSU. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<A HREF="psu01.html"><IMG SRC="psu01s.jpg" ALIGN=RIGHT TITLE="Simple, regulated PSU"
+ HSPACE=8 BORDER=1></A>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is a simple, regulated, linear PSU. There are no special components in the basic
+ circuit, they can all be changed or substituted depending on need and availability. All
+ the itterations of this PSU were built with parts from my bits bins.
+</BLOCKQUOTE>
+<B><U>Objective.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The idea was to put together a PSU suitable for running CB radios and similar ~12V DC
+ vehicle devices with what I had laying about the laboratory. The most usefull part was
+ the case and PCB from a long dead CB power supply. This may seem like cheating but only
+ the PCB, case and on/off switch were of any use. Everything else had either been
+ removed or was possibly damaged and so not reliable enough to be reused.
+</BLOCKQUOTE>
+<A NAME="psu03"></A>
+<B><U>Metalwork.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Everything was removed from the case and a heatsink for the output transistor was pulled
+ from the big box of assorted heatsinks. The one I found was such a good fit it could have
+ been made for the job.
+</BLOCKQUOTE>
+<A HREF="psu03.html"><IMG SRC="psu03s.jpg" ALIGN=RIGHT TITLE="IEC mains socket" HSPACE=8
+ BORDER=1></A>
+<BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ With this screwed in place a small piece of card was cut as a template for cutting a
+ mounting hole for an IEC mains socket taken from a dead PC PSU. This template was stuck
+ in place with double sided tape over the original entry hole for the fixed mains lead.
+<P ALIGN=JUSTIFY>
+ A jigsaw was used to cut the hole and the hole was filed until the socket was a snug
+ fit. The socket itself was then used at the template for drilling the securing screw
+ holes.
+<P ALIGN=JUSTIFY>
+ With the mains socket fitted a 2N3055 power transistor was dug up and fitted to the
+ heatsink with an insulating mounting kit. Leads were soldered on to allow connection to
+ the PCB.
+</BLOCKQUOTE>
+<A NAME="schem04"></A>
+<B><U>The circuit.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The circuit is really very simple. A centre tapped transformer is rectified by two
+ 1N5401 diodes to give a 24V DC unregulated supply. The transformer does not need to be
+ a centre tapped device, a <A HREF="brreg.html">single output transformer</A> and four
+ individual diodes or a monolithic bridge rectifier could just as easily be used but was
+ not what was to hand at the time.
+<A NAME="schem"></A>
+<P ALIGN=JUSTIFY>
+ This rectified voltage is smoothed by a total of 6900uF of 35V capacitors which were
+ also what was to hand. If I had larger values that would have fitted I would have used
+ those instead.
+</BLOCKQUOTE>
+<A HREF="myreg.html"><IMG SRC="myreg.jpg" ALIGN=LEFT TITLE="The schematic" HSPACE=8
+ BORDER=1></A>
+<BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ A 15V zener and a conventional silicon diode in series are used as a 15.7V reference
+ voltage. This is fed from the unregulated supply rail through a 1K5 0.5W resistor
+ giving a current of around 8mA. The actual current here isn't critical. As long as
+ there is enough to make the zener work and supply the reference to the rest of the
+ circuit and not so much that the zener cooks all is well. This voltage is bypassed by
+ a 100uF 25V capacitor to keep noise to a minimum.
+<P ALIGN=JUSTIFY>
+ A 0.5W resistor is specified here because, with the output shorted, it will need to
+ dissipate approximately 22V^2/1500 ohms = 0.32W which is just a litte much for a
+ standard 0.25W resistor.
+<P ALIGN=JUSTIFY>
+ This reference voltage feeds a TIP120 darlington transistor which itself feeds the base
+ of the 2N3055 output transistor. These two devices together make a high current gain
+ voltage follower that can readily supply a few amps of current.
+<P ALIGN=JUSTIFY>
+ To stop it all going horribly wrong should to great a demand be placed on the output, a
+ 0.2 ohm resistor in the 2N3055 emitter circuit is used as a current shunt. The voltage
+ developed across this resistor can increase to the point where the 2N2222 transistor
+ begins to conduct which is around 0.6V to 0.7V. Once the 2N2222 transistor starts to
+ conduct it diverts current away from the base of the TIP120 reducing the overall
+ current gain and limiting the output current to about 0.65V/0.2 ohms = 3.25A.
+<P ALIGN=JUSTIFY>
+ Again the current limiting transistor is not critical. Any small signal transistor that
+ can pass 20mA or more, withstand a Vce of 25V and has an Hfe in double figures should
+ work.
+<P ALIGN=JUSTIFY>
+ A 2N3055 was chosen as the output transistor because it was the correct shape, TO-3, for
+ the existing case holes and heatsink and with adequate cooling should be able to survive
+ prolonged abuse in this circuit. Any similarly rated transistor should be just as happy
+ to do this job.
+<P ALIGN=JUSTIFY>
+ An 820 ohm resistor, chosen to light the LED not light the room with the LED, feeds a
+ front panel mounted LED from the regulated output to show that the PSU is working.
+</BLOCKQUOTE>
+<B><U>Performance.</U></B>
+<A NAME="psu07" HREF="psu07.html"><IMG SRC="psu07s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="PSU being tested"></A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ With no load on the voltage at the output sockets is about 14V. This is a little more
+ than was anticipated but not so high as to be any worry. A load of only a few tens of
+ mA, about what the a CB will draw in receive, quickly reduces this to 13.5V.
+<P ALIGN=JUSTIFY>
+ A 21W vehicle bulb drops the voltage to 12.6V. This is to be expected as, even if the
+ voltage source were perfect, the 0.2 ohm current sense resistor will mean a drop of up
+ to 0.6V in normal use. As it isn't perfect this 1V drop at almost 2A current is to be
+ expected.
+<P ALIGN=JUSTIFY>
+ Adding a 5W vehicle bulb to the load reduces the voltage to 12.4V, not an excessive
+ drop, but replacing that 5W bulb with another 21W bulb causes the output to go into
+ current limit and drop to 10.2V.
+<P ALIGN=JUSTIFY>
+ Even running in current limit the only parts that get warm are the ones you would expect
+ to. The transformer - eventually, the output transistor and the current sense resistor
+ which actually being a 5W device and not 2.5W as specified, handled the 0.65V^2/0.2
+ ohms = 2.1W dissipation with ease.
+</BLOCKQUOTE>
+<A NAME="schem02"></A>
+<B><U>Improved voltage regulation.</U></B>
+<P ALIGN=JUSTIFY>
+<A HREF="reg431.html"><IMG SRC="reg431.jpg" ALIGN=LEFT HSPACE=8 BORDER=1
+ TITLE="Improved regulation schematic"></A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The output regulation suffers in part because of the 0.2 ohm current sense resistor in
+ the output transistor emitter circuit. If this is to be improved then feedback needs to
+ be taken from the output end of this resistor.
+<P ALIGN=JUSTIFY>
+ This is done by replacing the zener and diode voltage reference with an LM431 or
+ equivalent, these are almost ubiquitous in switch mode power supplies. Feeding the
+ input of the LM431 with a proportion on the output voltage this shunt regulator will
+ begin to conduct when this input voltage gets to typically 2.5V, this will then divert
+ current from the base of the TIP120 keeping this voltage at 2.5V.
+<P ALIGN=JUSTIFY>
+ The LM431 needs at most 10uA of input current so to make this current negligible a
+ divider current of 1mA was chosen. This will give an input to ground resistance of
+ 2.5V/1mA = 2.5K ohms but as 2.5K ohms is not a prefered value 2.2K ohms is used instead,
+ giving a divider current of 2.5V/2.2K ohms = 1.14mA.
+</BLOCKQUOTE>
+<IMG SRC="xx431.png" ALIGN=RIGHT HSPACE=8 BORDER=1 TITLE="LM431 regulator">
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The other resistor is then calculated from the rearranged formula for a potential
+ divider, R1 = Vin/Vout * R2 - R2 which in this case gives ..
+ <PRE>
+ R1 = Vin/Vout * R2 - R2
+ R1 = 13.8/2.5 * 2.2K - 2.2K
+ R1 = 9.944K</PRE>
+ Again this is not a prefered value so a 10K resistor is used instead.
+<P ALIGN=JUSTIFY>
+ Now when the PSU is tried the no load voltage is 13.79V, already an improvement, and
+ with a 21W vehicle bulb as a load the output is 13.22V. Adding a 5W vehicle bulb to the
+ load reduces the voltage to 12.8V which suggests that current limiting has begun and
+ replacing that 5W bulb with another 21W bulb causes the output to drop to 10.2V as it
+ did before.
+<P ALIGN=JUSTIFY>
+ Not perfect regulation but an improvement nonetheless.
+</BLOCKQUOTE>
+<A NAME="schem03"></A>
+<B><U>Improved current limiting.</U></B>
+<P ALIGN=JUSTIFY>
+<A HREF="cur431.html"><IMG SRC="cur431.jpg" ALIGN=LEFT HSPACE=8 BORDER=1
+ TITLE="Improved limiting schematic"></A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ To improve matters further the 2N2222 transistor can be replaced by another LM431. This
+ will give a much sharper knee as the LM431 has a much higer gain than any single
+ transistor.
+<P ALIGN=JUSTIFY>
+ The current sense resistor will need to be changed to accomodate the 2.5V input of the
+ LM431. In this case a the 0.2 ohm resistor is replaced by a 1 ohm resistor giving a
+ current limit of 2.5V/1 ohm = 2.5A. If you want to keep the limit at nearer 3A then a
+ 0.82 ohm resistor will give a limit of 2.5V/0.82 ohm = 3.05A or if you want a higher
+ limit, say near 6A, then a 0.43 ohm resistor will give you a limit of 2.5V/0.43 ohm =
+ 5.81A.
+<P ALIGN=JUSTIFY>
+ This resistor should be a little bigger than the 2.5W resistor previously specified as
+ it will need to dissipate up to 2.5A^2 * 1 ohm = 6.25W in normal use. To accomodate this
+ with room to spare a 10W resistor should really be used here.
+<P ALIGN=JUSTIFY>
+ Now when the PSU is tried the no load voltage remains at 13.79V and with a 21W vehicle
+ bulb as a load the output is still 13.68V. Adding a 5W vehicle bulb to the load reduces
+ the this by only a small amount to 13.67V which suggests that current limiting has not
+ yet begun. Finally, replacing that 5W bulb with another 21W bulb causes the output to
+ drop significantly to 6.8V, much better current limiting.
+</BLOCKQUOTE>
+<A NAME="schem05"></A>
+<A HREF="lim431.html"><IMG SRC="lim431.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="Adjustable limiting schematic"></A>
+<B><U>Adjustable current limiting.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The improved current limiting is good but suffers from a couple of drawbacks.
+<P ALIGN=JUSTIFY>
+ Because the LM431 needs a 2.5V input to work with the sense resistor needs to dissipate
+ quite a few watts. For a 3A current limit a resistor capable of handling at least 2.5V
+ * 3A = 7.5W would be needed which makes the resistor physically large and expensive.
+ It can also be awkward to find exactly the right low value resistor for the desired
+ current limit in such high wattages.
+<P ALIGN=JUSTIFY>
+ This circuit adds a fixed voltage offset to the current sense resistor voltage which
+ reduces the size of the current sense resistor needed. A bonus is because the current
+ sense circuit is now in the negative leg of the supply there is enough voltage drop
+ for an indicator LED can be added to show when the PSU is current limiting.
+<P ALIGN=JUSTIFY>
+ A 2.5V reference is provided by yet another LM431, a proportion of which will be added
+ to the sense resistor voltage depending on the position of the 2.2K pot. When this
+ proportion of the voltage plus the voltage across the sense resistor gets to 2.5V the
+ LM431 will begin to conduct, brightly lighting the LED and reducing the voltage at the
+ base of the TIP120, so preventing the current from rising any further.
+<P ALIGN=JUSTIFY>
+ With this pot set the cutrent limit behaves exactly as it did before but now with a much
+ smaller and cooler sense resistor and an LED which lights when it is active.
+</BLOCKQUOTE>
+<A NAME="psu09"></A>
+<B><U>Conclusion.</U></B>
+<A HREF="psu09.html"><IMG SRC="psu09s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="In current limit"></A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is now essentially complete, just some 'i's to cross and 't's to dot and some
+ matching screws to hold the lid on to find.
+<P ALIGN=JUSTIFY>
+ This can be used as a bench power supply for vehicle equipment or, with a no load output
+ of 13.8V, even as a float charger for 12V lead acid batteries. It's nothing special but
+ it is more use than the collection of parts that it was up until now.
+<P ALIGN=JUSTIFY>
+ With the adjustable current limit and smaller current sense resistor the only part that
+ gets more than warm under current limiting now is the 2N3055 pass transistor on its
+ heatsink. This could be fan cooled if the power supply was frequently going to be
+ operated in current limit. A temperature controlled fan, such as those in PC power
+ supplies, would be ideal for this, only comming on fully when needed.
+</BLOCKQUOTE>
+<A NAME="psu06"></A>
+<B><U>To do.</U></B>
+<P ALIGN=JUSTIFY>
+<A HREF="psu06.html"><IMG SRC="psu06s.jpg" ALIGN=LEFT HSPACE=8 BORDER=1
+ TITLE="Completed PSU"></A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ <STRIKE>Find four, preferably black, preferably matching screws to hold the cover
+ on.</STRIKE>
+<P ALIGN=JUSTIFY>
+ I found four, matching screws and screwed the cover on nice and tight and it all works
+ .. until that is you load it. Then the stray magnetic field from the transformer bounces
+ the thin steel cover off the top of said transformer at twice the line rate. BZZZZZZZZZ.
+ <STRIKE>Now I just need to find a thin foam pad.</STRIKE> Two thin slices of pencil
+ eraser stuck to the top of the transformer with double sided tape seem to have quietened
+ all the buzz.
+<P ALIGN=JUSTIFY>
+ Add an internal mains fuse. As it is it has no mains fuse and so relies on the fuse in
+ the power lead used. This is fine if a lead with a 3A fuse is used but not so fine if a
+ lead with a 10A fuse is used.
+<P ALIGN=JUSTIFY>
+ <STRIKE>Insulate all the exposed mains connections. It's pretty lethal with the cover
+ off as it is and I know that if I leave it like this sooner or later it's going to bite
+ me.</STRIKE> Done.
+</BLOCKQUOTE>
+<BR CLEAR=ALL>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 30th June, 2011.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

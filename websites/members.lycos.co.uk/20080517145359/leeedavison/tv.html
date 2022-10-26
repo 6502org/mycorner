@@ -1,0 +1,42 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>Trumpet blowing</TITLE></HEAD>
+<BODY BACKGROUND="back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=35%>
+<A HREF="film.html"><IMG SRC="film.png" BORDER=0 ALT="Look! I'm in the movies!"></A>
+<A HREF="eyes.html"><IMG SRC="eyes.gif" BORDER=0 ALT="No, they're eyes"></A>
+<A HREF="home.html"><IMG SRC="home_s.jpg" BORDER=0 ALT="Home"></A>
+<A HREF="crunch.html"><IMG SRC="crunch_ct.gif" BORDER=0 ALT="Ouch!"></A>
+<A HREF="head.html"><IMG SRC="head.gif" BORDER=0 ALT="Not for the faint of heart"></A>
+</TD>
+<TD WIDTH=30% ALIGN=CENTER><FONT SIZE=+2><B>One sunny day</B></FONT></TD><TD WIDTH=35%>
+<A HREF="index.html"><IMG SRC="epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR><TR><TD><A HREF="index.html"><IMG SRC="up.gif" BORDER=0 ALT="Up one"></A>
+</TD><TD ALIGN=CENTER>in Wales.</TD></TR></TABLE>
+<HR>
+<CENTER>
+<IMG SRC= "meontv.jpg" BORDER=1 ALT="That's me with the body board" WIDTH=100%>
+</CENTER>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 5th Ju

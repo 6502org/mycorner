@@ -1,0 +1,1266 @@
+<HTML><HEAD><TITLE>Micro Professor</TITLE>
+<META name="description" content="Micro Professor"></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#manual"><IMG SRC="../../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Tiny BASIC Manual. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<IMG SRC="manual.jpg" ALIGN=RIGHT TITLE="Tiny BASIC Manual" BORDER=1 HSPACE=8>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is my HTMLised version of the manual for the MPF-1 BASIC interpreter.
+<P ALIGN=JUSTIFY>
+ The original manual is printed as a monochrome A5 size booklet. Diagrams are simple and
+ where the keys or display are shown they are just boxed text. In this version I've
+ replaced the diagrams with colour pictures and the key and display boxes with small,
+ in-line, graphics. Shifted keys are shown with <FONT SIZE=-1 COLOR=red><B>RED</B></FONT>
+ text in the graphic.
+<P ALIGN=JUSTIFY>
+ FOR example ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ <I><B>"After the <IMG TITLE="GOTO" SRC="key_goto.png" ALIGN=CENTER BORDER=0> key is
+ pressed, the LED display display will show <IMG SRC="dis_icgot.png" ALIGN=CENTER BORDER=0
+ TITLE="IC GOt.">."</B></I>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ I've also tried to make sense of the <I>translated into English</I> phrases where
+ appropriate, e.g.
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ <I><B>"But, we just need to press <IMG TITLE="RUN" SRC="key_run.png" ALIGN=CENTER BORDER=0>
+ <IMG TITLE="5" SRC="key_5.png" ALIGN=CENTER BORDER=0> <IMG TITLE="0" SRC="key_0.png"
+ ALIGN=CENTER BORDER=0> <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0> when
+ we intend to run from the 50 line number of the statement not to go back to the first
+ line."</B></I>
+</BLOCKQUOTE>
+ .. becomes ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ <I><B>"To run the program from line 50, and not the first line, we just need to press
+ <IMG TITLE="RUN" SRC="key_run.png" ALIGN=CENTER BORDER=0> <IMG TITLE="5" SRC="key_5.png"
+ ALIGN=CENTER BORDER=0> <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG
+ TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0>."</B></I>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ .. after a while though your brain goes numb so there's probably quite a few I missed.
+<P ALIGN=JUSTIFY>
+ So, onward to the manual.
+</BLOCKQUOTE>
+<B><U>The Manual</U></B>
+<BLOCKQUOTE>
+<CENTER><TABLE BORDER=0 CELLSPACING=0>
+<TR><TD COLSPAN=6 ALIGN=CENTER><FONT SIZE=+2><B>TABLE OF CONTENTS</B></FONT></TD></TR>
+<TR><TD WIDTH=48>&nbsp;</TD><TD WIDTH=32></TD><TD WIDTH=360></TD><TD WIDTH=24></TD></TR>
+<TR><TD>I.</TD><TD COLSPAN=2>Introduction</TD><TD ALIGN=RIGHT><A HREF=#page05>5</A></TD>
+</TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD>II.</TD><TD COLSPAN=2>MPF-I BASIC Interpreter</TD>
+<TD ALIGN=RIGHT><A HREF=#page09>9</A></TD></TR>
+<TR><TD></TD><TD>2.1</TD><TD>How to install the BASIC Interpreter</TD>
+<TD ALIGN=RIGHT><A HREF=#page09>9</A></TD></TR>
+<TR><TD></TD><TD>2.2</TD><TD>Keyboard use and the display</TD>
+<TD ALIGN=RIGHT><A HREF=#page10>10</A></TD></TR>
+<TR><TD></TD><TD>2.3</TD><TD>Program editing</TD><TD ALIGN=RIGHT><A HREF=#page16>16</A>
+</TD></TR>
+<TR><TD></TD><TD>2.4</TD><TD>Cassette storage</TD>
+<TD ALIGN=RIGHT><A HREF=#page18>18</A></TD></TR>
+<TR><TD></TD><TD>2.5</TD><TD>Immediate instructions</TD>
+<TD ALIGN=RIGHT><A HREF=#page19>19</A></TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD>III.</TD><TD COLSPAN=2>Summary of BASIC</TD>
+<TD ALIGN=RIGHT><A HREF=#page21>21</A></TD></TR>
+<TR><TD></TD><TD>3.1</TD><TD>Variables</TD><TD ALIGN=RIGHT><A HREF=#page21>21</A></TD>
+</TR>
+<TR><TD></TD><TD>3.2</TD><TD>Operators</TD><TD ALIGN=RIGHT><A HREF=#page21>21</A></TD>
+</TR>
+<TR><TD></TD><TD>3.3</TD><TD>MPF BASIC Syntax grammar table</TD>
+<TD ALIGN=RIGHT><A HREF=#page22>22</A></TD></TR>
+<TR><TD></TD><TD>3.4</TD><TD>System RAM areas of BASIC-MPF</TD>
+<TD ALIGN=RIGHT><A HREF=#page25>25</A></TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD>IV.</TD><TD COLSPAN=2>Introduction to programming</TD>
+<TD ALIGN=RIGHT><A HREF=#page27>27</A></TD></TR>
+<TR><TD></TD><TD>4.1</TD><TD>Flow charts</TD><TD ALIGN=RIGHT>
+<A HREF=#page27>27</A></TD></TR>
+<TR><TD></TD><TD>4.2</TD><TD>Problems with solutions</TD>
+<TD ALIGN=RIGHT><A HREF=#page29>29</A></TD></TR>
+<TR><TD></TD><TD>4.3</TD><TD>Error codes</TD><TD ALIGN=RIGHT><A HREF=#page33>33</A></TD>
+</TR>
+<TR><TD></TD><TD>4.4</TD><TD>Examples</TD><TD ALIGN=RIGHT><A HREF=#page34>34</A></TD></TR>
+</TABLE></CENTER>
+<BR>
+<A NAME=page05></A>
+<B><FONT SIZE=+1>I. Introduction</FONT></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>BASIC is the most popular high level computer language
+ used by many of today's computers. BASIC stands for Biginners All-purpose Symbolic
+ Instruction Code. However, it should not be assumed that the BASIC language is only used
+ by beginners and has no application in the real world. On the contrary, BASIC is of
+ major importance in the world of business, and a large number of business systems
+ programs are written in this language. The major advantage is that a programmer can
+ produce a highly complex program in a fraction of the time taken to develop the same
+ program in many other languages.
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>The Micro-Professor, with it's powerful expansion
+ capabilities, has been developed by Multitech Industrial Corporation to execute Z-80
+ machine language. To help the Micro-Professor user learn BASIC programming Multitech
+ presents the Micro-Professor BASIC Interpreter.
+<P ALIGN=JUSTIFY>
+<B>Specifications:</B><P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+<TR><TD WIDTH=32></TD><TD WIDTH=32></TD></TR>
+<TR><TD VALIGN=TOP>(1)</TD><TD COLSPAN=2><P ALIGN=JUSTIFY>The language used on the MPF-I
+ is composed of several different types of words. The word types are:<BR>
+<LI> Statements<BR>
+<LI> Commands<BR>
+<LI> Variables</TD></TR>
+<TR><TD VALIGN=TOP>(2)</TD><TD COLSPAN=2><P ALIGN=JUSTIFY>A 2K Byte BASIC
+ Interpreter.</TD></TR>
+<TR><TD VALIGN=TOP>(3)</TD><TD COLSPAN=2><P ALIGN=JUSTIFY>A 34 key BASIC name plate
+ that overlays the original MPF-I keyboard.</TD></TR>
+<TR><TD VALIGN=TOP>(4)</TD><TD COLSPAN=2><P ALIGN=JUSTIFY>Summary of BASIC commands and
+ statements</TD></TR>
+<TR><TD></TD><TD>(a)</TD><TD>Commands</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>RUN - Execute the current program.</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>LIST - Print out the current program to
+ display.</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>LOAD - Load a program from the casette
+ tape.</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>SAVE - Save a program on the casette
+ tape.</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>CONTINUE - Continue after STOP or PRINT.</TD>
+</TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>NEW - Clear memory to allow a new program to be
+ written.</TD></TR>
+<TR><TD></TD><TD>(b)</TD><TD>Statements</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>PRINT - Output information to display.</TD>
+</TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>INPUT - Allow user input.</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>LET - Assign a numerical value to a
+ variable.</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>CALL - Call a machine-code routine.</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>GOTO - Jump to a given line.</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>GOSUB - Jump to subroutine.</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>RETURN - Return to main program from a
+ subroutine.</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>IF...THEN - Allow statement to be executed
+ conditionally.</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>FOR...TO - Set the parameters for loop
+ execution.</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>NEXT - End a FOR...TO statement.</TD></TR>
+<TR><TD></TD><TD></TD><TD><P ALIGN=JUSTIFY>STOP - Force return to the command mode.</TD>
+</TR>
+<TR><TD VALIGN=TOP>(5)</TD><TD COLSPAN=2>Variables</TD></TR>
+<TR><TD></TD><TD>(a)</TD><TD><P ALIGN=JUSTIFY>Numeric variables are the only type used in
+ MPF-I BASIC.</TD></TR>
+<TR><TD></TD><TD>(b)</TD><TD><P ALIGN=JUSTIFY>Variables can only hold "integer" or whole
+ number values such as 235 or -3451.</TD></TR>
+<TR><TD></TD><TD>(c)</TD><TD><P ALIGN=JUSTIFY>Limit: The limit for MPF-I BASIC is from
+ -32767 to 32767.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(d)</TD><TD><P ALIGN=JUSTIFY>Variable name: The length may be
+ one or two characters. If the length is one character it must be one of the letters A-F.
+ If the length is 2 characters the first must be one of the letters A-F and the second
+ must be one of the numeric digits, 0-9.</TD></TR>
+<TR><TD VALIGN=TOP>(6)</TD><TD COLSPAN=2>Memory Variable</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>M:</TD><TD><P ALIGN=JUSTIFY>The format is M
+ &lt;decimal&gt;<BR>
+ where decimal is a hexadecimal memory address.<BR>
+ <TT>[Line no.] LET M &lt;decimal&gt; = &lt;value&gt;</TT><BR>
+ To write a byte into the specified memory location.<BR>
+ <TT>[Line no.] LET &lt;variable&gt; = M &lt;decimal&gt;</TT><BR>
+ Assign variable with the contents of the specified memory location.</TD></TR>
+<TR><TD VALIGN=TOP>(7)</TD><TD COLSPAN=2>I/O Port Variable</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>P:</TD><TD><P ALIGN=JUSTIFY>The format is P
+ &lt;decimal&gt;<BR>
+ where decimal is a hexadecimal I/O port address.<BR>
+ <TT>[Line no.] LET P &lt;decimal&gt; = &lt;value&gt;</TT><BR>
+ Output a byte to the specified I/O port.<BR>
+ <TT>[Line no.] LET &lt;variable&gt; = P &lt;decimal&gt;</TT><BR>
+ Assign variable with the contents of the specified I/O port.</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+<A NAME=page09></A>
+<B><FONT SIZE=+1>II. MPF-I BASIC Interpreter</FONT></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>This chapter must be read very carefully, including how
+ to install the BASIC Interpreter, how to use the keyboard and display, how to edit
+ programs and how to use a cassette for storing or retrieving programs.
+<P ALIGN=JUSTIFY>
+<B>2.1 How to Install the BASIC Interpreter</B>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>The MPF-I BASIC Interpreter with a total length 2K
+ bytes is stored in an EPROM, either a TMS2516 or an Intel 2716. Another option is the
+ MPF-IB monitor with built-in BASIC Interpreter in a 4K byte EPROM, a TMS2532. On the
+ MPF-I there is an IC location for memory expansion, ROM or RAM, marked U7, see the
+ diagram below. The address range of U7 is from $2000 to $27FF. Before inserting the
+ EPROM in the socket at U7, insure that the pin 1 of of EPROM is towards the top of
+ the board and the MPF-I is turned off.
+<P ALIGN=JUSTIFY>
+ <B>NOTE:</B> Care should be taken when inserting EPROM as the pins are fragile and will
+ bend easily if not properly aligned.
+<P ALIGN=JUSTIFY>
+<IMG SRC="u7.jpg" WIDTH=100% ALIGN=CENTER TITLE="U7 location" BORDER=1>
+<A NAME=page10></A>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>Overlay the MPF-I keyboard with the BASIC name plate.
+ Next key in <IMG TITLE="GOTO" SRC="key_goto.png" ALIGN=CENTER BORDER=0> <IMG TITLE="2"
+ SRC="key_2.png" ALIGN=CENTER BORDER=0> <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER
+ BORDER=0> <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG TITLE="0"
+ SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG TITLE="RUN" SRC="key_run.png" ALIGN=CENTER
+ BORDER=0>, or key in <IMG TITLE="GOTO" SRC="key_goto.png" ALIGN=CENTER BORDER=0> <IMG
+ TITLE="0" SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG TITLE="8" SRC="key_8.png" ALIGN=CENTER
+ BORDER=0> <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG TITLE="0"
+ SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG TITLE="RUN" SRC="key_run.png" ALIGN=CENTER
+ BORDER=0> if using the 4K byte monitor. The LED display will show <IMG TITLE="bASIC ."
+ SRC="dis_basic.png" ALIGN=CENTER BORDER=0>, this stands for BASIC Ready, the rightmost
+ digit is a decimal point, which is the CURSOR. Now the MPF-I is under the control of the
+ BASIC Interpreter.
+<P ALIGN=JUSTIFY>
+<B>2.2 Keyboard use and the display</B>
+<P ALIGN=JUSTIFY>
+<IMG SRC="basic_overlay_m.jpg" WIDTH=100% ALIGN=CENTER TITLE="BASIC Overlay" BORDER=0>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>The diagram above is the keyboard overlay for the MPF-I
+ BASIC Interpreter. There are 34 keys but some keys have two different meanings. We can
+ divide these 34 keys into the following groups:
+<P ALIGN=JUSTIFY>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+<TR><TD WIDTH=32></TD><TD VALIGN=TOP WIDTH=32>(1)</TD><TD><P ALIGN=JUSTIFY><IMG
+ TITLE="RESET" SRC="key_reset.png" ALIGN=CENTER BORDER=0> Key: Reset the MPF-I and return
+ control to the MPF-I monitor.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(2)</TD><TD><P ALIGN=JUSTIFY><IMG SRC="key_shift.png"
+ TITLE="SHIFT" ALIGN=CENTER BORDER=0> Key: To select cursor control key functions and
+ operator keys.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(3)</TD><TD><P ALIGN=JUSTIFY>Alphabetic Keys: <IMG TITLE="A"
+ SRC="key_a.png" ALIGN=CENTER BORDER=0>, <IMG SRC="key_b.png" TITLE="B" ALIGN=CENTER
+ BORDER=0>, <IMG SRC="key_c.png" TITLE="C" ALIGN=CENTER BORDER=0>, <IMG SRC="key_d.png"
+ TITLE="D" ALIGN=CENTER BORDER=0>, <IMG SRC="key_e.png" TITLE="E" ALIGN=CENTER BORDER=0>,
+ <IMG SRC="key_f.png" TITLE="F" ALIGN=CENTER BORDER=0></TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(4)</TD><TD><P ALIGN=JUSTIFY>Numeric Keys: <IMG TITLE="0"
+ SRC="key_0.png" ALIGN=CENTER BORDER=0>, <IMG SRC="key_1.png" TITLE="1" ALIGN=CENTER
+ BORDER=0>, <IMG SRC="key_2.png" TITLE="2" ALIGN=CENTER BORDER=0>, <IMG SRC="key_3.png"
+ TITLE="3" ALIGN=CENTER BORDER=0>, <IMG SRC="key_4.png" TITLE="4" ALIGN=CENTER BORDER=0>,
+ <IMG SRC="key_5.png" TITLE="5" ALIGN=CENTER BORDER=0>, <IMG SRC="key_6.png" TITLE="6"
+ ALIGN=CENTER BORDER=0>, <IMG SRC="key_7.png" TITLE="7" ALIGN=CENTER BORDER=0>, <IMG
+ SRC="key_8.png" TITLE="8" ALIGN=CENTER BORDER=0>, <IMG SRC="key_9.png" TITLE="9"
+ ALIGN=CENTER BORDER=0></TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(5)</TD><TD><P ALIGN=JUSTIFY>Operator Keys: <IMG TITLE="+"
+ SRC="key_plus.png" ALIGN=CENTER BORDER=0>, <IMG SRC="key_minus.png" TITLE="-" ALIGN=CENTER
+ BORDER=0>, <IMG SRC="key_astrsk.png" TITLE="*" ALIGN=CENTER BORDER=0>, <IMG TITLE="/"
+ SRC="key_div.png" ALIGN=CENTER BORDER=0>, <IMG SRC="key_power.png" TITLE="**" ALIGN=CENTER
+ BORDER=0>, <IMG SRC="key_equal.png" TITLE="=" ALIGN=CENTER BORDER=0>, <IMG SRC="key_lt.png"
+ TITLE="<" ALIGN=CENTER BORDER=0>, <IMG SRC="key_gt.png" TITLE=">" ALIGN=CENTER BORDER=0>,
+ <IMG SRC="key_carrot.png" TITLE="~" ALIGN=CENTER BORDER=0>, <IMG SRC="key_and.png" TITLE="^"
+ ALIGN=CENTER BORDER=0>, <IMG SRC="key_or.png" TITLE="v" ALIGN=CENTER BORDER=0>. The
+ operators are accessed by using the <IMG SRC="key_shift.png" TITLE="SHIFT" ALIGN=CENTER
+ BORDER=0> key.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(6)</TD><TD><P ALIGN=JUSTIFY>Cursor keys: <IMG TITLE="LEFT"
+ SRC="key_left.png" ALIGN=CENTER BORDER=0>, <IMG SRC="key_right.png" TITLE="RIGHT"
+ ALIGN=CENTER BORDER=0>, <IMG SRC="key_up.png" TITLE="UP" ALIGN=CENTER BORDER=0>, <IMG
+ SRC="key_down.png" TITLE="DOWN" ALIGN=CENTER BORDER=0>. The cursor keys are accessed by
+ using the <IMG SRC="key_shift.png" TITLE="SHIFT" ALIGN=CENTER BORDER=0> key.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(7)</TD><TD><P ALIGN=JUSTIFY>Command keys: <IMG TITLE="SAVE"
+ SRC="key_save.png" ALIGN=CENTER BORDER=0>, <IMG SRC="key_cont.png" TITLE="CONT"
+ ALIGN=CENTER BORDER=0>, <IMG SRC="key_list.png" TITLE="LIST" ALIGN=CENTER BORDER=0>,
+ <IMG SRC="key_load.png" TITLE="LOAD" ALIGN=CENTER BORDER=0>, <IMG SRC="key_run.png"
+ TITLE="RUN" ALIGN=CENTER BORDER=0>, <IMG SRC="key_enter.png" TITLE="ENTER" ALIGN=CENTER
+ BORDER=0>, <IMG SRC="key_new.png" TITLE="NEW" ALIGN=CENTER BORDER=0>.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(8)</TD><TD><P ALIGN=JUSTIFY>Statement keys: <IMG TITLE="IF"
+ SRC="key_if.png" ALIGN=CENTER BORDER=0>, <IMG SRC="key_then.png" TITLE="THEN" ALIGN=CENTER
+ BORDER=0>, <IMG SRC="key_gosub.png" TITLE="GOSUB" ALIGN=CENTER BORDER=0>, <IMG TITLE="RET"
+ SRC="key_ret.png" ALIGN=CENTER BORDER=0>, <IMG SRC="key_for.png" TITLE="FOR" ALIGN=CENTER
+ BORDER=0>, <IMG SRC="key_to.png" TITLE="TO" ALIGN=CENTER BORDER=0>, <IMG SRC="key_next.png"
+ TITLE="NEXT" ALIGN=CENTER BORDER=0>, <IMG SRC="key_goto.png" TITLE="GOTO" ALIGN=CENTER
+ BORDER=0>, <IMG SRC="key_let.png" TITLE="LET" ALIGN=CENTER BORDER=0>, <IMG TITLE="PRINT"
+ SRC="key_print.png" ALIGN=CENTER BORDER=0>, <IMG SRC="key_input.png" TITLE="INPUT"
+ ALIGN=CENTER BORDER=0>, <IMG SRC="key_call.png" TITLE="CALL" ALIGN=CENTER BORDER=0>, <IMG
+ SRC="key_stop.png" TITLE="STOP" ALIGN=CENTER BORDER=0>.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(9)</TD><TD><P ALIGN=JUSTIFY>Delete keys: <IMG TITLE="DEL"
+ SRC="key_del.png" ALIGN=CENTER BORDER=0>, used to delete the letter at the cursor. <IMG
+ SRC="key_clr.png" TITLE="CLR" ALIGN=CENTER BORDER=0>, used to delete the current line.</TD>
+</TR>
+<TR><TD></TD><TD VALIGN=TOP>(10)</TD><TD><P ALIGN=JUSTIFY>Special variable keys: <IMG
+ SRC="key_m.png" TITLE="M" ALIGN=CENTER BORDER=0> and <IMG SRC="key_p.png" TITLE="P"
+ ALIGN=CENTER BORDER=0>, accessed by using the <IMG SRC="key_shift.png" TITLE="SHIFT"
+ ALIGN=CENTER BORDER=0> key.</TD></TR>
+</TABLE>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>The keyword concept is utilised in the BASIC program.
+ Some keys stand for complete words, these keys are convenient to use and save typing
+ time, there is a total of 19 keywords in MPF-BASIC. When the MPF-I is under the control
+ of the BASIC Interpreter, the LED display will show <IMG SRC="dis_basic.png" ALIGN=CENTER
+ BORDER=0 TITLE="bASIC .">. After the <IMG TITLE="GOTO" SRC="key_goto.png" ALIGN=CENTER
+ BORDER=0> key is pressed, the LED display will show <IMG SRC="dis_icgot.png" ALIGN=CENTER
+ BORDER=0 TITLE="IC GOt.">. When <IMG TITLE="DEL" SRC="key_del.png" ALIGN=CENTER BORDER=0> is
+ pressed, the LED display will show <IMG SRC="dis_basic.png" ALIGN=CENTER TITLE="bASIC ."
+ BORDER=0>.
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>The 19 keywords will constitute the majority of the
+ statements in your computer programs, and each statement will begin on a new line with a
+ unique line number to identify it. Try the following ..
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;<B>10 PRINT A</B></TT>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>The first two characters "10" are the line number, ten.
+ To enter this like the sequence of keys is <IMG TITLE="1" SRC="key_1.png" ALIGN=CENTER
+ BORDER=0> <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG SRC="key_print.png"
+ TITLE="PRINT" ALIGN=CENTER BORDER=0> <IMG TITLE="A" SRC="key_a.png" ALIGN=CENTER BORDER=0>
+ <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0>. The corresponding display
+ will be as follows:
+<P ALIGN=JUSTIFY>
+<TABLE BORDER=0 ALIGN=CENTER>
+<TR><TD></TD><TD WIDTH=32><TD ALIGN=CENTER>Display</TD></TR>
+<TR><TD>Before any key is pressed</TD><TD></TD><TD><IMG SRC="dis_basic.png" ALIGN=CENTER
+ BORDER=0 TITLE="bASIC ."></TD></TR>
+<TR><TD>Key in <IMG TITLE="1" SRC="key_1.png" ALIGN=CENTER BORDER=0></TD><TD></TD><TD><IMG
+ SRC="dis_asic1.png" ALIGN=CENTER BORDER=0 TITLE="ASIC 1."></TD></TR>
+<TR><TD>Key in <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER BORDER=0></TD><TD></TD><TD><IMG
+ SRC="dis_sic10.png" ALIGN=CENTER BORDER=0 TITLE="SIC 10."></TD></TR>
+<TR><TD>Key in <IMG TITLE="PRINT" SRC="key_print.png" ALIGN=CENTER BORDER=0></TD><TD></TD>
+<TD><IMG SRC="dis_10prt.png" ALIGN=CENTER BORDER=0 TITLE=" 10Prt."></TD></TR>
+<TR><TD>Key in <IMG TITLE="A" SRC="key_a.png" ALIGN=CENTER BORDER=0></TD><TD></TD><TD><IMG
+ SRC="dis_10prta.png" ALIGN=CENTER BORDER=0 TITLE="10PrtA."></TD></TR>
+<TR><TD>Key in <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0></TD><TD></TD>
+<TD><IMG SRC="dis_basic.png" ALIGN=CENTER BORDER=0 TITLE="bASIC ."></TD></TR>
+</TABLE>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>The word syntax as used in programming relates to the
+ order of keywords and characters in statements. In English syntax means the pattern of
+ sentences and phrases that are constructed from words. In BASIC the syntax is checked to
+ see if each BASIC statement has been constructed correctly. The MPF-I BASIC checks for
+ syntax in two ways, first checking is done as each part of a BASIC statement is entered,
+ secondly after the <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0> key is
+ pressed, the entire line is checked for correct syntax.
+<P ALIGN=JUSTIFY>
+ Try typing
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;<B>5 LET  A=1</B></TT>
+<P ALIGN=JUSTIFY>
+ During the statement entry, the syntax will be checked.
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>If the <IMG TITLE="2" SRC="key_2.png" ALIGN=CENTER
+ BORDER=0> key is pressed instead of the <IMG TITLE="A" SRC="key_a.png" ALIGN=CENTER
+ BORDER=0> key, the display will show <IMG SRC="dis_e2.png" ALIGN=CENTER BORDER=0
+ TITLE="E2    ."> after the <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0> key
+ is pressed, "E" means error, "2" is the Error Code. By means of pressing <IMG TITLE="-&gt;"
+ SRC="key_right.png" ALIGN=CENTER BORDER=0>, <IMG TITLE="DEL" SRC="key_del.png" ALIGN=CENTER
+ BORDER=0>, and <IMG TITLE="&lt;-" SRC="key_left.png" ALIGN=CENTER BORDER=0> keys, the
+ statement can be corrected as shown below.
+<P ALIGN=JUSTIFY>
+<TABLE BORDER=0 ALIGN=CENTER>
+<TR><TD></TD><TD WIDTH=32><TD ALIGN=CENTER>Display</TD></TR>
+<TR><TD>Before any key is pressed</TD><TD></TD><TD><IMG SRC="dis_e2.png" ALIGN=CENTER
+ BORDER=0 TITLE="E2    ."></TD></TR>
+<TR><TD>Key in <IMG TITLE="-&gt;" SRC="key_right.png" ALIGN=CENTER BORDER=0></TD><TD></TD>
+<TD><IMG SRC="dis_0.png" ALIGN=CENTER BORDER=0 TITLE="     0."></TD></TR>
+<TR><TD>Key in <IMG TITLE="-&gt;" SRC="key_right.png" ALIGN=CENTER BORDER=0></TD><TD></TD>
+<TD><IMG SRC="dis_00.png" ALIGN=CENTER BORDER=0 TITLE="    00."></TD></TR>
+<TR><TD>Key in <IMG TITLE="-&gt;" SRC="key_right.png" ALIGN=CENTER BORDER=0></TD><TD></TD>
+<TD><IMG SRC="dis_005.png" ALIGN=CENTER BORDER=0 TITLE="   005."></TD></TR>
+<TR><TD>Key in <IMG TITLE="-&gt;" SRC="key_right.png" ALIGN=CENTER BORDER=0></TD><TD></TD>
+<TD><IMG SRC="dis_005let.png" ALIGN=CENTER BORDER=0 TITLE="005LEt."></TD></TR>
+<TR><TD>Key in <IMG TITLE="-&gt;" SRC="key_right.png" ALIGN=CENTER BORDER=0></TD><TD></TD>
+<TD><IMG SRC="dis_05let2.png" ALIGN=CENTER BORDER=0 TITLE="05LEt2."></TD></TR>
+<TR><TD>Key in <IMG TITLE="DEL" SRC="key_del.png" ALIGN=CENTER BORDER=0></TD><TD></TD>
+<TD><IMG SRC="dis_05lete.png" ALIGN=CENTER BORDER=0 TITLE="05LEt=."></TD></TR>
+<TR><TD>Key in <IMG TITLE="&lt;-" SRC="key_left.png" ALIGN=CENTER BORDER=0></TD><TD></TD>
+<TD><IMG SRC="dis_005let.png" ALIGN=CENTER BORDER=0 TITLE="005LEt."></TD></TR>
+<TR><TD>Key in <IMG TITLE="A" SRC="key_a.png" ALIGN=CENTER BORDER=0></TD><TD></TD><TD><IMG
+ SRC="dis_05leta.png" ALIGN=CENTER BORDER=0 TITLE="05LEtA."></TD></TR>
+<TR><TD>Key in <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0></TD><TD></TD>
+<TD><IMG SRC="dis_basic.png" ALIGN=CENTER BORDER=0 TITLE="bASIC ."></TD></TR>
+</TABLE>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>The program now stored in the program memory is ..
+<P ALIGN=JUSTIFY>
+<TT><B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5 LET A=1<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10 PRINT A</B></TT>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>Suppose we want to execute this program, we should press
+ <IMG TITLE="RUN" SRC="key_run.png" ALIGN=CENTER BORDER=0> and <IMG TITLE="ENTER"
+ SRC="key_enter.png" ALIGN=CENTER BORDER=0>. To run the program from line 50, and not the
+ first line, we just need to press <IMG TITLE="RUN" SRC="key_run.png" ALIGN=CENTER BORDER=0>
+ <IMG TITLE="5" SRC="key_5.png" ALIGN=CENTER BORDER=0> <IMG TITLE="0" SRC="key_0.png"
+ ALIGN=CENTER BORDER=0> <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0>. The
+ corresponding display is shown below.
+<P ALIGN=JUSTIFY>
+<TABLE BORDER=0 ALIGN=CENTER>
+<TR><TD></TD><TD WIDTH=32><TD ALIGN=CENTER>Display</TD></TR>
+<TR><TD>Before any key is pressed</TD><TD></TD><TD><IMG SRC="dis_basic.png" ALIGN=CENTER
+ BORDER=0 TITLE="bASIC ."></TD></TR>
+<TR><TD>Key in <IMG TITLE="RUN" SRC="key_run.png" ALIGN=CENTER BORDER=0></TD><TD></TD>
+<TD><IMG SRC="dis_icrun.png" ALIGN=CENTER BORDER=0 TITLE="IC run."></TD></TR>
+<TR><TD>Key in <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0></TD><TD></TD>
+<TD><IMG SRC="dis_00001.png" ALIGN=CENTER BORDER=0 TITLE=" 00001"></TD></TR>
+<TR><TD>Key in <IMG TITLE="CONT" SRC="key_cont.png" ALIGN=CENTER BORDER=0></TD><TD></TD>
+<TD><IMG SRC="dis_basic.png" ALIGN=CENTER BORDER=0 TITLE="bASIC ."></TD></TR>
+</TABLE>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>Following is the key processing and display format.
+<P ALIGN=JUSTIFY>
+<IMG SRC="basic_display.jpg" WIDTH=100% ALIGN=CENTER TITLE="BASIC Display" BORDER=0>
+<P ALIGN=JUSTIFY>
+
+<TABLE BORDER=0>
+<TR><TD WIDTH=32>&nbsp;</TD>
+<TD><P ALIGN=JUSTIFY>
+ The following should be noted when using the BASIC Interpreter.
+</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD VALIGN=TOP>1.</TD>
+<TD><P ALIGN=JUSTIFY>
+ After users overlay the MPF-I keyboard with the BASIC keyboard overlay and key in <IMG
+ TITLE="GOTO" SRC="key_goto.png" ALIGN=CENTER BORDER=0> <IMG SRC="key_2.png" TITLE="2"
+ ALIGN=CENTER BORDER=0> <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG TITLE="0"
+ SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER
+ BORDER=0> <IMG TITLE="RUN" SRC="key_run.png" ALIGN=CENTER BORDER=0>, or <IMG TITLE="GOTO"
+ SRC="key_goto.png" ALIGN=CENTER BORDER=0> <IMG SRC="key_0.png" TITLE="0" ALIGN=CENTER
+ BORDER=0> <IMG SRC="key_8.png" TITLE="8" ALIGN=CENTER BORDER=0> <IMG TITLE="0"
+ SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER
+ BORDER=0> <IMG TITLE="RUN" SRC="key_run.png" ALIGN=CENTER BORDER=0> for 4K monitor, the
+ BASIC Interpreter will clear the RAM buffer from $1800 to $1FAD. This will set the
+ contents of each buffer byte to be zero. Then it will set the value of memory address
+ $18E7 to be $FF as the delimiter. If instead the user sets the starting address to $2017,
+ or $0817 for the 4K monitor, and presses the <IMG TITLE="RUN" SRC="key_run.png"
+ ALIGN=CENTER BORDER=0> key, BASIC can be restarted without destroying the user program.
+</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD VALIGN=TOP>2.</TD>
+<TD><P ALIGN=JUSTIFY>
+ The storage areas of user's program begins at the memory address $18E8 and is
+ terminated by a $FF delimiter. For example, if users key in the two following statements
+<PRE><B>	10 LET A5 = 180
+	20 PRINT A5
+</B></PRE><P ALIGN=JUSTIFY>
+ The BASIC Interpreter will convert the statements into the corresponding BASIC internal
+ code, see <A HREF=#page24>page 24</A> for a full list of BASICs internal codes. The
+ previous two statements occupy 18 bytes of memory.
+<PRE><B>	18E7	FF	</B>	Delimiter
+<B>	18E8	00	</B>0	Line number first digit
+<B>	18E9	01	</B>1	Line number second digit
+<B>	18EA	00	</B>0	Line number third digit
+<B>	18EB	1F	</B>LET
+<B>	18EC	0A	</B>A
+<B>	18ED	05	</B>5
+<B>	18EE	18	</B>=
+<B>	18EF	00	</B>0
+<B>	18F0	00	</B>0
+<B>	18F1	01	</B>1
+<B>	18F2	08	</B>8
+<B>	18F3	80	</B>0	b7 set indicates end of statement
+<B>	18F4	00	</B>0	Line number first digit
+<B>	18F5	02	</B>2	Line number second digit
+<B>	18F6	00	</B>0	Line number third digit
+<B>	18F7	20	</B>PRINT
+<B>	18F8	0A	</B>A
+<B>	18F9	85	</B>5	b7 set indicates end of statement
+<B>	18FA	FF	</B>	Delimiter
+</B></PRE><P ALIGN=JUSTIFY>
+ The BASIC Interpreter sets bit 7 of the last byte of each statement as the end of
+ statement marker. From the above example we know that $18F3 has a value of $00  but will
+ be $80 in memory as it is the last byte in the statement.
+</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD VALIGN=TOP>3.</TD>
+<TD><P ALIGN=JUSTIFY>
+ The stack pointer of MPF-BASIC is $1F9F because the user stack of the MPF-I is $1F9F.
+ So, if the user's program becomes so large that it extends beyond $1F9F, the BASIC
+ Interpreter's program will be overwritten.
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+<A NAME=page16></A>
+<B>2.3 Program editing</B>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>Before editing a program, we can check any statement by
+ using the <TT><B>LIST</B></TT> command. For example, if we want to check statement 10 of
+ the above program we can do so by pressing <IMG TITLE="LIST" SRC="key_list.png"
+ ALIGN=CENTER BORDER=0> <IMG TITLE="1" SRC="key_1.png" ALIGN=CENTER BORDER=0> <IMG TITLE="0"
+ SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER
+ BORDER=0>. Statement 10 will be scrolled from right to left across the display and then
+ the display will show <IMG SRC="dis_prta.png" ALIGN=CENTER BORDER=0 TITLE=" Prt A.">. We
+ can leave LIST mode by pressing the <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER
+ BORDER=0> key and the LED display will show <IMG SRC="dis_basic.png" ALIGN=CENTER
+ BORDER=0 TITLE="bASIC ."> to show that BASIC is ready. As the statement is being scrolled
+ from right to left pressing any key, except RESET, will pause the shifting. Shifting may
+ be resumed by again pressing any key, except RESET. By repeatedly pressing a key, for
+ example the <IMG TITLE="LIST" SRC="key_list.png" ALIGN=CENTER BORDER=0> key, you may pause
+ and resume the shifting action of the display several times. Because each BASIC statement
+ has a unique line number to identify it we can edit the request statement by replacing it
+ with a new statement. For example, if we want to change statement 10 to
+<PRE><B>	10 LET C = A
+</B></PRE><P ALIGN=JUSTIFY>
+ The keys we should press are <IMG TITLE="1" SRC="key_1.png" ALIGN=CENTER BORDER=0> <IMG
+ TITLE="0" SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG TITLE="LET" SRC="key_let.png"
+ ALIGN=CENTER BORDER=0> <IMG TITLE="C" SRC="key_c.png" ALIGN=CENTER BORDER=0> <IMG
+ SRC="key_equal.png" TITLE="=" ALIGN=CENTER BORDER=0> <IMG TITLE="A" SRC="key_a.png"
+ ALIGN=CENTER BORDER=0> <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0>. After
+ the <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0> key is pressed, the
+ old statement <TT>10 PRINT A</TT> will be removed from the program and the new statement
+ <TT>10 LET C = A</TT> will be stored in it's place. The program in program memory now
+ becomes
+<PRE><B>	 5 LET A = 1
+	10 LET C = A
+</B></PRE><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>If we want to insert a statement <TT>7 PRINT A</TT>
+ between statement 5 and 10, we can press following keys: <IMG TITLE="7" SRC="key_7.png"
+ ALIGN=CENTER BORDER=0> <IMG TITLE="PRINT" SRC="key_print.png" ALIGN=CENTER BORDER=0> <IMG
+ TITLE="A" SRC="key_a.png" ALIGN=CENTER BORDER=0> <IMG TITLE="ENTER" SRC="key_enter.png"
+ ALIGN=CENTER BORDER=0>. After the <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER
+ BORDER=0> key is pressed, the statement <TT>10 LET C = A</TT> will move backward from
+ original memory location to leave spave for the statement <TT>7 PRINT A</TT>. Statement
+ 7 will be inserted between statement 5 and statement 10. Now the program stored in the
+ program memory becomes<P>
+<PRE><B>	 5 LET A = 1
+	 7 PRINT A
+	10 LET C = A
+</B></PRE><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>We can delete any statement from the program memory by
+ pressing its line number and the <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER
+ BORDER=0> key. For example, we want to delete statement 10 from the above program, press
+ the keys as follows, <IMG TITLE="1" SRC="key_1.png" ALIGN=CENTER BORDER=0> <IMG TITLE="0"
+ SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER
+ BORDER=0>. Now the program stored in memory is
+<PRE><B>	 5 LET A = 1
+	 7 PRINT A
+</B></PRE>
+<A NAME=page18></A>
+<P ALIGN=JUSTIFY>
+<B>2.4 Cassette Storage</B>
+<TABLE BORDER=0>
+<TR><TD WIDTH=32>&nbsp;</TD><TD WIDTH=32></TD></TR>
+<TR><TD VALIGN=TOP>(1)</TD><TD COLSPAN=2><P ALIGN=JUSTIFY>
+ Saving Program onto Tape<BR>
+ The program in the memory can be saved to tape by pressing <IMG SRC="key_save.png"
+ TITLE="SAVE" ALIGN=CENTER BORDER=0> &lt;filename&gt; <IMG TITLE="ENTER" SRC="key_enter.png"
+ ALIGN=CENTER BORDER=0>.<BR>
+ Where:
+</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(a)</TD><TD><P ALIGN=JUSTIFY>
+ Filename is a decimal number from 0 to 255.
+</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(b)</TD><TD><P ALIGN=JUSTIFY>
+ Before pressing <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0>, you must
+ connect the microphone of the recorder to MIC jack of MPF-I and press PLAY and REC on
+ the recorder to start recording.
+</TD></TR>
+<TR><TD COLSPAN=3><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>The display is blank during transfer, the TONE-OUT LED is
+ on and the tone sounds. After recording, the display will show <IMG SRC="dis_basic.png"
+ ALIGN=CENTER BORDER=0 TITLE="bASIC .">.
+</TD></TR>
+<TR><TD VALIGN=TOP>(2)</TD><TD COLSPAN=2><P ALIGN=JUSTIFY>
+ Loading program from Tape<BR>
+ A program stored on tape can be loaded into memory by pressing <IMG SRC="key_load.png"
+ TITLE="LOAD" ALIGN=CENTER BORDER=0> &lt;filename&gt; <IMG TITLE="ENTER" SRC="key_enter.png"
+ ALIGN=CENTER BORDER=0>.<BR>
+ Where:
+</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(a)</TD><TD><P ALIGN=JUSTIFY>
+ Filename is a decimal number from 0 to 255.
+</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(b)</TD><TD><P ALIGN=JUSTIFY>
+ Turn the volume of recorder to Maximim.
+</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(c)</TD><TD><P ALIGN=JUSTIFY>
+ Press <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0>, and finally start the
+ recorder by pressing PLAY.
+</TD></TR>
+</TABLE>
+<A NAME=page19></A>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>At the beginning, the display is <IMG TITLE="......"
+ SRC="dis_points.png" ALIGN=CENTER BORDER=0>. When the requested file is found the display
+ becomes <IMG SRC="dis_dashes.png" ALIGN=CENTER BORDER=0 TITLE="------">. When the program
+ was saved on the tape an additional value called a checksum was recorded. This value is
+ produced by adding up all the bytes in the program. As the program is read back into the
+ MPF-I memory a new checksum is calculated. If the newly calculated checksum doesn't match
+ the check sum from the tape, an error has occured and the display will show <IMG
+ SRC="dis_err.png" TITLE="  -Err" ALIGN=CENTER BORDER=0>. Control will now be passed to the
+ monitor. If the checksum generated when the program is read from the tape matches the
+ checksum on the tape, then the last input byte will be displayed.
+<P ALIGN=JUSTIFY>
+<B>2.5 Immediate Instruction</B>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>A statement entered without a line number will executed
+ immediately after the <IMG SRC="key_enter.png" TITLE="ENTER" ALIGN=CENTER BORDER=0> key is
+ pressed. Immediate instructions allow you to use the Micro-Professor as a simple integer
+ calculator. The procedure to compute 3 x 8 is shown below.
+<P ALIGN=JUSTIFY>
+<BLOCKQUOTE>
+<IMG SRC="key_print.png" TITLE="PRINT" ALIGN=CENTER BORDER=0> <IMG SRC="key_3.png" TITLE="3"
+ ALIGN=CENTER BORDER=0> <IMG TITLE="*" SRC="key_astrsk.png" ALIGN=CENTER BORDER=0> <IMG
+ SRC="key_8.png" TITLE="8" ALIGN=CENTER BORDER=0> <IMG SRC="key_enter.png" TITLE="ENTER"
+ ALIGN=CENTER BORDER=0>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ The display will show <IMG SRC="dis_00024.png" ALIGN=CENTER BORDER=0 TITLE=" 00024">. To
+ return to <IMG SRC="dis_basic.png" ALIGN=CENTER BORDER=0 TITLE="bASIC ."> press <IMG
+ SRC="key_cont.png" TITLE="CONT" ALIGN=CENTER BORDER=0>.
+</BLOCKQUOTE>
+<A NAME=page21></A>
+<B><FONT SIZE=+1>III. Summary of BASIC</FONT></B>
+<BLOCKQUOTE>
+<TABLE BORDER=0 CELLPADDING=0>
+<TR><TD WIDTH=32></TD><TD WIDTH=32></TD></TR>
+<TR><TD VALIGN=TOP><B>3.1</B></TD><TD COLSPAN=2><P ALIGN=JUSTIFY>
+<B>Variables</B></TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(a)</TD><TD><P ALIGN=JUSTIFY>
+ Numeric variables are the only variable type used in MPF-I BASIC.
+</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(b)</TD><TD><P ALIGN=JUSTIFY>
+ Variables can only hold integer or whole number values.
+</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(c)</TD><TD><P ALIGN=JUSTIFY>
+ Limit: The limit for MPF-I BASIC integers is from -32767 to 32767.
+</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(d)</TD><TD><P ALIGN=JUSTIFY>
+ Variable name: The length may be one or two characters. If the length is one character it
+ must be one of the letters A-F. If the length is 2 characters the first must be one of
+ the letters A-F and the second must be one of the numeric digits, 0-9.
+</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD VALIGN=TOP><B>3.2</B></TD><TD COLSPAN=2><P ALIGN=JUSTIFY>
+<B>Operators</B></TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>Symbol</TD><TD>Function</TD></TR>
+<TR><TD></TD><TD ALIGN=CENTER>=</TD><TD>Assignment</TD></TR>
+<TR><TD></TD><TD ALIGN=CENTER>-</TD><TD>Negation or subtraction</TD></TR>
+<TR><TD></TD><TD ALIGN=CENTER>+</TD><TD>Addition</TD></TR>
+<TR><TD></TD><TD ALIGN=CENTER>*</TD><TD>Multiplication</TD></TR>
+<TR><TD></TD><TD ALIGN=CENTER>/</TD><TD>Division</TD></TR>
+<TR><TD></TD><TD ALIGN=CENTER>**</TD><TD>Raising to a power</TD></TR>
+<TR><TD></TD><TD ALIGN=CENTER>=</TD><TD>Equal</TD></TR>
+<TR><TD></TD><TD ALIGN=CENTER>&lt;</TD><TD>Less than</TD></TR>
+<TR><TD></TD><TD ALIGN=CENTER>&gt;</TD><TD>Greater than</TD></TR>
+<TR><TD></TD><TD ALIGN=CENTER>~</TD><TD>Bitwise NOT, 1's complement</TD></TR>
+<TR><TD></TD><TD ALIGN=CENTER>^</TD><TD>Bitwise AND</TD></TR>
+<TR><TD></TD><TD ALIGN=CENTER>v</TD><TD>Bitwise OR</TD></TR>
+</TABLE>
+<A NAME=page22></A>
+<P ALIGN=JUSTIFY>
+<B>3.3<TT>&nbsp;&nbsp;</TT>MPF BASIC Syntax Grammar Table</B>
+<PRE>*****************************************************************
+*                                                               *
+*            MPF  BASIC  Syntax  Grammar  Table                 *
+*                                                               *
+*****************************************************************
+
+digit   ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+letter  ::= A | B | C | D | E | F
+
+operator::= ~ | ^ | v | + | - | * | / | **
+
+unary   ::= + | - | ~
+
+relation::= &gt; | = | &lt;
+
+decimal ::= &lt;digit&gt; | +&lt;digit&gt; | -&lt;digit&gt; | &lt;decimal&gt;&lt;digit&gt;
+            Range : -32767 to +32767 inclusive
+
+filename::= &lt;decimal&gt;
+            Range : 0 to 255 inclusive
+
+portaddr::= &lt;decimal&gt;
+            Range : 0 to 255 inclusive
+
+variable::= &lt;letter&gt; | &lt;letter&gt;&lt;digit&gt;
+
+memory  ::= M &lt;decimal&gt;
+
+port    ::= P &lt;decimal&gt;
+
+line#   ::= &lt;digit&gt; | &lt;line#&gt;&lt;digit&gt;
+            Range : 1 to 3 digit
+
+value   ::= &lt;decimal&gt; | &lt;variable&gt;
+
+VMP_val ::= [unary]&lt;value&gt; | &lt;memory&gt; | &lt;port&gt;
+
+VMP_var ::= &lt;variable&gt; | &lt;memory&gt; | &lt;port&gt;
+
+express ::= &lt;value&gt; | &lt;value&gt; &lt;operator&gt; &lt;value&gt;
+
+VMP_exp ::= [unary]&lt;VMP_val&gt; | &lt;VMP_exp&gt; &lt;operator&gt; &lt;VMP_exp&gt;
+
+<B>*** CLAUSE ***</B>
+
+LET_clause      ::= [&lt;line#&gt;] LET &lt;VMP_var&gt; = &lt;VMP_exp&gt;
+
+PRINT_clause    ::= [&lt;line#&gt;] PRINT &lt;VMP_exp&gt;
+
+INPUT_clause    ::= [&lt;line#&gt;] INPUT &lt;variable&gt;
+
+NEXT_clause     ::= [&lt;line#&gt;] NEXT &lt;variable&gt;
+
+GOSUB_clause    ::= [&lt;line#&gt;] GOSUB &lt;line#&gt;
+
+RETURN_clause   ::= [&lt;line#&gt;] RET
+
+GOTO_clause     ::= [&lt;line#&gt;] GOTO &lt;line#&gt;
+
+FOR_clause      ::= [&lt;line#&gt;] FOR &lt;variable&gt; = &lt;value&gt; TO &lt;value&gt;
+</PRE><TT>
+IF_clause &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::= [&lt;line#&gt;] IF
+ &lt;VMP_exp&gt;&lt;relation&gt;&lt;VMP_exp&gt; THEN &lt;line#&gt;</TT>
+<PRE>
+CALL_clause     ::= [&lt;line#&gt;] CALL &lt;decimal&gt;
+
+STOP_clause     ::= [&lt;line#&gt;] STOP
+<A NAME=page24></A>
+<B>*** COMMAND ***</B>
+
+RUN_command     ::= RUN [&lt;line#&gt;]
+
+LIST_command    ::= LIST [&lt;line#&gt;]
+
+SAVE_command    ::= SAVE &lt;filename&gt;
+
+LOAD_command    ::= LOAD &lt;filename&gt;
+
+NEW_command     ::= NEW
+
+CONTINUE_command::= CONT
+
+DELETE_command  ::= DEL
+
+CLEAR_command   ::= CLR
+
+*****************************************************************
+*                                                               *
+*            MPF  BASIC  Internal  Code  Table                  *
+*                                                               *
+*****************************************************************
+ Code    Mean    Code    Mean    Code    Mean    Code    Mean
+ (hex)           (hex)           (hex)           (hex)
+ 00      0       10      NOT     20      PRINT   30      delete
+ 01      1       11      AND     21      INPUT   31      clear
+ 02      2       12      OR      22      NEXT    32      enter
+ 03      3       13      +       23      GOSUB   33      (left)
+ 04      4       14      -       24      RET     34      (right)
+ 05      5       15      *       25      GOTO    35      (down)
+ 06      6       16      /       26      FOR     36      (up)
+ 07      7       17      **      27      IF
+ 08      8       18      =       28      CALL
+ 09      9       19      &lt;       29      STOP
+ 0A      A       1A      &gt;       2A      run
+ 0B      B       1B      M       2B      list
+ 0C      C       1C      P       2C      save
+ 0D      D       1D      TO      2D      load
+ 0E      E       1E      THEN    2E      new
+ 0F      F       1F      LET     2F      cont
+</PRE>
+<A NAME=page25></A>
+<P ALIGN=JUSTIFY>
+<B>3.4 System RAM Areas of BASIC-MPF</B>
+<PRE>
+ 1800		ORG	$1800
+ 1800	VARBUF:	DEFS	2* (6*$10+6)	; variables buffer
+ 18CC		DEFS	1
+ 18CD	LINBUF:	DEFS	21		; line buffer
+ 18E2	FLAG:	DEFS	1
+ 18E3	STOP:	DEFS	2
+ 18E5	SP__:	DEFS	2
+ 18E7		DEFS	1		; delimiter FF
+
+ 	PRGBOT:
+ 			END
+</PRE>
+</BLOCKQUOTE>
+<A NAME=page27></A>
+<B><FONT SIZE=+1>IV. Introduction to programming</FONT></B>
+<BLOCKQUOTE>
+<B>4-1. Flow Chart</B>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>A computer executes commands in a precisely logical and
+ sequential fasion. This is how you must learn to think while programming. Imagine how
+ you perform the activity of going to the library to select a book. To borrow a book from
+ the library, you must first travel to the library; but before that you have to leave the
+ house, and before that you make a decision to go, and perhaps collect a load of books for
+ return. In the sentence you have just read, the activities are stated in completely the
+ wrong order. However, you are perfectly capable of sorting them out and executing them
+ correctly. To do this, you use a type of intuition born of long experience. The computer
+ you have just bought is not that intelligent. It must be fed with instructions and
+ presented in precisely the correct order, or it will make a mistake.
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>To help in this process, a diagramatic "flow-chart"
+ method will be presented--the visual sense being the most receptive at taking in
+ information. You could break down anything you want your computer to do into small
+ logical steps and arrange them in the correct order. Think of the activity of catching
+ a bus. You know what time the bus is supposed to come, so you make a decision to leave
+ the house at some definite time. When you arrive at the bus stop, you must watch for the
+ bus and put your had out to hail it when it comes. On boarding the bus, you might ask for
+ the price of ride, and then look for the right ammount of money. When you have paid, it
+ is essential to keep your eyes open for the right stop and leave the bus when it comes
+ along. The following flow-chart puts some of these ideas into a diagram for illustration.
+ A few different shapes of boxes are used for different purposes, they are explained
+ below.
+<P ALIGN=JUSTIFY>
+<A NAME=page28></A>
+<CENTER><IMG TITLE="Flow chart" SRC="flow01.gif" BORDER=0></CENTER>
+<P ALIGN=JUSTIFY>
+<A NAME=page29></A>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>Circles are used to indicate the beginning and end of a
+ process. The circle symbol contains the word start. Sometimes it will contain the name
+ of the process. Rectangles are used for statements where some sort of command is to be
+ executed. The major difference is in the diamond shaped decision boxes. A computer is
+ perfectly capable of making dicisions as to whether something is to be performed or not,
+ and the decision which has to be made is written in a diamond as shown. The process of
+ catching the bus is shown here stage by stage. The first decision which has to be made
+ is whether it is time to leave the house yet. If not, you must wait and keep on checking
+ the time until it is time to leave. This is indicated by a loop on the chart. That is,
+ a closed path which is executed around and around until some condition is met. Here the
+ condition is the time. When the time comes, you walk to the bus stop and enter another
+ looping process while waiting for the bus. The process should be almost self-explanitory
+ from a flow-chart, and in many ways this form is one of the best for explaining new ideas
+ and computer applications to people.
+<P ALIGN=JUSTIFY>
+<B>4-2. Problem with Solutions</B>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>Let us consider the problem of working out one's monthly
+ income after tax. You should have some idea of how the system works already, and it is an
+ easy problem to compute. It also illustrates how you think in a logical manner. The steps
+ are as follows.
+<TABLE BORDER=0 CELLPADDING=0>
+<TR><TD WIDTH=32>&nbsp;</TD><TD WIDTH=32></TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(1)</TD><TD><P ALIGN=JUSTIFY>
+ Imagine what steps you would use to calculate the answer.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(2)</TD><TD><P ALIGN=JUSTIFY>
+ Identify the output - i.e. what answer do you want.<BR>
+ Having done this, the problem is defined.<BR>
+ Once you have set out the information a-variable (input), and what you expect from the
+ computer (output), you can concentrate on the processing of input data to produce the
+ required output.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(3)</TD><TD><P ALIGN=JUSTIFY>
+ Imagine what steps you would use to calculate the answer.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(4)</TD><TD><P ALIGN=JUSTIFY>
+ Write down the steps found in (3) in a "flow-chart", or logical sequence.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(5)</TD><TD><P ALIGN=JUSTIFY>
+ Convert into computer language.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(6)</TD><TD><P ALIGN=JUSTIFY>
+ Type in and RUN the program.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(7)</TD><TD><P ALIGN=JUSTIFY>
+ Debug, i.e. correct programming errors, and return until correct.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(8)</TD><TD><P ALIGN=JUSTIFY>
+ Store on tape for further use.</TD></TR>
+</TABLE>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>This given information is yearly salary, yearly tax
+ allowance, monthly retirement deduction and tax rate.
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>The flow-chart as follows:
+<P ALIGN=JUSTIFY>
+<CENTER><IMG TITLE="Flow chart" SRC="flow02.gif" BORDER=0></CENTER>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>Breaking down the above chart, a flow-chart of the
+ following from is produced.
+<P ALIGN=JUSTIFY>
+<CENTER><IMG TITLE="Flow chart" SRC="flow03.gif" BORDER=0></CENTER>
+<P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>We can now write down a program from the last flow-chart
+ which will give a good estimate for most people's monthly wage, given that tax is payable
+ at 30% a year.
+<TABLE BORDER=0 CELLPADDING=0>
+<TR><TD WIDTH=32>&nbsp;</TD><TD WIDTH=32></TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(a)</TD><TD><P ALIGN=JUSTIFY>
+ All lines must start with a line-number. Choose increments of 10 between line-numbers to
+ allow plenty of room for inserting lines into the program wherever you wish.</TD></TR>
+<TR><TD></TD><TD VALIGN=TOP>(b)</TD><TD><P ALIGN=JUSTIFY>
+ Each line contains just one statement which must start with a keyword such as PRINT or
+ LET etc.<BR>
+ Check that you can match each of the boxes in the flow-chart with a statement below.</TD>
+</TR>
+<TR><TD></TD><TD></TD><TD>
+<PRE><B>
+ 10 INPUT	A
+ 20 LET		A1 = A / 12
+ 30 INPUT	B
+ 40 LET		B1 = B / 12
+ 50 INPUT	C
+ 60 LET		C1 = A1 - B1
+ 70 LET		C2 = C1 - C
+ 80 LET		C3 = 3 * C2
+ 90 LET		D = C3 / 10
+100 LET		E1 = A1 - D
+110 LET		E = E1 - C
+120 PRINT	E
+130 STOP</B></PRE>
+</TD></TR></TABLE>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>Suppose we now wish to run this program, just key in
+ <IMG TITLE="RUN" SRC="key_run.png" ALIGN=CENTER BORDER=0> and <IMG SRC="key_enter.png"
+ TITLE="ENTER" ALIGN=CENTER BORDER=0>, the display of the MPF-I will show <IMG TITLE="inP   ."
+ SRC="dis_inp.png" ALIGN=CENTER BORDER=0>. Now enter a value for A followed by the <IMG
+ TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0> key, the program will continue
+ execution until statement 30. At this time you should key in value B, and so on until you
+ have enterd values for A, B and C. The program continues to execute until statement 120
+ is executed, then the display will show the value E. Press the <IMG SRC="key_cont.png"
+ TITLE="CONT" ALIGN=CENTER BORDER=0> key and the display will show 130, this means that
+ program exection has stopped at statement 130, pressing <IMG SRC="key_cont.png"
+ TITLE="CONT" ALIGN=CENTER BORDER=0> again will return you to the BASIC Ready. Now key in
+ <IMG TITLE="RESET" SRC="key_reset.png" ALIGN=CENTER BORDER=0>, control will return to the
+ MPF-I monitor but the original data stored in the memory is still in there. After
+ pressing reset if you re-enter BASIC by keying in <IMG TITLE="GOTO" SRC="key_goto.png"
+ ALIGN=CENTER BORDER=0> <IMG SRC="key_2.png" TITLE="2" ALIGN=CENTER BORDER=0> <IMG TITLE="0"
+ SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG TITLE="1" SRC="key_1.png" ALIGN=CENTER
+ BORDER=0> <IMG TITLE="7" SRC="key_7.png" ALIGN=CENTER BORDER=0> <IMG SRC="key_run.png"
+ TITLE="RUN" ALIGN=CENTER BORDER=0>, or <IMG TITLE="GOTO" SRC="key_goto.png" ALIGN=CENTER
+ BORDER=0> <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG SRC="key_8.png"
+ TITLE="8" ALIGN=CENTER BORDER=0> <IMG SRC="key_1.png" TITLE="1" ALIGN=CENTER BORDER=0> <IMG
+ TITLE="7" SRC="key_7.png" ALIGN=CENTER BORDER=0> <IMG TITLE="RUN" SRC="key_run.png"
+ ALIGN=CENTER BORDER=0> for 4K monitor, all of the original statements and variable values
+ will be retained. All variable values and statements are lost if you re-enter BASIC by
+ keying in <IMG TITLE="GOTO" SRC="key_goto.png" ALIGN=CENTER BORDER=0> <IMG SRC="key_2.png"
+ TITLE="2" ALIGN=CENTER BORDER=0> <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG
+ TITLE="0" SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER
+ BORDER=0> <IMG SRC="key_run.png" TITLE="RUN" ALIGN=CENTER BORDER=0>, or <IMG TITLE="GOTO"
+ SRC="key_goto.png" ALIGN=CENTER BORDER=0> <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER
+ BORDER=0> <IMG SRC="key_8.png" TITLE="8" ALIGN=CENTER BORDER=0> <IMG SRC="key_0.png"
+ TITLE="0" ALIGN=CENTER BORDER=0> <IMG SRC="key_0.png" TITLE="0" ALIGN=CENTER BORDER=0> <IMG
+ SRC="key_run.png" TITLE="RUN" ALIGN=CENTER BORDER=0> for 4K monitor.
+<P ALIGN=JUSTIFY>
+<A NAME=page33></A>
+<B>4-3. Error Codes</B>
+<TABLE BORDER=0 CELLPADDING=0>
+<TR><TD WIDTH=32>&nbsp;</TD><TD WIDTH=32></TD></TR>
+<TR><TD></TD><TD>E0</TD><TD>Expression overflow</TD></TR>
+<TR><TD></TD><TD>E1</TD><TD>Illegal decimal value</TD></TR>
+<TR><TD></TD><TD>E2</TD><TD>Illegal variable name</TD></TR>
+<TR><TD></TD><TD>E5</TD><TD>Illegal relation operator</TD></TR>
+<TR><TD></TD><TD>E9</TD><TD>Syntax error</TD></TR>
+<TR><TD></TD><TD>EA</TD><TD>Illegal value</TD></TR>
+<TR><TD></TD><TD>EC</TD><TD>NEXT without FOR</TD></TR>
+<TR><TD></TD><TD>ED</TD><TD>RET without GOSUB</TD></TR>
+<TR><TD></TD><TD>EF</TD><TD>Line not found</TD></TR>
+</TABLE>
+<P ALIGN=JUSTIFY>
+<A NAME=page34></A>
+<B>4-4. Examples</B>
+<TABLE BORDER=0 CELLPADDING=0>
+<TR><TD WIDTH=32>&nbsp;</TD></TR>
+<TR><TD>1.</TD><TD><P ALIGN=JUSTIFY>
+ Use a FOR...NEXT loop to add all the numbers from 1 to a certain number.
+</TD></TR>
+<TR><TD></TD><TD>
+<PRE><B>
+ 10 INPUT	C
+ 20 LET		A = 0
+ 30 FOR		B = 1 TO C
+ 40 LET		A = A + B
+ 50 NEXT
+ 60 PRINT	A
+ 70 STOP</B>
+</PRE>
+</TD></TR>
+<TR><TD COLSPAN=2><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>After entering the program key in <IMG SRC="key_run.png"
+ TITLE="RUN" ALIGN=CENTER BORDER=0> <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER
+ BORDER=0>, and the LED display will show <IMG SRC="dis_inp.png" TITLE="inP   ."
+ ALIGN=CENTER BORDER=0>. Now key in the value C and then press the <IMG TITLE="ENTER"
+ SRC="key_enter.png" ALIGN=CENTER BORDER=0> key, the display will show the result. For
+ example, if the value of C is 10 the result will be 55 because 1+2+3+4+5+6+7+8+9+10 = 55.
+ In a FOR...TO statement the initial value, the number or variable between the equals sign
+ and TO, and the limiting value, the number or variable to the right of TO, must be of the
+ same sign.
+</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD>2.</TD><TD><P ALIGN=JUSTIFY>
+ Use a FOR...NEXT loop to add all the numbers from one number to another number.
+</TD></TR>
+<TR><TD></TD><TD>
+<PRE><B>
+  10 INPUT	C
+  20 INPUT	D
+  30 LET	A = 0
+  40 FOR	B = C TO D
+  50 LET	A = A + B
+  60 NEXT	B
+  70 PRINT	A
+  80 STOP</B>
+</PRE>
+</TD></TR>
+<TR><TD COLSPAN=2><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>C is the initial value and D is ending value. If you want
+ to add from 11 to 15, press <IMG TITLE="RUN" SRC="key_run.png" ALIGN=CENTER BORDER=0> <IMG
+ TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0> and the display will show <IMG
+ SRC="dis_inp.png" TITLE="inP   ." ALIGN=CENTER BORDER=0>. Key in <IMG SRC="key_1.png"
+ TITLE="1" ALIGN=CENTER BORDER=0> <IMG SRC="key_1.png" TITLE="1" ALIGN=CENTER BORDER=0> <IMG
+ SRC="key_enter.png" TITLE="ENTER" ALIGN=CENTER BORDER=0> to enter 11 for the variable C,
+ then key in <IMG SRC="key_1.png" TITLE="1" ALIGN=CENTER BORDER=0> <IMG SRC="key_5.png"
+ TITLE="5" ALIGN=CENTER BORDER=0> <IMG SRC="key_enter.png" TITLE="ENTER" ALIGN=CENTER
+ BORDER=0> to enter 15 for the variable D, the display will show 65.
+</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD VALIGN=TOP>3.</TD><TD><P ALIGN=JUSTIFY>
+ In the program below we use the statements GOSUB and RETURN to execute the different
+ subroutines depending on the value C. If the value C is larger than 7, the display will
+ show the sum of numbers from 1 to C. If the value of C is equal to or less than 7 then
+ the product of 1 to C will be computed.
+</TD></TR>
+<TR><TD></TD><TD>
+<PRE><B>
+  10 LET	A = 0
+  20 INPUT	C
+  30 IF		C &gt; 7 THEN 70
+  40 GOSUB	200
+  50 PRINT	A
+  60 STOP
+  70 GOSUB	100
+  80 PRINT	A
+  90 STOP
+ 100 FOR	B = 1 TO C
+ 110 LET	A = A + B
+ 120 NEXT	B
+ 130 RETURN
+ 200 LET	A = A + 1
+ 210 FOR	B = 1 TO C
+ 220 LET	A = A * B
+ 230 NEXT	B
+ 240 RETURN</B>
+</PRE>
+</TD></TR>
+<TR><TD>4.</TD><TD><P ALIGN=JUSTIFY>
+ Using the CALL statement to call the TONE subroutine of the MPF-I monitor.
+</TD></TR>
+<TR><TD></TD><TD>
+<PRE><B>
+  10 INPUT	C
+  20 FOR	A = 1 TO C
+  30 CALL	1506
+  40 FOR	B = 1 TO 1000
+  50 NEXT	B
+  60 NEXT	A
+  70 STOP</B>
+</PRE>
+</TD></TR>
+<TR><TD COLSPAN=2><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>Entering the monitor at hexadecimal address $05E2 will
+ produce a 2KHz tone on the speaker. $05E2 in hexadecimal equals 1506 in decimal.
+ The value entered into C will determine the number of cycles. To obtain a 1KhZ
+ tone enter the monitor at $05DE = 1502 decimal. You may write a program in assembly
+ language to produce sounds of different frequencies and durations. Enter the assembly
+ language shown below.
+</TD></TR>
+<TR><TD></TD><TD>
+<PRE><B>
+ 1800 0E80	LD  C,$80
+ 1802 21C000	LD  HL,$C0
+ 1805 C3E405	JP  $05E4</B>
+</PRE>
+</TD></TR>
+<TR><TD COLSPAN=2><P ALIGN=JUSTIFY>
+ change line 30 in the BASIC program to
+</TD></TR>
+<TR><TD></TD><TD>
+<PRE><B>
+ 30 CALL	6144</B>
+</PRE>
+</TD></TR>
+<TR><TD COLSPAN=2><P ALIGN=JUSTIFY>
+ Note that 6144 decimal = $1800 hex. Now execute the BASIC program. Use a value of 5 when
+ input is requested.
+</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD>5.</TD><TD><P ALIGN=JUSTIFY>
+ The operation of AND, OR, and NOT
+</TD></TR>
+<TR><TD></TD><TD>
+<PRE><B>
+  10 INPUT	A
+  20 INPUT	B
+  30 LET	C = A ^ B
+  40 PRINT	C
+  50 LET	C = A v B
+  60 PRINT	C
+  70 LET	C = ~C
+  80 PRINT	C
+  90 STOP</B>
+</PRE>
+</TD></TR>
+<TR><TD COLSPAN=2><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>Suppose the input value A is 0, the corresponding
+ hexadecimal value 0, and B is 255, the corresponding hexadecimal value is $FF. After
+ execution, the LED display will show 0. This represents $00 and $FF ANDed together.
+ Now key in <IMG TITLE="CONT" SRC="key_cont.png" ALIGN=CENTER BORDER=0> and the LED display
+ will show 255. This represents $00 and $FF ORed together. Again key in <IMG TITLE="CONT"
+ SRC="key_cont.png" ALIGN=CENTER BORDER=0> and the display will show -32512 which
+ represents the NOT of $FF.
+</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD>6.</TD><TD><P ALIGN=JUSTIFY>
+ Storing data in RAM
+</TD></TR>
+<TR><TD></TD><TD>
+<PRE><B>
+  10 INPUT	A
+  20 LET	M 6144 = A
+  30 LET	B = M 6144
+  40 PRINT	B
+  50 STOP</B>
+</PRE>
+</TD></TR>
+<TR><TD COLSPAN=2><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT> The input value can be stored in the position of $1800
+ and $1801. For example, if the value of A is 13, then $0D is stored in $1800 and $00 is
+ stored in $1801. Thus, the value of B is 13 which equals the value of $1800 and $1801 in
+ the memory.
+</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD>7.</TD><TD><P ALIGN=JUSTIFY>
+ Output $55 from port A of the optional PIO, U10
+</TD></TR>
+<TR><TD></TD><TD>
+<PRE><B>
+  10 LET	P130 = 15
+  20 LET	P128 = 85
+  30 STOP</B>
+</PRE>
+</TD></TR>
+<TR><TD COLSPAN=2><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT> The control port address of the PIO channel A is $82,
+ the corresponding decimal value is 130. The PIO channel A is selected as an output port,
+ with the control word of $0F, the corresponding decimal value is 15. And the address of
+ the data port A is $80, the corresponding decimal value is 128. The output data is $55,
+ the corresponding decimal value is 85.
+</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD>8.</TD><TD><P ALIGN=JUSTIFY>
+ The division operation
+</TD></TR>
+<TR><TD></TD><TD>
+<PRE><B>
+  10 INPUT	A
+  20 LET	C = A / 3
+  30 PRINT	C
+  40 STOP</B>
+</PRE>
+</TD></TR>
+<TR><TD COLSPAN=2><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT> Only integer variables are available in MPF-BASIC.
+ Suppose the input value of A is 11, the resulting value of C after execution is 3, i.e.
+ C is the integer result of A / 3.
+</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD VALIGN=TOP>9.</TD><TD><P ALIGN=JUSTIFY>
+ How to check the program stored in the memory. Use example 8 to demonstrate the list
+ actions shown below.
+</TD></TR>
+<TR><TD></TD><TD>
+<TABLE BORDER=0 CELLPADDING=0>
+<TR><TD WIDTH=32>&nbsp;</TD></TR>
+<TR><TD VALIGN=TOP>(1)</TD><TD><P ALIGN=JUSTIFY>
+ Key in <IMG TITLE="LIST" SRC="key_list.png" ALIGN=CENTER BORDER=0> <IMG SRC="key_1.png"
+ TITLE="1" ALIGN=CENTER BORDER=0> <IMG TITLE="0" SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG
+ TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0>, statement 10 will be displayed
+ from right to left (the contents will be shift across the screen).
+</TD></TR>
+<TR><TD VALIGN=TOP>(2)</TD><TD><P ALIGN=JUSTIFY>
+ Key in <IMG TITLE="DOWN" SRC="key_down.png" ALIGN=CENTER BORDER=0>, the contents of the
+ next statement, statement 20 in this case, will be displayed. Press the <IMG TITLE="DOWN"
+ SRC="key_down.png" ALIGN=CENTER BORDER=0> key again - now statement 30 will be displayed.
+</TD></TR>
+<TR><TD VALIGN=TOP>(3)</TD><TD><P ALIGN=JUSTIFY>
+ Key in <IMG TITLE="UP" SRC="key_up.png" ALIGN=CENTER BORDER=0> the previous statement will
+ be displayed, 20 in this example.
+</TD></TR>
+<TR><TD VALIGN=TOP>(4)</TD><TD><P ALIGN=JUSTIFY>
+ Key in <IMG TITLE="ENTER" SRC="key_enter.png" ALIGN=CENTER BORDER=0> if you intend to leave
+ the List mode.
+</TD></TR>
+<TR><TD VALIGN=TOP>(5)</TD><TD><P ALIGN=JUSTIFY>
+ Use <IMG TITLE="UP" SRC="key_up.png" ALIGN=CENTER BORDER=0>, <IMG SRC="key_down.png"
+ TITLE="DOWN" ALIGN=CENTER BORDER=0>, <IMG TITLE="&lt;-" SRC="key_left.png" ALIGN=CENTER
+ BORDER=0> in  the List mode, you don't need to press the <IMG SRC="key_shift.png"
+ TITLE="SHIFT" ALIGN=CENTER BORDER=0> key.
+</TD></TR>
+<TR><TD VALIGN=TOP>(6)</TD><TD><P ALIGN=JUSTIFY>
+ You just need only to press the <IMG TITLE="&lt;-" SRC="key_left.png" ALIGN=CENTER
+ BORDER=0> key when you want to review the execution in LIST mode.
+</TD></TR>
+<TR><TD VALIGN=TOP>(7)</TD><TD><P ALIGN=JUSTIFY>
+ Just key in <IMG TITLE="LIST" SRC="key_list.png" ALIGN=CENTER BORDER=0> <IMG TITLE="ENTER"
+ SRC="key_enter.png" ALIGN=CENTER BORDER=0> directly, if you intend to get the first line
+ of the program in LIST mode.
+</TD></TR>
+</TABLE>
+</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD VALIGN=TOP>10.</TD><TD><P ALIGN=JUSTIFY>
+ This example is to instruct users how to copy the program stored in the RAM buffer to
+ EPROM and how to utilize it. Before copying the program to the EPROM an $FF byte must
+ be added at the beginning and end of the program. Then it is just a case of starting
+ execution from the start of the copied program. We can explain it in the following
+ example.
+<P ALIGN=JUSTIFY>
+ The program ..
+</TD></TR>
+<TR><TD></TD><TD>
+<PRE><B>
+ 10 LET		A = 15
+ 20 PRINT	A</B>
+</PRE>
+</TD></TR>
+<TR><TD></TD><TD>
+ .. is keyed into memory from $1900 onwards ..
+</TD></TR>
+<TR><TD></TD><TD>
+<PRE>
+
+<B> 18FF	FF</B>		Delimiter
+<B> 1900	00</B>	0	Line number first digit
+<B> 1901	01</B>	1	Line number second digit
+<B> 1902	00</B>	0	Line number third digit
+<B> 1903	1F</B>	LET
+<B> 1904	0A</B>	A
+<B> 1905	18</B>	=
+<B> 1906	00</B>	0
+<B> 1907	00</B>	0
+<B> 1908	00</B>	0
+<B> 1909	01</B>	1
+<B> 190A	85</B>	5	Bit 7 set to indicate end of statement
+<B> 190B	00</B>	0	Line number first digit
+<B> 190C	02</B>	2	Line number second digit
+<B> 190D	00</B>	0	Line number third digit
+<B> 190E	20</B>	PRINT
+<B> 190F	8A</B>	A	Bit 7 set to indicate end of statement
+<B> 1910	FF</B>		Delimiter
+</PRE>
+</TD></TR>
+<TR><TD COLSPAN=2><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>To run the program at this location in memory first
+ re-enter BASIC by keying in <IMG TITLE="GOTO" SRC="key_goto.png" ALIGN=CENTER BORDER=0>
+ <IMG SRC="key_2.png" TITLE="2" ALIGN=CENTER BORDER=0> <IMG TITLE="0" SRC="key_0.png"
+ ALIGN=CENTER BORDER=0> <IMG SRC="key_1.png" TITLE="1" ALIGN=CENTER BORDER=0> <IMG TITLE="7"
+ SRC="key_7.png" ALIGN=CENTER BORDER=0> <IMG SRC="key_run.png" TITLE="RUN" ALIGN=CENTER
+ BORDER=0>, or <IMG TITLE="GOTO" SRC="key_goto.png" ALIGN=CENTER BORDER=0> <IMG TITLE="0"
+ SRC="key_0.png" ALIGN=CENTER BORDER=0> <IMG SRC="key_8.png" TITLE="8" ALIGN=CENTER
+ BORDER=0> <IMG SRC="key_1.png" TITLE="1" ALIGN=CENTER BORDER=0> <IMG SRC="key_7.png"
+ TITLE="7" ALIGN=CENTER BORDER=0> <IMG TITLE="RUN" SRC="key_run.png" ALIGN=CENTER BORDER=0>
+ for 4K monitor, to preserve the RAM contents. Then we type ..
+</TD></TR>
+<TR><TD></TD><TD>
+<PRE>
+
+ <IMG SRC="key_run.png" TITLE="RUN" ALIGN=CENTER BORDER=0> <IMG SRC="key_m.png" TITLE="M"
+ ALIGN=CENTER BORDER=0> <IMG SRC="key_6.png" TITLE="6" ALIGN=CENTER BORDER=0> <IMG
+ SRC="key_4.png" TITLE="4" ALIGN=CENTER BORDER=0> <IMG SRC="key_0.png" TITLE="0" ALIGN=CENTER
+ BORDER=0> <IMG SRC="key_0.png" TITLE="0" ALIGN=CENTER BORDER=0> <IMG SRC="key_enter.png"
+ TITLE="ENTER" ALIGN=CENTER BORDER=0>.		6400 decimal = $1900.</PRE>
+<TR><TD COLSPAN=2><P ALIGN=JUSTIFY>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;</TT>Some versions of BASIC have an error that stops the above
+ from working, for the above to work user should first check whether the value of the
+ memory address $2225, or $0A25 for 4K monitor, is $48 or not. If the contents of this
+ address is $4A, the user ought to use the EPB-MPF or another method to change the value
+ to $48.
+<P ALIGN=JUSTIFY>
+ The image of U6 from my MPF-1B has had this byte corrected to $48.
+</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 8th May, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

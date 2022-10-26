@@ -1,0 +1,173 @@
+<HTML>
+<HEAD>
+<TITLE>
+  6502 pseudo random number generator
+</TITLE>
+<META name="description" content="Content.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>6502 pseudo random number generator. </FONT><FONT SIZE=-1>By Lee Davison</FONT>
+<BR clear=all><A HREF="../index.html">[Back]</A>
+<BR clear=all><P>
+<HR>
+<B><U>8-bit version.</U></B>
+<BLOCKQUOTE>
+ This is a short peice of code that generates a maximal length, 8 bit, pseudo random
+ number sequence. This is the 6502 version of <A HREF="../../z80/prng.html">Z80 random</A>.
+<P>
+ This routine is no great shakes in the speed stakes, it's just a demo of a usefull
+ technique.
+<PRE>
+; returns pseudo random 8 bit number in A. Affects A, X and Y.
+; (r_seed) is the byte from which the number is generated and MUST be
+; initialised to a non zero value or this function will always return
+; zero. Also r_seed must be in RAM, you can see why......
+
+rand_8
+	LDA	r_seed	; get seed
+	AND	#$B8		; mask non feedback bits
+				; for maximal length run with 8 bits we need
+				; taps at b7, b5, b4 and b3
+	LDX	#$05		; bit count (shift top 5 bits)
+	LDY	#$00		; clear feedback count
+F_loop
+	ASL	A		; shift bit into carry
+	BCC	bit_clr	; branch if bit = 0
+
+	INY			; increment feedback count (b0 is XOR all the
+				; shifted bits from A)
+bit_clr
+	DEX			; decrement count
+	BNE	F_loop	; loop if not all done
+
+no_clr
+	TYA			; copy feedback count
+	LSR	A		; bit 0 into Cb
+	LDA	r_seed	; get seed back
+	ROL	A		; rotate carry into byte
+	STA	r_seed	; save number as next seed
+	RTS			; done
+
+r_seed
+	.byte	1		; prng seed byte (must not be zero)
+</PRE>
+</BLOCKQUOTE>
+<B><U>Other number lengths.</U></B>
+<BLOCKQUOTE>
+ A maximal length pseudo random number generator is basically just a shif register with
+ feedback from the later stages to generate the next input bit. The form for a generator
+ of length <I>n</I> with feedback from <I>t</I> is shown below.
+</BLOCKQUOTE>
+<CENTER>
+<B>Pseudo random sequence generator.</B>
+<P>
+ <IMG SRC="shift.png" TITLE="n length pseudo random sequence generator" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE>
+ You don't have to limit the length to only 8 bits, any number of bits from two upwards
+ will work if you chose the right feedback tap(s). Here is a table of some values.
+<P>
+<TABLE BGCOLOR="white" ALIGN=CENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 WIDTH=90%>
+<TR>
+<TD WIDTH=10%></TD><TD WIDTH=20%></TD><TD WIDTH=20%></TD>
+<TD WIDTH=10%></TD><TD WIDTH=20%></TD><TD WIDTH=30%></TD></TR>
+<TR>
+<TD ALIGN=CENTER><B><I>Bits [n]</I></B></TD>
+<TD ALIGN=CENTER><B><I>Tap(s) [t]</I></B></TD>
+<TD ALIGN=CENTER><B><I>Length</I></B></TD>
+<TD ALIGN=CENTER><B><I>Bits [n]</I></B></TD>
+<TD ALIGN=CENTER><B><I>Tap(s) [t]</I></B></TD>
+<TD ALIGN=CENTER><B><I>Length</I></B></TD></TR>
+<TR><TD ALIGN=CENTER>2</TD><TD ALIGN=CENTER>1</TD><TD ALIGN=RIGHT>3</TD>
+<TD ALIGN=CENTER>3</TD><TD ALIGN=CENTER>2</TD><TD ALIGN=RIGHT>7</TD></TR>
+<TR><TD ALIGN=CENTER>4</TD><TD ALIGN=CENTER>3</TD><TD ALIGN=RIGHT>15</TD>
+<TD ALIGN=CENTER>5</TD><TD ALIGN=CENTER>3</TD><TD ALIGN=RIGHT>31</TD></TR>
+<TR><TD ALIGN=CENTER>6</TD><TD ALIGN=CENTER>5</TD><TD ALIGN=RIGHT>63</TD>
+<TD ALIGN=CENTER>7</TD><TD ALIGN=CENTER>6</TD><TD ALIGN=RIGHT>127</TD></TR>
+<TR><TD ALIGN=CENTER><B>8</B></TD><TD ALIGN=CENTER><B>6,5,4</B></TD><TD ALIGN=RIGHT><B>255</B></TD>
+<TD ALIGN=CENTER>9</TD><TD ALIGN=CENTER>5</TD><TD ALIGN=RIGHT>511</TD></TR>
+<TR><TD ALIGN=CENTER>10</TD><TD ALIGN=CENTER>7</TD><TD ALIGN=RIGHT>1023</TD>
+<TD ALIGN=CENTER>11</TD><TD ALIGN=CENTER>9</TD><TD ALIGN=RIGHT>2047</TD></TR>
+<TR><TD ALIGN=CENTER>15</TD><TD ALIGN=CENTER>14</TD><TD ALIGN=RIGHT>32767</TD>
+<TD ALIGN=CENTER><B>16</B></TD><TD ALIGN=CENTER><B>15,13,4</B></TD><TD ALIGN=RIGHT><B>65535</B></TD>
+</TR>
+<TR><TD ALIGN=CENTER>17</TD><TD ALIGN=CENTER>14</TD><TD ALIGN=RIGHT>131071</TD>
+<TD ALIGN=CENTER>18</TD><TD ALIGN=CENTER>11</TD><TD ALIGN=RIGHT>262143</TD></TR>
+<TR><TD ALIGN=CENTER>20</TD><TD ALIGN=CENTER>17</TD><TD ALIGN=RIGHT>1048575</TD>
+<TD ALIGN=CENTER>21</TD><TD ALIGN=CENTER>19</TD><TD ALIGN=RIGHT>2097151</TD></TR>
+<TR><TD ALIGN=CENTER>22</TD><TD ALIGN=CENTER>21</TD><TD ALIGN=RIGHT>4194303</TD>
+<TD ALIGN=CENTER>23</TD><TD ALIGN=CENTER>18</TD><TD ALIGN=RIGHT>8388607</TD></TR>
+<TR><TD ALIGN=CENTER><B>24</B></TD><TD ALIGN=CENTER><B>23,22,17</B></TD><TD ALIGN=RIGHT><B>16777215</B>
+</TD>
+<TD ALIGN=CENTER>25</TD><TD ALIGN=CENTER>22</TD><TD ALIGN=RIGHT>33554431</TD></TR>
+<TR><TD ALIGN=CENTER>28</TD><TD ALIGN=CENTER>25</TD><TD ALIGN=RIGHT>268435455</TD>
+<TD ALIGN=CENTER>29</TD><TD ALIGN=CENTER>27</TD><TD ALIGN=RIGHT>536870911</TD></TR>
+<TR><TD ALIGN=CENTER>31</TD><TD ALIGN=CENTER>28</TD><TD ALIGN=RIGHT>2147483647</TD>
+<TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD></TR>
+</TABLE>
+<P>
+ In the last case, with 31 bits, if you took a new value once a second the sequence
+ wouldn't repeat for over sixty eight years. Even clocked at 1MHz it would still take
+ almost a minute and a half to cycle through every state.
+<P>
+ A sequence generator like this is used to generate values for the RND() function in
+ <A HREF="../ehbasic/index.html">EhBASIC</A>.
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 2nd May, 2002.</FONT>
+</BODY>
+</HTML>
+
+</xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.2 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+</noscript><script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3dd3038e&adpref="></script>

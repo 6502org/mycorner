@@ -1,0 +1,207 @@
+<HTML><HEAD><TITLE>6502 pseudo random number generator</TITLE>
+<META name="description" content="Content."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>6502 8 bit PRNG.</FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is a short peice of code that generates a maximal length, 8 bit, pseudo random
+ number sequence. This is the 6502 version of <A HREF="../../z80/prng/index.html">Z80
+ random</A>. A 32 bit 68k version can be found
+ <A HREF="../../68k/prng/index.html">here</A>.
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This routine is no great shakes in the speed stakes, it's just a demo of a usefull
+ technique.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; returns pseudo random 8 bit number in A. Affects A, X and Y.
+; (r_seed) is the byte from which the number is generated and MUST be
+; initialised to a non zero value or this function will always return
+; zero. Also r_seed must be in RAM, you can see why......
+
+rand_8
+	LDA	r_seed		; get seed
+	AND	#$B8		; mask non feedback bits
+				; for maximal length run with 8 bits we need
+				; taps at b7, b5, b4 and b3
+	LDX	#$05		; bit count (shift top 5 bits)
+	LDY	#$00		; clear feedback count
+F_loop
+	ASL	A		; shift bit into carry
+	BCC	bit_clr		; branch if bit = 0
+
+	INY			; increment feedback count (b0 is XOR all the	
+				; shifted bits from A)
+bit_clr
+	DEX			; decrement count
+	BNE	F_loop		; loop if not all done
+
+no_clr
+	TYA			; copy feedback count
+	LSR	A		; bit 0 into Cb
+	LDA	r_seed		; get seed back
+	ROL	A		; rotate carry into byte
+	STA	r_seed		; save number as next seed
+	RTS			; done
+
+r_seed
+	.byte	1		; prng seed byte (must not be zero)
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<B><U>Other number lengths.</U></B>
+<BLOCKQUOTE>
+ A maximal length pseudo random number generator is basically just a shif register with
+ feedback from the later stages to generate the next input bit. The form for a generator
+ of length <I>n</I> with feedback from <I>t</I> is shown below.
+</BLOCKQUOTE>
+<CENTER>
+<B>Pseudo random sequence generator.</B>
+<P>
+ <IMG SRC="shift.png" TITLE="n length pseudo random sequence generator" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE>
+ You don't have to limit the length to only 8 bits, any number of bits from two upwards
+ will work if you chose the right feedback tap(s). Here is a table of some values.
+<P>
+<TABLE BGCOLOR="white" ALIGN=CENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 WIDTH=80%>
+<TD WIDTH=10% ALIGN=CENTER><B><I>Bits [n]</I></B></TD>
+<TD WIDTH=20% ALIGN=CENTER><B><I>Tap(s) [t]</I></B></TD>
+<TD WIDTH=20% ALIGN=CENTER><B><I>Length</I></B></TD>
+<TD WIDTH=10% ALIGN=CENTER><B><I>Bits [n]</I></B></TD>
+<TD WIDTH=20% ALIGN=CENTER><B><I>Tap(s) [t]</I></B></TD>
+<TD WIDTH=20% ALIGN=CENTER><B><I>Length</I></B></TD></TR>
+<TR><TD ALIGN=CENTER>2</TD><TD ALIGN=CENTER>1</TD><TD ALIGN=RIGHT>3&nbsp;</TD>
+<TD ALIGN=CENTER>3</TD><TD ALIGN=CENTER>2</TD><TD ALIGN=RIGHT>7&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>4</TD><TD ALIGN=CENTER>3</TD><TD ALIGN=RIGHT>15&nbsp;</TD>
+<TD ALIGN=CENTER>5</TD><TD ALIGN=CENTER>3</TD><TD ALIGN=RIGHT>31&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>6</TD><TD ALIGN=CENTER>5</TD><TD ALIGN=RIGHT>63&nbsp;</TD>
+<TD ALIGN=CENTER>7</TD><TD ALIGN=CENTER>6</TD><TD ALIGN=RIGHT>127&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER><B>8</B></TD><TD ALIGN=CENTER><B>6,5,4</B></TD><TD ALIGN=RIGHT><B>255&nbsp;</B></TD>
+<TD ALIGN=CENTER>9</TD><TD ALIGN=CENTER>5</TD><TD ALIGN=RIGHT>511&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>10</TD><TD ALIGN=CENTER>7</TD><TD ALIGN=RIGHT>1023&nbsp;</TD>
+<TD ALIGN=CENTER>11</TD><TD ALIGN=CENTER>9</TD><TD ALIGN=RIGHT>2047&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>15</TD><TD ALIGN=CENTER>14</TD><TD ALIGN=RIGHT>32767&nbsp;</TD>
+<TD ALIGN=CENTER><B>16</B></TD><TD ALIGN=CENTER><B>15,13,4</B></TD><TD ALIGN=RIGHT><B>65535&nbsp;</B></TD>
+</TR>
+<TR><TD ALIGN=CENTER>17</TD><TD ALIGN=CENTER>14</TD><TD ALIGN=RIGHT>131071&nbsp;</TD>
+<TD ALIGN=CENTER>18</TD><TD ALIGN=CENTER>11</TD><TD ALIGN=RIGHT>262143&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>20</TD><TD ALIGN=CENTER>17</TD><TD ALIGN=RIGHT>1048575&nbsp;</TD>
+<TD ALIGN=CENTER>21</TD><TD ALIGN=CENTER>19</TD><TD ALIGN=RIGHT>2097151&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>22</TD><TD ALIGN=CENTER>21</TD><TD ALIGN=RIGHT>4194303&nbsp;</TD>
+<TD ALIGN=CENTER>23</TD><TD ALIGN=CENTER>18</TD><TD ALIGN=RIGHT>8388607&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER><B>24</B></TD><TD ALIGN=CENTER><B>23,22,17</B></TD><TD ALIGN=RIGHT><B>16777215&nbsp;</B>
+</TD>
+<TD ALIGN=CENTER>25</TD><TD ALIGN=CENTER>22</TD><TD ALIGN=RIGHT>33554431&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>28</TD><TD ALIGN=CENTER>25</TD><TD ALIGN=RIGHT>268435455&nbsp;</TD>
+<TD ALIGN=CENTER>29</TD><TD ALIGN=CENTER>27</TD><TD ALIGN=RIGHT>536870911&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>31</TD><TD ALIGN=CENTER>28</TD><TD ALIGN=RIGHT>2147483647&nbsp;</TD>
+<TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD></TR>
+</TABLE>
+<P ALIGN=JUSTIFY>
+ In the last case, with 31 bits, if you took a new value once a second the sequence
+ wouldn't repeat for over sixty eight years. Even clocked at 1MHz it would still take
+ over thirty five minutes to cycle through every state.
+</BLOCKQUOTE>
+<B><U>Faster, shorter method.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The above pseudo random number generator is known as a Fibonacci generator and, while it
+ works, it turns out there is a much better generator to implement with a microprocessor.
+</BLOCKQUOTE>
+<CENTER>
+<B>Galois pseudo random sequence generator.</B>
+<P>
+ <IMG SRC="tfihs.png" TITLE="n length pseudo random sequence generator" BORDER=1>
+</CENTER>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The Galois generator needs only to test the state of one bit and that can be tested after
+ the shift has been performed. The state of this bit determines whether the feedback term
+ is exclusive ORed with the result. This single bit test and multiple bit feedback is
+ easily done as can be seen from the code below.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; returns pseudo random 8 bit number in A. Affects A. (r_seed) is the
+; byte from which the number is generated and MUST be initialised to a
+; non zero value or this function will always return zero. Also r_seed		
+; must be in RAM, you can see why......
+
+rand_8
+	LDA	r_seed		; get seed
+	ASL			; shift byte
+	BCC	no_eor		; branch if no carry
+
+	EOR	#$CF		; else EOR with $CF
+no_eor
+	STA	r_seed		; save number as next seed
+	RTS			; done
+
+r_seed
+	.byte	1		; prng seed byte, must not be zero
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ You don't have to limit the length to only 8 bits, any number of bits from three upwards
+ will work if you chose the right feedback value. Here is a table of some values that
+ have been chosen to give a feedback value that fits in a byte, this makes implementation
+ on an 8 bit micro as short as possible. For these values bit n is the least significant
+ bit in the value and the tested bit is the bit shifted out from bit 1.
+<P ALIGN=JUSTIFY>
+<TABLE BGCOLOR="white" ALIGN=CENTER BORDER=1 CELLSPACING=0 CELLPADDING=0 WIDTH=80%>
+<TD WIDTH=10% ALIGN=CENTER><B><I>Bits [n]</I></B></TD>
+<TD WIDTH=20% ALIGN=CENTER><B><I>Feedback</I></B></TD>
+<TD WIDTH=20% ALIGN=CENTER><B><I>Length</I></B></TD>
+<TD WIDTH=10% ALIGN=CENTER><B><I>Bits [n]</I></B></TD>
+<TD WIDTH=20% ALIGN=CENTER><B><I>Feedback</I></B></TD>
+<TD WIDTH=20% ALIGN=CENTER><B><I>Length</I></B></TD></TR>
+<TR><TD ALIGN=CENTER>3</TD><TD ALIGN=CENTER>$03</TD><TD ALIGN=RIGHT>7&nbsp;</TD>
+<TD ALIGN=CENTER>4</TD><TD ALIGN=CENTER>$03</TD><TD ALIGN=RIGHT>15&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>5</TD><TD ALIGN=CENTER>$17</TD><TD ALIGN=RIGHT>31&nbsp;</TD>
+<TD ALIGN=CENTER>6</TD><TD ALIGN=CENTER>$27</TD><TD ALIGN=RIGHT>63&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>7</TD><TD ALIGN=CENTER>$4B</TD><TD ALIGN=RIGHT>127&nbsp;</TD>
+<TD ALIGN=CENTER><B>8</B></TD><TD ALIGN=CENTER><B>$CF</B></TD><TD ALIGN=RIGHT><B>255&nbsp;</B></TD></TR>
+<TR><TD ALIGN=CENTER>9</TD><TD ALIGN=CENTER>$B7</TD><TD ALIGN=RIGHT>511&nbsp;</TD>
+<TD ALIGN=CENTER>10</TD><TD ALIGN=CENTER>$E7</TD><TD ALIGN=RIGHT>1023&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>11</TD><TD ALIGN=CENTER>$EB</TD><TD ALIGN=RIGHT>2047&nbsp;</TD>
+<TD ALIGN=CENTER>12</TD><TD ALIGN=CENTER>$EB</TD><TD ALIGN=RIGHT>4095&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>13</TD><TD ALIGN=CENTER>$BB</TD><TD ALIGN=RIGHT>8191&nbsp;</TD>
+<TD ALIGN=CENTER>14</TD><TD ALIGN=CENTER>$BB</TD><TD ALIGN=RIGHT>16383&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>15</TD><TD ALIGN=CENTER>$DD</TD><TD ALIGN=RIGHT>32767&nbsp;</TD>
+<TD ALIGN=CENTER><B>16</B></TD><TD ALIGN=CENTER><B>$D7</B></TD><TD ALIGN=RIGHT><B>65535&nbsp;</B></TD></TR>
+<TR><TD ALIGN=CENTER>17</TD><TD ALIGN=CENTER>$AF</TD><TD ALIGN=RIGHT>131071&nbsp;</TD>
+<TD ALIGN=CENTER>18</TD><TD ALIGN=CENTER>$E7</TD><TD ALIGN=RIGHT>262143&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>19</TD><TD ALIGN=CENTER>$AF</TD><TD ALIGN=RIGHT>524287&nbsp;</TD>
+<TD ALIGN=CENTER>20</TD><TD ALIGN=CENTER>$F3</TD><TD ALIGN=RIGHT>1048575&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>21</TD><TD ALIGN=CENTER>$B7</TD><TD ALIGN=RIGHT>2097151&nbsp;</TD>
+<TD ALIGN=CENTER>22</TD><TD ALIGN=CENTER>$BB</TD><TD ALIGN=RIGHT>4194303&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>23</TD><TD ALIGN=CENTER>$F3</TD><TD ALIGN=RIGHT>8388607&nbsp;</TD>
+<TD ALIGN=CENTER><B>24</B></TD><TD ALIGN=CENTER><B>$DB</B></TD><TD ALIGN=RIGHT><B>16777215&nbsp;</B></TD></TR>
+<TR><TD ALIGN=CENTER>25</TD><TD ALIGN=CENTER>$93</TD><TD ALIGN=RIGHT>33554431&nbsp;</TD>
+<TD ALIGN=CENTER>26</TD><TD ALIGN=CENTER>$B1</TD><TD ALIGN=RIGHT>67108863&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>27</TD><TD ALIGN=CENTER>$B1</TD><TD ALIGN=RIGHT>134217727&nbsp;</TD>
+<TD ALIGN=CENTER>28</TD><TD ALIGN=CENTER>$E1</TD><TD ALIGN=RIGHT>268435455&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>29</TD><TD ALIGN=CENTER>$C3</TD><TD ALIGN=RIGHT>536870911&nbsp;</TD>
+<TD ALIGN=CENTER>30</TD><TD ALIGN=CENTER>$AF</TD><TD ALIGN=RIGHT>1073741823&nbsp;</TD></TR>
+<TR><TD ALIGN=CENTER>31</TD><TD ALIGN=CENTER>$8B</TD><TD ALIGN=RIGHT>2147483647&nbsp;</TD>
+<TD ALIGN=CENTER><B>32</B></TD><TD ALIGN=CENTER><B>$AF</B></TD><TD ALIGN=RIGHT><B>4294967295&nbsp;</B></TD></TR>
+</TABLE>
+<P ALIGN=JUSTIFY>
+ This is now the form of sequence generator used to generate values for the RND()
+ function in <A HREF="../ehbasic/index.html">EhBASIC</A>.
+</BLOCKQUOTE>
+<CENTER><I><B>"The generation of random numbers is too important to be left to chance."
+</I></B><BR>Robert R. Coveyou.</CENTER>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 24th January, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

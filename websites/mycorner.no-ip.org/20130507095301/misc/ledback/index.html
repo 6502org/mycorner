@@ -1,0 +1,244 @@
+<HTML><HEAD><TITLE>LED backlight conversion</TITLE>
+<META name="description" content="PRNG LED display"></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>LED backlight conversion. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<TABLE>
+<TR><TD>
+<A NAME="001" HREF="led01.html"><IMG SRC="led01s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="LED backlight strip"></A>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I have an Acer laptop that was missing a display and had found all the bits I needed
+ except for the CCFL backlight inverter. I'd thought I had some spares from other dead
+ Acer laptops but it turns out they're all just a little different.
+<P ALIGN=JUSTIFY>
+ So it looked like I was going to be waiting for the correct inverter to show up until I
+ remembered I have a few smashed LCD panels with LED backlights that I have collected for
+ the LEDs.
+<P ALIGN=JUSTIFY>
+ How hard can it be to use the LED backlight instead?
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="002" HREF="led02.html"><IMG SRC="led02s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="LED backlight circuit"></A>
+<B><U>LED backlight circuit.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Once the <FONT COLOR=RED><B><TT>DO NOT TOUCH!</TT></B></FONT> tape has been removed from
+ the the back of the LCD it is usually quite easy to identify the LED backlight driver
+ circuit on the PCB.
+<P ALIGN=JUSTIFY>
+ In this case it is right next to the backlight ribbon connector, seen on the left, and
+ has helpful legends next to usefull test pads such as LED_EN and VLED. It also has the
+ largest inductor and schottky diode on the whole PCB.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="003" HREF="led03.html"><IMG SRC="led03s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="Removing the PCB"></A>
+<B><U>Removing the PCB.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ To remove the PCB from the smashed LCD the flex PCB connections to the glass need to be
+ removed. These are not fixed very firmly and can usually be pulled from the PCB by hand.
+<P ALIGN=JUSTIFY>
+ If they won't let go they can just be chopped through with scissors or a knife.
+<P ALIGN=JUSTIFY>
+ This should free the PCB so it can be removed from the LCD.
+</BLOCKQUOTE>
+<B><U>Removing the LED strip.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The LED strip is usually secured by more tape, both along the length of the connecting
+ flex PCB and along the display edge, and a couple of screws, one at either end of the
+ strip.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="004" HREF="led04.html"><IMG SRC="led04s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="LED driver chip"></A>
+<B><U>LED driver chip.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I haven't managed to locate the correct datasheet for the LED driver chip, U401, used on
+ this board but <A HREF="A706.pdf">this <IMG SRC="../../pdf_sm.png"></A> one seems to
+ have the same pinout so I used it as the reference in this case.
+<P ALIGN=JUSTIFY>
+ If you can't find the exact datasheet for a particular chip you can often find the
+ datasheet for a related chip from the same manufacturer.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<IMG SRC="schem.png" ALIGN=RIGHT HSPACE=8 BORDER=1 WIDTH=440 HEIGHT=240 TITLE="Schematic">
+<B><U>Schematic.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The circuit on the board was traced to confirm the punction of the labeled pads. The
+ boost converter part of the circuit looks very much like the circuit in the datasheet.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="005" HREF="led05.html"><IMG SRC="led05s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="Preparing the PCB"></A>
+<B><U>Preparing the PCB.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Apart from the supply and control inputs a ground connection is also needed. A point on
+ the PCB where ground is exposed or the ground end of a component could have been used
+ but it was just as easy to scrape away a small patch of the solder resist from the
+ ground trace.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="006" HREF="led06.html"><IMG SRC="led06s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="Attaching wires"></A>
+<B><U>Attaching wires.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ To make sure I could actually get the LEDs to light some plastic insulated flexible
+ wires were soldered to the PCB. The power leads go to a barrel socket that fits a
+ laptop supply.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="007" HREF="led07.html"><IMG SRC="led07s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="First testing"></A>
+<B><U>First testing.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ A 19V laptop supply was used to supply the DC for the circuit. The battery is just used
+ as a handy 3.3V logic level to drive the LED_EN and S_PWM inputs.
+<P ALIGN=JUSTIFY>
+ Unfortunately this image doesn't convey quite how bright those LEDs are. They are almost
+ painfully bright to look at directly.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="008" HREF="led08.html"><IMG SRC="led08s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="PCB reduction"></A>
+<B><U>PCB reduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Of course you don't want to be trying to find space for the entire PCB from the donor
+ screen. This was remedied by cutting off most of the PCB with scissors. The PCB is very
+ thin and cuts quite easily.
+<P ALIGN=JUSTIFY>
+ Had there still not been the space for this, much reduced, part it could probably have
+ been further reduced by cutting it in half horizontally. This would have taken tracing
+ out all of the components associated with the LED driver chip to make sure nothing that
+ was needed was being discarded.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="009" HREF="led09.html"><IMG SRC="led09s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="Second test"></A>
+<B><U>Second test.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ After chopping most of the PCB off it was tested again to make sure it still lit up.
+ Fortunately it did though I did not really expect it not to work after such a
+ conservative trimming.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="010" HREF="led10.html"><IMG SRC="led10s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="Inverter pinout"></A>
+<B><U>Inverter pinout.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ At this point I still didn't have the pinout of the inverter plug from the laptop lid
+ wiring. This is not too hard to work out but the connector is so small that my DMM
+ probes were far too big to fit anywhere.
+<P ALIGN=JUSTIFY>
+ To get round this I used sewing pins held in crocodile leads as probes and probed the
+ back of the connector where the plastic clips that hold each socket in place are as
+ there is relatively easy access through there.
+<P ALIGN=JUSTIFY>
+ Also, taping the connector down makes life a whole lot easier than trying to hold it
+ down with one pin while probing with the other.
+<P ALIGN=JUSTIFY>
+ The method I used to identify the pinout was as follows.
+<UL>
+<LI>Pick any pin and call that zero volts, probably easiest to start with one at one
+ end.</LI>
+<LI>Make a note of the voltage measured between this pin and each of the other pins.</LI>
+<LI>If one of the other pins is at a lower voltage call that pin 0V and start again.</LI>
+</UL>
+<P ALIGN=JUSTIFY>
+ This done the pin functions will mostly be obvious.
+<UL>
+<LI>The supply pin will be the highest voltage, 11V or 19V depending on whether you are
+ running from the battery or from the PSU.</LI>
+<LI>The brightness pin will vary depending on the display brightness setting.</LI>
+<LI>The display enable pin will either be 3.3V or 0V depending on whether the display is
+ on or off. (You can often switch this with a function key.)</LI>
+</UL>
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="011" HREF="led11.html"><IMG SRC="led11s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="Trying the swap"></A>
+<B><U>Trying the swap.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ As I only have the one working LCD for this laptop I didn't want to rip the CCFL tube
+ out of it if the LED backlight was not going to work. Luckily I had an almost
+ identical LCD that had suffered an unfortunate kinetic event but was mostly whole, at
+ least as far as trying out a replacement backlight goes.
+<P ALIGN=JUSTIFY>
+ So the CCFL tube, which is still good, was carefully removed and the LED backlight
+ fitted in its place. On powering the LED backlight the undamaged parts of the LCD were
+ illuminated fairly evenly across the whole panel.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="012" HREF="led12.html"><IMG SRC="led12s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="Ready to fit"></A>
+<B><U>Ready to fit.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ For some reason the brightness PWM signal from the laptop just wouldn't drive the PWM
+ input to the driver chip. After faffing about for a couple of hours with different
+ pullup resistor combinations and eventually managing to pull the S_PWM pad off the board
+ I tied the PWM input to the internally regulated Vcc pin of the chip. This means that
+ the LEDs are always on full brightness when the backlight is enabled.
+<P ALIGN=JUSTIFY>
+ The plastic insulated wires were far too thick to make the connection to the inverter
+ and they were replaced with enamel coated wires that fit snugly the 'wrong way' into
+ the inverter plug.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="013" HREF="led13.html"><IMG SRC="led13s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="Fitting it in"></A>
+<B><U>Fitting it in.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There is quite a lot of room between the back of the LCD and the laptop lid so there was
+ no trouble finding space for the LED driver.
+<P ALIGN=JUSTIFY>
+ Initially this was all just taped in place but the LEDs run fairly warm and as a
+ consequence the tape began to let go where it was actually holding things together. As a
+ result the illumination of the panel became uneven, being much brighter at the bottom
+ where the strip is with individual LEDs becomming obvious.
+<P ALIGN=JUSTIFY>
+ To remedy this the tape was removed and the metal strip that originally held the CCFL
+ captive was replaced.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="014" HREF="led14.html"><IMG SRC="led14s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="Doesn't fit"></A>
+<B><U>Didn't fit.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Nothing like this is ever as easy as you wish it would be and there were no surprises
+ when the LED strip turnd out to be just a bit too long for the LCD.
+<P ALIGN=JUSTIFY>
+ In this case the LEDs were just short enough to fit in place of the CCFL tube and the
+ extra length beyond the LCD ends was made up of the flex PCB for the LEDs and the
+ mounting tabs for the strip.
+<P ALIGN=JUSTIFY>
+ The flex PCB was unstuck far enough along to allow the mounting tabs to be folded back
+ flat and the flex PCB will then bend round the edge of the LCD when it is refitted in
+ its mounts.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="015" HREF="led15.html"><IMG SRC="led15s.jpg" ALIGN=RIGHT HSPACE=8 BORDER=1
+ TITLE="The final result"></A>
+<B><U>The final result.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Overall I'm more than happy how well this conversion has gone. The resulting backlight
+ is, apart from a couple of small spots by each corner, even over the entire display.
+<P ALIGN=JUSTIFY>
+ The loss of the ability to control the brightness does not seem to be a huge loss at
+ this point. The display is bright enough to be used in a sunlit room without being
+ blinding in a dark room.
+<P ALIGN=JUSTIFY>
+ Let's hope it works equally well for Dearest Darling Daughter whose machine this now is.
+</BLOCKQUOTE>
+</TD></TR>
+</TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 26th April, 2013.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

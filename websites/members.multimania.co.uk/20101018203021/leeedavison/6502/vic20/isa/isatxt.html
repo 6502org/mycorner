@@ -1,0 +1,248 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish4541e9b5{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if IE]>
+<style>
+#catfish4541e9b5{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip4541e9b5{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad4541e9b5"></div>
+<HTML><HEAD><TITLE>Vic 20 ISA slot - GAL logic listing.</TITLE></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#txt">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>GAL logic listing </FONT></B><FONT SIZE=-1>by Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="../vic20_txt.zip">Download this file <IMG SRC="../../../zip_sm.png"
+ ALT="Download" border=0>
+</A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This file includes the listing for the ROM/RAM expansion logic as well as the ISA slot
+ listing. Only those lines that are relevant to the ISA slot have been rendered in
+ <B>bold</B>.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+*******************************************************************************
+                                    vic_ISA
+*******************************************************************************
+
+CUPL(WM)        4.7b Serial# XX-xxxxxxxx
+Device          g16v8as  Library DLIB-h-36-2
+Created         Fri Feb 06 14:16:24 2004
+Name            vic_ISA 
+Partno          00 
+Revision        01 
+Date            01/10/03 
+Designer        Lee 
+Company         
+Assembly        None 
+Location        
+
+===============================================================================
+                            Expanded Product Terms
+===============================================================================
+
+!A13 =>
+    BLK2
+  # BLK5
+
+<B>!ISA_IOR =>
+    CRW & IO2 & dlp2 & p2
+
+!ISA_IOW =>
+    !CRW & IO2 & dlp2 & p2
+
+ISA_RES =>
+    RES</B>
+
+!RAM =>
+    BLK1
+  # BLK2
+
+RAM_A14 =>
+    BLK1
+  # BLK5
+
+!ROM =>
+    BLK3
+  # BLK5
+
+!ROM_A14 =>
+    BLK1
+  # BLK5
+
+
+===============================================================================
+                                 Symbol Table
+===============================================================================
+
+Pin Variable                                    Pterms   Max     Min
+Pol   Name              Ext     Pin     Type     Used   Pterms  Level
+--- --------            ---     ---     ----    ------  ------  -----
+
+    A13                         16       V        2       8       1
+ !  BLK1                        3        V        -       -       -
+ !  BLK2                        4        V        -       -       -
+ !  BLK3                        5        V        -       -       -
+ !  BLK5                        6        V        -       -       -
+<B>    CRW                         7        V        -       -       -
+    ISA_IOR                     12       V        1       8       1
+    ISA_IOW                     13       V        1       8       1
+    ISA_RES                     14       V        1       8       1</B>
+    RAM                         18       V        2       8       1
+<B> !  IO2                         9        V        -       -       -</B>
+    RAM_A14                     15       V        2       8       1
+<B> !  RES                         11       V        -       -       -</B>
+    ROM                         19       V        2       8       1
+    ROM_A14                     17       V        2       8       1
+    VRW                         2        V        -       -       -
+<B>    dlp2                        1        V        -       -       -     
+    p2                          8        V        -       -       -</B>
+
+
+LEGEND    D : default variable         F : field      G : group
+          I : intermediate variable    N : node       M : extended node
+          U : undefined                V : variable   X : extended variable
+          T : function
+
+
+===============================================================================
+                                   Fuse Plot
+===============================================================================
+
+Syn   02192 - Ac0   02193 x
+
+Pin #19  02048  Pol x  02120  Ac1 x
+ 00000 -------------x------------------
+ 00032 -----------------x--------------
+ 00064 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00096 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00128 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00160 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00192 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00224 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Pin #18  02049  Pol x  02121  Ac1 x
+ 00256 -----x--------------------------
+ 00288 ---------x----------------------
+ 00320 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00352 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00384 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00416 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00448 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00480 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Pin #17  02050  Pol x  02122  Ac1 x
+ 00512 -----x--------------------------
+ 00544 -----------------x--------------
+ 00576 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00608 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00640 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00672 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00704 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00736 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Pin #16  02051  Pol x  02123  Ac1 x
+ 00768 ---------x----------------------
+ 00800 -----------------x--------------
+ 00832 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00864 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00896 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00928 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00960 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 00992 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Pin #15  02052  Pol -  02124  Ac1 x
+ 01024 -----x--------------------------
+ 01056 -----------------x--------------
+ 01088 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01120 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01152 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01184 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01216 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01248 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+<B>Pin #14  02053  Pol -  02125  Ac1 x
+ 01280 -------------------------------x
+ 01312 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01344 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01376 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01408 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01440 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01472 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01504 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Pin #13  02054  Pol x  02126  Ac1 x
+ 01536 --x------------------x--x----x-- 
+ 01568 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01600 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01632 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01664 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01696 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01728 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01760 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Pin #12  02055  Pol x  02127  Ac1 x
+ 01792 --x-----------------x---x----x--
+ 01824 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01856 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01888 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01920 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01952 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 01984 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 02016 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</B>
+
+
+LEGEND    X : fuse not blown
+          - : fuse blown
+
+===============================================================================
+                                 Chip Diagram
+===============================================================================
+
+                               ______________
+                              |   vic_ISA    |
+                     <B>dlp2 x---|1</B>           20|---x Vcc
+                      VRW x---|2           19|---x ROM
+                    !BLK1 x---|3           18|---x RAM
+                    !BLK2 x---|4           17|---x ROM_A14
+                    !BLK3 x---|5           16|---x A13
+                    !BLK5 x---|6           15|---x RAM_A14
+                      <B>CRW x---|7           14|---x ISA_RES
+                       p2 x---|8           13|---x ISA_IOW
+                     !IO2 x---|9           12|---x ISA_IOR</B>
+                      GND x---|10          <B>11|---x !RES</B>
+                              |______________|
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 26th February, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish4541e9b5" style="display:none"></div>
+<script src="http://ads.mmania.com/displaycf.js.php?r=4541e9b5&cc=uk" type=text/javascript></script>
+<!-- begin ZEDO for channel: Mmania.com , publisher: Mmania.com , Ad Dimension: Slider - 1 x 1 -->
+<script language="JavaScript">
+var zflag_nid="1070"; var zflag_cid="147"; var zflag_sid="106"; var zflag_width="1"; var zflag_height="1"; var zflag_sz="94"; 
+</script>
+<script language="JavaScript" src="http://d2.zedo.com/jsc/d2/fo.js"></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

@@ -1,0 +1,81 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=5f43df0b&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>Enhanced 68k BASIC, update</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 68k microprocessor
+ family."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_1"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Update. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+ Download version 3.21 <A HREF="source.zip">source <IMG SRC="../../zip_sm.png"
+ ALT="Download" BORDER=0></A>.
+<P ALIGN=JUSTIFY>
+<A NAME=050217></A>
+<B>17th February 2005.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Just when I think it's safe to relax some undocumented features rear their ugly heads.
+<P ALIGN=JUSTIFY>
+ Firstly, if an attempt was made to access an array with an index value of n where 0 < n <
+ 0.5 then instead of getting element 0 you sometimes got an array bounds error, this has
+ been fixed.
+<P ALIGN=JUSTIFY>
+ Secondly, if you tried to dimension an array bigger than the available memory EhBASIC
+ would curl up it's toes and die, this was due to an incorrect branch type and has now
+ been fixed to give an out of memory error.
+<P ALIGN=JUSTIFY>
+ The version number is now 3.21. Enjoy.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<A NAME=050215></A>
+<B>15th February 2005.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Lots has changed from the last version, this is reflected in the change in major version
+ number from 2.xx to 3.xx.
+<P ALIGN=JUSTIFY>
+ The biggest change is that the code is now pure, this means it is both relocatable and
+ re-entrant so in a multitasking system only one copy of the code needs to be in memory
+ even if multiple instances are run. The planned target to test this is the Amiga but I
+ have not written an Amiga version just yet.
+<P ALIGN=JUSTIFY>
+ Internally there are other big internal changes. The code is now able to handle programs
+ larger than 128K correctly, create and reference arrays bigger than 128K correctly and
+ now generates an error if you try to make an array dimension larger than 65535. This
+ <I>should</I> remove the last of the restrictions that made this an 8 bit interpreter
+ that just growed.
+<P ALIGN=JUSTIFY>
+ Other changes of note ar that the USR() function needs no extra code for null functions,
+ just an RTS will work, and, as EhBASIC's RAM can now be anywhere, the function RAMBASE
+ has been added so that EhBASIC can work out where it's own memory is. This means the code
+ to set the USR() function address is now ..
+<PRE>
+	<B>LOKE RAMBASE+8,address</B>
+</PRE>
+ .. for any instance of EhBASIC68. Also the RND() function now uses a full 32 bit Galois
+ LFSR pseudo random number generator and the scatter array has been removed, this is both
+ faster and smaller. A lot of testing went into modifying this function including running
+ the full sequence to test correct operation and running a number of 64K and 512K
+ sequences to test the ramdomness or the values returned.
+<P ALIGN=JUSTIFY>
+ The version number is now 3.19. Enjoy.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<A NAME=040526></A>
+<B>26th May 2004.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The length of the keyword SWAP was incorrect in the list table. This has been fixed.
+<P ALIGN=JUSTIFY>
+ The version number is now 2.21. Enjoy.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<A NAME=040504></A>
+<B>4th May 2004.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ It's been quite a while since the last update and there are a few changes.
+<P ALIGN=JUSTIFY>
+ Internally there have been big changes in the way that functions are handled. This
+ gives better performance and makes the code easier to change.
+<P ALIGN=JUSTIFY>
+ RND(n) has been changed so that values now are scattered after being generated. This
+ scattering, though limited in range, is truly random. The array use

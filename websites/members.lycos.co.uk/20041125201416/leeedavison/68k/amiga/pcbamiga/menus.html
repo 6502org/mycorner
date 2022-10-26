@@ -1,0 +1,658 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>
+  Amiga PCB & schematic CAD
+</TITLE>
+<META name="description" content="Amiga PCB & schematic CAD.">
+</HEAD>
+<BODY
+  BACKGROUND="../../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>PCBAmiga, menus </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="using.html">[Back]</A>
+<BR clear=all><P>
+<HR>
+<B><U>Project.</U></B>
+<BLOCKQUOTE>
+<B>Layout</B>, <B>Schematic</B>,<B>Design</B>,<B>Symbol.</B>
+<BLOCKQUOTE>
+<PRE>
+"  Layout   "  These four items can be thought of as two two way switches.
+" Schematic "  One switch toggles either layout or schematic mode and the
+"  Design   "  other toggles design or symbol mode.
+"  Symbol   "
+
+ Layout mode is for PCB production. Up to 8 track layers and two silk layers
+ can be used. The program defautlts to the layout library files (#?.LLB) for
+ symbols and to printed circuit board files (#?.PCB) for designs.
+
+ Schematic mode is for producing schematics. You are restricted to one layer
+ and two silk layers. The program defautlts to the schematic library files
+ (#?.SLB) for symbols and to schematic files (#?.SCH) for designs.
+
+ Design mode is for creating complete designs. Either PCBs or schematics.
+
+ Symbol mode is for creating or editing symbol libraries.
+</PRE>
+</BLOCKQUOTE>
+<B>===============</B>
+<BLOCKQUOTE>
+</BLOCKQUOTE>
+<B>Edit track   F1.</B><BR>
+<B>New track    F2.</B>
+<BLOCKQUOTE>
+<PRE>
+" Edit track   F1 "   Edit track puts you in edit mode on the nearest
+" New track    F2 "   track node. If no track is within range, or
+		      there are no tracks, then an error message will be
+		      generated.
+
+ New track allows you to start a new track. Once the track is started the
+ functions are those for edit track mode with the one difference that the
+ last mode is set to new track and not edit track.
+</PRE>
+</BLOCKQUOTE>
+<B>Edit pad     F3.</B><BR>
+<B>New pad      F4.</B>
+<BLOCKQUOTE>
+<PRE>
+" Edit pad     F3 "   Edit pad puts you in edit mode on the nearest
+" New pad      F4 "   pad. If no pad is within range, or there are no
+		      pads, then an error message will be generated.
+
+ New pad allows you to create a new pad. Once the pad is started the
+ functions are those for edit pad mode with the one difference that the
+ last mode is set to new pad and not edit pad.
+</PRE>
+</BLOCKQUOTE>
+<B>Edit text    F5.</B><BR>
+<B>New text     F6.</B>
+<BLOCKQUOTE>
+<PRE>
+" Edit text    F5 "   Edit text puts you in edit mode on the origin of
+" New text     F6 "   the nearest text. If no text is within range, or
+		      there is no text, then an error message will be
+		      generated.
+
+ New text allows you to enter and placea new text string. Once the text is
+ placed the functions are those for edit text mode with the one difference
+ that the last mode is set to new text and not edit text.
+</PRE>
+</BLOCKQUOTE>
+<B>Edit symbol  F7.</B><BR>
+<B>New symbol   F8.</B>
+<BLOCKQUOTE>
+<PRE>
+" Edit symbol  F7 "   Edit symbol puts you in edit mode on the origin
+" New symbol   F8 "   of the nearest symbol. If no symbol is within
+		      range, or there are no symbols then an error message
+		      will be generated.
+
+ New symbol allows you to select, and place, a new symbol. Once the symbol
+ is placed the functions are as those for edit symbol with the one difference
+ that the last mode is set to new symbol and not edit symbol
+</PRE>
+</BLOCKQUOTE>
+<B>Block mode  F10.</B>
+<BLOCKQUOTE>
+ Enters block mode.
+</BLOCKQUOTE>
+<B>===============</B>
+<BLOCKQUOTE>
+</BLOCKQUOTE>
+<B>Load          L.</B>
+<BLOCKQUOTE>
+ Load design.
+</BLOCKQUOTE>
+<B>Save          S.</B>
+<BLOCKQUOTE>
+ Save design.
+</BLOCKQUOTE>
+<B>===============</B>
+<BLOCKQUOTE>
+</BLOCKQUOTE>
+<B>Load library.</B>
+<BLOCKQUOTE>
+ Loads a new library.
+</BLOCKQUOTE>
+<B>New library.</B>
+<BLOCKQUOTE>
+ Is actually a clear lib function. Creates an empty library.
+</BLOCKQUOTE>
+<B>Save symbol.</B>
+<BLOCKQUOTE>
+ Save symbol. May dump this and merge it with save.
+</BLOCKQUOTE>
+<B>===============</B>
+<BLOCKQUOTE>
+</BLOCKQUOTE>
+<B>Print.</B>
+<BLOCKQUOTE>
+<PRE>
+"  Draft "   These three select the printout density of
+" Normal "   either the whole area or any active block.
+"  Bold  "   This may be removed from the final program.
+</PRE>
+</BLOCKQUOTE>
+<B>===============</B>
+<BLOCKQUOTE>
+</BLOCKQUOTE>
+<B>Clear all   ŸF3.</B>
+<BLOCKQUOTE>
+ Clears the entire draw area. May ask first.
+</BLOCKQUOTE>
+<B>Status     Help.</B>
+<BLOCKQUOTE>
+ Displays the program status window. (Memory used etc.)
+</BLOCKQUOTE>
+<B>Quit          Q.</B>
+<BLOCKQUOTE>
+ Exits the program. May ask "save"? or "are you sure"?
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>Operation.</U></B>
+<BLOCKQUOTE>
+<B>Zoom.</B>
+<BLOCKQUOTE>
+<PRE>
+" In    T "  Zoom in one level
+" Out   W "  Zoom out one level
+" Zm 1  1 "  Go to zoom level 1
+" Zm 2  2 "  Go to zoom level 2
+" Zm 3  3 "  Go to ...
+" Zm 4  4 "  - " -
+" Zm 5  5 "  - " -
+" Zm 6  6 "  - " -
+</PRE>
+</BLOCKQUOTE>
+<B>Angle         a.</B>
+<BLOCKQUOTE>
+<PRE>
+" Multi  "  Selects track angle fixes. Multi allows any angle
+" 45 Fix "  45 fix only allows horizontal, vertical and diagonals
+" 90 Fix "  90 fix only allows horizontal and vertical tracks
+</PRE>
+</BLOCKQUOTE>
+<B>===============</B>
+<BLOCKQUOTE>
+</BLOCKQUOTE>
+<B>Pan           p.</B>
+<BLOCKQUOTE>
+ Pan cursor position to centre screen.
+</BLOCKQUOTE>
+<B>Grid          g.</B>
+<BLOCKQUOTE>
+ Turn drawing grid on/off.
+</BLOCKQUOTE>
+<B>Scale        Ÿg.</B>
+<BLOCKQUOTE>
+ No info yet.
+</BLOCKQUOTE>
+<B>Snap          m.</B>
+<BLOCKQUOTE>
+<PRE>
+"  Grid  "  Changes the snap mode. Grid, half and quater arev self
+"  Half  "  explanitory. Free is freehand. Near isn't implemented
+" Quater "  yet!
+"  Free  "
+"  Near  "
+</PRE>
+</BLOCKQUOTE>
+<B>Set origin    O.</B>
+<BLOCKQUOTE>
+ Set cursor position as users origin.
+</BLOCKQUOTE>
+<B>Go origin     o.</B>
+<BLOCKQUOTE>
+ Pan to origin (if off screen).
+</BLOCKQUOTE>
+<B>Units         i.</B>
+<BLOCKQUOTE>
+ Selects co-ordinates to be in inches or mm.
+</BLOCKQUOTE>
+<B>Rel/Abs       A.</B>
+<BLOCKQUOTE>
+ Selects absolute or relative co-ordinate display.
+</BLOCKQUOTE>
+<B>Rubberband    x.</B>
+<BLOCKQUOTE>
+ Turns rubberbanding on/off.
+</BLOCKQUOTE>
+<B>===============</B>
+<BLOCKQUOTE>
+</BLOCKQUOTE>
+<B>Repeat        r.</B>
+<BLOCKQUOTE>
+ Repeats the current track, pad, text, symbol or block at the
+ cursor position.
+</BLOCKQUOTE>
+<B>Shift         s.</B>
+<BLOCKQUOTE>
+ Shifts a track, text or block to the cursor position.
+</BLOCKQUOTE>
+<B>Current       c.</B>
+<BLOCKQUOTE>
+ Pans you to the current edit point, symbol, text, pad or block but
+ only if this point is off screen.
+</BLOCKQUOTE>
+<B>Zap          ŸZ.</B>
+<BLOCKQUOTE>
+ Will delete a whole track, a text string, a symbol etc. Usually asks
+ for confirmation (if enabled (I think?)).
+</BLOCKQUOTE>
+<B>Delete       ŸD.</B>
+<BLOCKQUOTE>
+ Deletes one track node.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>Track.</U></B>
+<BLOCKQUOTE>
+<B>Home          h.</B>
+<BLOCKQUOTE>
+ Moves the edit node to the first node on the track.
+</BLOCKQUOTE>
+<B>Back          b.</B>
+<BLOCKQUOTE>
+ Moves the edit node to the previous node on the track.
+</BLOCKQUOTE>
+<B>Next          n.</B>
+<BLOCKQUOTE>
+ Moves the edit node to the next node on the track.
+</BLOCKQUOTE>
+<B>End           e.</B>
+<BLOCKQUOTE>
+ Moves the edit node to last node on the track.
+</BLOCKQUOTE>
+<B>Arc/Circle   Ÿa.</B>
+<BLOCKQUOTE>
+ Makes circles from two node tracks.<BR>
+ Delete segments to make just an arc
+</BLOCKQUOTE>
+<B>===============</B>
+<BLOCKQUOTE>
+</BLOCKQUOTE>
+<B>All layer.</B>
+<BLOCKQUOTE>
+<PRE>
+" Lower silk "  Set the layer of the whole track.
+" Layer 1    "
+" Layer 2    "
+" Layer 3    "
+" Layer 4    "
+" Layer 5    "
+" Layer 6    "
+" Layer 7    "
+" Layer 8    "
+" Upper silk "
+</PRE>
+</BLOCKQUOTE>
+<B>Seg layer.</B>
+<BLOCKQUOTE>
+<PRE>
+" Lower silk "  Set the layer of the next track segment.
+" Layer 1    "  Will insert auto via pad if enabled.
+" Layer 2    "
+" Layer 3    "
+" Layer 4    "
+" Layer 5    "
+" Layer 6    "
+" Layer 7    "
+" Layer 8    "
+" Upper silk "
+</PRE>
+</BLOCKQUOTE>
+<B>All width.</B>
+<BLOCKQUOTE>
+<PRE>
+" 1 "  Set the width of the whole track.
+" 2 "
+" 3 "
+" 4 "
+" 5 "
+" 6 "
+" 7 "
+" 8 "
+</PRE>
+</BLOCKQUOTE>
+<B>Seg width.</B>
+<BLOCKQUOTE>
+<PRE>
+" 1 " Set the width of the next track segment.
+" 2 "
+" 3 "
+" 4 "
+" 5 "
+" 6 "
+" 7 "
+" 8 "
+</PRE>
+</BLOCKQUOTE>
+<B>===============</B>
+<BLOCKQUOTE>
+</BLOCKQUOTE>
+<B>Invert        i.</B>
+<BLOCKQUOTE>
+ Reverses the sequence of track nodes.
+</BLOCKQUOTE>
+<B>Flip          f.</B>
+<BLOCKQUOTE>
+ Errrrrrm ... forgotten ! ??
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>Pad.</U></B>
+<BLOCKQUOTE>
+<B>Layer.</B>
+<BLOCKQUOTE>
+<PRE>
+" Layer 1   "  Allows you to select the pad layer.
+" Layer 2   "
+" Layer 3   "
+" Layer 4   "
+" Layer 5   "
+" Layer 6   "
+" Layer 7   "
+" Layer 8   "
+" All layer "
+</PRE>
+</BLOCKQUOTE>
+<B>Size.</B>
+<BLOCKQUOTE>
+<PRE>
+"  1  "  Allows you to select the pad size.
+"  2  "
+"  3  "
+"  4  "
+"  5  "
+"  6  "
+"  7  "
+"  8  "
+"  9  "
+" 10  "
+" 11  "
+" 12  "
+" 13  "
+" 14  "
+" 15  "
+" Via "
+</PRE>
+</BLOCKQUOTE>
+<B>Variant.</B>
+<BLOCKQUOTE>
+<IMG SRC="../../../nograph.png"BORDER=1 ALT="[Pad variants]">
+ Allows you to select one of these funky pad shapes.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>Text.</U></B>
+<BLOCKQUOTE>
+<B>Edit text     t.</B>
+<BLOCKQUOTE>
+ Allows you to edit the text string.
+</BLOCKQUOTE>
+<B>Layer.</B>
+<BLOCKQUOTE>
+<PRE>
+" Lower silk "  Sets the text layer.
+" Layer 1    "
+" Layer 2    "
+" Layer 3    "
+" Layer 4    "
+" Layer 5    "
+" Layer 6    "
+" Layer 7    "
+" Layer 8    "
+" Upper silk "
+</PRE>
+</BLOCKQUOTE>
+<B>Size.</B>
+<BLOCKQUOTE>
+<PRE>
+" 1 "  Sets the text size.
+" 2 "
+" 3 "
+" 4 "
+</PRE>
+</BLOCKQUOTE>
+<B>Width.</B>
+<BLOCKQUOTE>
+<PRE>
+" 1 "  Sets the text width.
+" 2 "
+" 3 "
+" 4 "
+" 5 "
+" 6 "
+" 7 "
+" 8 "
+</PRE>
+</BLOCKQUOTE>
+<B>Angle.</B>
+<BLOCKQUOTE>
+<PRE>
+" Normal      "  Rotates the text about the origin by the
+" -90 degrees "  ammount shown.                            
+" 180 degrees "
+" +90degrees  "
+</PRE>
+</BLOCKQUOTE>
+<B>Flip          f.</B>
+<BLOCKQUOTE>
+ Flips the text (left/right) about the origin.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>Symbol.</U></B>
+<BLOCKQUOTE>
+<B>Edit text     t.</B>
+<BLOCKQUOTE>
+ Allows you to edit the symbol text (visibility & position?)
+</BLOCKQUOTE>
+<B>Layer.</B>
+<BLOCKQUOTE>
+<PRE>
+" Layer 1 "  Selects the symbol layer.
+" Layer 2 "
+" Layer 3 "
+" Layer 4 "
+" Layer 5 "
+" Layer 6 "
+" Layer 7 "
+" Layer 8 "
+</PRE>
+</BLOCKQUOTE>
+<B>Angle.</B>
+<BLOCKQUOTE>
+<PRE>
+ " Normal      "  Rotates the symbol about the origin by the
+ " -90 degrees "  ammount shown.
+ " 180 degrees "
+ " +90degrees  "
+</PRE>
+</BLOCKQUOTE>
+<B>Flip          f.</B>
+<BLOCKQUOTE>
+ Flips the symbol about the origin.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>Block.</U></B>
+<BLOCKQUOTE>
+<B>Clockwise.</B>
+<BLOCKQUOTE>
+ Rotates the active block clockwise about the cursor. Will wait for the
+ mouse click if hotkey not used.
+</BLOCKQUOTE>
+<B>Anticlockwise.</B>
+<BLOCKQUOTE>
+ Rotates the active block anticlockwise about the cursor (not implemented yet). Will wait for
+ the mouse click if hotkey not used.
+</BLOCKQUOTE>
+<B>Flip.</B>
+<BLOCKQUOTE>
+ Flips the active block about the cursor. Will
+ wait for the mouse click if hotkey not used.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>Prefs.</U></B>
+<BLOCKQUOTE>
+<B>Draw.</B>
+<BLOCKQUOTE>
+ Will allow the setup of track widths, pad inner and outer sizes etc.
+</BLOCKQUOTE>
+<B>User.</B>
+<BLOCKQUOTE>
+ Will allow setup of default paths etc. Not implemented yet.
+</BLOCKQUOTE>
+<B>Print.</B>
+<BLOCKQUOTE>
+ Just a collection of buttons at the moment. Click close to exit.
+</BLOCKQUOTE>
+<B>Palette.</B>
+<BLOCKQUOTE>
+ Set the palette preferences. Not implemented yet.
+</BLOCKQUOTE>
+<B>Screen.</B>
+<BLOCKQUOTE>
+ Set the screen preferences. Not implemented yet.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 28th April, 2002.</FONT>
+</BODY>
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=78ae4a4e&adpref="></script>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.12 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 

@@ -1,0 +1,50 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=6f6063f7&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>Vic 20 network interface - software</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=25%><A HREF="index.html#source">
+ <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>Vic 20 network - software </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT>
+</TD><TD WIDTH=25%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Introduction</U></B>
+<IMG SRC="home.jpg" ALIGN=RIGHT BORDER=1 ALT="Vic 20 web server
+ home page" HSPACE=8>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ It would have easily been possible to expand the Vic 20 well beyond it's original
+ specification for this project, but that would have just made it a less able Commodore
+ 64. So, the code as is fits in the 8KB cartridge space from $A000 to $BFFF and only the
+ Vic's internal RAM is used. BASIC is completely ignored, and could be removed, and only
+ the cartridge startup and interrupt vectors are used in the kernal ROM.
+<P ALIGN=JUSTIFY>
+ At the time of writing the .asm file is over 100KB long so only sections will be
+ presented here, if you want to see all the code you can <A
+ HREF="source.zip">download <IMG SRC="../../../zip_sm.png" ALT="Download" border=0></A>
+ it as a .zip file.
+<P ALIGN=JUSTIFY>
+ As there are differences between PAL and NTSC Vic 20s where this makes a difference
+ the PAL code is shown in <B>bold</B> and the NTSC code is shown in <FONT
+ COLOR=#AAAAAA><B>grey</B></FONT>. The PAL code is tested but as I don't have an NTSC
+ machine I'm unable to test those bits. They <I><B>should</B></I> work.
+</BLOCKQUOTE>
+<B><U>Features</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This code provides ARP, TCP/IP and ICMP function enough to be PINGed and enough HTTP
+ ability to serve the web content held in the ROM file system. The TCP implementation
+ is as server only, there is no active open or close wait ability and supports only a
+ single connection at a time, this may change.
+<P ALIGN=JUSTIFY>
+ One of the Vic's VIA timers is used to provide a millisecond clock, this allows the TCP
+ state machine to time out gracefully, and is used to time the animation of the crawling
+ dot in the bottom right of the Vic screen.
+<P ALIGN=JUSTIFY>
+ The first two IP address digits are fixed at 169.254 in the ROM but the last two digits
+ are copied from the MAC address of the card. This means the same ROM code can be used in
+ multiple Vics without changes, each mac

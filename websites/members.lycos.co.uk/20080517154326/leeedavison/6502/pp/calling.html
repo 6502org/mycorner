@@ -1,0 +1,62 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>6502 Pen plotter - Calling draw</TITLE>
+<META name="description" content="6502 Pen plotter."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#links"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>6502 Pen plotter - Calling draw </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Calling draw.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The most basic command that the plotter has is the drawm (WriteSeg) command. This command
+ allows the movement of the mechanism in one of eight directions, with the pen up or down,
+ for up to 65535 steps. It is from these straight lines that all other lines and curves
+ are constructed.
+<P ALIGN=JUSTIFY>
+ Before draw is called there are four variables that need to be set up ..<P>
+<TABLE BGCOLOR="white" BORDER=1 ALIGN=CENTER>
+<TR><TD><B>Variable</B></TD><TD><B>Size</B></TD><TD><B>Use</B></TD></TR>
+<TR><TD>Lcntl</TD><TD>Word</TD><TD>Number of steps for this line</TD></TR>
+<TR><TD>Dirbyte</TD><TD>Byte</TD><TD>Bits 1 and 3 control X and Y direction</TD></TR>
+<TR><TD>Stepbyte</TD><TD>Byte</TD><TD>Bits 0 and 2 control X and Y stepping</TD></TR>
+<TR><TD>Penflag</TD><TD>Byte</TD><TD>Bit 7 controls the pen state</TD></TR>
+</TABLE>
+<P ALIGN=JUSTIFY>
+ The combination of direction bits and step bits gives the eight directions that the
+ plotter can move when combined.<P>
+<CENTER>
+<TABLE BGCOLOR="white" BORDER=1 WIDTH=60%>
+<TR><TD WIDTH=25% COLSPAN=4 ALIGN=CENTER><B>Bits</B></TD>
+<TD ROWSPAN=2 ALIGN=CENTER><B>Direction</B></TD></TR>
+<TR><TD ALIGN=CENTER><B>3</B></TD><TD ALIGN=CENTER><B>2</B></TD>
+<TD ALIGN=CENTER><B>1</B></TD><TD ALIGN=CENTER><B>0</B></TD></TR>
+<TR><TD ALIGN=CENTER>x</TD><TD ALIGN=CENTER>0</TD><TD ALIGN=CENTER>x</TD>
+<TD ALIGN=CENTER>0</TD><TD>No movement, no use, not used.</TD></TR>
+<TR><TD ALIGN=CENTER>x</TD><TD ALIGN=CENTER>0</TD><TD ALIGN=CENTER>0</TD>
+<TD ALIGN=CENTER>1</TD><TD>Along the X axis, left.</TD></TR>
+<TR><TD ALIGN=CENTER>x</TD><TD ALIGN=CENTER>0</TD><TD ALIGN=CENTER>1</TD>
+<TD ALIGN=CENTER>1</TD><TD>Along the X axis, right.</TD></TR>
+<TR><TD ALIGN=CENTER>0</TD><TD ALIGN=CENTER>1</TD><TD ALIGN=CENTER

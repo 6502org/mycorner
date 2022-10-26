@@ -1,0 +1,99 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish085d8bd6{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if IE]>
+<style>
+#catfish085d8bd6{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip085d8bd6{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad085d8bd6"></div>
+<HTML><HEAD><TITLE>VFD PSU revisited.</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="circuit.html#anodes"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>GAL logic equations file </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="7seg.zip">Download this file <IMG SRC="../../zip_sm.png" ALT="Download"
+ BORDER=0></A>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=WHITE><TR><TD>
+<PRE>
+/*	Hexadecimal to seven segment decoder			*/	
+
+Name		7seg.pld ;
+PartNo		00 ;
+Date		22/07/09 ;
+Revision	01 ;
+Designer	Lee ;
+Company		None ;
+Assembly	None ;
+Location	None ;
+Device		g16v8as ;
+
+/*	Inputs							*/
+
+Pin 1 = A ;				/* 2^0 bit		*/
+Pin 2 = B ;				/* 2^1 bit		*/
+Pin 3 = C ;				/* 2^2 bit		*/
+Pin 4 = D ;				/* 2^3 bit		*/
+
+/*	Outputs - active low					*/
+
+Pin 18 = !g ;
+Pin 17 = !f ;
+Pin 16 = !e ;
+Pin 15 = !d ;
+Pin 14 = !c ;
+Pin 13 = !b ;
+Pin 12 = !a ;
+
+/*	Declarations and intermediate variable definitions	*/
+
+FIELD input = [ D, C, B, A ] ;
+FIELD output = [ a, b, c, d, e, f, g ] ;
+
+/*	Logic equations						*/
+
+TABLE input => output {
+
+	0 => 7E ;	1 => 30 ;	2 => 6D ;	3 => 79 ;
+	4 => 33 ;	5 => 5B ;	6 => 5F ;	7 => 70 ;
+	8 => 7F ;	9 => 7B ;	A => 77 ;	B => 1F ;
+	C => 4E ;	D => 3D ;	E => 4F ;	F => 47 ;
+	}
+</PRE>
+</TD></TR></TABLE></BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 25th July, 2009.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish085d8bd6" style="display:none"></div>
+<script src="http://ads.mmania.com/displaycf.js.php?r=085d8bd6&cc=uk" type=text/javascript></script>
+<!-- begin ZEDO for channel: Mmania.com , publisher: Mmania.com , Ad Dimension: Slider - 1 x 1 -->
+<script language="JavaScript">
+var zflag_nid="1070"; var zflag_cid="147"; var zflag_sid="106"; var zflag_width="1"; var zflag_height="1"; var zflag_sz="94"; 
+</script>
+<script language="JavaScript" src="http://d2.zedo.com/jsc/d2/fo.js"></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

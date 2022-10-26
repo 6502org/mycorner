@@ -1,0 +1,198 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish0225ac42{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if IE]>
+<style>
+#catfish0225ac42{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip0225ac42{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad0225ac42"></div>
+<HTML><HEAD><TITLE>VFD PSU revisited</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>VFD PSU revisited. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<TABLE WIDTH=100%><TR><TD ALIGN=LEFT><B><A HREF="idents.html">Previous</A></B></TD>
+<TD ALIGN=RIGHT><B><A HREF="circuit.html">Next</A></B></TD></TR></TABLE>
+<BR CLEAR=ALL>
+<A NAME=proto></A>
+<map name="Map"> 
+ <area shape="poly" href="supply.html"
+ coords="70,118, 70,218, 180,218, 180,118" ALT="Power supply">
+ <area shape="poly" href="anodes.html"
+ coords="80,69, 80,118, 168,118, 168,69" ALT="Anode (segment) drives">
+ <area shape="poly" href="grids.html"
+ coords="170,25, 265,25, 265,95, 170,95" ALT="Grid (digit) drives">
+ <area shape="poly" href="display.html"
+ coords="90,25, 170,25, 170,65, 90,65" ALT="Vacuum fluorescent display">
+ <area shape="poly" href="clocks.html"
+ coords="195,155, 275,155, 275,215, 195,215" ALT="VFD clocks">
+ <area shape="poly" href="decoders.html"
+ coords="170,90, 255,90, 255,130, 170,130" ALT="VFD decoders">
+ <area shape="poly" href="proto.html"
+ coords="0,0, 319,0, 319,239, 0,239" ALT="VFD supply and drivers">
+</map>
+<IMG SRC="proto_s.jpg" USEMAP="#Map" ALIGN=RIGHT BORDER=1 HSPACE=8 ALT="VFD power supply">
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I still have quite a few vacuum fluorescent displays that have been rescued from old
+ video recorders, radios, clocks and the like. They aren't difficult to use but do need
+ an AC filament supply and an anode supply of anything from twelve to about thirty volts.
+<P ALIGN=JUSTIFY>
+ This circuit is a copy of the circuit from an old calculator and provides the AC filament
+ supply and high voltage anode supply for a vacuum fluorescent display from a single DC
+ supply.
+<P ALIGN=JUSTIFY>
+ The advantage of this circuit is that the anode voltage is at the logic supply voltage so
+ switching the anodes and grids does not require either high voltage open collector
+ outputs or level shifters. A single small PNP transistor and two resistors is enough to
+ interface each drive.
+<P ALIGN=JUSTIFY>
+ Clicking on each part of the picture will take you to a close up of that part.
+</BLOCKQUOTE>
+<IMG SRC="vfd.png" ALIGN=RIGHT BORDER=1 HSPACE=8 ALT="VFD power supply diagram">
+<B><U>The circuit.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Q2 and T1 form a blocking oscillator with the feedback current via C1 being amplified by
+ the emitter follower stage Q1. R1 provides more feedback as well as the positive bias to
+ the base of the emitter follower.
+<P ALIGN=JUSTIFY>
+ The output from the 160 turn secondary is rectified by D1 and smothed by C2 producing the
+ negative bias for the VFD cathode (filament). This output is then fed back via the LM431
+ adjustable shunt regulator to the emitter follower's base with the result that the more
+ negative this output goes the less time per cycle that Q2 conducts for.
+<P ALIGN=JUSTIFY>
+ The centre tapped 24 turn winding produces two to three volts AC to drive the VFD
+ filaments and the centre tap allows symetrical biasing to the negative cathode voltage.
+<P ALIGN=JUSTIFY>
+ The anode voltage is the system supply voltage and so can be easily switched by a single
+ PNP transistor.
+</BLOCKQUOTE>
+<B><U>Components.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ All the components are what I had to hand at the time and none of them are particularly
+ critical.
+<P ALIGN=JUSTIFY>
+<B>Transistors</B>
+<P ALIGN=JUSTIFY>
+ The 2N2222 can be replaced by any high gain small signal NPN transistor such as BC108,
+ BC547, 2N3904 etc and the BD437 can probably be replaced by any near equivalent. In this
+ circuit the BD437 ran cool so could probably be replaced by a smaller transistor.
+</BLOCKQUOTE>
+<A NAME=tformer></A>
+<A HREF="tformer.html"><IMG SRC="tformer_s.jpg" ALIGN=RIGHT BORDER=1 HSPACE=8
+ ALT="Ferrite transformer"></A>
+<BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B>Transformer</B>
+<P ALIGN=JUSTIFY>
+ This was wound, using 0.125mm enameled wire, on a small ferrite cored bobbin that was the
+ feedback transformer in a PC power supply. After each winding was complete a layer of
+ tape was laid over it. The start of each winding was marked on the bobbin with each
+ winding being wound in the same direction. The dots in the circuit diagram denote the
+ start of each winding.
+<P ALIGN=JUSTIFY>
+ The turns count and ratio could be varied if, for example, you need more anode volts
+ without increasing the filament voltage then more turns can be added to the 160 turn
+ anode voltage winding.
+<P ALIGN=JUSTIFY>
+<B>Diode</B>
+<P ALIGN=JUSTIFY>
+ A random shottky diode was used to rectify the cathode voltage and any diode that can
+ carry a few 10s of mA and withstand a reverse voltage of 50V or more, such as a 1N4148,
+ should work here.
+</BLOCKQUOTE>
+<IMG SRC="xx431.png" ALIGN=RIGHT BORDER=1 HSPACE=8 ALT="LM341 pinout">
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B>Regulator</B>
+<P ALIGN=JUSTIFY>
+ The LM431 is used as a adjustable zener, the voltage being determined by Rx, and is used
+ to set the voltage between the cathode and the anodes up to a maximum of about 36V. This
+ device can be replaced by any equivalent such as TL431.
+<P ALIGN=JUSTIFY>
+ For cathode to anode volatges above 36V the LM431 and it's two resistors should be
+ replaced with a zener diode of the required voltage.
+<P ALIGN=JUSTIFY>
+<B>Rx</B>
+<P ALIGN=JUSTIFY>
+ Rx is used to set the cathode voltage. With the voltage control disconnected the unloaded
+ output is greater than eighty volts. With the voltage control connected the approximate
+ cathode to anode voltage is given by ..
+<PRE>
+		<B>V = 3 + 2.5 * ((Rx / R2) + 1)</B>
+</PRE>
+ .. which for Rx = 220K gives a cathode to anode voltage of about 30 volts.
+<P ALIGN=JUSTIFY>
+<B>Capacitors</B>
+<P ALIGN=JUSTIFY>
+ As this circuit oscillates at a far lower frequency than the prototype the rectfier
+ resevoir capacitor is made up of a single 1uF 63V electrolytic. This value is not
+ critical.
+<P ALIGN=JUSTIFY>
+ The 1000pF oscillator feedback capacitor was chosen to give the best running. The
+ circuit will still oscillate even if this capacitor is omitted, though regulation
+ suffers. The circuit seems to work fine over a few decades of range on this capacitor.
+<P ALIGN=JUSTIFY>
+<B>Resistors</B>
+<P ALIGN=JUSTIFY>
+ The base bias resistor, R1, should be a fifth, or less, of the value of the LM431
+ reference voltage resistor R2. If it is much more than this regulation suffers as the
+ current through Rx and R2 alone is enough to affect the bias point.
+</BLOCKQUOTE>
+<IMG SRC="drives.png" ALIGN=RIGHT BORDER=1 HSPACE=8 ALT="Anode and grid drives"></A>
+<B><U>Anode and grid drives.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ As the VFD anode supply is at the same potential as the logic supply the drives are just
+ a single PNP transistor, in this case a BC557 but any equivalent should work, and two
+ resistors. A third resistor is used to pull down the pin when the drive is off to
+ prevent ghosting.
+<P ALIGN=JUSTIFY>
+ The anode/grid pulldown resistors, Rc, can be in SIL resistor packs and the value is not
+ critical. 100K was only used because packs of this value were available, higher values
+ could also be used.
+<P ALIGN=JUSTIFY>
+ Note that Rc pulls the anode or grid down to the VFD negative supply and not to zero
+ volts.
+<P ALIGN=JUSTIFY>
+ The base pullup resistors, Rb, can also be in SIL resistor packs and the value is not
+ critical. 100K was only used because resistors of this value were available, other values
+ could also be used. This resistor ensures that the transistor is turned fully off when
+ driven by TTL or open collector outputs. Rs, the series drive resistor, should be
+ selected so that with a low output enough current is passed to turn on the transistor.
+</BLOCKQUOTE>
+<BR CLEAR=ALL>
+<TABLE WIDTH=100%><TR><TD ALIGN=LEFT><B><A HREF="idents.html">Previous</A></B></TD>
+<TD ALIGN=RIGHT><B><A HREF="circuit.html">Next</A></B></TD></TR></TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 24th July, 2009.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish0225ac42" style="display:none"></div>
+<script src="http://ads.mmania.com/displaycf.js.php?r=0225ac42&cc=uk" type=text/javascript></script>
+<!-- begin ZEDO for channel: Mmania.com , publisher: Mmania.com , Ad Dimension: Slider - 1 x 1 -->
+<script language="JavaScript">
+var zflag_nid="1070"; var zflag_cid="147"; var zflag_sid="106"; var zflag_width="1"; var zflag_height="1"; var zflag_sz="94"; 
+</script>
+<script language="JavaScript" src="http://d2.zedo.com/jsc/d2/fo.js"></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

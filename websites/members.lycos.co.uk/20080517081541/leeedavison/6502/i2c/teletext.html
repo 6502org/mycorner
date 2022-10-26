@@ -1,0 +1,92 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD><TITLE>I2C Bus interface</TITLE>
+<META name="description" content="An I2C bus interface for the 6502.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>EhBASIC Teletext page viewer. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+ This is a simple page select driver for the SAA5243 + SAA5231 teletext chipset. X is
+ valid as a wildcard digit.
+<BR>
+<A HREF="teletext.zip">Download this file <IMG SRC="../../zip_sm.png" ALT="Download"
+ BORDER=0></A><P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+1 REM set memory size to 8192 for this program
+
+5 REM simple teletext decoder page driver
+6 REM there is no page read, output is via
+7 REM teletext chip video out
+
+10 REM set I2C interface values
+20 TT = 34 : REM teletext chip 12c address
+30 SB = $2000 : REM send byte
+40 RB = £2003 : REM read byte (not used)
+50 CL = $F5 : REM # bytes low (i2ccountL)
+60 BL = $F1 : REM buffer ptr low  (rxbuffl)
+70 AD = $F4 : REM device address (i2caddr)
+80 BF = $4000 : REM buffer address
+90 DIM TR(10) : REM register buffer
+
+110 GOSUB 800 : REM setup chip
+120 TR(8) = 0 : REM no clear display
+130 TR(9) = 0 : REM set row
+140 TR(10) = 0 : REM set column
+
+150 GOSUB 838 : REM set registers 8 to 10
+160 P3 = 49 : REM 1
+161 P2 = 48 : REM 0
+162 P1 = 48 : REM 0
+170 GOSUB 370 : REM set search page
+
+200 REM main program loop
+210 DO
+220 GOSUB 300 : REM select page
+230 LOOP
+299 END : REM never gets here
+
+300 REM Select page
+
+310 INPUT "Page no.";P$
+320 IF LEN(P$)<>3 THEN 310
+330 P$ = UCASE$(P$) : REM "x" to "X"
+
+340 P1=ASC(RIGHT$(P$,1)) : REM 1s character ASCII value
+350 P2=ASC(MID$(P$,2,1)) : REM 10s character ASCII value
+360 P3=ASC(LEFT$(P$,1)) : REM 100s character ASCII value
+
+365 REM dispaly the searched for page number
+370 POKE BF,8 : REM register address
+380 POKE BF+1,0 : REM set x value
+390 POKE BF+3,0 : REM set y value
+400 POKE BF+3,2 : REM set white
+410 POKE BF+4,P3 : REM display page 100s
+420 POKE BF+5,P2 : REM display page 10s
+430 POKE BF+6,P1 : REM display page 1s
+440 POKE AD,TT : REM set 

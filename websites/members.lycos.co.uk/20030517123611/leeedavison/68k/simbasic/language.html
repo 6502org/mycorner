@@ -1,0 +1,321 @@
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC language reference</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the EASy68k
+ Assembly Language Programming Tool.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>EhBASIC68 language reference </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="index.html#link_1">[Back]</A>
+<BR clear=all><P>
+<HR>
+<P>
+<P>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE>
+ This language reference will only refer to those commands which differ from, or are
+ in addition to, those in the main <A HREF="../ehbasic/language.html">EhBASIC68 language
+ reference</A>. 
+</BLOCKQUOTE>
+<P>
+<B><U>Notes on graphic commands</U></B>
+<BLOCKQUOTE>
+<B>Co-ordinates</B>
+<P>
+ In all instances X and Y co-ordinate values may vary from -32768 to +32767.
+ Attempting to use values outside this range will cause a function call error.
+ Only parts of a structure that appear within the visible window, (0,0) to
+ (639,479), will be drawn.
+<P>
+<B>Colour values</B>
+<P>
+ Colour values are longword integers and are interpreted as follows ..<P>
+<CENTER>
+<TABLE WIDTH=480 CELLPADDING=4 CELLSPACING=1 BORDER=1 BGCOLOR=WHITE>
+<TR>
+<TD ALIGN=CENTER WIDTH=25%><B>Bits 31 to 24</B></TD>
+<TD ALIGN=CENTER WIDTH=25%><B>Bits 23 to 16</B></TD>
+<TD ALIGN=CENTER WIDTH=25%><B>Bits 15 to 8</B></TD>
+<TD ALIGN=CENTER><B>Bits 7 to 0</B></TD></TR>
+<TR>
+<TD ALIGN=CENTER>Ignored</TD>
+<TD ALIGN=CENTER>Blue value</TD>
+<TD ALIGN=CENTER>Green value</TD>
+<TD ALIGN=CENTER>Red value</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+ As bits 31 to 24 are ignored -ve values may be used where convenient. E.g. you could
+ use -1 instead of $FFFFFF for white.
+</BLOCKQUOTE>
+<P>
+<B><U>BASIC Keywords</B></U>
+<BLOCKQUOTE>
+ Here is a list of EASy68k BASIC keywords. Keywords are only valid when entered in upper
+ case as shown, spaces may not be included in them. So, for example, GOTO would be a valid
+ keyword but GO TO would not.
+  <P>
+  <CENTER>
+    <TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+    <TR>
+      <TD WIDTH=14%><A HREF="#ELLIPSE">ELLIPSE</A></TD>
+      <TD WIDTH=14%><A HREF="#ELLIPSEF">ELLIPSEF</A></TD>
+      <TD WIDTH=14%><A HREF="#FILL">FILL</A></TD>
+      <TD WIDTH=14%><A HREF="#LINE">LINE</A></TD>
+      <TD WIDTH=14%><A HREF="#LOAD">LOAD</A></TD>
+      <TD WIDTH=14%><A HREF="#MODE">MODE</A></TD>
+      <TD><A HREF="#MOVE">MOVE</A></TD>
+    </TR>
+    <TR>
+      <TD><A HREF="#POINT">POINT</A></TD>
+      <TD><A HREF="#POINTF">POINT()</A></TD>
+      <TD><A HREF="#RECT">RECT</A></TD>
+      <TD><A HREF="#RECTF">RECTF</A></TD>
+      <TD><A HREF="#SAVE">SAVE</A></TD>
+      <TD><A HREF="#SIZE">SIZE</A></TD>
+      <TD><A HREF="#TI">TI</A></TD>
+    </TR>
+    </TABLE>
+  </CENTER>
+ </BLOCKQUOTE>
+</BLOCKQUOTE>
+<P>
+<B><U>BASIC Commands</U></B>
+<BLOCKQUOTE>
+
+ <A name=ELLIPSE></A>
+ <B>ELLIPSE [&#60;exprX1&#62;,&#60;exprY1&#62;,&#60;exprX2&#62;,&#60;exprY2&#62;][,][&#60;exprLC&#62;[,&#60;exprFC&#62;]]</B>
+ <BLOCKQUOTE>
+  Draws an unfilled ellipse bounded by the rectangle defined by exprX1 and
+  exprX2, for the X axis, and exprY1 and exprY2, for the Y axis, of colour
+  exprLC. The width of the line used to draw the ellipse is set by the <A
+  HREF="#SIZE">SIZE</A> command
+<P>
+  If exprLC is present then the line colour will be set before the ellipse is
+  drawn.
+<P>
+  If exprFC is present then the fill colour will be set before the ellipse is
+  drawn. If you want to set the fill colour then the line colour must also be
+  set.
+<P>
+  If the co-ordinates are omitted then only the line colour, and possibly the
+  fill colour, will be set.
+ </BLOCKQUOTE>
+
+ <A name=ELLIPSEF></A>
+ <B>ELLIPSEF [&#60;exprX1&#62;,&#60;exprY1&#62;,&#60;exprX2&#62;,&#60;exprY2&#62;][,][&#60;exprLC&#62;[,&#60;exprFC&#62;]]</B>
+ <BLOCKQUOTE>
+  The same as <A HREF="#ELLIPSE">ELLIPSE</A> except the ellipse is filled with
+  the current fill colour.
+ </BLOCKQUOTE>
+
+ <A name=FILL></A>
+ <B>FILL [&#60;exprX&#62;,&#60;exprY&#62;][,][&#60;exprFC&#62;]</B>
+ <BLOCKQUOTE>
+  Flood fill the area starting from &#60;exprX&#62;,&#60;exprY&#62;. The fill will
+  continue until it reaches the screen edge or a pixel of a different colour to that
+  originally at &#60;exprX&#62;,&#60;exprY&#62;.
+ <P>
+  If &#60;exprFC&#62; is specified then the fill colour will be set to that value before
+  the fill starts. Also just giving &#60;exprFC&#62; will set the fill colour without
+  drawing.
+ </BLOCKQUOTE>
+
+ <A name=LINE></A>
+ <B>LINE [&#60;exprX1&#62;,&#60;exprY1&#62;[,&#60;exprX2&#62;,&#60;exprY2&#62;]][,][&#60;exprLC&#62;]</B>
+ <BLOCKQUOTE>
+  Draws a line from &#60;exprX1&#62;,&#60;exprY1&#62; to &#60;exprX2&#62;,&#60;exprY2&#62;.
+  If &#60;exprX2&#62;,&#60;exprY2&#62; is omitted then the line is drawn from the current
+  graphics position to &#60;exprX1&#62;,&#60;exprY1&#62;.
+ <P>
+  If &#60;exprLC&#62; is specified then the line colour will be set to that value before
+  the line is drawn. Also just giving &#60;exprLC&#62; will set the line colour without
+  drawing.
+ </BLOCKQUOTE>
+
+ <A name=LOAD></A>
+ <B>LOAD &#60;expression$&#62;</B>
+ <BLOCKQUOTE>
+  Attempts to load the file expression$. It will recognise the file format (binary or
+  ASCII) and invoke the necessary routines.
+ <P>
+  During an ASCII load you will see the program as it is being read from the file. This
+  file is also merged with any program lines currently in the memory.
+ <P>
+  Binary loading is <I>much</I> faster and over writes any program currently in memory.
+ </BLOCKQUOTE>
+
+ <A name=MODE></A>
+ <B>MODE &#60;expression&#62;</B>
+ <BLOCKQUOTE>
+  Set the draw mode to &#60;expression&#62;. Valid values are 0 to 15.
+  <P>
+  <CENTER>
+  <TABLE CELLPADDING=4 CELLSPACING=1 BORDER=1 BGCOLOR=WHITE>
+  <TR><TD ALIGN=CENTER><B>Mode</B></TD>
+      <TD ALIGN=CENTER><B>Function</B></TD>
+      <TD ALIGN=CENTER><B>Effect</B></TD></TR>
+  <TR><TD ALIGN=CENTER>0</TD><TD>False</TD>
+      <TD>Drawing is always black</TD></TR>
+  <TR><TD ALIGN=CENTER>1</TD><TD>True</TD>
+      <TD>Drawing is always white</TD></TR>
+  <TR><TD ALIGN=CENTER>2</TD><TD>Null</TD>
+      <TD>Nothing is drawn but the cursor is moved</TD></TR>
+  <TR><TD ALIGN=CENTER>3</TD><TD>Inverse</TD>
+      <TD>The inverse of the background is drawn</TD></TR>
+  <TR><TD ALIGN=CENTER>4</TD><TD>Colour</TD>
+      <TD>The colour is drawn</TD></TR>
+  <TR><TD ALIGN=CENTER>5</TD><TD>Inverse colour</TD>
+      <TD>The inverse of the colour is drawn</TD></TR>
+  <TR><TD ALIGN=CENTER>6</TD><TD>Inverse OR</TD>
+      <TD>The inverse of the background OR the colour is drawn</TD></TR>
+  <TR><TD ALIGN=CENTER>7</TD><TD>Inverse AND</TD>
+      <TD>The inverse of the background AND the colour is drawn</TD></TR>
+  <TR><TD ALIGN=CENTER>8</TD><TD>OR Inverse</TD>
+      <TD>The background OR the inverse of the colour is drawn</TD></TR>
+  <TR><TD ALIGN=CENTER>9</TD><TD>AND Inverse</TD>
+      <TD>The background AND the inverse of the colour is drawn</TD></TR>
+  <TR><TD ALIGN=CENTER>10</TD><TD>OR</TD>
+      <TD>The background OR the colour is drawn</TD></TR>
+  <TR><TD ALIGN=CENTER>11</TD><TD>NOR</TD>
+      <TD>The background NOR the colour is drawn</TD></TR>
+  <TR><TD ALIGN=CENTER>12</TD><TD>AND</TD>
+      <TD>The background AND the colour is drawn</TD></TR>
+  <TR><TD ALIGN=CENTER>13</TD><TD>NAND</TD>
+      <TD>The background NAND the colour is drawn</TD></TR>
+  <TR><TD ALIGN=CENTER>14</TD><TD>EOR</TD>
+      <TD>The background ExclusiveOR the colour is drawn</TD></TR>
+  <TR><TD ALIGN=CENTER>15</TD><TD>ENOR</TD>
+      <TD>The background ExclusiveNOR the colour is drawn</TD></TR>
+  </TABLE>
+  </CENTER>
+ </BLOCKQUOTE>
+
+ <A name=MOVE></A>
+ <B>MOVE &#60;exprX&#62;,&#60;exprY&#62;</B>
+ <BLOCKQUOTE>
+  Move the current graphics point to &#60;exprX&#62;,&#60;exprY&#62;. Nothing is drawn.
+ </BLOCKQUOTE>
+
+ <A name=POINT></A>
+ <B>POINT &#60;exprX&#62;,&#60;exprY&#62;[,&#60;exprLC&#62;]</B>
+ <BLOCKQUOTE>
+  Set the colour of the point &#60;exprX&#62;,&#60;exprY&#62; to the current line colour.
+ <P>
+  If &#60;exprLC&#62; is specified then the current line colour is set before the point
+  is plotted.
+ </BLOCKQUOTE>
+
+ <A name=RECT></A>
+ <B>RECT [&#60;exprX1&#62;,&#60;exprY1&#62;,&#60;exprX2&#62;,&#60;exprY2&#62;][,][&#60;exprLC&#62;[,&#60;exprFC&#62;]]</B>
+ <BLOCKQUOTE>
+  The same as <A HREF="#ELLIPSE">ELLIPSE</A> except the bounding rectangle
+  itself is drawn.
+ </BLOCKQUOTE>
+
+ <A name=RECTF></A>
+ <B>RECTF [&#60;exprX1&#62;,&#60;exprY1&#62;,&#60;exprX2&#62;,&#60;exprY2&#62;][,][&#60;exprLC&#62;[,&#60;exprFC&#62;]]</B>
+ <BLOCKQUOTE>
+  The same as <A HREF="#RECT">RECT</A> except the bounding rectangle is filled
+  with the current fill colour.
+ </BLOCKQUOTE>
+
+ <A name=SAVE></A>
+ <B>SAVE &#60;expression$&#62;[,a[n1][-n2]]</B>
+ <BLOCKQUOTE>
+  Attempts to save the program memory to the file expression$. If the command has the
+  <B>,a</B> appended then the program will be saved in ASCII format. If saving in ASCII
+  format then the range of the save can be specified as with the <A
+  HREF="../ehbasic/language.html#LIST">LIST</A> command.
+ </BLOCKQUOTE>
+
+ <A name=SIZE></A>
+ <B>SIZE &#60;expression&#62;</B>
+ <BLOCKQUOTE>
+  Sets the width of lines drawn using the <A HREF="#LINE">LINE</A> command and the width
+  of the outlines drawn using any of the shape commands.
+ <P>
+  The valid range of &#60;expression&#62; is from 0 to 255 but setting a value of zero
+  will actually give a width of one.
+ </BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>BASIC Functions</U></B>
+<BLOCKQUOTE>
+ <P><A name=POINTF></A>
+ <B>POINT(&#60;exprX&#62;,&#60;exprY&#62;)</B>
+ <BLOCKQUOTE>
+  Returns the pixel colour value at point &#60;exprX&#62;,&#60;exprY&#62;.
+ </BLOCKQUOTE>
+
+ <A name=TI></A>
+ <B>TI</B>
+ <BLOCKQUOTE>
+  Returns the time since midnight in 1/100ths of seconds.
+ </BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 25th April, 2003.</FONT>
+</BODY>
+</HTML>
+
+
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.3 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3ec62cba&adpref="></script>

@@ -1,0 +1,43 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>Adventures in the Battlezone</TITLE></HEAD>
+<BODY BACKGROUND="bzbg.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR VALIGN=TOP><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><IMG SRC="logo.gif" TITLE="Battlezone" BORDER=0><BR>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<TABLE WIDTH=100% BORDER=0><TR ALIGN=CENTER>
+<TD WIDTH=40><A HREF="3d_cube_02.html">
+<IMG SRC="last.gif" TITLE="Last" BORDER=0 HSPACE=4></A>
+</TD>
+<TD BGCOLOR=BLACK>
+<IMG SRC="3d_logo_01.png" HEIGHT=320 TITLE="Battlezone logo" BORDER=0></TD>
+<TD WIDTH=40><A HREF="3d_miss_01.html">
+<IMG SRC="next.gif" TITLE="Next" BORDER=0 HSPACE=4></A>
+</TD></TR></TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 18th July, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HRE

@@ -1,0 +1,317 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=5bc8ff3&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>Enhanced BASIC language reference</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502
+ microprocessor."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_1"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Enhanced BASIC language reference </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Numbers</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+  Numbers may range from zero to plus or minus 1.70141173x10^38 and will have an
+  accuracy of just under 1 part in 1.68 x 10^7.
+<P ALIGN=JUSTIFY>
+  Numbers can be preceded by a sign, + or -, and are written as a string of
+  numeric digits with or without a decimal point and can also have a positive
+  or negative exponent as a power of 10 multiplier e.g.
+<P ALIGN=JUSTIFY>
+  <CENTER>
+    <TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+      <TR>
+        <TD>-142</TD> 
+        <TD>96.3</TD> 
+        <TD>0.25</TD> 
+        <TD>-136.42E-3</TD>
+        <TD>-1.3E7</TD> 
+        <TD>1</TD> 
+      </TR>
+    </TABLE>
+  </CENTER>
+<P ALIGN=JUSTIFY>
+  .. are all valid numbers.
+<P ALIGN=JUSTIFY>
+  Integer numbers, i.e. with no decimal fraction or exponent, can also be in
+  either hexadecimal or binary. Hexadecimal numbers should be preceded by <B>$</B>
+  and binary numbers preceded by <B>%</B>, e.g.
+<P ALIGN=JUSTIFY>
+  <CENTER>
+    <TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+      <TR>
+        <TD>%101010</TD> 
+        <TD>-$FFE0</TD> 
+        <TD>$A0127BD</TD> 
+        <TD>-%10011001</TD> 
+        <TD>%00001010</TD>
+        <TD>$0A</TD> 
+      </TR>
+    </TABLE>
+  </CENTER>
+<P ALIGN=JUSTIFY>
+  .. again are all valid numbers.
+</BLOCKQUOTE>
+<B><U>Strings</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+  Strings are any string of printable characters enclosed in a pair of quotation marks.
+  Non printing characters may be converted to single character strings using the
+  <A href="#CHR">CHR$()</A> functions.
+<P ALIGN=JUSTIFY>
+  <CENTER>
+    <TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+      <TR>
+        <TD>"Hello world"</TD> 
+        <TD>"-136.42E-3"</TD> 
+        <TD>"+----+----+"</TD> 
+        <TD>"[Y/n]"</TD> 
+        <TD>"Y"</TD> 
+      </TR>
+    </TABLE>
+  </CENTER>
+<P ALIGN=JUSTIFY>
+  Are all valid strings.
+</BLOCKQUOTE>
+<B><U>Variables</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+  Variables of both numeric and string type are available. String variables are
+  distinguished by the <B>$</B> suffix. As well as simple variables arrays are also
+  available and these may be either numeric or string and are distinguished by their
+  bracketed indicies after the variable name.
+<P ALIGN=JUSTIFY>
+  Variable names may be any length but only the first two name characters are significant
+  so BL and BLANK will refer to the same variable. The first character must be one of "A"
+  to "Z" or "a" to "z", following characters may also include numbers. E.g.
+<P ALIGN=JUSTIFY>
+  <CENTER>
+    <TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+      <TR>
+        <TD>A</TD> 
+        <TD>A$</TD> 
+        <TD>NAME$</TD>
+        <TD>x2LIM</TD> 
+        <TD>y</TD> 
+        <TD>colour</TD>
+        <TD>s1</TD> 
+        <TD>s2</TD> 
+      </TR>
+    </TABLE>
+  </CENTER>
+<P ALIGN=JUSTIFY>
+  Variable names are case sensitive so AB, Ab, aB and ab are all separate variables.
+<P ALIGN=JUSTIFY>
+  Variable names may not contain BASIC keywords. Keywords are only valid in upper
+  case so 'PRINTER' is not allowed (it would be interpreted as PRINT ER) but 'printer'
+  is.
+<P ALIGN=JUSTIFY>
+  Note that spaces in variable names are ignored so 'print e r', 'print er' and 'pri nter'
+  will all be interpreted the same way.
+</BLOCKQUOTE>
+
+<B><U>BASIC Keywords</B></U>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+  Here is a list of BASIC keywords. They are only valid when entered in upper case as
+  shown and spaces may not be included in them. So GOTO is valid BASIC keyword but GO TO
+  is not.
+<P ALIGN=JUSTIFY>
+  <CENTER>
+    <TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+    <TR>
+      <TD><A href="#ABS">ABS</A></TD>
+      <TD><A href="#AND">AND</A></TD>
+      <TD><A href="#ASC">ASC</A></TD>
+      <TD><A href="#ATN">ATN</A></TD>
+      <TD><A href="#BIN">BIN$</A></TD>
+      <TD><A href="#BITCLR">BITCLR</A></TD>
+      <TD><A href="#BITSET">BITSET</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#BITTST">BITTST</A></TD>
+      <TD><A href="#CALL">CALL</A></TD>
+      <TD><A href="#CHR">CHR$</A></TD>
+      <TD><A href="#CLEAR">CLEAR</A></TD>
+      <TD><A href="#CONT">CONT</A></TD>
+      <TD><A href="#COS">COS</A></TD>
+      <TD><A href="#DATA">DATA</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#DEC">DEC</A></TD>
+      <TD><A href="#DEEK">DEEK</A></TD>
+      <TD><A href="#DEF">DEF</A></TD>
+      <TD><A href="#DIM">DIM</A></TD>
+      <TD><A href="#DO">DO</A></TD>
+      <TD><A href="#DOKE">DOKE</A></TD>
+      <TD><A href="#END">END</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#AND">EOR</A></TD>
+      <TD><A href="#EXP">EXP</A></TD>
+      <TD><A href="#FN">FN</A></TD>
+      <TD><A href="#FOR">FOR</A></TD>
+      <TD><A href="#FRE">FRE</A></TD>
+      <TD><A href="#GET">GET</A></TD>
+      <TD><A href="#GOSUB">GOSUB</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#GOTO">GOTO</A></TD>
+      <TD><A href="#HEX">HEX$</A></TD>
+      <TD><A href="#IF">IF</A></TD>
+      <TD><A href="#INC">INC</A></TD>
+      <TD><A href="#INPUT">INPUT</A></TD>
+      <TD><A href="#INT">INT</A></TD>
+      <TD><A href="#IRQ">IRQ</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#LCASE">LCASE$</A></TD>
+      <TD><A href="#LEFT">LEFT$</A></TD>
+      <TD><A href="#LEN">LEN</A></TD>
+      <TD><A href="#LET">LET</A></TD>
+      <TD><A href="#LIST">LIST</A></TD>
+      <TD><A href="#LOAD">LOAD</A></TD>
+      <TD><A href="#LOG">LOG</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#LOOP">LOOP</A></TD>
+      <TD><A href="#MAX">MAX</A></TD>
+      <TD><A href="#MID">MID$</A></TD>
+      <TD><A href="#MIN">MIN</A></TD>
+      <TD><A href="#NEW">NEW</A></TD>
+      <TD><A href="#NEXT">NEXT</A></TD>
+      <TD><A href="#NMI">NMI</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#NOT">NOT</A></TD>
+      <TD><A href="#NULL">NULL</A></TD>
+      <TD><A href="#OFF">OFF</A></TD>
+      <TD><A href="#ON">ON</A></TD>
+      <TD><A href="#AND">OR</A></TD>
+      <TD><A href="#PEEK">PEEK</A></TD>
+      <TD><A href="#PI">PI</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#POKE">POKE</A></TD>
+      <TD><A href="#POS">POS</A></TD>
+      <TD><A href="#PRINT">PRINT</A></TD>
+      <TD><A href="#READ">READ</A></TD>
+      <TD><A href="#REM">REM</A></TD>
+      <TD><A href="#RESTORE">RESTORE</A></TD>
+      <TD><A href="#RETIRQ">RETIRQ</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#RETNMI">RETNMI</A></TD>
+      <TD><A href="#RETURN">RETURN</A></TD>
+      <TD><A href="#RIGHT">RIGHT$</A></TD>
+      <TD><A href="#RND">RND</A></TD>
+      <TD><A href="#RUN">RUN</A></TD>
+      <TD><A href="#SADD">SADD</A></TD>
+      <TD><A href="#SAVE">SAVE</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#SIN">SIN</A></TD>
+      <TD><A href="#SGN">SGN</A></TD>
+      <TD><A href="#SPC">SPC(</A></TD>
+      <TD><A href="#SQR">SQR</A></TD>
+      <TD><A href="#STEP">STEP</A></TD>
+      <TD><A href="#STOP">STOP</A></TD>
+      <TD><A href="#STR">STR$</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#SWAP">SWAP</A></TD>
+      <TD><A href="#TAB">TAB(</A></TD>
+      <TD><A href="#TAN">TAN</A></TD>
+      <TD><A href="#THEN">THEN</A></TD>
+      <TD><A href="#TO">TO</A></TD>
+      <TD><A href="#TWOPI">TWOPI</A></TD>
+      <TD><A href="#UCASE">UCASE$</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#UNTIL">UNTIL</A></TD>
+      <TD><A href="#USR">USR</A></TD>
+      <TD><A href="#VAL">VAL</A></TD>
+      <TD><A href="#VARPTR">VARPTR</A></TD>
+      <TD><A href="#WAIT">WAIT</A></TD>
+      <TD><A href="#WHILE">WHILE</A></TD>
+      <TD><A href="#WIDTH">WIDTH</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#AND">+</A></TD>
+      <TD><A href="#AND">-</A></TD>
+      <TD><A href="#AND">*</A></TD>
+      <TD><A href="#AND">/</A></TD>
+      <TD><A href="#AND">^</A></TD>
+      <TD><A href="#AND"><<</A></TD>
+      <TD><A href="#AND">>></A></TD>
+    </TR>
+    <TR>
+      <TD><A href="#AND">></A></TD>
+      <TD><A href="#AND">=</A></TD>
+      <TD><A href="#AND"><</A></TD>
+    </TR>
+    </TABLE>
+  </CENTER>
+ </BLOCKQUOTE>
+ 
+  <UL>
+    <LI>Anything in upper case is part of the command/function structure and must be present
+    <LI>Anything in lower case enclosed in < > is to be supplied by the user
+    <LI>Anything enclosed in [ ] is optional
+    <LI>Anything enclosed in { } and separated by | characters are multi choice options
+    <LI>Any items followed by an ellipsis, ... , may be repeated any number of times
+    <LI>Any punctuation and symbols, except those above, are part of the structure and must
+        be included
+  </UL>
+
+  <BLOCKQUOTE>
+  <TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0>
+  <TR><TD>var</TD><TD>is a valid variable name</TD></TR>
+  <TR><TD>var$</TD><TD>is a valid string variable name</TD></TR>
+  <TR><TD>var()</TD><TD>is a valid array name</TD></TR>
+  <TR><TD>var$()</TD><TD>is a valid string array name</TD></TR>
+  <TR><TD>&nbsp;</TD></TR>
+  <TR><TD>expression</TD><TD>is any expression returning a result</TD></TR>
+  <TR><TD>expression$&nbsp;&nbsp;&nbsp;</TD><TD>is any expression returning a string result</TD></TR>
+  <TR><TD>&nbsp;</TD></TR>
+  <TR><TD>addr</TD><TD>is an integer in the range +/- 16777215 that will be wrapped to the range 0 to 65535</TD></TR>
+  <TR><TD>b</TD><TD>is a byte value 0 to 255</TD></TR>
+  <TR><TD>n</TD><TD>is an integer in the range 0 to 63999</TD></TR>
+  <TR><TD>w</TD><TD>is an integer in the range -32768 to 32767</TD></TR>
+  <TR><TD>i</TD><TD>is a +ve integer value</TD></TR>
+  <TR><TD>r</TD><TD>is real number</TD></TR>
+  <TR><TD>+r</TD><TD>is a +ve value real number (0 is considered +ve)</TD></TR>
+  <TR><TD>$</TD><TD>is a string literal</TD></TR>
+  </TABLE>
+  </BLOCKQUOTE>
+</BLOCKQUOTE>
+
+<P><B><U>BASIC Commands</U></B>
+
+<BLOCKQUOTE>
+  <A name=END></A>
+  <B>END</B>
+  <BLOCKQUOTE><P ALIGN=JUSTIFY>
+    Terminates program execution and returns control to the command line (direct mode).
+    END may be placed anywhere in a program, it does not have to be on the last line, and
+    there may be any number, including none, of ENDs in total.
+<P ALIGN=JUSTIFY>
+    Note. CONT may be used after and END to resume execution from the next statement.
+  </BLOCKQUOTE>
+
+  <A name=FOR></A>
+  <B>FOR &lt;var&gt; = &lt;expression&gt; TO &lt;expression&gt; [STEP expression]</B>
+  <BLOCKQUOTE><P ALIGN=JUSTIFY>
+    Assigns a variable to a loop counter and optionally sets the start value, the end
+    value and the step size. If STEP expression is omitted then a default step size of
+    +1 will be assumed.
+  </BLOCKQUOTE>
+
+  <A name=NEXT></A>
+  <B>NEXT [var[,var]...]</B>
+  <BLOCKQUOTE><P ALIGN=JUSTIFY>
+    Increments or decrements a loop variable and checks for the terminating condition. If
+    the terminating condition has been reached then execution continues with the next
+    command, else execution continues with the command after the FOR assignment. <I>See <A
+    href="#FOR">FOR</A></I>.
+  </BLOCKQUOTE>
+
+  <A name=DATA></A>
+  <B>DATA [{r|$}[,{r|$}]...]</B>

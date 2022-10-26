@@ -1,0 +1,376 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>Enhanced 68k BASIC, language reference</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the EASy68k
+ Assembly Language Programming Tool.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#link_1">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Language reference. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This language reference will only refer to those commands which differ from, or are
+ in addition to, those in the main <A HREF="../ehbasic/language.html">EhBASIC68 language
+ reference</A>. 
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B><U>Notes on graphic commands</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B>Co-ordinates</B>
+<P ALIGN=JUSTIFY>
+ In all instances X and Y co-ordinate values may vary from -32768 to +32767.
+ Attempting to use values outside this range will cause a function call error.
+ Only parts of a structure that appear within the visible window, (0,0) to
+ (639,479), will be drawn.
+<P ALIGN=JUSTIFY>
+<B>Colour values</B>
+<P ALIGN=JUSTIFY>
+ Colour values are longword integers and are interpreted as follows ..<P ALIGN=JUSTIFY>
+<CENTER>
+<TABLE WIDTH=480 CELLPADDING=4 CELLSPACING=1 BORDER=1 BGCOLOR=WHITE>
+<TR>
+<TD ALIGN=CENTER WIDTH=25%><B>Bits 31 to 24</B></TD>
+<TD ALIGN=CENTER WIDTH=25%><B>Bits 23 to 16</B></TD>
+<TD ALIGN=CENTER WIDTH=25%><B>Bits 15 to 8</B></TD>
+<TD ALIGN=CENTER><B>Bits 7 to 0</B></TD></TR>
+<TR>
+<TD ALIGN=CENTER>Ignored</TD>
+<TD ALIGN=CENTER>Blue value</TD>
+<TD ALIGN=CENTER>Green value</TD>
+<TD ALIGN=CENTER>Red value</TD></TR>
+</TABLE>
+</CENTER>
+<P ALIGN=JUSTIFY>
+ As bits 31 to 24 are ignored -ve values may be used where convenient. E.g. you could
+ use -1 instead of $FFFFFF for white.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B><U>BASIC Keywords</B></U>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Here is a list of EASy68k BASIC keywords. Keywords are only valid when entered in upper
+ case as shown, spaces may not be included in them. So, for example, GOTO would be a valid
+ keyword but GO TO would not.
+<P ALIGN=JUSTIFY>
+<CENTER>
+<TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+<TR>
+ <TD WIDTH=14%><A HREF="#ELLIPSE">ELLIPSE</A></TD>
+ <TD WIDTH=14%><A HREF="#ELLIPSEF">ELLIPSEF</A></TD>
+ <TD WIDTH=14%><A HREF="#FILL">FILL</A></TD>
+ <TD WIDTH=14%><A HREF="#LINE">LINE</A></TD>
+ <TD WIDTH=14%><A HREF="#LOAD">LOAD</A></TD>
+ <TD WIDTH=14%><A HREF="#MODE">MODE</A></TD>
+ <TD><A HREF="#MOVE">MOVE</A></TD>
+</TR>
+<TR>
+ <TD><A HREF="#POINT">POINT</A></TD>
+ <TD><A HREF="#POINTF">POINT()</A></TD>
+ <TD><A HREF="#RECT">RECT</A></TD>
+ <TD><A HREF="#RECTF">RECTF</A></TD>
+ <TD><A HREF="#SAVE">SAVE</A></TD>
+ <TD><A HREF="#SIZE">SIZE</A></TD>
+ <TD><A HREF="#TI">TI</A></TD>
+</TR>
+</TABLE>
+</CENTER>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B><U>BASIC Commands</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<A name=ELLIPSE></A>
+<B>ELLIPSE [&#60;exprX1&#62;,&#60;exprY1&#62;,&#60;exprX2&#62;,&#60;exprY2&#62;][,][&#60;exprLC&#62;[,&#60;exprFC&#62;]]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Draws an unfilled ellipse bounded by the rectangle defined by exprX1 and exprX2, for
+ the X axis, and exprY1 and exprY2, for the Y axis, of colour exprLC. The width of the
+ line used to draw the ellipse is set by the <A HREF="#SIZE">SIZE</A> command.
+<P ALIGN=JUSTIFY>
+ If exprLC is present then the line colour will be set before the ellipse is drawn.
+<P ALIGN=JUSTIFY>
+ If exprFC is present then the fill colour will be set before the ellipse is drawn.
+ If you want to set the fill colour then the line colour must also be set.
+<P ALIGN=JUSTIFY>
+ If the co-ordinates are omitted then only the line colour, and the fill colour if
+ given, will be set without drawing.
+</BLOCKQUOTE>
+<A name=ELLIPSEF></A>
+<B>ELLIPSEF [&#60;exprX1&#62;,&#60;exprY1&#62;,&#60;exprX2&#62;,&#60;exprY2&#62;][,][&#60;exprLC&#62;[,&#60;exprFC&#62;]]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The same as <A HREF="#ELLIPSE">ELLIPSE</A> except the ellipse is filled with
+ the current fill colour.
+</BLOCKQUOTE>
+<A name=FILL></A>
+<B>FILL [&#60;exprX&#62;,&#60;exprY&#62;][,][&#60;exprFC&#62;]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Flood fill the area starting from &#60;exprX&#62;,&#60;exprY&#62;. The fill will
+ continue until it reaches the screen edge or a pixel of a different colour to that
+ originally at &#60;exprX&#62;,&#60;exprY&#62;.
+<P ALIGN=JUSTIFY>
+ If &#60;exprFC&#62; is specified then the current fill colour is set before the fill
+ starts. If &#60;exprX&#62;,&#60;exprY&#62; is omitted and just &#60;exprFC&#62; is
+ specified then the fill colour is set without drawing.
+</BLOCKQUOTE>
+<A name=LINE></A>
+<B>LINE [&#60;exprX1&#62;,&#60;exprY1&#62;[,&#60;exprX2&#62;,&#60;exprY2&#62;]][,][&#60;exprLC&#62;]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Draws a line from &#60;exprX1&#62;,&#60;exprY1&#62; to &#60;exprX2&#62;,&#60;exprY2&#62;.
+ If &#60;exprX2&#62;,&#60;exprY2&#62; is omitted then the line is drawn from the current
+ graphics position to &#60;exprX1&#62;,&#60;exprY1&#62;.
+<P ALIGN=JUSTIFY>
+ If &#60;exprLC&#62; is specified then the line colour will be set to that value before
+ the line is drawn. Also just giving &#60;exprLC&#62; will set the line colour without
+ drawing.
+</BLOCKQUOTE>
+<A name=LOAD></A>
+<B>LOAD &#60;expression$&#62;</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Attempts to load the file expression$. It will recognise the file format (binary or
+ ASCII) and invoke the necessary routines.
+<P ALIGN=JUSTIFY>
+ During an ASCII load you will see the program as it is being read from the file. This
+ file is merged with any program lines currently in the memory so to completely replace
+ a program in memory NEW should be performed before LOAD.
+<P ALIGN=JUSTIFY>
+ Binary files load <I>much</I> faster and over write any program currently in memory but
+ may not be readable by future versions.
+</BLOCKQUOTE>
+<A name=MODE></A>
+<B>MODE &#60;expression&#62;</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Set the draw mode to &#60;expression&#62;. Valid values are 0 to 15.
+<P ALIGN=JUSTIFY>
+<CENTER>
+<TABLE CELLPADDING=4 CELLSPACING=1 BORDER=1 BGCOLOR=WHITE>
+<TR><TD ALIGN=CENTER><B>Mode</B></TD>
+    <TD ALIGN=CENTER><B>Function</B></TD>
+    <TD ALIGN=CENTER><B>Effect</B></TD></TR>
+<TR><TD ALIGN=CENTER>0</TD><TD>False</TD>
+    <TD>Drawing is always black</TD></TR>
+<TR><TD ALIGN=CENTER>1</TD><TD>True</TD>
+    <TD>Drawing is always white</TD></TR>
+<TR><TD ALIGN=CENTER>2</TD><TD>Null</TD>
+    <TD>Nothing is drawn but the cursor is moved</TD></TR>
+<TR><TD ALIGN=CENTER>3</TD><TD>Inverse</TD>
+    <TD>The inverse of the background is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>4</TD><TD>Colour</TD>
+    <TD>The colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>5</TD><TD>Inverse colour</TD>
+    <TD>The inverse of the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>6</TD><TD>Inverse OR</TD>
+    <TD>The inverse of the background OR the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>7</TD><TD>Inverse AND</TD>
+    <TD>The inverse of the background AND the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>8</TD><TD>OR Inverse</TD>
+    <TD>The background OR the inverse of the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>9</TD><TD>AND Inverse</TD>
+    <TD>The background AND the inverse of the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>10</TD><TD>OR</TD>
+    <TD>The background OR the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>11</TD><TD>NOR</TD>
+    <TD>The background NOR the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>12</TD><TD>AND</TD>
+    <TD>The background AND the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>13</TD><TD>NAND</TD>
+    <TD>The background NAND the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>14</TD><TD>EOR</TD>
+    <TD>The background ExclusiveOR the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>15</TD><TD>ENOR</TD>
+    <TD>The background ExclusiveNOR the colour is drawn</TD></TR>
+</TABLE>
+</CENTER>
+</BLOCKQUOTE>
+<A name=MOVE></A>
+<B>MOVE &#60;exprX&#62;,&#60;exprY&#62;</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Move the current graphics point to &#60;exprX&#62;,&#60;exprY&#62;. Nothing is drawn.
+</BLOCKQUOTE>
+<A name=POINT></A>
+<B>POINT [&#60;exprX&#62;,&#60;exprY&#62;][,][&#60;exprLC&#62;]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Set the colour of the point &#60;exprX&#62;,&#60;exprY&#62; to the current line colour.
+<P ALIGN=JUSTIFY>
+ If &#60;exprLC&#62; is specified then the current line colour is set before the point
+ is plotted. If &#60;exprX&#62;,&#60;exprY&#62; is omitted and just &#60;exprLC&#62; is
+ specified then the line colour is set without drawing.
+</BLOCKQUOTE>
+<A name=RECT></A>
+<B>RECT [&#60;exprX1&#62;,&#60;exprY1&#62;,&#60;exprX2&#62;,&#60;exprY2&#62;][,][&#60;exprLC&#62;[,&#60;exprFC&#62;]]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The same as <A HREF="#ELLIPSE">ELLIPSE</A> except the bounding rectangle
+ itself is drawn.
+</BLOCKQUOTE>
+<A name=RECTF></A>
+<B>RECTF [&#60;exprX1&#62;,&#60;exprY1&#62;,&#60;exprX2&#62;,&#60;exprY2&#62;][,][&#60;exprLC&#62;[,&#60;exprFC&#62;]]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The same as <A HREF="#RECT">RECT</A> except the bounding rectangle is filled
+ with the current fill colour.
+</BLOCKQUOTE>
+<A name=SAVE></A>
+<B>SAVE &#60;expression$&#62;[,a[n1][-n2]]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Attempts to save the program memory to the file expression$. If the command has the
+ <B>,a</B> appended then the program will be saved in ASCII format. If saving in ASCII
+ format then the range of the save can be specified as with the <A
+ HREF="../ehbasic/language.html#LIST">LIST</A> command.
+<P ALIGN=JUSTIFY>
+ A program saved as binary loads much faster however, it is not recomended for archiving
+ as binary programs may not be readable by different versions of EhBASIC.
+</BLOCKQUOTE>
+<A name=SIZE></A>
+<B>SIZE &#60;expression&#62;</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sets the width of lines drawn using the <A HREF="#LINE">LINE</A> command and the width
+ of the outlines drawn using any of the shape commands.
+<P ALIGN=JUSTIFY>
+ The valid range of &#60;expression&#62; is from 0 to 255 but setting a value of zero
+ will actually give a width of one.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>BASIC Functions</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<A name=POINTF></A>
+<B>POINT(&#60;exprX&#62;,&#60;exprY&#62;)</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the pixel colour value at point &#60;exprX&#62;,&#60;exprY&#62;.
+</BLOCKQUOTE>
+<A name=TI></A>
+<B>TI</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the time since midnight in 1/100ths of seconds.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 26th May, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=526d779f&adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="//secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

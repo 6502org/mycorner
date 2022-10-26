@@ -1,0 +1,116 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>6502 Pen plotter - Drawing lines</TITLE>
+<META name="description" content="6502 Pen plotter."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#links"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>6502 Pen plotter - Drawing lines </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Reflection.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Because of the nature of the plotter's motors the number of possible lines that can be
+ drawn can be halved by reversing the direction of the X axis motor in the case of lines
+ with a -ve end X co-ordinate.
+<P ALIGN=JUSTIFY>
+ The same can be done again for lines with a -ve end Y co-ordinate. The result of this is
+ that all possible lines can be drawn using only unsigned integer maths.
+<P>
+<CENTER>
+ <IMG SRC="reflect.png" BORDER=1 ALT="[Reducing the possible types of line]">
+</CENTER>
+<P>
+</BLOCKQUOTE>
+<B><U>Interpolation.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Drawing a line between any two arbitary points on a grid the exact line cannot be drawn
+ as we are limited to either horizontals, verticals or diagonals. So to draw a
+ representation of the line on the square lattice the program can only generate the best
+ approximation.
+<P ALIGN=JUSTIFY>
+ The routine used by the plotter does just this. Given the distant endpoint of a line, the
+ near endpoint is always (0,0) as all lines are drawn relative to the current pen position
+ the routine generates the intermediate points.
+<P ALIGN=JUSTIFY>
+ The main feature of this routine is that the drawing of the line involves no
+ multiplication or division operations so even long lines are generated quicker that they
+ are drawn.
+<P ALIGN=JUSTIFY>
+ This graphic shows how three possible lines can be drawn using just one horizontal or
+ vertical and one diagonal.
+<P>
+<CENTER>
+ <IMG SRC="lines.png" BORDER=1 ALT="[How lines are drawn]">
+</CENTER>
+<P>
+</BLOCKQUOTE>
+<B><U>The routine.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ First the endpoint X co-ordinate is tested and if it is -ve the X motor direction is
+ set -ve and the sign of the X co-ordinate is changed.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+WriteLine
+	LDA	#$02		; set X direction +ve
+	STA	Dirbyte		; and save it
+
+	LDA	Xwordh		; get X axis high byte
+	BPL	Xispos		; branch if not -ve
+
+	EOR	#$FF		; invert byte
+	STA	Xwordh		; save it
+	LDA	Xwordl		; get low byte
+	EOR	#$FF		; invert it
+	STA	Xwordl		; save it
+	INC	Xwordl		; +1
+	BNE	Nohighx		; branch if no carry
+
+	INC	Xwordh		; else increment high byte		
+Nohighx
+	LDA	#$00		; clear A (direction -ve)
+	STA	Dirbyte		; clear direction byte
+Xispos
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Next exactly the same thing is done for the endpoint Y co-ordinate.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	LDA	Ywordh		; get Y axis high byte
+	BPL	Yispos		; branch if not -ve
+
+	EOR	#$FF		; invert byte
+	STA	Ywordh		; save it
+	LDA	Ywordl		; get low byte
+	EOR	#$FF		; invert it
+	STA	Ywordl		; save it
+	INC	Ywordl		; +1
+	BNE	Nohighy		; branch if no carry
+
+	INC

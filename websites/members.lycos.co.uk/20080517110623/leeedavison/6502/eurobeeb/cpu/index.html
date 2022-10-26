@@ -1,0 +1,75 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>
+  Euro Beeb - CPU card
+</TITLE>
+<META name="description" content="Content.">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="../index.html">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>CUBE - CPU. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="7066_0001.html">
+<IMG SRC="7066_0001_t.jpg" ALT="Eurobeeb CPU card" ALIGN=RIGHT></A>
+<U><B>Introduction</B></U>
+<BLOCKQUOTE>
+ This is the heart of the CUBE system and could run as a stand alone SBC as it has the
+ following...
+<BLOCKQUOTE>
+<LI> 65C02 CPU
+<LI> 2 x 8k RAM (battery backed)
+<LI> 16k EPROM
+<LI> 6551 ACIA
+<LI> 6522 VIA
+<LI> uEM M3002 RTC
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<U><B>First things first.</B></U>
+<BLOCKQUOTE>
+ The original battery on this card had burst and it was beginning to corrode the
+ surrounding metal. To halt this the battery was the first thing to go.<P>
+ Next as I am going to be experimenting with this card I also decided to replace the
+ 'budget' sockets with some turned pin type.<P>
+ This involved desoldering and removing all the <A HREF="gallery.html#socks">old
+ sockets</A> and then cleaning the <A HREF="gallery.html#socks">board</A>. Once the board
+ was clean the new <A HREF="gallery.html#socks">turned pin sockets</A> were soldered in
+ place and the board was thoroughly cleaned once more.
+</BLOCKQUOTE>
+<U><B>Address map</B></U>
+<BLOCKQUOTE>
+ The address map appears to be very similar to that of the BBC micro. Which is what you
+ would expect. Details to follow.
+</

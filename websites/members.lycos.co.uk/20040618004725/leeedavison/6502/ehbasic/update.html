@@ -1,0 +1,259 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC, update</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="index.html#link_1">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Enhanced BASIC, update </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+ <B>Not <A HREF=errata.html>undocumented features</A> this time but changes for any other
+ reasons...</B><P>
+ Download version 1.10
+ <A HREF="source.zip">source <IMG SRC="../../zip_sm.png" ALT="Download"
+ border=0></A>,
+ <A HREF="binary.zip">binary <IMG SRC="../../zip_sm.png" ALT="Download"
+ border=0></A> or
+ <A HREF="hex.zip">Motorola hex <IMG SRC="../../zip_sm.png" ALT="Download"
+ border=0></A>.
+<P>
+<A NAME=030714></A>
+<B>14th July 2003.</B>
+<BLOCKQUOTE>
+ Has it really been nearly a year since the last update? Doesn't seem like it. Most of
+ this time has been taken with developing EhBASIC for the <A
+ HREF="../suprchips/index.html">Mitsubishi 740 family</A>, a 65C02 compatable cored
+ microcontroller, and a port for the <A HREF="../../68k/ehbasic/index.html">680x0
+ processor</A>. As it's been so long a couple of version numbers have been skipped,
+ these were never released.
+<P>
+ The biggest change is that all keyword handling is now done with a dictionary instead
+ of a simple list. The advantage to this is that line parsing and listing are much faster,
+ in some cases nearly 100 times faster, and changes to keywords are now easier to do.
+<P>
+ Another change is the way the FOR ... NEXT loop operates internally. It no longer looks
+ for current loops with the same loop variable when a FOR is executed. The advantage is
+ faster code in a lot of places, the disadvantage is that if you jump out of a loop the
+ stack space is never recovered. Since that's a no-no anyway I've chosen to leave it like
+ that.
+<P>
+ Finally EhBASIC now announces the version number at startup. Any other changes are minor
+ and are to improve speed, function or size.
+<P>
+ Version number is now 1.10
+</BLOCKQUOTE>
+<A NAME=020725></A>
+<B>25th July 2002.</B>
+<BLOCKQUOTE>
+ Just a small update. The addresses where values for HEX$() or BIN$() have been changed.
+ This frees up two bytes in page zero and is this ...
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+nums_1		= $E0		; number to bin/hex string convert MSB
+nums_2		= nums_1+1	; number to bin/hex string convert
+nums_3		= nums_1+2	; number to bin/hex string convert LSB
+</PRE>
+</TD></TR></TABLE>
+</P>
+ ... becomes ...
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+nums_1		= Itempl	; number to bin/hex string convert MSB
+nums_2		= nums_1+1	; number to bin/hex string convert
+nums_3		= nums_1+2	; number to bin/hex string convert LSB
+</PRE>
+</TD></TR></TABLE>
+</P>
+ This is done in version 1.05
+</BLOCKQUOTE>
+<A NAME=020708></A>
+<B>8th July 2002.</B>
+<BLOCKQUOTE>
+ This is a re-write of the <A HREF=language.html#BIN>BIN$()</A> and
+ <A HREF=language.html#HEX>HEX$()</A> functions. This frees up 8 bytes from page zero as
+ well as being a little quicker. The downside is code length which is up slightly to
+ 9600 bytes ($2580 bytes).
+<P>
+ Examples of the speed increase are ..<P>
+<TABLE CELLSPACING=0 BORDER=1 BGCOLOR=white>
+<TR><TD>
+<TABLE CELLSPACING=5 BORDER=0 BGCOLOR=white>
+<TR>
+<TD COLSPAN=4 ALIGN=CENTER> Cycle times for <B>HEX$(57005)</B> and <B>BIN$(57005)</B></TD>
+</TR>
+<TR>
+<TD>Function</TD>
+<TD ALIGN=CENTER>Before</TD>
+<TD ALIGN=CENTER>After</TD>
+<TD ALIGN=CENTER>Saving</TD>
+</TR>
+<TR>
+<TD>HEX$()</TD>
+<TD>686 cycles</TD>
+<TD>465 cycles</TD>
+<TD>221 cycles (110uS @ 2MHz - 32%)</TD>
+</TR>
+<TR>
+<TD>BIN$()</TD>
+<TD>1700 cycles</TD>
+<TD>1079 cycles</TD>
+<TD>621 cycles (310uS @ 2MHz - 37%)</TD>
+</TR>
+</TABLE>
+</TR></TD>
+</TABLE>
+<P>
+ The other change is that both binary and Motorola hex versions are also available for
+ download.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 14th July, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%>
+</TD></TR></TABLE>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.11 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=954cfbe3&adpref="></script>

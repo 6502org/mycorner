@@ -1,0 +1,48 @@
+<HTML><HEAD><TITLE>SuprDupr AT keyboard driver</TITLE>
+<META name="description" content="An AT keyboard driver for the SuprDupr."></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=25%>
+<A HREF="../index.html#atkey"><IMG SRC="../../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER><B><FONT SIZE=+1>AT keyboard interface driver </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT></TD><TD WIDTH=25%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<P>
+<IMG SRC="atkey.jpg" ALIGN=RIGHT BORDER=1 TITLE="SuprDupr with AT keyboard" HSPACE=8>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The SuprDupr has a PS2 style socket for an AT keyboard. However, as it arrived, the
+ data and clock go to the GAL and so were jumped directly to port 7, bits 7 and 6, on the
+ micro. There are also positions for pullup resistors on both the keyboard data and clock
+ lines, these are not needed and were omitted. These details may have changed as this was
+ an early production board.
+</BLOCKQUOTE>
+<B><U>Software.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The software is unfinished and provided as a starting point for anyone who wishes
+ to make their own. As provided the driver provides very reliable basic keyboard handling.
+<P ALIGN=JUSTIFY>
+ During developement it was noticed that the keyboard driver would sometimes hang so some
+ test code was added to monitor the reliability (included in the source but commented out)
+ and it was found that the routine wouldn't return about once in every 750,000 calls.
+<P ALIGN=JUSTIFY>
+ This was eventually traced to a faulty keyboard but highlighted the vunerability of the
+ code to spurious responses from the keyboard. As a result the robustness of the code was
+ improved by adding timeouts and the resulting code proved reliable over hundreds of
+ millions of calls.
+</BLOCKQUOTE>
+<A NAME="source"></A>
+<B><U>The source</U></B>
+<BLOCKQUOTE>
+ <A HREF="asm.html">View</A> or <A HREF="asm.zip">download <IMG
+ SRC="../../../zip_sm.png" BORDER=0 TITLE="Download"></A> driver .asm file<BR>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 28th April, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

@@ -1,0 +1,83 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>6502 Pen plotter</TITLE>
+<META name="description" content="6502 Pen plotter."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>6502 Pen plotter </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Hardware.</U></B><P>
+<BLOCKQUOTE>
+ The basis for this project is an old Apple II pen plotter. Adverts from when this was
+ a current piece of hardware give the price as over £1100 (over $1700) and at the time
+ this was one of the best priced plotters available.
+<P>
+ It has a single pen and a keypad with UP, DOWN, LEFT and RIGHT buttons plus a switch
+ for PEN UP. There is no position sensing or feedback of any sort from the mechanism,
+ it relies entirely on relative (to the last position) movement and user vigilance.
+<P>
+ At first it was my intention to just restore the plotter and use it as it was but the
+ fact that it was almost completely dumb, the host interface was just a logic level
+ mimic of the control panel, and that the driver circuit radiated some milliwatts of RF
+ right up into the VHF band, persuaded me to junk the original circuit and build a new
+ one.
+</BLOCKQUOTE>
+<CENTER>
+<B>Pen plotter circuit.</B>
+<P>
+ <IMG SRC="../../nocircuit.png" TITLE="6502 Pen plotter" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE>
+ The circuit consists of a 6502, two 32k x 8 RAMs, a 32k x 8 EPROM, a 6551 ACIA with a
+ MAX 232 buffer, a 6840 counter timer, two stepper motor drivers, two 8 bit latches, an 8
+ bit buffer, an address decoder (GAL16V8A) and is all clocked by a 1.832 MHz oscillator.
+<P>
+ The use of a GAL for the glue chip allows an almost complete change of the memory map
+ without any circuit changes. This means that changes in address requirements can be
+ accommodated without recourse to the soldering iron. For anyone interested an example
+ set of equations for this chip are in pp.pld and can be compiled with WinCUPL. The
+ fuse file, pp.jed and the compiler listing, pp.txt are also included.
+</BLOCKQUOTE>
+<P>
+<CENTER>
+<B> The finished board.</B><P>
+<P>
+ <IMG SRC="board.jpg" TITLE="6502 Pen plotter" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE>
+ At the back are the motor current limit resistors then, on the board from left to right,
+ are the motor and pen drivers, output latches, input buffer and decoding, CPU and XTAL
+ osc., reset switch and +5V regulator, lower 32k RAM, upper 32k RAM and smoothing caps,
+ 32k ROM and MAX232, 6551 ACIA and more smoothing caps and finally the 6840 counter timer
+ chip.
+</BLOCKQUOTE>
+<CENTER>
+<B> The board in the plotter.</B><P>
+<P>
+ <IMG SRC="../../nophoto.png" TITLE="6502 Pen plotter" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE>
+ As can be seen the size, shape a

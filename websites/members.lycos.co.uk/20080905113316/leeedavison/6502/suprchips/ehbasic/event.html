@@ -1,0 +1,44 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=9463adcc&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC74 examples</TITLE>
+<META name="description"
+ content="An advanced BASIC interpreter for the 740 microprocessor family">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=25%>
+<A HREF="examples.html">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>EVENT and PWM example. </FONT></B><FONT SIZE=-1>by Lee Davison</FONT>
+</TD>
+<TD WIDTH=25%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<P>
+<U><B>Introduction.</B></U>
+<BLOCKQUOTE>
+ In this very basic example the SuprDupr is used to measure the width of +ve pulses on
+ the counter 0 input.
+<P>
+</BLOCKQUOTE>
+<U><B>The code.</B></U>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 TIMERX PWM : REM set PWM measure mode
+20 CNTR0 - : REM -ve edge triggered, count when high
+30 ON CNTR0 1000 : REM event code
+40 TIMERX START : REM ensure timer can run
+
+100 DO
+110 DO : LOOP UNTIL EVENT : REM wait for event
+120 PRINT TX : REM print result
+130 LOOP : REM loop forever
+
+1000 TX = TIM

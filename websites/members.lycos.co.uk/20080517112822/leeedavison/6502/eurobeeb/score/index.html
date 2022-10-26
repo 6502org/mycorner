@@ -1,0 +1,85 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>
+  Euro Beeb - More CUBE parts
+</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="../index.html">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>More CUBE parts. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<U><B>Introduction</B></U>
+<BLOCKQUOTE>
+ Just look at this lot. More CUBE cards, and parts, than you can comfortably shake a
+ stick at. Not all of these are CUBE manufactured though. Some are Pro-Active Control
+ Ltd. and a few are Ariel Industries Ltd. I have multiple examples of everything below
+ and the haul totals over 100 cards, with at least half of them being new old stock.
+ There are also ten 19" rackmount chassis, half of those still flatpacked and sealed
+<P>
+ As well as the hardware there is the documentation for almost everything.
+<P>
+ Just for now are these thumbnails linked to bigger images but, as I get the information
+ scanned, OCRed and posted, I will link to the relevant pages.
+</BLOCKQUOTE>
+<CENTER>
+<TABLE WIDTH=90%>
+<CAPTION ALLIGN=TOP><B>CUBE - More parts</B></CAPTION>
+<TR>
+<TD ALIGN=CENTER>
+<A HREF="backplane_10_l.jpg"><IMG SRC="backplane_10_t.jpg"
+ ALT="Ten way backplane"></A></TD>
+<TD ALIGN=CENTER>
+<A HREF="backplane_8_l.jpg"><IMG SRC="backplane_8_t.jpg"
+ ALT="Eight way backplane"></A></TD>
+<TD ALIGN=CENTER>
+<A HREF="backplane_6_l.jpg"><IMG SRC="backplane_6_t.jpg"
+ ALT="Six way backplane"></A></TD>
+<TD ALIGN=CENTER>
+<A HREF="cuban12a_l.jpg"><IMG SRC="cuban12a_t.jpg"
+ ALT="Four channed A to D"></A></TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER><B>10 slot backplane</B></TD>
+<TD ALIGN=CENTER><B>8 slot backplane</B></TD>
+<TD ALIGN=CENTER><B>6 slot backplane</B></TD>
+<TD ALIGN=CENTER><B>Four channel A to D</B></TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER>
+<A HREF="cuban12ad_l.jpg"><IMG SRC="cuban12ad_t.jpg"
+ ALT="Four channel A to D & D to A"></A></TD>
+<TD ALIGN=CENTER>
+<A HREF="cugraph_ii_l.jpg"><IMG SRC="cu

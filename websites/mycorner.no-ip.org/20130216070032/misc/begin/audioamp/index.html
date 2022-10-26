@@ -1,0 +1,77 @@
+<HTML><HEAD><TITLE>Audio amplifier</TITLE></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html#aamp00"><IMG SRC="../../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Audio amplifier. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<TABLE WIDTH=100%><TR><TD>
+<IMG SRC="schem.png" ALIGN=RIGHT TITLE="Audio amplifier" WIDTH=400 HEIGHT=240
+ HSPACE=8 BORDER=1>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This minimal component audio amplifier schematic is taken almost in its entirety from
+ the LM386 datasheet but with the component values adjusted to more readily available
+ values. None of them are critical.
+<P ALIGN=JUSTIFY>
+ The electret microphone input stage is added as an equally minimal input device. The 47K
+ resistor supplies the bias current for the microphone and the 100nF capacitor blocks any
+ resulting DC from passing to the amplifier.
+<P ALIGN=JUSTIFY>
+ This circuit can be run from a six volt battery supply, such as four AA cells, or from
+ a six volt DC power supply. The actual voltage is not critical, it should work from four
+ volts upwards, but it is recommended not to go higher than twelve volts or the LM386 may
+ be damaged.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="aamp01" HREF="aamp01.html"><IMG SRC="aamp01.png" ALIGN=RIGHT HSPACE=8 WIDTH=320
+ HEIGHT=240 BORDER=1 TITLE="Breadboard layout"></A>
+<B><U>Breadboard layout.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The circuit is laid out on the breadboard in roughly the same arrangement as in the
+ schematic. The speaker used was an old PC speaker so a pin header was inserted into the
+ breadboard to accept it. The connection for the microphone is also shown as a pin header
+ in the layout diagram but the electret actually used to build the circuit had wire ends
+ so a header wasn't used.
+<P ALIGN=JUSTIFY>
+ Speakers don't much care which way round they are connected, if the connections are
+ reversed all that changes is the phase, but they are usually marked + and - and it is
+ good practice to always connect the + lead to the signal and the - lead to 0V.
+<P ALIGN=JUSTIFY>
+ Electret microphones are polarised and will not work connected the wrong way round so
+ you must connect the + lead to the amplifier input and the - lead to 0V.
+<P ALIGN=JUSTIFY>
+ The + end of both the speaker and microphone connections are marked by a red stripe in
+ the layout diagram.
+<P ALIGN=JUSTIFY>
+ The 22K volume pot only had short leads so tinned wire was soldered to each so that it
+ would plug into the breadboard. If the volume pot works in the reverse sense, i.e.
+ turning it clockwise makes it quieter, then fitting it rotated 180 degrees should
+ correct this.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A></A>
+<A HREF="aamp02.html" NAME="aamp02"><IMG SRC="aamp02s.jpg" ALIGN=RIGHT HSPACE=8
+ WIDTH=320 HEIGHT=240 BORDER=1 TITLE="Practical layout"></A>
+<B><U>Practical circuit.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Here the is circuit laid out and working on an actual breadboard.
+<P ALIGN=JUSTIFY>
+ This is just a small section of a much larger breadboard. The extra components are
+ capacitors that I usually have scattered across the breadboard to eliminate noise from
+ the power rails. They make no difference to this circuit.
+<P ALIGN=JUSTIFY>
+ The extra links are because this particular breadboard has a break in the horizontal
+ rails at the mid point. I don't want this break so I usually keep these positions
+ jumpered.
+</BLOCKQUOTE>
+</TD></TR></TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 22nd July, 2011.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+
+

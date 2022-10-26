@@ -1,0 +1,73 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>Vic 20 multi thread TCP</TITLE>
+<META name="description" content="Vic 20 multi thread TCP">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=25%><A HREF="../index.html#multitcp">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD ALIGN=CENTER>
+<B><FONT SIZE=+1>Vic 20 multi thread TCP </FONT></B><FONT SIZE=-1>by Lee Davison</FONT>
+</TD><TD WIDTH=25%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Introduction</U></B>
+<IMG SRC="multi.jpg" ALIGN=RIGHT BORDER=1 ALT="Eight thread TCP" HSPACE=8>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The Vic 20 <A HREF="../network/index.html">network</A> code allows a Vic 20 to be
+ connected to an ethernet network and, while it works, it suffers from one drawback,
+ it can only support one TCP connection at any time. This is most noticeable when
+ opening a web page with multiple images on it as once one connection is open all the
+ others wait at least one time out time before trying again. This meant that in spite
+ of the first HTTP GET request being serviced in less than 200ms, the pages on the Vic
+ 20 web server would still take ten seconds or so to complete.
+</BLOCKQUOTE>
+<B><U>Multi threads</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The solution to this is to replace the single thread TCP code with multi thread code
+ that can handle more than one connection at any time. This introduces a new level of
+ complexity into the code and increases RAM use but this is more than made up for by
+ the aparent improvement in performance. For example, a web page with three embedded
+ images is now served in less than 800ms.
+</BLOCKQUOTE>
+<B><U>The new software</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The biggest change is to the TCP code. This has been modified to send RST packets,
+ should they be needed, and now behaves more like the specification in RFC 793. It
+ has also been changed to support multiple simutaneous connections and in this case
+ up to eight simultaneous connections are supported, enough to serve two http clients
+ with no noticeable loss in performance. RAM permitting, sixty four connections should
+ be possible with only minimal code changes.
+<P ALIGN=JUSTIFY>
+ The software has changed in more than just it's ability to handle multiple TCP
+ connections. Changes have also been made in the way the different layers of code
+ interact, giving better definition to which layer each part of the code belongs to.
+ There is also greater division between different protocols at the same level and, while
+ this has increased code size a little, it should make it easier to add or remove code
+ should need arise.
+<P ALIGN=JUSTIFY>
+ The low level code that handles the network interface car

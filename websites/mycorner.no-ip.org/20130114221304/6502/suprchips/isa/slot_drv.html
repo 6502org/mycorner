@@ -1,0 +1,73 @@
+<HTML><HEAD><TITLE>8 Bit ISA slot - EhBASIC routines.</TITLE>
+<META name="description" content="An AT keyboard driver for the SuprDupr"></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=25%>
+<A HREF="index.html#source">
+  <IMG SRC="../../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>8 Bit ISA slot routines. </FONT></B><FONT SIZE=-1>by Lee Davison</FONT>
+</TD>
+<TD WIDTH=25%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="8019drv.zip">Download this file <IMG SRC="../../../zip_sm.png" TITLE="Download"
+ border=0></A>
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+rst_pin	=	7		; reset pin bit number
+ior_pin	=	1		; ISA /IOR pin bit number
+iow_pin	=	0		; ISA /IOW pin bit number
+
+		*=	$EF00	; set this as needed
+
+; write to NIC port CALL write_creg,address,byte
+
+write_creg:
+	JSR	LAB_1C01	; scan for "," else do syntax error/warm start	
+	JSR	LAB_GADB	; get two parameters for POKE or WAIT
+	STX	Port5		; byte out to data port
+	LDM	#$FF,PDir5	; data port to output
+	LDA	Port6		; get current address
+	AND	#$E0		; clear non address bits
+	STA	Port6		; save cleared address
+	LDA	Itempl		; get address back
+	AND	#$1F		; mask non address bits
+	ORA	Port6		; OR in non port bits
+	STA	Port6		; save address
+	CLB	iow_pin,Port4	; write bit low
+	SEB	iow_pin,Port4	; write bit high
+	RTS
+
+		*=	$EF20	; set this as needed
+
+; read from NIC port USR(n) where n is the address
+
+read_creg:
+	JSR	LAB_EVBY	; evaluate byte expression, result in X
+	LDM	#$00,PDir5	; data port to input
+	LDA	Port6		; get current address
+	AND	#$E0		; clear non address bits
+	STA	Port6		; save address
+	TXA			; get address
+	AND	#$1F		; mask non address bits
+	ORA	Port6		; OR in non port bits
+	STA	Port6		; save address
+	CLB	ior_pin,Port4	; read bit low
+	LDY	Port5		; get byte from data port
+	SEB	ior_pin,Port4	; read bit high
+	JMP	LAB_1FD0	; convert Y to byte in FAC1 & return
+</PRE>
+</TD></TR></TABLE>
+<P>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 3rd August, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

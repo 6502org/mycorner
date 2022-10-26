@@ -1,0 +1,57 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=7ea9d0fa&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC74 examples</TITLE>
+<META name="description"
+ content="An advanced BASIC interpreter for the 740 microprocessor family">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=25%>
+<A HREF="examples.html">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>Timers example. </FONT></B><FONT SIZE=-1>by Lee Davison</FONT>
+</TD>
+<TD WIDTH=25%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<P>
+<U><B>Introduction.</B></U>
+<BLOCKQUOTE>
+ In this example the SuprDupr is used to read a joystick on an analog input and generate
+ a servo PWM signal using two of the timers.
+<P>
+ The joystick input gave a value of 90 to 165, the servo needs a pulse width of 0.5mS
+ to 2.5mS which, with the prescale value used, means TIMERX values will range from 50
+ to 250
+<P>
+ The values for <B>S</B> and <B>M</B>, the scaling and minimum offset values used in
+ the code, were calculated as follows..
+<BLOCKQUOTE>
+<PRE><B>S = timer range / input range
+  = (250-50) / (165-90)
+  = 2.67</B></PRE>
+</BLOCKQUOTE>
+ .. and ..
+<BLOCKQUOTE>
+<PRE><B>M = minimum timer - minimum scaled value
+  = 50 - (90*S)
+  = -190</B></PRE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<U><B>The code.</B></U>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 REM generates timing pulses for a servo
+20 REM control is via analog input 0
+30 REM output is via timer X
+40 REM timer 1 is used to generate the 20mS frame
+50 REM
+100 TIMERX STOP : REM stop output
+110 PRES12 49 : TIMER1 199 :

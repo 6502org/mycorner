@@ -1,0 +1,63 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=66418de0&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>Sampled sound card</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Sampled sound card. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+ <IMG SRC="soundcard.jpg" HSPACE=8 ALIGN=RIGHT TITLE="Unknown sound card" BORDER=1>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Another found at a radio rally for not very much money thing. The legend on the card says
+ <I><B>BWB NEWARK LTD. VSS3 SAMPLED SOUND PROGRAM CARD MK3</B></I> but apart from that I
+ have no real info. I grabbed this because I thought the <TT>27C4000</TT> EPROMs would
+ come in handy and there were some other interesting chips on the board. One of the first
+ things I did with the card was to read out the programmable logic devices and the EPROMs.
+<P ALIGN=JUSTIFY>
+ Four of the EPROMS, labeled <TT>MGD_SND_.2_A, B, C</TT> and <TT>D</TT>, are connected to
+ an <TT>OKI MSM6376</TT> speech chip and I wanted to know what sounds there were in these
+ EPROMs. While I could find datasheets for similar chips, including chips from the
+ <TT>MSM6375</TT> family, they all lacked any information of the format of the stored
+ data, apart from that it is ADPCM encoded.
+</BLOCKQUOTE>
+<B><U>Finding sounds</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Looking at the contents of the sound ROMs in turn, the A ROM seemed to start with some
+ sort of table then just random data, sound ROMs B and C seemed to be just random data
+ and ROM D differed from B and C only in that most of the last half of it is unprogrammed.
+<P ALIGN=JUSTIFY>
+ It seemed to make some sense to combine the ROMs to make one big data image and this was
+ done with the ROMs in the order A, B, C and D.
+</BLOCKQUOTE>
+<B><U>Addresses</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ With the ROMS combined to form one data image it quickly became evident that the table
+ at the start is a table of addresses as all the values fall within the range of the data.
+ Starting at the fourth byte in they were taken as a series of longword addresses in
+ big-endian format, high bytes first. The address of the first sample is shown in
+ <B>bold</B>.
+<P ALIGN=JUSTIFY>
+ <IMG SRC="addresses.png" HSPACE=8 TITLE="Start addresses start" BORDER=1>
+<P ALIGN=JUSTIFY>
+ These continue until a longword zero is encountered, this marks the end of the sample
+ addresses. This again is shown in <B>bold</B>.
+<P ALIGN=JUSTIFY>
+ <IMG SRC="addresend.png" HSPACE=8 TITLE="Start addresses end" BORDER=1>
+<P ALIGN=JUSTIFY>
+ Each address points to the start of a sample, this is the start of the sample pointed
+ to by the first address ...
+<P ALIGN=JUSTIFY>
+ <IMG SRC="samplesrt.png" HSPACE=8 TITLE="Sample start" BORDER=1>
+<P ALIGN=JUSTIFY>
+ Before I discovered that the data was ADPCM encoded I did try to play the samples as just
+ binary data. For the first sample that produced this awfull noise.
+<BLOCKQUOTE>
+<A HREF="000220_raw.wav">000220.wav <IMG SRC="icon.gif" TITLE=Sample ALIGN=CENTER 
+BORDER=0></A> raw data as a .wav file.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>ADPCM Samples</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Once I found some data on the voice chip I realised that the sample

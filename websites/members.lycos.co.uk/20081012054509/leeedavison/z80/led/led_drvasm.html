@@ -1,0 +1,186 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=349d76a&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>Z80 LED matrix - Driver assembly source file.</TITLE>
+<META name="description" content="An LED matrix driver for the Z80."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#link_1">
+<IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Driver assembly source. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD>
+<TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="led_drv_asm.zip">Download this file <IMG SRC="../../zip_sm.png" ALT="[Download]"
+ border=0></A>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; This code was written to test some LED matrix displays that were bought
+; cheap at a radio rally. The cards have 240 LEDs in an 8x30 matrix driven
+; by 8 row lines and two 4 bit decoders driving the 30 columns. (column 15
+; and column 31 = all LEDs off.)
+
+; The displays were driven by the uPF IO/M Z80 PIO the address map of which
+; is below. Change these for your own system.
+
+; One interesting routine in this is rand_8 which generates a maximal length
+; 8 bit pseudo random sequence. Read the comments to see how it works.
+
+; uPF Address map
+
+MPortA:		EQU	00h	;Main board 8255 port A
+MPortB:		EQU	01h	;Main board 8255 port B
+MPortC:		EQU	02h	;Main board 8255 port C
+MPPCNT:		EQU	03h	;Main board 8255 control
+
+MCTC0:		EQU	40h	;Main board CTC Channel 0
+MCTC1:		EQU	41h	;Main board CTC Channel 1
+MCTC2:		EQU	42h	;Main board CTC Channel 2
+MCTC3:		EQU	43h	;Main board CTC Channel 3
+
+MPIODA:		EQU	80h	;Main board PIO Port A Data
+MPIOCA:		EQU	82h	;Main board PIO Port A Control
+MPIODB:		EQU	81h	;Main board PIO Port B Data
+MPIOCB:		EQU	83h	;Main board PIO Port B Control
+
+PIODA:		EQU	68h	;IOM PIO Port A Data
+PIOCA:		EQU	6Ah	;IOM PIO Port A Control
+PIODB:		EQU	69h	;IOM PIO Port B Data
+PIOCB:		EQU	6Bh	;IOM PIO Port B Control
+
+URTDA:		EQU	60h	;IOM 8251 Data Port
+URTCNT:		EQU	61h	;IOM 8251 Control Port
+
+CTC0:		EQU	64h	;IOM CTC Channel 0
+CTC1:		EQU	65h	;IOM CTC Channel 1
+CTC2:		EQU	66h	;IOM CTC Channel 2
+CTC3:		EQU	67h	;IOM CTC Channel 3
+
+DIPSW:		EQU	6Ch	;IOM Dip SW
+
+PPortA:		EQU	7Ch	;Programmer 8255 port A
+PPortB:		EQU	7Dh	;Programmer 8255 port B
+PPortC:		EQU	7Eh	;Programmer 8255 port C
+EPPCNT:		EQU	7Fh	;Programmer 8255 control
+
+PPortD:		EQU	70h	;Programmer Vpp select & control
+
+	ORG	1800h
+
+	LD	A,#0Fh		; control word
+	OUT	(PIOCA),A	; port A o/p
+	OUT	(PIOCB),A	; port B o/p
+
+	LD	A,#0Fh		; set OFF address
+	LD	(pat_adr),A	; save it
+	CALL	byte_out	; out to display
+
+	LD	A,#0Ch		; set scans per call
+	LD	(s_count),A	; save it
+
+	LD	A,#29		; scroll end byte
+	LD	(s_end),A	; save it
+
+	LD	A,#00h		; start from 0
+	LD	(pat_adr),A	; save address
+	LD	(index),A	; save index byte
+	LD	(s_start),A	; clear scroll start
+	LD	(1+s_start),A	; clear scroll start (high byte)
+
+; scrolling buffer
+
+main:
+	LD	HL,pattern	; point to bitmap
+	ADD	A,L		; add low
+	LD	L,A		; copy back
+	LD	A,#0		; clear byte
+	ADC	A,H		; add high byte + carry
+	LD	H,A		; save back
+	LD	(pointer),HL	; save it
+	CALL	scan_disp	; go scan the display
+	LD	A,(index)	; get index
+	INC	A		; next
+	LD	(index),A	; save new
+	JR	NZ,main		; loop
+
+; flash 'Reboot' 4 times slowly
+
+	LD	HL,d_buffer	; point to display buffer
+	LD	(pointer),HL	; save it
+
+	LD	HL,xpattern	; point to pattern
+	LD	DE,d_buffer	; point to buffer
+	LD	BC,30		; 30 bytes to do
+	LDIR			; copy block
+
+	LD	A,#80h		; scan count
+	LD	(s_count),A	; save it
+
+	LD	A,#04h		; flash count
+	LD	(d_count),A	; save it
+
+	LD	HL,d_buffer	; point to bitmap 'Reboot'
+
+	CALL	flash_it	; flash display
+
+	LD	A,#08h		; set scans per call
+	LD	(s_count),A	; save it
+
+	LD	A,#01h		; scroll direction (right)
+	LD	(s_dir),A	; save it
+
+	CALL	clear_dis	; scroll clear display
+
+; scroll up test
+
+	CALL	b_clear		; clear buffer
+
+	LD	HL,p_up		; point to pattern
+	LD	DE,p_buffer	; point to buffer
+	LD	BC,30		; 30 bytes to do
+	LDIR			; copy block
+
+	LD	A,#18h		; set scans per call
+	LD	(s_count),A	; save it
+
+	LD	A,#40h		; scroll count
+	LD	(d_count),A	; save it
+
+	LD	A,#29		; scroll end byte
+	LD	(s_end),A	; save it
+	LD	A,#0		; start from 0
+	LD	(s_start),A	; clear scroll start
+	LD	A,#01h		; scroll direction (up)
+	LD	(s_dir),A	; save it
+
+scroll_up:
+	CALL	scan_disp	; go scan the display
+
+	CALL	scroll		; go scroll display
+
+	LD	A,(d_count)	; get scroll count
+	DEC	A		; next
+	LD	(d_count),A	; save new
+	JR	NZ,scroll_up	; loop if not done
+
+; scroll down test
+
+	LD	HL,p_down	; point to pattern
+	LD	DE,p_buffer	; point to buffer
+	LD	BC,30		; 30 bytes to do
+	LDIR			; copy block
+
+	LD	A,#40h		; scroll count
+	LD	(d_count),A	; save it
+
+	LD	A,#00h		; scroll direction (up)
+	LD	(s_dir),A	; save it
+
+scroll_dn:
+	CALL	scan_disp	; go scan the display
+
+	CALL	scroll		; go scroll display
+
+	LD	A,(d

@@ -1,0 +1,103 @@
+<HTML><HEAD><TITLE>Vic 20 .prg file reader</TITLE>
+<META name="description" content="Vic 20 lister"></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=25%>
+<A HREF="../index.html"><IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER><B><FONT SIZE=+1>Vic 20 .prg file reader </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT></TD><TD WIDTH=25%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<IMG SRC="prgread.png" ALIGN=RIGHT BORDER=1 ALT="Vic 20 listing" HSPACE=8>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ Want an easy way to convert a Vic 20 <TT><B>.prg</B></TT> file into something a little
+ more platform independant? I did, so I cobbled this together and added bits until I got
+ bored.
+</BLOCKQUOTE>
+<B><U>Use</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The program takes a standard Vic 20 <TT><B>.prg</B></TT> file and reads it. Optionally
+ it will produce a text and/or html version of that file. An example html output is <A
+ HREF="example1.html">here</A>.
+<P ALIGN=JUSTIFY>
+ On running <TT><B>prgread.exe</B></TT> you will be prompted for a filename, as this is
+ a QuickBASIC program you need to enter the DOS filename, without the <TT><B>.prg</B></TT>
+ extension. If the filename contains spaces you'll have to enclose it in quotes, e.g.
+ <TT><B>"demo 1"</B></TT>. If you enter a null filename the program will just exit at
+ this point.
+<P ALIGN=JUSTIFY>
+ Any time while the files are being written output can be aborted by pressing the [ESC]
+ key.
+<P ALIGN=JUSTIFY>
+ After the filename you will be asked if you want a text output file. If you answer yes,
+ or just press return, an ASCII file with the same name as the input file but with a
+ <TT><B>.txt</B></TT> extension will be output. In this file special Commodore characters
+ will be rendered as ASCII surrounded by curly braces, e.g. [CTRL] 1, which is the colour
+ control for black, will be replaced by {BLK}. An example of this type of output is
+ <A HREF="example.txt">here</A>.
+<P ALIGN=JUSTIFY>
+ After the text output prompt you will be asked if you want an html output file. If you
+ answer yes, or just press return, an html file with the same name as the input file but
+ with an <TT><B>.htm</B></TT> extension will be output. As well as this you will be asked
+ if you want html graphics, if you answer yes to this then the special Commodore
+ characters will be rendered as 8 by 8 graphics instead of as ASCII names, e.g.[CTRL] 1,
+ which is the colour control for black, will be replaced by "<IMG SRC=d0.bmp ALT={BLK}>".
+ An example of this type of output is <A HREF="example2.html">here</A> where the {CLR} on
+ line 11 has been replaced by it's graphic equivalent. The default response is <I>not</I>
+ to use graphics.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0><TR><TD>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+<FONT COLOR=blue> 3 </FONT><FONT COLOR=red>PRINT</FONT> <FONT COLOR=green>"<IMG SRC=92.bmp ALT={RVSON}><IMG SRC=91.bmp ALT={DOWN}><IMG SRC=d0.bmp ALT={BLK}>VIC 20: GREAT GRAPHIC ABILITY"</FONT>;   
+<FONT COLOR=blue> 10 </FONT>V<FONT COLOR=red>=INT</FONT>(7<FONT COLOR=red>*RND</FONT>(0))
+<FONT COLOR=blue> 11 </FONT><FONT COLOR=red>PRINT</FONT><FONT COLOR=green>"<IMG SRC=d3.bmp ALT={CLR}>"</FONT>:<FONT COLOR=red>POKE</FONT>7680<FONT COLOR=red>+</FONT>K,102
+<FONT COLOR=blue> 12 </FONT><FONT COLOR=red>POKE</FONT>38400<FONT COLOR=red>+</FONT>K,V
+<FONT COLOR=blue> 13 </FONT><FONT COLOR=red>IF</FONT>K<FONT COLOR=red>&lt;</FONT>24<FONT COLOR=red>THEN</FONT>K<FONT COLOR=red>=</FONT>253
+<FONT COLOR=blue> 14 </FONT><FONT COLOR=red>IF</FONT>K<FONT COLOR=red>&gt;</FONT>483<FONT COLOR=red>THEN</FONT>K<FONT COLOR=red>=</FONT>253
+<FONT COLOR=blue> 15 </FONT><FONT COLOR=red>POKE</FONT>A,E:<FONT COLOR=red>POKE</FONT>B,D:<FONT COLOR=red>GOTO</FONT> 3
+</PRE></TD></TR></TABLE>
+<TD><P ALIGN=JUSTIFY>
+ The HTML produced by prgread can easily be edited and then included in other HTML
+ pages, or just used as is.
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ If you do opt to use the html grapgics you will be prompted for an image path. If the
+ images will be in the same directory as the html file then just hit [ENTER] to not add
+ a path. If the images will be in another directory you can enter the relative path and
+ this will be added to each image entry.
+<P ALIGN=JUSTIFY>
+<IMG SRC="popup.png" ALIGN=RIGHT BORDER=1 ALT="Popup text on graphics" HSPACE=8>
+ Another feature of the html output is that the text is coloured to make different parts
+ distinct. Line numbers are rendered in blue, BASIC keywords are rendered in red and
+ quoted strings are rendered in green. All other parts are rendered in black. This can
+ aid reading the source when it's been written without spaces and can make large areas of
+ data stand out clearly. When the graphics option is chosen another aid is the addition
+ of popup text on the graphic characters.
+<P ALIGN=JUSTIFY>
+</BLOCKQUOTE>
+<B><U>The program</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ You can see the source code <A HREF="source.html">here</A> or you can <A
+ HREF="source.zip">download <IMG SRC="../../../zip_sm.png" ALT="Download" border=0></A> it
+ as a .zip file.
+<P ALIGN=JUSTIFY>
+ If you don't have QuickBASIC or just want to convert some files you can get the binary
+ executable is <A HREF="exe.zip">here <IMG SRC="../../../zip_sm.png" ALT="Download"
+ border=0></A>
+<P ALIGN=JUSTIFY>
+ If you want to generate html files with the grapic characters you'll need them as well. They
+ are <A
+ HREF="images.zip">here <IMG SRC="../../../zip_sm.png" ALT="Download" border=0></A>
+<P ALIGN=JUSTIFY>
+ The current version is now V1.45, this adds an optional image path to be added to the
+ graphics in the html output file.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 10th December, 2008.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

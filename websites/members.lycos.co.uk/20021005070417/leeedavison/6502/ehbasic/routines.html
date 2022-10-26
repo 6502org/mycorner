@@ -1,0 +1,327 @@
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC, useful routines</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>Enhanced BASIC, useful routines </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="index.html#link_1">[Back]</A>
+<BR clear=all><P>
+<HR>
+<P>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE>
+ There are many subroutines within BASIC that can be useful if you wish to use
+ your own assembly routines with it. Here are some of them with a brief description
+ of their function. For full details see the source code.
+</BLOCKQUOTE>
+<B><U>The routines.</U></B>
+<BLOCKQUOTE>
+<B>LAB_IGBY</B>
+<BLOCKQUOTE>
+   BASIC increment and get byte routine. gets the next byte from the
+   BASIC command stream. If the byte is a numeric character then the
+   carry flag will be set, if the byte is a termination byte, either
+   null or a statement separator, then the zero flag will be set.
+   Spaces in the command stream will automatically be ignored.
+</BLOCKQUOTE>
+<B>LAB_GBYT </B>
+<BLOCKQUOTE>
+   BASIC get byte routine. Gets the current byte from the BASIC
+   command stream but does not change the pointer. Otherwise the
+   same as above.
+</BLOCKQUOTE>
+<B>LAB_COLD</B>
+<BLOCKQUOTE>
+   Performs a cold start. BASIC is reset and all BASIC memory is cleared.
+</BLOCKQUOTE>
+<B>LAB_WARM</B>
+<BLOCKQUOTE>
+   Performs a warm start. Execution is stopped and BASIC returns to
+   immediate mode.
+</BLOCKQUOTE>
+<B>LAB_OMER</B>
+<BLOCKQUOTE>
+   Do "Out of memory" error, then warm start. The same as error $0C
+   below.
+</BLOCKQUOTE>
+<B>LAB_XERR</B>
+<BLOCKQUOTE>
+   With X set, do error #X, then warm start.
+<BR>
+<BR>
+<TABLE BGCOLOR="white" WIDTH=80% CELLPADDING=2 CELLSPACING=0 BORDER=1>
+  <TR>
+    <TD WIDTH=10% ALIGN=CENTER><B><U>X</U></B></TD><TD WIDTH=40%><B><U>Error</U></B></TD>
+    <TD WIDTH=10% ALIGN=CENTER><B><U>X</U></B></TD><TD WIDTH=40%><B><U>Error</U></B></TD>
+  </TR>
+  <TR>
+    <TD ALIGN=CENTER>$00</TD><TD>NEXT without FOR</TD><TD ALIGN=CENTER>$02</TD><TD>syntax</TD>
+  </TR>
+  <TR>
+    <TD ALIGN=CENTER>$04</TD><TD>RETURN without GOSUB</TD><TD ALIGN=CENTER>$06</TD><TD>out of data</TD>
+  </TR>
+  <TR>
+    <TD ALIGN=CENTER>$08</TD><TD>function call</TD><TD ALIGN=CENTER>$0A</TD><TD>overflow</TD>
+  </TR>
+  <TR>
+    <TD ALIGN=CENTER>$0C</TD><TD>out of memory</TD><TD ALIGN=CENTER>$0E</TD><TD>undefined statement</TD>
+  </TR>
+  <TR>
+    <TD ALIGN=CENTER>$10</TD><TD>array bounds</TD><TD ALIGN=CENTER>$12</TD><TD>double dimension array</TD>
+  </TR>
+  <TR>
+    <TD ALIGN=CENTER>$14</TD><TD>divide by 0</TD><TD ALIGN=CENTER>$16</TD><TD>illegal direct</TD>
+  </TR>
+  <TR>
+    <TD ALIGN=CENTER>$18</TD><TD>type mismatch</TD><TD ALIGN=CENTER>$1A</TD><TD>long string</TD>
+  </TR>
+  <TR>
+    <TD ALIGN=CENTER>$1C</TD><TD>string too complex</TD><TD ALIGN=CENTER>$1E</TD><TD>continue error</TD>
+  </TR>
+  <TR>
+    <TD ALIGN=CENTER>$20</TD><TD>undefined function</TD><TD ALIGN=CENTER>$22</TD><TD>LOOP without DO</TD>
+  </TR>
+</TABLE>
+</BLOCKQUOTE>
+<B>LAB_INLN</B>
+<BLOCKQUOTE>
+   Print "? " and get BASIC input. Returns XY (low/high) as a pointer to
+   the start of the input line. The input is null terminated.
+</BLOCKQUOTE>
+<B>LAB_SSLN</B>
+<BLOCKQUOTE>
+   Search Basic for a line, the line number required is held in the temporary
+   integer, from start of program memory. Returns carry set and a pointer to
+   the line in Baslnl/Baslnh if found, if not it returns carry and a pointer to
+   the next numbered line in Baslnl/Baslnh.
+</BLOCKQUOTE>
+<B>LAB_SHLN</B>
+<BLOCKQUOTE>
+   Search Basic for temporary integer line number from AX. Same as above
+   but starts the search from AX (low/high).
+</BLOCKQUOTE>
+<B>LAB_SNBS</B>
+<BLOCKQUOTE>
+   Scan for next BASIC statement (: or [EOL]). Returns Y as index to :
+   or [EOL] from (Bpntrl).
+</BLOCKQUOTE>
+<B>LAB_SNBL</B>
+<BLOCKQUOTE>
+   Scan for next BASIC line. Same as above but only returns on [EOL].
+</BLOCKQUOTE>
+<B>LAB_REM</B>
+<BLOCKQUOTE>
+   Perform REM, skip (rest of) line.
+</BLOCKQUOTE>
+<B>LAB_GFPN</B>
+<BLOCKQUOTE>
+   Get fixed-point number into temporary integer.
+</BLOCKQUOTE>
+<B>LAB_CRLF</B>
+<BLOCKQUOTE>
+   Print [CR]/[LF] to output device.
+</BLOCKQUOTE>
+<B>LAB_PRNA</B>
+<BLOCKQUOTE>
+   Print character in A to output device.
+</BLOCKQUOTE>
+<B>LAB_GVAR</B>
+<BLOCKQUOTE>
+   Get variable address. Returns a pointer to the variable in Lvarpl/h
+   and sets the data type flag, $FF=string, $00=numeric.
+</BLOCKQUOTE>
+<B>LAB_EVNM</B>
+<BLOCKQUOTE>
+   Evaluates an expression and checks the result is numeric, if not it
+   does a type mismatch. The result of the expression is returned in
+   FAC1.
+</BLOCKQUOTE>
+<B>LAB_CTNM</B>
+<BLOCKQUOTE>
+   Check if source is numeric, else do type mismatch.
+</BLOCKQUOTE>
+<B>LAB_CTST</B>
+<BLOCKQUOTE>
+   Check if source is string, else do type mismatch.
+</BLOCKQUOTE>
+<B>LAB_CKTM</B>
+<BLOCKQUOTE>
+   Type match check, set carry for string, clear carry for numeric.
+</BLOCKQUOTE>
+<B>LAB_EVEX</B>
+<BLOCKQUOTE>
+   Evaluate expression.
+</BLOCKQUOTE>
+<B>LAB_GVAL</B>
+<BLOCKQUOTE>
+   Get numeric value from line. Returns the result in FAC1.
+</BLOCKQUOTE>
+<B>LAB_SCCA</B>
+<BLOCKQUOTE>
+   Scan for the byte in A as the next byte. If so return here, else do syntax
+   error then warm start.
+</BLOCKQUOTE>
+<B>LAB_SNER</B>
+<BLOCKQUOTE>
+   Do syntax error, then warm start.
+</BLOCKQUOTE>
+<B>LAB_CASC</B>
+<BLOCKQUOTE>
+   Check byte is alpha ("A" to "Z" or "a" to "z"), return carry clear
+   if so.
+</BLOCKQUOTE>
+<B>LAB_EVIN</B>
+<BLOCKQUOTE>
+   Evaluate integer expression. Return integer in FAC1_3/FAC1_2
+   (low/high).
+</BLOCKQUOTE>
+<B>LAB_EVPI</B>
+<BLOCKQUOTE>
+   Evaluate +ve integer expression.
+</BLOCKQUOTE>
+<B>LAB_EVIR</B>
+<BLOCKQUOTE>
+   Evaluate integer expression, check is in range -32786 to 32767
+</BLOCKQUOTE>
+<B>LAB_FCER</B>
+<BLOCKQUOTE>
+   Do function call error, then warm start.
+</BLOCKQUOTE>
+<B>LAB_CKRN</B>
+<BLOCKQUOTE>
+   Check that the interpreter is not in immediate mode. If not then
+   return, if so do illegal direct error.
+</BLOCKQUOTE>
+<B>LAB_GARB</B>
+<BLOCKQUOTE>
+   Perform garbage collection routine.
+</BLOCKQUOTE>
+<B>LAB_EVST</B>
+<BLOCKQUOTE>
+   Evaluate string.
+</BLOCKQUOTE>
+<B>LAB_ESGL</B>
+<BLOCKQUOTE>
+   Evaluate string, return string length in Y.
+</BLOCKQUOTE>
+<B>LAB_SGBY</B>
+<BLOCKQUOTE>
+   Scan and get byte parameter, return the byte in X.
+</BLOCKQUOTE>
+<B>LAB_GTBY</B>
+<BLOCKQUOTE>
+   Get byte parameter and ensure numeric type, else do type mismatch
+   error. Return the byte in X.
+</BLOCKQUOTE>
+<B>LAB_EVBY</B>
+<BLOCKQUOTE>
+   Evaluate byte expression, return the byte in X.
+</BLOCKQUOTE>
+<B>LAB_GADB</B>
+<BLOCKQUOTE>
+   Get two parameters as in POKE or WAIT. Return the byte (second parameter)
+   in X and the integer (first parameter) in the temporary integer pair, Itempl/Itemph.
+</BLOCKQUOTE>
+<B>LAB_SCGB</B>
+<BLOCKQUOTE>
+   Scan for "," and get byte, else do Syntax error then warm start.
+   Return the byte in X.
+</BLOCKQUOTE>
+<B>LAB_F2FX</B>
+<BLOCKQUOTE>
+   New convert float to fixed routine. accepts any value that fits into 24
+   bits, +ve or -ve and converts it into a right truncated integer in the
+   temporary integer pair, Itempl/Itemph.
+</BLOCKQUOTE>
+<B>LAB_UFAC</B>
+<BLOCKQUOTE>
+   Unpack the four bytes starting (AY) into FAC1 as a floating point number.
+</BLOCKQUOTE>
+<B>LAB_PFAC</B>
+<BLOCKQUOTE>
+   Pack the floating point number in FAC1 into the current variable (Lvarpl).
+</BLOCKQUOTE>
+<B>LAB_STFA</B>
+<BLOCKQUOTE>
+   Stores a 16 bit number in FAC1. Set X to the exponent required (usually
+   $90) and the carry set for +ve numbers and clear for -ve numbers. The
+   routine will clear FAC1 mantissa3 and then normalise it. 
+</BLOCKQUOTE>
+<B>LAB_AYFC</B>
+<BLOCKQUOTE>
+   Save integer AY (A = high byte, Y = low byte) in FAC1 and convert to
+   float. The result will be -32768 to +32767.
+</BLOCKQUOTE>
+<B>LAB_MSSP</B>
+<BLOCKQUOTE>
+   Make string space A bytes long. This returns the following.
+   str_ln = A   = string length
+   str_pl = Sutill	= string pointer low byte
+   str_ph = Sutilh	= string pointer high byte
+</BLOCKQUOTE>
+<B>LAB_RTST</B>
+<BLOCKQUOTE>
+   Return string. Takes the string described instr_ln, str_pl and str_ph and
+   puts it on the string stack. This is how you return a string to BASIC.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 2nd May, 2002.</FONT>
+</BODY>
+</HTML>
+
+
+</xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.2 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+</noscript><script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3d9e8ef1&adpref="></script>

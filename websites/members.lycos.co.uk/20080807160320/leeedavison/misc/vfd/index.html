@@ -1,0 +1,63 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=179af476&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>VFD PSU</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Vacuum Fluorescent Display PSU. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<A NAME=proto></A>
+<A HREF="proto.html"><IMG SRC="proto_s.jpg" ALIGN=RIGHT ALT="Prototype VFD power supply"
+ HSPACE=8></A>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I have quite a few vacuum fluorescent displays that have been rescued from old video
+ recorders, radios, clocks and the like. They aren't difficult to use but do need an AC
+ filament supply and an anode supply of anything from 16 to about 30 volts.
+<P ALIGN=JUSTIFY>
+ This circuit is a development of the mini switcher and used to provide the AC filament
+ supply and high voltage anode supply for a vacuum fluorescent display from a single 5
+ volt supply.
+</BLOCKQUOTE>
+<B><U>Components.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ All the components are what I had to hand at the time and none of them are particularly
+ critical.
+<P ALIGN=JUSTIFY>
+<B>Transistors</B>
+<P ALIGN=JUSTIFY>
+ The TUN is any high gain small signal NPN transistor such as BC108, BC148, 2N3904 etc
+ and the BC437 can probably be replaced by any near equivalent. In the breadboard
+ prototype the BC437 ran warm so was bolted to a heatsink.
+</BLOCKQUOTE>
+<IMG SRC="xx431.png" ALIGN=RIGHT BORDER=1 HSPACE=8 ALT="LM341 pinout">
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B>Regulator</B>
+<P ALIGN=JUSTIFY>
+ The LM431 is used as a adjustable zener, the voltage being determined by Rx, and is used
+ to set the anode supply voltage up to a maximum of 36V. This device can be replaced by
+ any equivalent such as TL431.
+<P ALIGN=JUSTIFY>
+ For anode volatges above 36V the LM431 and it's two resistors should be replaced with a
+ zener diode of the required voltage.
+<P ALIGN=JUSTIFY>
+<B>Rx</B>
+<P ALIGN=JUSTIFY>
+ Rx is used to set the output voltage. With the voltage control disconnected the unloaded
+ output is about 40 volts. With the voltage control connected the approximate output
+ voltage is given by ..
+<PRE>
+		<B>Vout = 2.5 * (Rx + 10K) / 10K</B>
+</PRE>
+ .. which for Rx = 100K gives about 27 volts out.
+</BLOCKQUOTE>
+<A NAME=tformer></A>
+<A HREF="tformer.html"><IMG SRC="tformer_s.jpg" ALIGN=RIGHT BORDER=1 HSPACE=8
+ ALT="Torroidal transformer"></A>
+<BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B>Transformer</B>
+<P ALIGN=JUSTIFY>
+ This was wound on a small torroidal core using PVC insulated wire and could probably be
+ much smaller and wound on a different shape core such as a

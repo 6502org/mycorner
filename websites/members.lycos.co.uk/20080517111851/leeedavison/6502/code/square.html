@@ -1,0 +1,85 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>
+ 6502 Code - Square Calculator
+</TITLE>
+<META name="description" content="How to calculate 16-bit squares in 6502 assembly.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Square Calculator. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<U><B>Introduction.</B></U>
+<BLOCKQUOTE>
+ This routine calculates the 16-bit unsigned integer square of a signed 16-bit integer in
+ the range +/-255 (decimal).
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+; Calculates the 16 bit unsigned integer square of the signed 16 bit integer in	
+; Numberl/Numberh. The result is always in the range 0 to 65025 and is held in
+; Squarel/Squareh
+;
+; The maximum input range is only +/-255 and no checking is done to ensure that
+; this is so.
+;
+; This routine is useful if you are trying to draw circles as for any circle
+;
+; x^2+y^2=r^2 where x and y are the co-ordinates of any point on the circle and
+; r is the circle radius
+;
+; Destroys all registers
+
+	.ORG	8000		; these must be in RAM
+
+Numberl				; number to square low byte
+Numberh	= Numberl+		; number to square high byte
+	.word $FFFF
+
+Squarel				; square low byte
+Squareh	= Squarel+1		; square high byte
+	.word $FFFF
+
+Tempsq				; temp byte for intermediate result
+	.byte $00
+
+	.ORG	8192		; any address will do
+
+Square
+	LDA	#$00		; clear A
+	STA	Squarel		; clear square low byte
+				; (the high byte gets shifted out)
+	LDA	Numberl		; get number low byte
+	LDX	Numberh		; get number high byte
+	BPL	No

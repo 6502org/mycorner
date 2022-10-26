@@ -1,0 +1,195 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>My corner</TITLE></HEAD>
+<BODY BACKGROUND="back.png" BGCOLOR="white" TEXT="black" LINK="#0000EE" VLINK="#0000CC" >
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR VALIGN=TOP><TD WIDTH=20%>
+<A HREF="crunch.html"><IMG SRC="crunch_ct.gif" ALIGN=LEFT BORDER=0 ALT="Ouch!"></A>
+</TD><TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+2>My corner </FONT></B>
+<FONT SIZE=-2>By Lee Davison</FONT><BR>A miscellaneous collection of things I've done.
+</TD><TD WIDTH=20%><A HREF="home.html">
+<IMG SRC="home_s.jpg" ALIGN=RIGHT BORDER=0 ALT="Home"></A></TD></TR></TABLE>
+<HR>
+<TABLE WIDTH=100%>
+<TR><TD COLSPAN=2 ALIGN=CENTER>
+<IMG SRC="view.jpg"BORDER=1 ALT="View from my Southampton flat">
+</TD></TR>
+<TR><TD VALIGN=TOP ALIGN=CENTER>
+<B><U>News.</U></B>
+<BR><A HREF="news.html">Latest news and updates</A><BR>
+<BR><B><U>Everything else.</U></B>
+<BR><A HREF="baking/index.html">Baking cakes and things</A>
+<BR><A HREF="panorama/index.html">Some more, small, panoramic pictures</A>
+<BR><A HREF="links/index.html">Links to various related sites</A>
+</TD><TD VALIGN=TOP ALIGN=CENTER>
+<B><U>Electronics & Microprocessors.</U></B>
+<BR><A HREF="6502/index.html">6502 based projects</A>
+<BR><A HREF="68k/index.html">68k based projects</A>
+<BR><A HREF="6809/index.html">6809 based projects</A>
+<BR><A HREF="z80/index.html">Z80 based projects</A>
+<BR><A HREF="misc/index.html">Miscellania</A>
+</TD></TR>
+<TR><TD COLSPAN=2 ALIGN=CENTER>
+<IMG SRC="homeview.jpg"BORDER=1 ALT="View of where I grew up">
+</TD></TR></TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR VALIGN=TOP><TD WIDTH=40%>
+<A HREF="head.html"><IMG SRC="head.gif" BORDER=0 ALT="Not for the faint of heart"></A>
+<A HREF="eyes.html"><IMG SRC="eyes.gif" BORDER=0 ALT="No, they're eyes"></A>
+<A HREF="tv.html"><IMG SRC="tv.png" BORDER=0 ALT="Look! I'm on telly!"></A>
+</TD>
+<TD WIDTH=20% ALIGN=CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A>
+</TD>
+<TD WIDTH=40% ROWSPAN=2>
+<TABLE BORDER=0 ALIGN=RIGHT CELLSPACING=0 CELLPADDING=0>
+<TR><TD>
+<A HREF="http://t.webring.com/go?ring=6502webring&id=6&prev">
+<IMG SRC="ringprev.png" ALT="Previous Site" BORDER=0 HEIGHT=19 WIDTH=16></A>
+<A HREF="http://t.webring.com/hub?ring=6502webring&id=6&hub">
+<IMG SRC="6502ring.png" ALT="The 6502 WebRing" BORDER=0 HEIGHT=19 WIDTH=124></A>
+<A HREF="http://t.webring.com/go?ring=6502webring&id=6&next">
+<IMG SRC="ringnext.png" ALT="Next Site" BORDER=0 HEIGHT=19 WIDTH=16></A>
+</TD></TR>
+<TR><TD>
+<A HREF="http://c.webring.com/go?ring=680x0webing&id=1&prev">
+<IMG SRC="ringprev.png" ALT="Previous Site" BORDER=0 HEIGHT=19 WIDTH=16></A>
+<A HREF="http://c.webring.com/hub?ring=680x0webing&id=1&hub">
+<IMG SRC="680x0ring.png" ALT="The 680x0 WebRing" BORDER=0 HEIGHT=19 WIDTH=124></A>
+<A HREF="http://c.webring.com/go?ring=680x0webing&id=1&next">
+<IMG SRC="ringnext.png" ALT="Next Site" BORDER=0 HEIGHT=19 WIDTH=16></A>
+</TD></TR>
+<TR><TD>
+<A HREF="http://v.webring.com/go?ring=ez80webring&id=2&prev">
+<IMG SRC="ringprev.png" ALT="Previous Site" BORDER=0 HEIGHT=19 WIDTH=16></A>
+<A HREF="http://v.webring.com/hub?ring=ez80webring&id=2&hub">
+<IMG SRC="ez80ring.png" ALT="The eZ80 WebRing" BORDER=0 HEIGHT=19 WIDTH=124></A>
+<A HREF="http://v.webring.com/go?ring=ez80webring&id=2&next">
+<IMG SRC="ringnext.png" ALT="Next Site" BORDER=0 HEIGHT=19 WIDTH=16></A>
+</TD></TR></TABLE>
+</TD></TR>
+<TR><TD VALIGN=BOTTOM>
+<FONT SIZE=-1>Last page update: 17th February, 2005.</FONT>
+</TD></TR></TABLE>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&CC=uk"></script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=1423d092&adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="//secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

@@ -1,0 +1,190 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>6502 ROM file system - Source</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#source">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>ROM file system source. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>The source.</U></B><P>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; constants for the file system
+
+none		=	$00		; no flags
+
+; flags:
+
+deleted		=	$80		; file is deleted but not removed	
+directory	=	$40		; file is really a directory
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Self explanitory really, the deleted flag is not used yet.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; variables for the file system
+
+; zero page
+
+filesys_l	.ds	1		; file system pointer low byte
+filesys_h	.ds	1		; file system pointer high byte
+
+lensys_l	.ds	1		; file system length low byte
+lensys_h	.ds	1		; file system length high byte
+
+file_l		.ds	1		; current file pointer low byte
+file_h		.ds	1		; current file pointer high byte
+
+length_l	.ds	1		; current file length low byte
+length_h	.ds	1		; current file length high byte
+
+fileflags	.ds	1		; current file's flag byte
+
+findname_l	.ds	1		; filename to find pointer low byte
+findname_h	.ds	1		; filename to find pointer high byte	
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ filesys is the pointer returned by the find routine, it is only valid if a file was
+ found, i.e. Cb is = 1.
+<P ALIGN=JUSTIFY>
+ lensys is the length of the returned file and like filesys is only valid if a file
+ was found.
+<P ALIGN=JUSTIFY>
+ file and length are used internally by the find routine.
+<P ALIGN=JUSTIFY>
+ fileflags is used internally by the find routine.
+<P ALIGN=JUSTIFY>
+ findname points to the start of the null yerminated path/name of the file to find. Like
+ the HTTP "GET" it must start with "/" and "/" is used to separate directories so "/",$00
+ is valid as is "/index.html",$00 but "o.html",$00 isn't.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; file format is ..
+
+f_start		.ds	1		; flag byte
+					; bit	function
+					; ---	--------
+					;  7	deleted
+					;  6	directory
+					; 5-0	unassigned
+f_length	.ds	2		; file payload length word
+f_name		.ds	1		; filename and null terminator byte
+;		.ds	length		; here to here+length-1 is the payload	
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ This is used to define the header, f_name is used realtive to f_start and will remain
+ correct even if other parameters, such as a parent pointer for reverse tree searches,
+ are added to the header.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; find file, searches the file system for the filename pointed to by the find
+; name pointer. returns with Cb = 1 and the pointer to the file payload in
+; filesys, if found.
+;
+; file name to search for should be "/[path[path]][name]" where path is the
+; directory name followed by a "/". the path may be many deep and both the
+; path and the name may be null. if the name is null then the default_file
+; name will be searched for the path given.
+
+LAB_find
+	LDA	root+1			; get root payload length low byte
+	STA	lensys_l		; save payload length low byte
+	LDA	root+2			; get root payload length high byte
+	STA	lensys_h		; save payload length high byte
+
+	LDA	#&lt;root_b		; get root body pointer low byte
+	STA	filesys_l		; set file system pointer low byte
+	LDA	#&gt;root_b		; get body pointer high byte
+	STA	filesys_h		; set file system pointer high byte
+	LDY	#$00			; clear index
+	LDA	(findname_l),Y		; get the first byte of the find name
+	CMP	#'/'			; compare with separator
+	BNE	LAB_exit_n_found	; exit if not "/" at start
+
+	JSR	LAB_directory		; search the root for the file
+	BIT	fileflags		; get the flags for this file
+	BVC	LAB_exit_find		; exit if it's a file
+
+	JSR	LAB_find_default	; a directory so find the default file	
+LAB_exit_find
+	RTS
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The routine above returns either a found file pointer and it's length or flags not
+ found. If the match turns out to be a directory, e.g. "/images", then the search
+ routine is re-entered at the find default file entry so the file searched becomes
+ effectively "/images/index.html"
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; flag file found and exit
+
+LAB_exit_found
+	BIT	fileflags		; test the flags, set Vb for a directory
+	SEC				; flag found
+	RTS
+
+
+; flag file not found and exit
+
+LAB_exit_n_foun
+	CLV				; flag not a directory
+	CLC				; flag not found
+	RTS
+
+
+; increment filesys to the next file pointer in the directory
+
+LAB_nextfile
+	CLC				; clear carry for add
+	LDA	filesys_l		; get filesys low byte
+	ADC	#$02			; increment to next pointer
+	STA	filesys_l		; save filesys low byte
+	BCC	ni_inc_h		; branch if no rollover
+
+	INC	filesys_h		; else increment filesys high byte
+ni_inc_h
+	SEC				; set carry for subtract
+	

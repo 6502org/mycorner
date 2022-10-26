@@ -1,0 +1,44 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=4db43d75&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>68008 Dartboard control pcb, I2C bus.</TITLE>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>I2C Bus. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ On the top right hand side of the board is a four pin connector labeled LED DISPLAYS and
+ numbered as P4.
+</BLOCKQUOTE>
+<CENTER>
+ <IMG SRC="p4.png" BORDER=1 ALT="Dart board I2C connector.">
+ <IMG SRC="p4.jpg" BORDER=1 ALT="Dart board I2C connector.">
+</CENTER>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This connector was used as an I2C bus port and has the necessary open collector drivers
+ and pull up resistors, all that's needed is some software.
+</BLOCKQUOTE>
+<B><U>I2C Bus hardware.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ For the purpose of having something to drive a small board was made up with a RAMTROM
+ FM30C256 'data collector' chip. This chip has 32k bytes of non volatile RAM, a real time
+ clock, a reset generator (not used in this application) and a tamper detector input which
+ is active even when the system is powered down.
+</BLOCKQUOTE>
+<CENTER>
+ <IMG SRC="i2cboard.png" BORDER=1 ALT="FM30C256 circuit.">
+ <IMG SRC="i2cbyte.jpg" BORDER=1 ALT="SDA upper trace,
+SCL lower trace.">
+</CENTER>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The board consists of the chip plus a 32768 Hz watch XTAL, a 3V lithium backup battery,
+ connector for the I2C bus and a header for the selectable address and tamper inputs.
+ There is also a test tag for 

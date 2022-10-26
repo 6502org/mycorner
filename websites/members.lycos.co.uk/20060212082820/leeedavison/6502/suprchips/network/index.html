@@ -1,0 +1,239 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>Network interface</TITLE>
+<META name="description" content="6502 network driver.">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=25%><A HREF="../index.html#network">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD ALIGN=CENTER>
+<B><FONT SIZE=+1>Network interface. </FONT></B><FONT SIZE=-1>by Lee Davison</FONT>
+</TD><TD WIDTH=25%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<IMG SRC="rtcard.jpg" ALIGN=RIGHT BORDER=1
+ USEMAP="#Map" ALT="Live Realtek 8019 network card." HSPACE=8>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 ALIGN=CENTER>
+<TR VALIGN=MIDDLE><TD ALIGN=RIGHT><B>As <A
+ HREF="http://slashdot.org/article.pl?sid=03/08/16/1226253&mode=thread&tid=126&tid=156&tid=95&tid=96&tid=99">featured</A>
+ on&nbsp;</B></TD><TD ALIGN=LEFT WIDTH=136><A HREF="http://slashdot.org"><IMG SRC="slashdot.gif"
+ BORDER=0 VSPACE=2 ALT="Go to Slashdot"></A>
+</TD></TR><TR><TD COLSPAN=2 ALIGN=CENTER><I>Read a <A HREF="comments.html">sample</A> of
+ the comments.</I></TD></TR></TABLE>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I've seen a few web-server-on-a-micro projects which are good, but usually use a bit
+ banged serial port and SLIP or PPP via some other machine to get onto the network proper.
+ I wanted something I could plug into an ethernet port on my home network without needing
+ another, intermediate, machine.
+</BLOCKQUOTE>
+<B><U>Hardware</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Deciding what network chip to use was a choice between 3com Etherlink III, generic 8390
+ and Realtek 8019AS. As I'd seen projects that used the 8019AS and I have three cards the
+ same I decided to use the Realtek cards.
+<P ALIGN=JUSTIFY>
+ After getting the software to run on the Realtek cards I eventually looked into using
+ the 3Com cards of various types that I have. Investigation revealed that the 3C509B can
+ work in 8 bit mode but would need a small hardware change to access an ID port, this is
+ needed to initialise the card. As I have a few 3C509Bs of various types I made the
+ change and re-wrote the code to drive them. Both versions are available.
+<P ALIGN=JUSTIFY>
+ If you do decide to use a PC network card like I have, make sure that..
+<BLOCKQUOTE>
+<LI>It works (one of my cards doesn't though it seems to).
+<LI>It is configured for the expected I/O range and interrupt ($03xx and IRQ4 in this case).
+<LI>It is configured for the media type you're going to use (BNC, twisted pair or AUI).
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ I chose to use the SuprChip V as the developement platform for two reasons. First, I was
+ already involved in developing software on it, and second, it was the easiest target to
+ build the <A HREF="../isa/index.html">ISA</A> slot for.
+<P ALIGN=JUSTIFY>
+ As it runs EhBASIC that part of the code should port to any 6502 EhBASIC system without
+ too much trouble (interrupts being the only real difference) and the assembly code that
+ actually drives the card depends on the system used so would probably need changing in
+ any case.
+</BLOCKQUOTE>
+<BR CLEAR=ALL>
+<IMG SRC="flow.png" ALIGN=RIGHT BORDER=1
+ ALT="Flowchart of main program loop" HSPACE=8>
+<B><U>Software</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Two assembly routines are used that allow EhBASIC easy access to the slot. Details about
+ them can be found <A HREF="../isa/slot_drv.html">here</A>.
+<P ALIGN=JUSTIFY>
+<A NAME="pages"></A>
+ The rest of the software is written in EhBASIC and, while it's not particularly fast
+ or pretty, does support ARP, ICMP echo requests (aka PING) and can serve one of
+ <S>three</S> <A HREF="pages.html">four web pages</A> via TCP port 80.
+<P ALIGN=JUSTIFY>
+ The program spends its idle time just waiting for a packet to arrive. Once a packet is
+ flagged (this is done by the interrupt service routine) it is checked against known
+ types and processed as needed. When this has been done the NIC buffer is checked for any
+ pending packets and they are processed as needed. If the NIC buffer is empty then the
+ program returns to the idle loop and waits for the next packet to arrive.
+<P ALIGN=JUSTIFY>
+ The TCP handler is not a full TCP stack, it can only handle one passively opened thread,
+ and does not time wait on closing due to limited resources. It also ignores out of
+ sequence, repeated or error packets where it should send a RST. The other shortfall is
+ that it can only handle unfragmented data so is limited to less than 1500 bytes for both
+ receive and transmit.
+</BLOCKQUOTE>
+<A NAME="source"></A>
+<B><U>Source</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There are now two versions of the source available, the original version for the Realtek
+ 8019AS cards and the newer version for the 3Com 3C509B cards. You can either download
+ them as zipped text files or view them as html.
+<BLOCKQUOTE>
+ <LI> 8019AS source code - <A HREF="source.html">View</A> or <A
+ HREF="source.zip">download<IMG SRC="../../../zip_sm.png" ALT="Download" border=0></A>
+ <LI> 3C509B source code - <A HREF="3c509b.html">View</A> or <A
+ HREF="3c509b.zip">download<IMG SRC="../../../zip_sm.png" ALT="Download" border=0></A>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 7th September, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+<map name="Map"> 
+ <AREA SHAPE="poly" HREF="index.html" ALT="I2C clock memory card"
+  coords="143,121, 145,63, 166,55, 163,107, 143,121">
+ <AREA SHAPE="poly" HREF="index.html" ALT="Realtek 8019AS card"
+  coords="40,77, 159,38, 158,94, 52,150, 40,77">
+ <AREA SHAPE="poly" HREF="../isa/index.html" ALT="SuprChip to ISA board"
+  coords="57,149, 140,102, 182,116, 111,167, 57,149">
+ <AREA SHAPE="poly" HREF="../../../misc/lazyprom/index.html" ALT="LazyPROM EPROM emulator"
+  coords="192,171, 199,162, 201,148, 225,126, 231,127, 231,119, 233,119, 238,105, 241,105, 242,109, 237,120, 237,128, 243,130, 243,150, 256,153, 234,186, 192,171">
+ <AREA SHAPE="poly" HREF="../index.html" ALT="SuprChip V microcontroller"
+  coords="255,220, 131,175, 133,158, 170,131, 177,134, 177,147, 277,178, 255,220">
+ <AREA SHAPE="rectangle" HREF="setup.html" ALT="Click for bigger image"
+  coords="0,0, 320,240">
+</map>
+</BODY>
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&CC=uk"></script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=43350b0d&adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="//secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

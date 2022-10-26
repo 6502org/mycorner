@@ -1,0 +1,92 @@
+<HTML><HEAD><TITLE>6502 Code - Square Calculator</TITLE><META name="description"
+ content="How to calculate 16-bit squares in 6502 assembly."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Square Calculator. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<U><B>Introduction.</B></U>
+<BLOCKQUOTE>
+ This routine calculates the 16-bit unsigned integer square of a signed 16-bit integer in
+ the range +/-255 (decimal).
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+; Calculates the 16 bit unsigned integer square of the signed 16 bit integer in	
+; Numberl/Numberh. The result is always in the range 0 to 65025 and is held in
+; Squarel/Squareh
+;
+; The maximum input range is only +/-255 and no checking is done to ensure that
+; this is so.
+;
+; This routine is useful if you are trying to draw circles as for any circle
+;
+; x^2+y^2=r^2 where x and y are the co-ordinates of any point on the circle and
+; r is the circle radius
+;
+; Destroys all registers
+
+	.ORG	8000		; these must be in RAM
+
+Numberl				; number to square low byte
+Numberh	= Numberl+		; number to square high byte
+	.word $FFFF
+
+Squarel				; square low byte
+Squareh	= Squarel+1		; square high byte
+	.word $FFFF
+
+Tempsq				; temp byte for intermediate result
+	.byte $00
+
+	.ORG	8192		; any address will do
+
+Square
+	LDA	#$00		; clear A
+	STA	Squarel		; clear square low byte
+				; (the high byte gets shifted out)
+	LDA	Numberl		; get number low byte
+	LDX	Numberh		; get number high byte
+	BPL	NoNneg		; if +ve don't negate it
+				; else do a two's complement
+	EOR	#$FF		; invert
+	SEC			; +1
+	ADC	#$00		; and add it
+
+NoNneg:
+	STA	Tempsq		; save ABS(number)
+	LDX	#$08		; set bit count
+
+Nextr2bit:
+	ASL	Squarel		; low byte *2
+	ROL	Squareh		; high byte *2+carry from low
+	ASL	A		; shift number byte
+	BCC	NoSqadd		; don't do add if C = 0
+	TAY			; save A
+	CLC			; clear carry for add
+	LDA	Tempsq		; get number
+	ADC	Squarel		; add number^2 low byte
+	STA	Squarel		; save number^2 low byte
+	LDA	#$00		; clear A
+	ADC	Squareh		; add number^2 high byte
+	STA	Squareh		; save number^2 high byte
+	TYA			; get A back
+
+NoSqadd:
+	DEX			; decrement bit count
+	BNE	Nextr2bit	; go do next bit
+	RTS
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 28th August, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+

@@ -1,0 +1,221 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE> Memory Plus manual </TITLE>
+</HEAD>
+<BODY
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="01.html"><IMG SRC="index.png" ALIGN=RIGHT BORDER=0 ALT="Index"></A>
+<B><FONT SIZE=+2>MEMORY PLUS Manual </FONT></B><FONT SIZE=-2>By Lee Davison</FONT>
+<BR CLEAR=all>
+<BR>
+<A HREF="03.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="05.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 4
+</CENTER>
+<BR CLEAR=all>
+<HR>
+ <PRE>
+
+
+  9.	Turn on the power supply.  Using the MICRO monitor, examine and modify
+	a few RAM locations to verify that they basically work.  With the RAM
+	switch set to 2000, locations 2000 through 3FFF are accessible.  If you
+	are unable to examine and modify these locations, then check steps 2 to
+	8 for any errors.  If you can not find anything you did wrong, then go
+	to the section on "MEMORY PLUS Testing and Field Repair" on page 16.
+
+  10.	If the above preliminary examination of RAM memory is successful, then
+	you are ready to run a more rigorous memory test.  Follow the instruc-
+	tions in the section on "RAM Memory Test".  If these tests work, and
+	all you plan to use on MEMORY PLUS is the RAM, then you are done with
+	the initial set up and check out.
+
+  11.	If you plan to use the EPROM Programmer, you must build the cable that
+	goes between the MICRO and MEMORY PLUS application connectors if you
+	have not already done so.  Follow the wiring list labelled "MEMORY
+	PLUS to MICRO Connections".  Carefully check the cable you built and
+	review the power connections as discussed in step 6 above.
+
+  12.	Connect the MICRO and MEMORY PLUS together with the application cable.
+
+  13.	No specific tests are provided for testing the VIA.  If you wish to
+	test this chip, read the section on "VERSATILE INTERFACE ADAPTER" and
+	the "MCS6522 VERSATILE INTERFACE ADAPTER - Data Sheet" contained in
+	your MICRO Manual.  You may then devise your own tests dependent on how
+	you intend to use the VIA chip.
+
+  14.	The only simple way to test the EPROM Programmer is to program an
+	EPROM.  The EPROM Programmer requires a +25 volts at 30 milliamps.
+	The best way to provide this is by using the on board regulator
+	circuit.  A +27 to +30V unregulated supply can be connected to
+	pin E-3 of the MEMORY PLUS expansion connector.  See the section on
+	"EPROM Programming" for details.  This will provide about +24.7V
+	for EPROM programming and will prevent over voltages which can
+	destroy an  EPROM.  Follow the instructions in the "EPROM Program-
+	ming" section and program an EPROM.
+
+  15.	Once you have a programmed EPROM, you can place it into the correct
+	EPROM socket and try to use it.  The "standard" addresses for the MEMORY
+	PLUS board are C000 - C7FF, C800 - CFFF, D000 - D7FF, and D800 - DFFF.
+	Set the ROM Select Switch to the desired 8K starting address.  Since the
+	EPROM Programmer Program verified as it programmed, the contents should
+	be correct.  If not, then there is probably a problem in where you have
+	placed the EPROM (wrong socket) or which direction you have inserted the
+	EPROM (pin 1 goes upper right corner).  If the contents of the EPROM
+	look okay, then execute the code to determine if it runs correctly.
+	If the code looks correct, then it should run properly.
+
+  16.	Congratulations.  You now have an expanded MICRO system with a lot of
+	new capabilities.  You should now make yourself more familiar with the
+	MEMORY PLUS facilities by re-reading the documentation, particularly
+	the VIA Data Sheet.
+
+
+
+
+ </PRE>
+<BR CLEAR=all>
+<HR>
+<A HREF="03.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="05.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 4
+</CENTER>
+<BR CLEAR=all>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 8th December, 2002.</FONT>
+</BODY>
+</HTML>
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.10 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=3fe63630&adpref="></script>

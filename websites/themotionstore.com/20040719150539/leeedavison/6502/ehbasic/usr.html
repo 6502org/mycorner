@@ -1,0 +1,365 @@
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC, using USR()</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="index.html#link_1">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one" width="64" height="20"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Enhanced BASIC, using USR() </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<P>
+<B><U>Introduction.</U></B>
+<BR>
+<BLOCKQUOTE>
+   USR(&#60;expression[$]&#62;) calls the machine code function pointed to by the user
+   jump vector after evaluating &#60;expression[$]&#62; and placing the result in the
+   first floating accumulator. Once the user function exits, via an RTS, the value in
+   the floating accumulator is passed back to EhBASIC.
+<P>
+   Either a numeric value or a string can be passed, and either type can be returned
+   depending on the setting of the data type flag at the end of the user code and the
+   return point (see code examples for details).
+<P>
+   It can also be extended by adding parameters to USR() and parsing them from within
+   the routine in the same way that CALL can be extended, just remember to get the
+   value from FAC1 first.
+</BLOCKQUOTE>
+<B><U>How to - numeric source, numeric result.</U></B>
+<BLOCKQUOTE>
+ First you need to write the code.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; this code demonstrates the use of USR() to quickly calculate the square of a
+; byte value. Compare this with doing SQ=A*A or even SQ=A^2.
+
+	.include BASIC.DIS	; include the BASIC labels file. this allows
+				; you easy access to the internal routines you
+				; need to parse the command stream and access
+				; some of the internals of BASIC. It is usually
+				; output by the assembler as part of the listing
+				; or as a separate, optional, file.
+
+; for now we'll put this in the spare RAM @ $F400
+
+	*=	$F400
+
+Square
+	JSR	LAB_EVBY	; evaluate byte expression, result in X and FAC1_3
+	LDA	#$00		; clear A
+	STA	FAC1_2		; clear square low byte (use FAC1 as the workspace)
+				; (no need to clear the high byte, it gets shifted out)
+	TXA			; copy byte to A
+	LDX	#$08		; set bit count
+Nextr2bit
+	ASL	FAC1_2		; low byte *2
+	ROL	FAC1_1		; high byte *2+carry from low
+	ASL	A		; shift byte
+	BCC	NoSqadd		; don't do add if C = 0
+
+	TAY			; save A
+	CLC			; clear carry for add
+	LDA	FAC1_3		; get number
+	ADC	FAC1_2		; add number^2 low byte
+	STA	FAC1_2		; save number^2 low byte
+	LDA	#$00		; clear A
+	ADC	FAC1_1		; add number^2 high byte
+	STA	FAC1_1		; save number^2 high byte
+	TYA			; get A back
+NoSqadd
+	DEX			; decrement bit count
+	BNE	Nextr2bit	; go do next bit
+
+	LDX	#$90		; set exponent=2^16 (integer)
+	SEC			; set carry for +ve result
+	JMP	LAB_STFA	; set exp=X, clearFAC1 mantissa3, normalise & return
+</PRE>
+</TD></TR></TABLE>
+<P>
+ Now you need to set up the address for your function. This is done by DOKEing
+ an address into the USR() vector e.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+
+DOKE $0B,$F400		; set the user function address to addr
+			; $0B	- user function vector address
+			; $F400	- routine address
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ Finally you need to set the vector in your BASIC program and use that to call the
+  function
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.
+10 DOKE $0B,$F400
+.
+.
+.
+145 SQ=USR(A)
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>How to - numeric source, string result.</U></B>
+<BLOCKQUOTE>
+ AS before, first you need to write the code.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; this code demonstrates the use of USR() to generate a string of # characters.
+; the length of the required string is the parameter passed.
+
+	.include BASIC.DIS	; include the BASIC labels file. this allows
+				; you easy access to the internal routines you
+				; need to parse the command stream and access
+				; some of the internals of BASIC. It is usually
+				; output by the assembler as part of the listing
+				; or as a separate, optional, file.
+
+; for now we'll put this in the spare RAM @ $F400
+
+	*=	$F400
+
+STRING
+	JSR	LAB_EVBY	; evaluate byte expression, result in X and FAC1_3
+
+	TXA			; string is byte length
+	BEQ	NUL_STRN	; branch if null string
+
+	JSR	LAB_MSSP	; make string space A bytes long A=$AC=length,
+				; X=$AD=Sutill=ptr low byte, Y=$AE=Sutilh=ptr high byte
+	LDA	#"#"		; set character
+	LDY	FAC1_3		; get length
+SAV_HASH
+	DEY			; decrement bytes to do
+	STA	(str_pl),Y	; save byte in string
+	BNE	SAV_HASH	; loop if not all done
+
+NUL_STRN
+	PLA			; dump return address (return via get value
+	PLA			; from line, this skips the type checking and
+				; so allows a string result to be returned)
+	JMP	LAB_RTST	; check for space on descriptor stack then put
+				; string address and length on descriptor stack
+				; & update stack pointers
+</PRE>
+</TD></TR></TABLE>
+<P>
+ Now you need to set up the address for your function. This is done by DOKEing
+ an address into the USR() vector e.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+DOKE $0B,$F400		; set the user function address to addr
+			; $0B	- user function vector address
+			; $F400	- routine address
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ Finally you need to set the vector in your BASIC program and use that to call the
+  function
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.
+10 DOKE $0B,$F400
+.
+.
+.
+145 HA$=USR(A)
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>How to - string source, numeric result.</U></B>
+<BLOCKQUOTE>
+ AS before, first you need to write the code.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; this code demonstrates the use of USR() to test a string of characters.
+; if all the string is alpha -1 is returned, else 0 is returned.
+
+	.include BASIC.DIS	; include the BASIC labels file. this allows
+				; you easy access to the internal routines you
+				; need to parse the command stream and access
+				; some of the internals of BASIC. It is usually
+				; output by the assembler as part of the listing
+				; or as a separate, optional, file.
+
+; for now we'll put this in the spare RAM @ $F400
+
+	*=	$F400
+
+ALPHA
+	JSR	LAB_EVST	; evaluate string
+	TAX			; copy length to X
+	BEQ	NOT_ALPH	; branch if null string
+
+	LDY	#$00		; clear index
+ALP_LOOP
+	LDA	(ut1_pl),Y	; get byte from string
+	JSR	LAB_CASC	; is character "a" to "z" (or "A" to "Z")
+	BCC	NOT_ALPH	; branch if not alpha
+
+	INY			; increment index
+	DEX			; decrement count
+	BNE	ALP_LOOP	; loop if not all done
+
+	LDA	#$FF		; set for -1
+	BNE	IS_ALPHA	; branch always
+
+NOT_ALPH
+	LDA	#$00		; set for 0
+IS_ALPHA
+	TAY			; copy byte
+	LDX	#$00		; clear byte
+	STX	Dtypef		; clear data type flag, $00=numeric
+	JMP	LAB_AYFC	; save & convert integer AY to FAC1 & return
+</PRE>
+</TD></TR></TABLE>
+<P>
+ Now you need to set up the address for your function. This is done by DOKEing
+ an address into the USR() vector e.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+DOKE $0B,$F400		; set the user function address to addr
+			; $0B	- user function vector address
+			; $F400	- routine address
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ Finally you need to set the vector in your BASIC program and use that to call the
+  function
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.
+10 DOKE $0B,$F400
+.
+.
+.
+145 AL=USR(A$)
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>How to - string source, string result.</U></B>
+<BLOCKQUOTE>
+ AS before, first you need to write the code.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; this code demonstrates the use of USR() invert the case of a string of
+; characters. only alpha characters will be affected.
+
+	.include BASIC.DIS	; include the BASIC labels file. this allows
+				; you easy access to the internal routines you
+				; need to parse the command stream and access
+				; some of the internals of BASIC. It is usually
+				; output by the assembler as part of the listing
+				; or as a separate, optional, file.
+
+; for now we'll put this in the spare RAM @ $F400
+
+	*=	$F400
+
+ALPHA
+	JSR	LAB_EVST	; evaluate string
+	STA	str_ln		; set string length
+	STX	str_pl		; set string pointer low byte
+	STY	str_ph		; set string pointer high byte
+	TAX			; copy length to X
+	BEQ	NO_STRNG	; branch if null string
+
+	LDY	#$00		; clear index
+ALP_LOOP
+	LDA	(ut1_pl),Y	; get byte from string
+	JSR	LAB_CASC	; is character "a" to "z" (or "A" to "Z")
+	BCC	NOT_ALPH	; branch if not alpha
+
+	EOR	#$20		; toggle case
+	STA	(ut1_pl),Y	; save byte back to string
+NOT_ALPH
+	INY			; increment index
+	DEX			; decrement count
+	BNE	ALP_LOOP	; loop if not all done
+
+NO_STRNG
+	PLA			; dump return address (return via get value
+	PLA			; from line, this skips the type checking and
+				; so allows a string result to be returned)
+	JMP	LAB_RTST	; check for space on descriptor stack then put
+				; string address and length on descriptor stack
+				; & update stack pointers
+</PRE>
+</TD></TR></TABLE>
+<P>
+ Now you need to set up the address for your function. This is done by DOKEing
+ an address into the USR() vector e.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+DOKE $0B,$F400		; set the user function address to addr
+			; $0B	- user function vector address
+			; $F400	- routine address
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ Finally you need to set the vector in your BASIC program and use that to call the
+  function
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.
+10 DOKE $0B,$F400
+.
+.
+.
+145 A$=USR(A$)
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 14th July, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%>
+</TD></TR></TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,82 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=73824971&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>Enhanced 68k BASIC, useful routines</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 68k microprocessor
+ family.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#link_1">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Useful routines. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<P>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There are many subroutines within BASIC that can be useful if you wish to use your own
+ assembly routines with it. Here are some of them with a brief description of their
+ function. For full details see the source code.
+</BLOCKQUOTE>
+<B><U>The routines.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B>LAB_IGBY</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ BASIC increment and get byte routine. gets the next byte from the BASIC command stream.
+ If the byte is a numeric character then the carry flag will be set, if the byte is a
+ termination byte, either null or a statement separator, then the zero flag will be set.
+ Spaces in the command stream will automatically be ignored.
+</BLOCKQUOTE>
+<B>LAB_GBYT </B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ BASIC get byte routine. Gets the current byte from the BASIC command stream but does not
+ increment the execute pointer. Otherwise the same as above.
+</BLOCKQUOTE>
+<B>LAB_COLD</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Performs a cold start. BASIC is reset and all BASIC memory is cleared.
+</BLOCKQUOTE>
+<B>LAB_WARM</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Performs a warm start. Execution is stopped and BASIC returns to immediate mode.
+</BLOCKQUOTE>
+<B>LAB_XERR</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ With d0 set, do error #d0, then warm start.
+<P>
+ The equivalent can be achieved by calling the routine in the name column.
+<BR>
+<BR>
+<TABLE BGCOLOR="white" WIDTH=80% CELLPADDING=2 CELLSPACING=0 BORDER=1>
+<TR>
+<TD WIDTH=12% ALIGN=CENTER><B><U>Name</U></B></TD>
+<TD WIDTH=7%  ALIGN=CENTER><B><U>d0</U></B></TD>
+<TD WIDTH=31%><B><U>Error</U></B></TD>
+<TD WIDTH=12% ALIGN=CENTER><B><U>Name</U></B></TD>
+<TD WIDTH=7%  ALIGN=CENTER><B><U>d0</U></B></TD>
+<TD WIDTH=31%><B><U>Error</U></B></TD>
+</TR>
+<TR>
+<TD>LAB_NFER</TD><TD ALIGN=CENTER>$00</TD><TD>NEXT without FOR</TD>
+<TD>LAB_SNER</TD><TD ALIGN=CENTER>$04</TD><TD>syntax</TD>
+</TR>
+<TR>
+<TD>LAB_RGER</TD><TD ALIGN=CENTER>$08</TD><TD>RETURN without GOSUB</TD>
+<TD>LAB_ODER</TD><TD ALIGN=CENTER>$0C</TD><TD>out of data</TD>
+</TR>
+<TR>
+<TD>LAB_FCER</TD><TD ALIGN=CENTER>$10</TD><TD>function call</TD>
+<TD>LAB_OFER</TD><TD ALIGN=CENTER>$14</TD><TD>overflow</TD>
+</TR>
+<TR>
+<TD>LAB_OMER</TD><TD ALIGN=CENTER>$18</TD><TD>out of memory</TD>
+<TD>LAB_USER</TD><TD ALIGN=CENTER>$1C</TD><TD>undefined statement</TD>
+</TR>
+<TR>
+<TD>LAB_ABER</TD><TD ALIGN=CENTER>$20</TD><TD>array bounds</TD>
+<TD>LAB_DDER</TD><TD ALIGN=CENTER>$24</TD><TD>double dimensio

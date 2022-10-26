@@ -1,0 +1,39 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=89a95324&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>6541 mystery board</TITLE>
+<META name="description" content="Content."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>6541 Mystery board. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<IMG SRC="board_t.jpg" ALIGN=RIGHT WIDTH=320 HEIGHT=240 BORDER=1 HSPACE=8
+ ALT="6541 mystery board">
+<B><U>Not such a mystery</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The only identification on this board is the board <A HREF="ident.html#logo">logo</A>
+ and the <A HREF="ident.html#label">labels</A> on the EPROM and the PAL.
+<P ALIGN=JUSTIFY>
+ I still don't know exactly what this is but I can now make a few guesses. I believe the
+ board was made by Sigma Designs who have made a few disk controllers with the SDC prefix.
+ I can identify all the chips except the missing <A HREF="ident.html">40 pin DIL</A> and
+ that I suspect is a Western Digital WDxxxx floppy disk controller.
+<P ALIGN=JUSTIFY>
+ The 34 way header on the right hand edge of the board would seem to be the port for the
+ disk drives though it's not the standard PC type drive as there is a power connection
+ to some of the pins that would usually be grounded. Going by the code two, double sided,
+ drives are supported.
+<P ALIGN=JUSTIFY>
+ Thanks to Roberto for reverse engineering the equations to the PAL, this has let me work
+ out how the devices are addressed. The EPROM goes from $F800 to $FFFF even though it's a
+ 4k device, the RAM sppears from $F200 to $F7FF which is only three quaters of it's 2k
+ size. Some of the unused area, $F080 to $F0FF is taken by the WDxxxx chip.
+<P ALIGN=JUSTIFY>
+ The smaller 26 way header seen on the bottom right of the board is the host interface,
+ this is a byte wide port and looks like a 65xx peripheral to the host device.
+<P ALIGN=JUSTIFY>
+ Larger pictures of the board are here..
+<P ALIGN=JUSTIFY>
+<TABLE ALIGN=CENTER><TR><TD WIDTH=33%>
+<LI>A <A HREF="board_s.jpg">640 x 

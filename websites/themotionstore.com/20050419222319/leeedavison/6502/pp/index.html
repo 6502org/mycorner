@@ -1,0 +1,115 @@
+<HTML><HEAD><TITLE>6502 Pen plotter</TITLE>
+<META name="description" content="6502 Pen plotter."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>6502 Pen plotter </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Hardware.</U></B><P>
+<BLOCKQUOTE>
+ The basis for this project is an old Apple II pen plotter. Adverts from when this was
+ a current piece of hardware give the price as over £1100 (over $1700) and at the time
+ this was one of the best priced plotters available.
+<P>
+ It has a single pen and a keypad with UP, DOWN, LEFT and RIGHT buttons plus a switch
+ for PEN UP. There is no position sensing or feedback of any sort from the mechanism,
+ it relies entirely on relative (to the last position) movement and user vigilance.
+<P>
+ At first it was my intention to just restore the plotter and use it as it was but the
+ fact that it was almost completely dumb, the host interface was just a logic level
+ mimic of the control panel, and that the driver circuit radiated some milliwatts of RF
+ right up into the VHF band, persuaded me to junk the original circuit and build a new
+ one.
+</BLOCKQUOTE>
+<CENTER>
+<B>Pen plotter circuit.</B>
+<P>
+ <IMG SRC="../../nocircuit.png" TITLE="6502 Pen plotter" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE>
+ The circuit consists of a 6502, two 32k x 8 RAMs, a 32k x 8 EPROM, a 6551 ACIA with a
+ MAX 232 buffer, a 6840 counter timer, two stepper motor drivers, two 8 bit latches, an 8
+ bit buffer, an address decoder (GAL16V8A) and is all clocked by a 1.832 MHz oscillator.
+<P>
+ The use of a GAL for the glue chip allows an almost complete change of the memory map
+ without any circuit changes. This means that changes in address requirements can be
+ accommodated without recourse to the soldering iron. For anyone interested an example
+ set of equations for this chip are in pp.pld and can be compiled with WinCUPL. The
+ fuse file, pp.jed and the compiler listing, pp.txt are also included.
+</BLOCKQUOTE>
+<P>
+<CENTER>
+<B> The finished board.</B><P>
+<P>
+ <IMG SRC="board.jpg" TITLE="6502 Pen plotter" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE>
+ At the back are the motor current limit resistors then, on the board from left to right,
+ are the motor and pen drivers, output latches, input buffer and decoding, CPU and XTAL
+ osc., reset switch and +5V regulator, lower 32k RAM, upper 32k RAM and smoothing caps,
+ 32k ROM and MAX232, 6551 ACIA and more smoothing caps and finally the 6840 counter timer
+ chip.
+</BLOCKQUOTE>
+<CENTER>
+<B> The board in the plotter.</B><P>
+<P>
+ <IMG SRC="../../nophoto.png" TITLE="6502 Pen plotter" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE>
+ As can be seen the size, shape and layout of the board were mostly dictated by the space
+ and cable lengths on the plotter chassis.
+</BLOCKQUOTE>
+<B><U>Software.</U></B>
+<BLOCKQUOTE>
+ The software can be thought of as two separate parts, the hardware driver and the
+ command interpreter.
+<P>
+<B>The hardware driver.</B>
+<BLOCKQUOTE>
+ The hardware driver takes pen movement commands from the buffer queue and outputs the
+ necessary signals to the output drivers. It then sets up a timer event depending on the
+ actions taken and returns control to the command interpreter. If there were no pen
+ movements to be processed the timer is disabled and the hardware driver effectively
+ goes to sleep until woken by the interpreter.
+</BLOCKQUOTE>
+<B>The command interpreter.</B>
+<BLOCKQUOTE>
+ The command interpreter gets commands from the host machine and translates them into
+ discrete pen motions which are sent to the pen movement buffer, it also generates any
+ resulting status or error messages. If, when a pen movement is sent to the buffer, the
+ hardware driver is asleep the interpreter generates the necessary software interrupt to
+ start it. The command interpreter also handles the local controls on the plotter (never
+ implemented).
+<A name=links></A>
+</BLOCKQUOTE>
+<B>The routines.</B>
+<BLOCKQUOTE>
+<LI> <A HREF="init.html">Initialisation</A>
+<LI> <A HREF="drawing.html">Drawing</A>
+<LI> <A HREF="calling.html">Calling draw</A>
+<LI> <A HREF="lines.html">Drawing lines</A>
+<LI> <U>Drawing circles</U>
+<LI> <U>Read</U>, as html, or <U>download</U> the source as a zipped file.
+</BLOCKQUOTE>
+ The software for this project was not completed and during development <A
+ HREF="../ehbasic/index.html">EhBASIC</A> was used for quick and dirty concept design
+ and testing
+</BLOCKQUOTE>
+<B><U>Status.</U></B>
+<BLOCKQUOTE>
+ This project is unfinished and will remain that way. Just after I'd got the plot
+ subroutines done and mostly debugged, and could happily draw lines at any angle in any
+ direction and curves of all sorts, I was given a fully working Roland 880 A3 eight
+ pen plotter. It has a higher resolution than this mechanism and is complete and
+ working so, at least as a plotter, this project is unlikely to be developed further.
+</BLOCKQUOTE>
+<P>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 28th April, 2002.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+

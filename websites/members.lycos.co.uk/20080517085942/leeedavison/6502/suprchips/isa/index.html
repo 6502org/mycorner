@@ -1,0 +1,70 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>8 Bit ISA slot</TITLE>
+<META name="description" content="8 bit ISA slot.">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=25%>
+<A HREF="../index.html#isa">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>8 Bit ISA slot. </FONT></B><FONT SIZE=-1>by Lee Davison</FONT>
+</TD>
+<TD WIDTH=25%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<IMG SRC="isa.png" ALIGN=RIGHT BORDER=1
+ ALT="SuprChip V 8 bit ISA slot." HSPACE=8>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I wanted a quick way to connect an 8 bit ISA slot, only to access the IO adresse range,
+ to the SuprChip V microcontroller. The circuit I came up with appears on the right.
+<P ALIGN=JUSTIFY>
+ The address lines A5 to A15 can either be set using jumpers or switches (I used switches)
+ or, if you only need one address range, can be hard wired to the corresponding address.
+<P ALIGN=JUSTIFY>
+ Any of the five interrupt lines, from IRQ3 to IRQ7, can be selected by the use of a
+ jumper. Again if you will only need one (or none) of these then the desired interrupt
+ can be hard wired.
+<P ALIGN=JUSTIFY>
+ This circuit could be fairly easily adapted as a memory mapped device by connecting the
+ corresponding address and data lines (possibly through buffers), by driving the IOR and
+ IOW pins with decoded read and write signals, and by connecting the interrupt, via an
+ invertor, to the NMI input on the processor. The RESET line can be driven, again via
+ an invertor, by the processor RESET line or by an output port line. This line is active
+ high.
+<P ALIGN=JUSTIFY>
+ While experimenting with different network cards I discovered some of them need the +12v
+ supply in addition to the +5v supply. This additional connection is shown in <FONT
+ COLOR=RED>red</FONT> on the diagram.
+<P ALIGN=JUSTIFY>
+ As I had a stack of 3Com 3C509B NICs of various types I decided to try to use them. Well
+ it turns out that even with PnP disabled you still need to access the card's id port on
+ $01xx. To allow this Port 6 bit 6 was connected to the A9 line, so both $03xx and $01xx
+ can be accessed by the software. This additional connec

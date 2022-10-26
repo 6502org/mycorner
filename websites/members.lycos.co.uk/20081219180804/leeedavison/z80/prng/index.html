@@ -1,0 +1,82 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=3b149b22&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>Z80 pseudo random number generator</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Z80 8 bit PRNG. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<U><B>Introduction</B></U>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is a short peice of code that generates a maximal length, 8 bit, pseudo random
+ number sequence. It was originally used to switch off and on all the LED's in a 8x30
+ matrix in a good random looking order (the un-needed values being skipped).
+<P>
+ It's shorter, but slower, than using a lookup table and a counter.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; returns pseudo random 8 bit number in A. Only affects A.
+; (r_seed) is the byte from which the number is generated and MUST be	
+; initialised to a non zero value or this function will always return
+; zero. Also r_seed must be in RAM, you can see why......
+
+rand_8:
+	LD	A,(r_seed)	; get seed
+	AND	#B8h		; mask non feedback bits
+	SCF			; set carry
+	JP	PO,no_clr	; skip clear if odd
+	CCF			; complement carry (clear it)
+no_clr:
+	LD	A,(r_seed)	; get seed back
+	RLA			; rotate carry into byte
+	LD	(r_seed),A	; save back for next prn
+	RET			; done
+
+r_seed:
+	DB	1		; prng seed byte (must not be zero)
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The 6502 8 bit version can be found <A HREF="../../6502/code/prng.html">here</A> and
+ the 32 bit 68k version can be found <A HREF="../../68k/prng/index.html">here</A>.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 28th August, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="//secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

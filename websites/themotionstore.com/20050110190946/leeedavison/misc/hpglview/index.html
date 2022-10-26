@@ -1,0 +1,91 @@
+<HTML>
+<HEAD><TITLE>HP-GL viewer</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="../index.html">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>HP-GL Viewer. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+ <IMG SRC="hpgl.png" ALIGN=RIGHT ALT="Example output" BORDER=1 HSPACE=8><P>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This HP-GL viewer is written in QuickBASIC 4.5 and can interpret most common HP-GL and
+ some HP-GL2 drawing commands. QuickBASIC 4.5 was chosen purely because it's available on
+ all the PCs I usually use. There is nothing particularly clever in the code and it
+ <I>should</I> translate easily to any other language.
+</BLOCKQUOTE>
+<B><U>Features.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<LI>Most common line and curve commands.
+<LI>Shapes.
+<LI>Text plotting.
+<LI>Autoscale for best fit to 640 x 480 screen.
+<LI>Zoom and pan the plotted image.
+<LI>Errrr. That's it.
+</BLOCKQUOTE>
+<B><U>Use.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There are no command line options, when the program is run it will prompt for a
+ filename, this should be the full name and extension (if any) and does not need to be
+ any particular type.
+<P ALIGN=JUSTIFY>
+ The file will then be processed to determine the size of the plot and any warnings or
+ errors found will be reported, if there are any then the program will wait for a key
+ press before proceeding. Next the file will be processed again and this time any
+ resulting output will be drawn and will look something like the example shown.
+<P ALIGN=JUSTIFY>
+ Once the plot is generated it can be zoomed untill it is plotted at a scale of 1:1 or it
+ fills the screen (whichever is the bigger image) and the viewpoint can be panned left,
+ right, up and down. The keys are ..
+<BLOCKQUOTE><TABLE>
+<TR><TD WIDTH=90 ALIGN=CENTER><B>Key</B></TD><TD ALIGN=CENTER><B>Function</B></TD></TR>
+<TR><TD><B>Home</B></TD><TD>Moves the viewpoint fully out and centres it.</TD></TR>
+<TR><TD><B>Page up</B></TD><TD>Moves the viewpoint out.</TD></TR>
+<TR><TD><B>Page down</B></TD><TD>Moves the viewpoint in.</TD></TR>
+<TR><TD><B>End</B></TD><TD>Moves the viewpoint fully in.</TD></TR>
+<TR><TD><B>Cursor right</B></TD><TD>Pans the viewpoint right.</TD></TR>
+<TR><TD><B>Cursor left</B></TD><TD>Pans the viewpoint left.</TD></TR>
+<TR><TD><B>Cursor up</B></TD><TD>Pans the viewpoint up.</TD></TR>
+<TR><TD><B>Cursor down</B></TD><TD>Pans the viewpoint down.</TD></TR>
+</TABLE></BLOCKQUOTE>
+ At any time use <B>ESCAPE</B> to quit.
+<P ALIGN=JUSTIFY>
+ Limits are:-
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<LI>You can't move out further than the plot image filling the screen.
+<LI>You can't move in any closer than a scale of 1:1.
+<LI>You can't pan beyond the edges of the plot image.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<A NAME="softw"></A>
+<TABLE WIDTH=100%><TR>
+<TD VALIGN=TOP COLSPAN=2 WIDTH=55%><B><U>Software.</U></B></TD>
+<TD VALIGN=TOP COLSPAN=2><B><U>To do.</U></B></TD></TR>
+<TR><TD WIDTH=30></TD><TD VALIGN=TOP>
+<LI><A HREF="source.html">View</A> v1.17 or download the v1.17
+ <A HREF="source.zip">source <IMG SRC="../../zip_sm.png" ALT="Download"
+ ALIGN=CENTER border=0></A>
+<LI>Download the v1.17 <A HREF="hpglview.zip">DOS executable <IMG SRC="../../zip_sm.png"
+ ALT="Download" ALIGN=CENTER border=0></A>
+<LI>Download some example <A HREF="plot.zip">hpgl files <IMG SRC="../../zip_sm.png"
+ ALT="Download" ALIGN=CENTER border=0></A></TD><TD WIDTH=30></TD><TD VALIGN=TOP>
+<LI>Soft clip window.
+<LI>Input window.
+<LI>Scale and rotate.
+<LI>Text scale and rotate.
+<LI>Filled shapes.</TD></TR></TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 23rd January, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>

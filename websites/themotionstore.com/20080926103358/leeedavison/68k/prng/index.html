@@ -1,0 +1,110 @@
+<HTML><HEAD><TITLE>68k pseudo random number generator</TITLE>
+<META name="description" content="Content."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>68000, 32bit PRNG. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<U><B>Introduction</B></U>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is the 68k version of the code to generate a maximal length, 32 bit, pseudo random
+ number sequence. The loop is repeated five times to hide the nature of the generator,
+ at least from human eyes. This code is taken from the RND(n) function in
+ <A HREF="../ehbasic/index.html">EhBASIC68k</A>.
+</BLOCKQUOTE>
+<U><B>The code</B></U>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+* 32 bit 68k version of PRNG. Prng32 must be in RAM and must be
+* initialised to a non zero value. Taking the 5th next number is	
+* slower but helps hide the shift nature of this generator.
+
+NextPRNG
+	MOVEQ	#4,d2		* do this 5 times
+	MOVE.l	Prng32,d0	* get current 
+Ninc0
+	MOVEQ	#0,d1		* clear bit count
+	ROR.l	#2,d0		* bit 31 -> carry
+	BCC	Ninc1		* skip increment if =0
+
+	ADDQ.b	#1,d1		* else increment bit count
+Ninc1
+	ROR.l	#3,d0		* bit 28 -> carry
+	BCC	Ninc2		* skip increment if =0
+
+	ADDQ.b	#1,d1		* else increment bit count
+Ninc2
+	ROL.l	#5,d0		* restore PRNG longword
+	ROXR.b	#1,d1		* EOR bit into Xb
+	ROXR.l	#1,d0		* shift bit to most significant
+	DBF	d2,Ninc0	* loop 5 times
+
+	MOVE.l	d0,Prng32	* save back to seed word
+	RTS
+
+Prng32
+	ds.l	1		* random number store
+
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<U><B>Galois version</B></U>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is the form of pseudo random number generator now used in EhBASIC68. The benefit
+ is that it's easier to implement than the Fibonacci so can be run through more cycles
+ each go. This gives better results when testing the randomness of relatively short
+ sequences of numbers.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+* RND(n), 32 bit Galois version. make n=0 for 19th next number in
+* sequence or n<>0 to get 19th next number in sequence after seed n.	
+* This version of the PRNG uses the Galois method and a sample of
+* 65536 bytes produced gives the following values.
+
+* Entropy = 7.997442 bits per byte
+* Optimum compression would reduce these 65536 bytes by 0 percent
+
+* Chi square distribution for 65536 samples is 232.01, and
+* randomly would exceed this value 75.00 percent of the time
+
+* Arithmetic mean value of data bytes is 127.6724, 127.5 = random
+* Monte Carlo value for Pi is 3.122871269, error 0.60 percent
+* Serial correlation coefficient is -0.000370, uncorrelated = 0.0
+
+NextPRN
+	MOVEQ	#$AF-$100,d1	* set EOR value
+	MOVEQ	#18,d2		* do this 19 times
+	MOVE.l	Prng32,d0	* get current 
+Ninc0
+	ADD.l	d0,d0		* shift left 1 bit
+	BCC.s	Ninc1		* branch if bit 32 not set
+
+	EOR.b	d1,d0		* do galois LFSR feedback
+Ninc1
+	DBF	d2,Ninc0	* loop
+
+	MOVE.l	d0,Prng32	* save back to seed word
+	RTS
+
+Prng32
+	ds.l	1		* random number store
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The 6502 8 bit version, along with more information about random number generation, can
+ be found <A HREF="../../6502/code/prng.html">here</A> and the Z80 8 bit version can be
+ found <A HREF="../../z80/prng/index.html">here</A>.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 12th February, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+

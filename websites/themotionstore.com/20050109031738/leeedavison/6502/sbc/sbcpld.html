@@ -1,0 +1,87 @@
+<HTML>
+<HEAD>
+<TITLE>
+  Single board computer - GAL logic equations file.
+</TITLE>
+<META name="description" content=" Single board 6502 computer.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#links">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one" width="64" height="20"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>GAL logic equations file. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="sbc_pld.zip">Download this file <IMG SRC="../../zip_sm.png" ALT="[Download]"
+ BORDER=0>
+</A>
+<PRE>
+Name     sbc ;
+PartNo   00 ;
+Date     01/08/00 ;
+Revision 01 ;
+Designer Lee ;
+Company  ;
+Assembly None ;
+Location  ;
+Device   g16v8as ;
+
+/* This GAL is the random glue for the sbc board	*/
+
+/* Logic minimisations			None				*/
+/* Optimizations			None				*/
+/* Download				JEDEC/POF/PRG			*/
+/* Doc File Options			fuse plot, equations		*/
+/* Output				None				*/
+
+/* *************** INPUT PINS *********************/
+
+PIN	1 = A15		;			/* address bus		*/ 
+PIN	2 = A14		;			/* address bus		*/ 
+PIN	3 = A13		;			/* address bus		*/ 
+PIN	4 = A12		;			/* address bus		*/ 
+PIN	5 = A11		;			/* address bus		*/ 
+PIN	6 = A10		;			/* address bus		*/ 
+PIN	7 = A9		;			/* address bus		*/ 
+PIN	8 = A8		;			/* address bus		*/ 
+PIN	9 = RW		;			/* read write		*/ 
+PIN	11 = p02	;			/* phase 2 clock	*/ 
+
+/* *************** OUTPUT PINS *********************/
+
+PIN  19 = ROM		;			/* 32K ROM		*/ 
+PIN  18 = port0		;			/* port 0 strobe	*/ 
+PIN  17 = port1		;			/* port 1 strobe	*/ 
+PIN  16 = RAM0		;			/* lower 32K RAM	*/ 
+PIN  15 = RAM1		;			/* upper 32K RAM	*/ 
+/*PIN  14 = 		;			/*			*/ 
+/*PIN  13 = 		;			/*			*/ 
+/*PIN  12 = 		;			/*			*/ 
+
+/* intermediate terms */
+
+Mrom = A15 & A14 & A13 & A12 & A11 & RW ;		/* Monitor ROM adress range	*/
+Brom = A15 & A14 & (!A12 # !A13) & RW ;			/* BASIC ROM C000 - EFFF	*/
+
+/* Output terms */
+
+!port0	= A15 & A14 & A13 & A12 & !A11 & !A10 & !A9 & !A8 ;	/* 256 byte block	*/
+!port1	= A15 & A14 & A13 & A12 & !A11 & !A10 & !A9 & A8 ;	/* 256 byte block	*/
+!RAM0	= !A15 & p02 ;						/* lower 32K RAM	*/ 
+!RAM1	= !(Mrom # Brom # !port0 # !port1) & A15 & p02 ;	/* upper 32K RAM	*/ 
+!ROM	= (Mrom # Brom) & p02 ;					/* 32K ROM		*/ 
+
+</PRE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 29th August, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>

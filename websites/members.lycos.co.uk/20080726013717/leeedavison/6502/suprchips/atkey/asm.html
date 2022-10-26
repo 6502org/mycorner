@@ -1,0 +1,267 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=85859383&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>
+  AT keyboard interface driver - assembly source file.
+</TITLE>
+<META name="description" content="An AT keyboard driver for the SuprDupr">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=25%>
+<A HREF="index.html#source">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>AT keyboard interface driver </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT></TD>
+<TD WIDTH=25%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="asm.zip">Download this file <IMG SRC="../../../zip_sm.png" ALT="[Download]"
+ border=0></A>
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; suprdupr AT keyboard driver ver$ 0.1
+
+; PC AT keyboard interface for 3806 L.Davison, 2001/2/3
+; works with 102 key standard and 105 key Win95/98 keyboards
+
+; The main, externally useable routines are ...
+
+; ResetAT	resets the keyboard, flags & LEDs
+; KeyLEDs	sets the keyboard LEDs, is called by ResetAT
+; SendAT	sends a byte to the keyboard, returns with the response
+; ScanAT	scans keyboard and get scancode, returns after timeout if no key
+; ScanKey	scans keyboard & decodes the key, returns after a timeout if no key
+
+; addresses used ...
+
+KEYread		=	Port7	; keyboard port, o.c. outputs
+KEYwrite	=	PDir7	; keyboard port, o.c. outputs
+KDA		=	7	; bit 7 is data
+KCL		=	6	; bit 6 is clock
+				; bits 0 to 5 are not used by this
+
+TxChar		=	$52	; transmit character buffer
+RxChar		=	$53	; receive character buffer
+LEDBits		=	$54	; LED status bits
+				; bit 0 = scroll lock,		1 = LED on
+				; bit 1 = num lock,		1 = LED on
+				; bit 2 = caps lock,		1 = LED on
+				; bits 3 to 7 are unused but may get trashed
+KeyBits		=	$55	; key status bits
+				; bit 0 = Left shift,		1 = key down
+				; bit 1 = Left control,		1 = key down
+				; bit 2 = Left win,		1 = key down
+				; bit 3 = Left alt,		1 = key down
+				; bit 4 = Right shift,		1 = key down
+				; bit 5 = Right control,	1 = key down
+				; bit 6 = Right win,		1 = key down
+				; bit 7 = Right alt,		1 = key down
+RxTwo		=	$56	; two code key flag and temporary counter
+
+		*=	$9000
+
+;; code for testing only. remove for ROM code
+;
+;	LDM	#$FF,PDir6	; output
+;	LDM	#$00,Port6	; low
+;
+;	SEB	7,Port6		; pin high
+;	CLB	7,Port6		; pin low
+;
+;	JSR	ResetAT		; resets the keyboard, flags & LEDs
+;Scan_lp:
+;	LDM	#$00,$58
+;	LDM	#$20,$59
+;Scan_gg:
+;	JSR	ScanKey		; get and decode key
+;	BCS	Scan_ou		; branch if key
+;
+;	DEC	$58		; heartbeat countdown
+;	BNE	Scan_gg		; loop if not done
+;
+;	DEC	$59		; heartbeat countdown
+;	BNE	Scan_gg		; loop if not done
+;
+;	LDA	#03		; heartbeat character on hyperterm
+;Scan_ou:
+;	JSR	OUTPUT		; output byte key
+;	BRA	Scan_lp		; loop forever
+;
+;; end of demo code
+
+; keyboard decoding routine. the entry point is ScanKey for a non
+; halting keyboard poll. if there is a key waiting it will be
+; returned in RxChar, else, on return, RxChar will be null.
+
+				; key pressed was break [pause] key
+WasBRK:
+	LDA	#$07		; seven more scancodes to ignore
+				; ($14,$77,$E1,$F0,$14,$F0,$77)
+	STA	RxTwo		; copy code count
+Ploop:
+	LDX	#$00		; 2000uS delay (8Mhz 3806 1w)
+	JSR	ScanAD		; long wait and get second scancode
+	DEC	RxTwo		; decrement count
+	BNE	Ploop		; loop if not all pause bytes done
+
+	LDA	#$03		; make break = [CTRL-C]
+	STA	RxChar		; save key
+	SEC			; flag key
+	RTS
+
+				; process lifted key
+KeyUp:
+	LDX	#$00		; 2000uS delay (8Mhz 3806 1w)
+	JSR	ScanAD		; long wait and get second scancode
+
+	ORA	RxTwo		; OR in table half
+	TAY			; set index from scancode
+	LDA	ATtable,Y	; get keycode
+	TAX			; save key for now
+	AND	#$F0		; mask top nibble
+;	CMP	#$C0		; function key ?
+;	BEQ	FuncKeyUP	; was function key, use this branch for you own
+;				; function key up handler (X holds char code)
+
+	CMP	#$90		; bit hold ?
+	BNE	ScanKey		; not bit hold, go get next
+				; ignores other key releases
+
+	LDA	#$00		; clear A
+
+				; was bit hold key (for up or down key)
+BitHold:
+	STA	RxTwo		; save key up/down flag ($90 for down, $00 for up)
+	TXA			; get key back
+	CMP	#$98		; compare with win_menu key
+	BCS	ScanKey		; ignore $98 - $9F
+
+				; if here key is either, [L_SHIFT], [L_CTRL],
+				; [L_WIN], [L_ALT], [R_SHIFT], [RCTRL], [R_WIN]
+				; or [R_ALT]
+
+				; rotates a 1 into a byte of 0s to
+				; toggle the pressed/lifted key's bit
+	AND	#$07		; mask lower 3 bits
+	TAX			; key # to X
+	LDA	#$00		; clear A
+	SEC			; set -1 bit
+R_Loop:
+	ROL	A		; rotate zero bit through A
+	DEX			; decrement bit count
+	BPL	R_Loop		; loop if not that key
+
+	LDX	RxTwo		; get key up flag
+	BEQ	ClearBit	; branch if was it key up
+
+	ORA	KeyBits		; set the bit
+	BRA	SavBits		; branch always
+
+ClearBit:
+	EOR	#$FF		; make only one bit = 0
+	AND	KeyBits		; clear the bit
+SavBits:
+	STA	KeyBits		; and save it back
+
+	BCC	ScanKey		; go get next scancode (branch always)
+
+				; handle num, caps and scroll lock keys
+SetUnset:
+	TXA			; get key back
+	EOR	LEDBits		; toggle the LED bits
+	STA	LEDBits		; save new LED bits
+	JSR	KeyLEDs		; set the keyboard LEDs
+
+; get a key from the keyboard, exits with null after timeout
+; This is the main entry point for this routine
+
+ScanKey:
+	JSR	ScanAT		; scan keyboard
+	BCS	ProcKey		; if key go do processing
+
+	RTS
+
+; process key from the keyboard
+
+ProcKey:
+	CMP	#$E1		; is it pause (break)
+	BEQ	WasBRK		; branch if so
+
+	CMP	#$AA		; is it selftest pass
+	BEQ	ScanKey		; branch if was
+
+; this bit should onlt be needed if you use scancode set 3
+
+;	CMP	#$FF		; is it error or buffer overflow
+;	BNE	NotOF		; branch if not
+
+;	JSR	ClearOF		; clear overflow
+;	BRA	ScanKey		; get scancode again
+
+				; here we have handled startup, errors and [BREAK]
+NotOF:
+	LDX	#$00		; clear for single key code
+	CMP	#$E0		; is it $E0 (two byte sequence)
+	BNE	NotE0		; branch if not
+
+;	LDX	#$00		; 2000uS delay (8Mhz 3806 1w) X is already cleared
+	JSR	ScanAD		; long wait and get second scancode
+	LDX	#$80		; set for double key code
+NotE0:
+	STX	RxTwo		; set/clear two code flag
+	CMP	#$F0		; is it $F0 (key up)
+	BEQ	KeyUp		; branch if up
+
+				; key has been pressed
+	ORA	RxTwo		; OR in table half
+	TAY			; set index from scancode
+	LDA	ATtable,Y	; get keycode
+	TAX			; save key for now
+	AND	#$F0		; mask top nibble
+	CMP	#$80		; bit set/unset ?
+	BEQ	SetUnset	; was bit set/unset
+
+	CMP	#$90		; bit hold ?
+	BEQ	BitHold		; was so go set hold bit
+
+	CMP	#$C0		; function key ?
+;	BEQ	FuncKey		; was function key, use this branch for you own
+				; function key down handler (X holds char code)
+	BEQ	ScanKey		; was function key, ignore for now
+
+				; key is not function, bit change or lock key
+	BBC	2,LEDBits,N_CapsL	; skip CAPS if not set
+
+	TXA			; get key back
+	CMP	#"a"+$80	; compare with "a" (shiftable)
+	BCC	N_CapsL		; branch if less
+
+	CMP	#"z"+$80+1	; compare with "z"+1 (shiftable)
+	BCS	N_CapsL		; branch if greater or equal
+
+				; caps lock on and was alpha, so shift it
+	TYA			; copy index
+	EOR	#$80		; do CAPS LOCK
+	TAY			; back to index
+
+N_CapsL:
+	TYA			; copy scancode
+	CMP	#$CA		; compare with keypad "/"
+	BEQ	Shift		; correct keypad "/"
+
+	CMP	#$69		; compare scancode with lowest numeric pad code
+	BCC	NotNumpad	; branch if less
+
+	CMP	#$7E		; compare scancode with highest numeric pad code+1
+	BCS	NotNumpad	; branch if greater or equal (not numeric)
+
+				; gets here if numeric pad code
+	BBS	1,LEDBits,N_Shift	; skip if NUM lock set
+				; (backward

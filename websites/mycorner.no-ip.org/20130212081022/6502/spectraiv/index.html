@@ -1,0 +1,67 @@
+<HTML><HEAD><TITLE>Spectra IV pinball</TITLE>
+<META name="description" content="Content."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html#other"><IMG SRC="../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Spectra IV pinball. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<IMG SRC="spectraivs.jpg" ALIGN=RIGHT WIDTH=320 HEIGHT=240 BORDER=1 HSPACE=8
+ TITLE="Spectra IV pinball table">
+<B><U>Introduction</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The Spectra IV pinball machine was manufactured in 1978 by The Valley Company. It is
+ one of only two models of rotating table solid state pinball machines. Over 2,500
+ of these machines were made.
+<P ALIGN=JUSTIFY>
+ Up to four players can play a game, each sitting at one side of the table, and the whole
+ playfield can be rotated to face each player in turn.
+</BLOCKQUOTE>
+<B><U>Technical</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ At the heart of the machine is a 6503 CPU. This is a 6502 CPU with a 12 bit address bus
+ in a 28 pin package. The top 3K out of the 4K address range is taken up by the program
+ ROM(s), originally three individual 1K ROMs but often replaced by a single 4K device.
+<P ALIGN=JUSTIFY>
+ Page zero of the address space is filled with 256 bytes of non volatile RAM and also all
+ the output devices for the solenoids, lamps and displays. This is arranged such that
+ when an address is written to both the RAM and the register of any addressed output
+ device are both written but when an address is read only the RAM responds. As a result
+ all output registers can be treated as read/write and values like the player scores are
+ saved in memory and displayed by a single write action.
+<P ALIGN=JUSTIFY>
+ Also, as this RAM is non volatile the state of the output registers can be restores
+ simply by reading and writing back each device address on powerup.
+<P ALIGN=JUSTIFY>
+ The only other device is a 6532 RIOT which provides 128 bytes of volatile RAM for the
+ stack, a timer that is used to double the interrupt rate and the remaining I/O for the
+ sound chip, an SN76477 from TI, and all the switch inputs.
+</BLOCKQUOTE>
+<B><U>Firmware</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The firmware for this machine has been dumped and can be used in emulators so even if
+ you don't own a real machine you can play something virtually the same. There is a
+ problem with the dumped image that causes strange things to happen when scores cross
+ a thousands boundary especially for players two and three in a multiplayer game.
+<P ALIGN=JUSTIFY>
+ In an effort to shed some light on the cause of this behavior I have disassembled and
+ mostly commented the firmware and in doing so discovered the cause just past LAB_0AAC
+ where it looks like a JSR became corrupted and turned into an LDY and ASL.
+<P ALIGN=JUSTIFY>
+ The disassembled source can be found <A HREF="spectra4.zip">here <IMG
+ SRC="../../zip_sm.png" ALIGN=CENTER BORDER=0 TITLE="source"></A>.
+<P ALIGN=JUSTIFY>
+ This disassembly is not quite complete and while it reassembles correctly the comments
+ still need some work. If you can help add anything to this please email me.
+<P ALIGN=JUSTIFY>
+ Reassembled ROMs with the most likely intended original code can be found <A
+ HREF="spectra4.zip">here <IMG SRC="../../zip_sm.png" ALIGN=CENTER BORDER=0
+ TITLE="ROMs"></A>.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 18th April, 2012.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

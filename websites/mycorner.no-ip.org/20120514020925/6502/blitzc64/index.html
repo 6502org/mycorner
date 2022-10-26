@@ -1,0 +1,119 @@
+<HTML><HEAD><TITLE>Blitz BASIC C64 emulation</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=25%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER><B><FONT SIZE=+1>Blitz BASIC C64 emulation </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=25%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<IMG SRC="blitzc64.png" ALIGN=RIGHT BORDER=1 TITLE="C64 in Blitz BASIC" HSPACE=8>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Recently on the 6502.org forum a new user joined and in <A
+ HREF="http://forum.6502.org/viewtopic.php?t=1855">this post</A> presented some BASIC
+ source that was alleged to be a Commodore 64 emulator with just a few bugs.
+<P ALIGN=JUSTIFY>
+ It turns out that it's Blitz3D BASIC and, like a lot of BASIC source code, is a bit shy
+ of comments and has left over bits and pieces from previous attempts to make it work.
+</BLOCKQUOTE>
+<B><U>What was wrong.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Most of the code was in place and working but the routines for the compare opcodes, CMP,
+ CPX and CPY were broken as well as the code for the ADC and SBC opcodes which were also
+ incomplete. Code for the BIT opcode had been duplicated and edited at some time but the
+ working version was commented out. There was also quite a bit of unnecessary code to
+ handle values in the Blitz3D 32 bit signed integer variables becoming negative that
+ really wasn't needed.
+</BLOCKQUOTE>
+<B><U>What I fixed.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ CMP, CPX, CPY, ADC, SBC and BIT as well as adding PHP and PLP as functions to handle
+ the break flag properly. I also removed the unnecessary code for negative values and
+ broke the very long multi statement lines into multiple lines with comments.
+<P ALIGN=JUSTIFY>
+ I made sure that values that were smaller than 32 bit, which is all of them, were masked
+ whenever they were changed and that, as much as possible, it was done the same way every
+ time.
+</BLOCKQUOTE>
+<B><U>What happened.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ You would expect that as things were fixed the code would work better and better. What
+ really happened was that it would almost work then I'd fix another thing and be left
+ staring at a blank screen - again.
+<P ALIGN=JUSTIFY>
+ Eventually it all came right and I got the familiar C64 sign on screen but not until
+ after having to write test ROM images and adding some debug code, which is still there,
+ so I could tell which opcodes were failing and how.
+<P ALIGN=JUSTIFY>
+ After that it was just a case of going over the code again to remove extra sets of
+ parentheses and unifying logical tests to make the code more self consistent.
+</BLOCKQUOTE>
+<B><U>What's been changed since.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I replaced the busy wait at the end of the main loop with a delay wait. This means a
+ lower CPU load on fast machines and faster execution on slow machines.
+<P ALIGN=JUSTIFY>
+ I corrected the cycle timings for most opcodes and address modes except for some cases
+ of address,{X|Y} indexing. The error is only one cycle at most. This means that on a
+ fast enough machine this now runs at about the same speed as a real Commodore 64.
+<BR><BR>
+ I also corrected the cycle timings for the IRQ and NMI interrupts and made reset() clear
+ the cycle counter.
+<P ALIGN=JUSTIFY>
+ I added the showtime constant and some extra code at the end of the main loop that will
+ show how many milliseconds late the code was in completing 20000 CPU cycles. To see this
+ time set the showtime constant near the top of the source to True.
+<P ALIGN=JUSTIFY>
+ The arrays that held the ROM images and RAM image have been replaced with banks. This
+ makes loading the roms much simpler and reading or writing the memory much quicker.
+<BR><BR>
+ The program now runs at under 100% CPU loading on my old laptop even in debug mode.
+<P ALIGN=JUSTIFY>
+ I replaced the pixel by pixel drawing of characters on the screen with tiles loaded
+ from an image. This is the nearest way I have found, so far, of making screen writes
+ character based instead of pixel based. This makes drawing a whole screen of characters,
+ as is done whenever the screen scrolls, five or six times faster than previously.
+<P ALIGN=JUSTIFY>
+ I fixed the keyboard shift sense but shift lock key still does nothing.
+<P ALIGN=JUSTIFY>
+ The cycle counter has been corrected for a PAL CPU.
+<P ALIGN=JUSTIFY>
+ Added a virtual i/o area so that upper case and lower case characters can be diaplayed.
+ It's a bit crap but POKE 53272,22 will change a whole screen of characters to lower case
+ and POKE 53272,20 will change them back to upper case.
+<P ALIGN=JUSTIFY>
+ Corrected the remaining address,{X|Y} cycle timings.
+<P ALIGN=JUSTIFY>
+ Maped the cursor, backspace, delete, insert and home keys to CBM keycodes.
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ V0.67 <A HREF="bbc64.zip">is here<IMG SRC="../../zip_sm.png" TITLE="[Download]"
+ border=0></A> and includes a copy of the original source as posted on the 6502.org
+ forum.
+<P ALIGN=JUSTIFY>
+ To get it to run you will also need Blitz3D and images of the kernal, basic and
+ character ROMs and will need to call them kernal.rom, basic.rom and char.rom
+ respectively. The images are readily available online.
+<P ALIGN=JUSTIFY>
+ This has been updated to include the details of the author of the original PASCAL
+ source, Marc Dendooven.
+</BLOCKQUOTE>
+<B><U>What's left to do?</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Just about everything apart from the CPU and some pretend I/O. There's no colour, no
+ colour RAM, no graphics, no sound. No joystick ports, no user port, no cartridge port,
+ no memory banking, no VIC memory mapping, no ROM/RAM memory mapping and no storage
+ devices. There's not even a fully working keyboard, yet.
+</BLOCKQUOTE>
+<B><U>What else is available?</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ With just a few, small changes the code becomes a <A
+ HREF="../blitzvic/index.html">VIC 20 emulator.</A>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 13th June, 2011.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

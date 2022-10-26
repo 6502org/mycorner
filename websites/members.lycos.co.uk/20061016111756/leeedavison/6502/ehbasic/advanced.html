@@ -1,0 +1,638 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC, advanced examples</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="index.html#link_1">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Enhanced BASIC, advanced examples </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<P>
+<B><U>Creating buffer space.</U></B>
+<BLOCKQUOTE>
+ Sometimes there is a need for a byte oriented buffer space. This can be achieved by
+ lowering the top of BASIC memory and using the "protected" space created thus. The
+ main problem with this is that there may not be the same RAM configuration in all
+ the systems this code is to run on.
+<P>
+ One way round this is to allocate the space from BASIC's array memory by dimensioning
+ an array big enough to hold your data. As arrays always start from zero then to work
+ out the array size needed you do ..<P>
+ Array dimension = (bytes needed/4)-1.<P>
+ E.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 DIM b1(19) : REM need 80 bytes for input buffer
+20 DIM b2($100) : REM need $0400 bytes for screen buffer
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ So you've allocated the buffer but where is it? This is one use of the <A
+ HREF="language.html#VARPTR">VARPTR</A> function, it is used in this case to return
+ the start of the array's data space.<P>
+ E.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 a1 = VARPTR(b1(0)) : REM get the address of the buffer space
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ But wait, there is another problem here. Because variables are created when they are
+ first assigned a value any new variable created after the array is dimensioned will
+ move the array in memory. So the following will not work..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 DIM b1(19) : REM 80 bytes for buffer
+20 a1 = VARPTR(b1(0)) : REM get the address of the buffer space
+40 FOR x = 0 to 79
+50 POKE a1+x,ASC(" ")
+60 NEXT
+.
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ When we get to line 40, a1, the pointer to the array data space, is wrong because the
+ variable x has been created and moved all the arrays up by six bytes.
+
+ The way round this is to ensure that all variables that you will use have been created
+ prior to getting the pointer. This also means you start with known values in all your
+ variables.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 DIM b1(19) : REM 80 bytes for buffer
+20 x = 0 : REM loop counter
+30 a1 = VARPTR(b1(0)) : REM get the address of the buffer space
+40 FOR x = 0 to 79
+50 POKE a1+x,ASC(" ")
+60 NEXT
+.
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ Another way is to get the pointer every time you use it. This has the advantage of
+ always being correct but is somewhat slower.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 DIM b1(19) : REM 80 bytes for buffer
+40 FOR x = 0 to 79
+50 POKE VARPTR(b1(0))+x,ASC(" ")
+60 NEXT
+.
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ One thing to remember, never try to use a string array as a buffer. Everything will
+ seem to work until you run out of string space and the garbage collection routine is
+ called. Once this happens it's likely that your buffer will get trashed and you may
+ even find that the program freezes because the garbage collection routine now thinks
+ that there are more string bytes than there are memory.
+</BLOCKQUOTE>
+<BR>
+<B><U>Creating short code space.</U></B>
+<BLOCKQUOTE>
+ While the techniques explained above can also be used to create space for machine code
+ routines there is a simpler way for position independant routines up to 255 bytes long
+ to be held in memory.
+<P>
+ Assemble the code and use the hex output from your assembler to create a set of BASIC
+ data statements.<BR>
+  E.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+1000 DATA $A5,$11,$C9,$3A,$B0,$08,$38,$E9
+1010 DATA $30,$38,$E9,$D0,$90,$0D,$09,$20
+1020 DATA $38,$E9,$61,$90,$0B,$C9,$06,$B0
+1030 DATA $07,$69,$3A,$E9,$2F,$85,$11,$60
+1040 DATA $18,$60
+1050 DATA -1
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ Now we just use a loop like this to load this hex code into a string.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 RESTORE 1000
+20 READ by : REM assume at least one byte
+30 DO
+40 co$ = co$+CHR$(by)
+50 READ by
+60 LOOP UNTIL by=-1
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ The code can now be called by doing ..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+140 CALL(SADD(co$))
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ Note that you must always use the SADD() function to get the address for the CALL as the
+ garbage collection routine may move the string in memory and this is the best way to
+ ensure that the address is always correct.
+</BLOCKQUOTE>
+<BR>
+<B><U>Coding for speed</U></B>
+<BLOCKQUOTE>
+<B><U>Spaces</U></B>
+<BLOCKQUOTE>
+  Remove spaces from your code. Spaces, while they don't affect the program flow, do
+  take a finite time to skip over. The only space you don't need to worry about is the
+  one between the line number and the code as this is stripped during input parsing and
+  the apparent space is generated by the LIST command output.
+<P>
+  E.g. the following ..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 REM line 10
+20   REM line 20
+30     REM line 30
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+  .. reads as follows when LISTed
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 REM line 10
+20 REM line 20
+30 REM line 30
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>Removing REM.</U></B>
+<BLOCKQUOTE>
+  Remove remarks from your code. Remarks like spaces don't do anything, program wise,
+  but take time to skip. Removing remarks, especially from time critical code, can
+  make a big difference.
+</BLOCKQUOTE>
+<B><U>Variables.</U></B>
+<BLOCKQUOTE>
+  Use variables. One place where time is wasted, especially in loops, is repeatedly
+  interpreting numeric values or unchanging functions.<BR>
+  E.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.
+140 FOR x = 0 to 79
+150 POKE $F400+x,ASC(" ")
+160 NEXT
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+  This loop can be improved in a number of ways. First assign a variable the value $F400
+  and use that. Doing this is faster after only three uses.<BR>
+  E.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 a1 = $F400
+.
+140 FOR x = 0 to 79
+150 POKE a1+x,ASC(" ")
+160 NEXT
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+  The other way to make this loop faster is to assign the value of the (unchanging)
+  function to a variable, then move the function outside the loop.<BR>
+  E.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 a1 = $F400
+.
+130 sp = ASC(" ")
+140 FOR x = 0 to 79
+150 POKE a1+x,sp
+160 NEXT
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+  Now the ASC(" ") is only evaluated once and the loop is executed faster.
+</BLOCKQUOTE>
+<B><U>GOTO and GOSUB</U></B>
+<BLOCKQUOTE>
+  When EhBASIC encounters a GOTO or GOSUB it has to search through memory for the
+  target line. If the target line follows the command then it searches from the next
+  line, if the target line precedes the command then the search starts from the beginning
+  of program memory. So keeping this distance, in lines, as short as possible will make
+  the program run faster.
+<P>
+  One place that this is difficult is in a conditional loop. In calculating points in the
+  Mandelbrot set, for example, code like this is used ..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.
+230 INC it
+235 tp = mx*mx-my*my+x
+240 my = 2*mx*my+y
+245 mx = tp
+250 co = (mx*mx + my*my)
+255 IF (it<128) AND (co<4.0) THEN 230
+. 
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+  Each time the condition in line 255 is met the interpreter has to search from the start
+  of memory for line 230. While this may not take long if the program is short it can
+  slow longer programs considerably.
+<P>
+  This can easily be resolved though by using a <A HREF="language.html#DO">DO .. LOOP</A>
+  instead. So our example code becomes..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.
+220 DO
+230 INC it
+235 tp = mx*mx-my*my+x
+240 my = 2*mx*my+y
+245 mx = tp
+250 co = (mx*mx + my*my)
+255 LOOP WHILE (it<128) AND (co<4.0)
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+  This is quicker because the location of the start of the loop, the DO, is placed on the
+  stack and the interpreter doesn't have to search for it.
+</BLOCKQUOTE>
+<B><U>Packing them in.</U></B>
+<BLOCKQUOTE>
+  Another way to speed up time critical code is to place as many commands as possible
+  on each line, this can make a noticeable speed gain.<BR>
+  E.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 a1 = $F400
+.
+130 sp = ASC(" ")
+140 FOR x = 0 to 79 : POKE a1+x,sp : NEXT
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>INC and DEC.</U></B>
+<BLOCKQUOTE>
+  INCrement and DECrement are quick and clear ways of altering a numeric value by plus
+  or minus one and are faster than using add or subtract.<BR>
+  E.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 INC a
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+  .. is quicker than ..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 a = a+1
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+  .. and ..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 INC a,a
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+  .. is still quicker than ..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 a = a+2
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+  Also combine increments or decrements if you can.<BR>
+  E.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 INC so,d
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+  .. is quicker than ..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 INC so : INC de
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>>> and <<</U></B>
+<BLOCKQUOTE>
+  Using >> and << can be quicker than using / or * where integer math and a power of
+  two is involved.<BR>
+  E.g. you want to find the byte that holds the pixel at x,y in a 256 x 32 display
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 ad = y*32 + INT(x/8) : REM pixel address
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+  .. is done quicker with.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 ad = y<<5 + x>>3 : REM pixel address
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<BR>
+<B><U>Coding for space</U></B>
+<BLOCKQUOTE>
+ Most of the techniques used to improve the speed of a program can also reduce the
+ number of bytes used by that program.
+<P>
+<B><U>Spaces.</U></B>
+<BLOCKQUOTE>
+  Remove spaces from your code. The only space you don't need to worry about is the
+  one between the line number and the code as this is stripped during input parsing and
+  the apparent space is generated by the LIST command output.
+</BLOCKQUOTE>
+<B><U>Removing REM.</U></B>
+<BLOCKQUOTE>
+  Remove remarks from your code. Remarks like spaces don't do anything, removing remarks,
+  can save a lot of space.
+</BLOCKQUOTE>
+<B><U>Variables.</U></B>
+<BLOCKQUOTE>
+  Use variables. Often you will find yourself using the same numeric value again and
+  again. If this value has many digits, such as the value for e (2.718282), then
+  assigning that value at the beginning of the program can start to save space with the
+  third use.
+<P>
+  Re-use variables. Every time you assign a new variable a value it takes up six more
+  bytes of the available memory. If you have a variable that is only used as a loop
+  counter then try to use it for temporary values or GET values elsewhere in the
+  program.
+</BLOCKQUOTE>
+<B><U>Constants.</U></B>
+<BLOCKQUOTE>
+  There are two constants defined in EhBASIC, PI and TWOPI. They are the closest
+  floating values to pi and 2*pi and will save you seven bytes each time you can
+  use them.
+</BLOCKQUOTE>
+<B><U>Packing them in.</U></B>
+<BLOCKQUOTE>
+  Another way to save space is to place as many commands as possible on each line,
+  this will save you five bytes every time you put another command on an existing
+ line compared to using a new line.
+</BLOCKQUOTE>
+<B><U>INC and DEC.</U></B>
+<BLOCKQUOTE>
+  INCrement and DECrement also save space. Either will save you three bytes for
+  each variable INCremented or DECremented.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<BR>
+<U><B>Derived functions</B></U> 
+<BLOCKQUOTE>
+  The following functions, while not part of BASIC, can be calculated using the
+  existing BASIC functions.
+<P>
+<CENTER>
+<TABLE BGCOLOR="white" WIDTH=85% cellSpacing=0 cellPadding=3 border=1>
+  <TR>
+    <TD>Secant</TD><TD>SEC(X)=1/COS(X)</TD></TR>
+  <TR>
+    <TD>Cosecant</TD><TD>CSC(X)=1/SIN(X)</TD></TR>
+  <TR>
+    <TD>Cotangent</TD><TD>COT(X)=1/TAN(X)</TD></TR>
+  <TR>
+    <TD>Inverse sine</TD><TD>ARCSIN(X)=ATN(X/SQR(X*X+1))</TD></TR>
+  <TR>
+    <TD>Inverse cosine</TD><TD>ARCCOS(X)=-ATN(X/SQR(X*X+1))+PI/2</TD></TR>
+  <TR>
+    <TD>Inverse secant</TD><TD>ARCSEC(X)=ATN(SQR(X*X-1))+(SGN(X)-1)*PI/2</TD></TR>
+  <TR>
+    <TD>Inverse cosecant</TD><TD>ARCCSC(X)=ATN(1/SQR(X*X-1))+(SGN(X)-1)*PI/2</TD></TR>
+  <TR>
+    <TD>Inverse cotangent</TD><TD>ARCCOT(X)=-ATN(X)+PI/2</TD></TR>
+  <TR>
+    <TD>Hyperbolic sine</TD><TD>SINH(X)=(EXP(X)-EXP(-X))/2</TD></TR>
+  <TR>
+    <TD>Hyperbolic cosine</TD><TD>COSH(X)=(EXP(X)+EXP(-X))/2</TD></TR>
+  <TR>
+    <TD>Hyperbolic tangent</TD><TD>TANH(X)=-EXP(-X)/(EXP(X)+EXP(-X))*2+1</TD></TR>
+  <TR>
+    <TD>Hyperbolic secant</TD><TD>SECH(X)=2/(EXP(X)+EXP(-X))</TD></TR>
+  <TR>
+    <TD>Hyperbolic cosecant</TD><TD>CSCH(X)=2/(EXP(X)-EXP(-X))</TD></TR>
+  <TR>
+    <TD>Hyperbolic cotangent</TD><TD>COTH(X)=EXP(-X)/(EXP(X)-EXP(-X))*2+1</TD></TR>
+  <TR>
+    <TD>Inverse hyperbolic sine</TD><TD>ARCSINH(X)=LOG(X+SQR(X*X+1))</TD></TR>
+  <TR>
+    <TD>Inverse hyperbolic cosine</TD><TD>ARCCOSH(X)=LOG(X+SQR(X*X-1))</TD></TR>
+  <TR>
+    <TD>Inverse hyperbolic tangent</TD><TD>ARCTANH(X)=LOG((1+X)/(X))/2</TD></TR>
+  <TR>
+    <TD>Inverse hyperbolic secant</TD><TD>ARCSECH(X)=LOG((SQR(X*X+1)+1)/X)</TD></TR>
+  <TR>
+    <TD>Inverse hyperbolic cosecant</TD><TD>ARCCSCH(X)=LOG((SGN(X)*SQR(X*X+1)+1)/X)</TD>
+  </TR>
+  <TR>
+    <TD>Inverse hyperbolic cotangent</TD><TD>ARCCOTH(X)=LOG((X+1)/(X-1))/2</TD></TR>
+</TABLE>
+</CENTER>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 4th May, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%>
+</TD></TR></TABLE>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&CC=uk"></script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=3f3ae182&adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="//secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

@@ -1,0 +1,234 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>Links</TITLE></HEAD>
+<BODY BACKGROUND="../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Links. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../index.html">
+ <IMG SRC="../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Here are, in no particular order of merit, some of the sites that I either find
+ usefull or refer to this site or both.
+</BLOCKQUOTE>
+<B><U>6502.</U></B>
+<BLOCKQUOTE>
+<TABLE BORDER=0 WIDTH=84% CELLPADDING=5>
+<TR><TD><P ALIGN=JUSTIFY>6502.org, <A HREF="http://www.6502.org/"
+ TARGET="_new">http://www.6502.org/</A>, is one of the primary 6502 sites. You can
+ get almost anywhere from there and it should probably be the first place you look
+ for 6502 related information.</TD>
+<TD ALIGN=CENTER>
+<TABLE BGCOLOR=#336699><TR><A
+ HREF="http://www.6502.org/" TARGET="_new">
+<TD HEIGHT=112 WIDTH=252 ALIGN=CENTER><A
+ HREF="http://www.6502.org/" TARGET="_new">
+<IMG SRC="../6502/6502org_logo.gif" ALT="Home of all things 6502" BORDER=0></A></TD>
+</A></TR></TABLE>
+</TD></TR>
+<TR><TD><P ALIGN=JUSTIFY>Probably the best general purpose 6502 integrated developement
+ environment for a Windows based platform.<P ALIGN=JUSTIFY>
+ Michal Kowalski has updated this a number of times and it has become a 'couldn't do
+ without' tool.</TD>
+<TD ALIGN=CENTER><A HREF="http://home.pacbell.net/michal_k/" TARGET="_new"><IMG
+ SRC="michal_k.jpg" HEIGHT=112 WIDTH=180 BORDER=1 ALT="Best generic 6502 simulator"></A>
+</TD></TR>
+<TR><TD><P ALIGN=JUSTIFY>Daryl's 65C02 Single board Computer.<BR> Daryl has a couple
+ of designs for 65C02 single board computers. His SBC-2 has run EhBASIC and there is
+ also a version of EhBASIC for his 65C02 simulator.</TD>
+<TD ALIGN=CENTER><A HREF="http://users.softcom.net/darylr/" TARGET="_new"><IMG
+ SRC="sbc2.png" HEIGHT=112 WIDTH=140 BORDER=1 ALT="Daryl's 6502 SBC"></A></TD></TR>
+<TR><TD><P ALIGN=JUSTIFY>From  <A HREF="http://shimizu-lab.dt.u-tokai.ac.jp/"
+ TARGET="_new">Shimizu-Lab</A>. A core that can run EhBASIC.<P ALIGN=JUSTIFY>
+ "m65 is provided as a synthesizable soft IP core under GPL. The description
+ language is SFL and can be synthesized for any FPGA such as ALTERA or Xilinx. When
+ synthesized for ALTERA FLEX10K series, it will fit within 600 logic cells."
+</TD>
+<TD ALIGN=CENTER><A HREF="http://shimizu-lab.dt.u-tokai.ac.jp/pgm/m65/index.html"
+ TARGET="_new"><IMG SRC="shimizu.png" HEIGHT=112 WIDTH=275 BORDER=1
+ ALT="Shimizu-Lab"></A></TD></TR>
+<TR><TD><P ALIGN=JUSTIFY>The Motion Store <A HREF="http://www.themotionstore.com"
+ TARGET="_new">http://www.themotionstore.com</A> can supply boards using the Mitsubishi
+ 38067 microcontroller as well as a whole host of motion control related products.
+</TD>
+<TD ALIGN=CENTER><A HREF="http://www.themotionstore.com" TARGET="_new"><IMG
+ SRC="motionstore.png" BORDER=1 ALT="Go to The Motion Store website"></A>
+</TD></TR>
+<TR><TD><P ALIGN=JUSTIFY>Bird Computer <A HREF="http://www.birdcomputer.ca/index.html"
+ TARGET="_new">http://www.birdcomputer.ca/index.html</A> have a 6502 core that can
+ run EhBASIC. Note that due to the lack of decimal mode the HEX$() command won't
+ work properly.</TD>
+<TD ALIGN=CENTER><A
+ HREF="http://www.birdcomputer.ca/Projects/Prj6502/bc6502_page.html" TARGET="_new">
+<IMG SRC="bird6502.png" HEIGHT=112 WIDTH=240 BORDER=1 ALT="Bird 6502 IP core"></A></TD>
+</TR>
+<TR><TD><P ALIGN=JUSTIFY>TABOO Productions <A HREF="http://taboo.eu.org/"
+ TARGET="_new">http://taboo.eu.org/</A>
+ is a graphically intense but rather content limited site. It hasn't been updated in
+ ages but has the saving grace that TASS 1.31, the assembler I preferd to use, is
+ available from the download page.</TD>
+<TD ALIGN=CENTER><A HREF="http://taboo.eu.org/download/" TARGET="_new">
+<IMG SRC="taboo.png" HEIGHT=112 WIDTH=180 BORDER=1 ALT="Go get TASS 1.31"></A></TD></TR>
+</TABLE>
+<BR clear=all>
+</BLOCKQUOTE>
+
+<B><U>680x0.</U></B>
+<BLOCKQUOTE>
+<TABLE BORDER=0 WIDTH=84% CELLPADDING=5>
+<TR><TD><P ALIGN=JUSTIFY>EASy68K. Probably the best general purpose 68k integrated
+ developement environment for a Windows based platform. You can also get the source
+ for this program and compile it for your favourite platform.<P>
+ Another 'couldn't do without' tool.</TD>
+<TD ALIGN=CENTER><A HREF="http://www.monroeccc.edu/ckelly/easy68k.htm" TARGET="_new"><IMG
+ SRC="../68k/simbasic/easy68k.gif" ALT="The best 68000 simulator - ever" BORDER=1></A>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+
+<B><U>Other.</U></B>
+<BLOCKQUOTE>
+<TABLE BORDER=0 WIDTH=84% CELLPADDING=5>
+<TR><TD><P ALIGN=JUSTIFY><A HREF="http://www.hanssummers.com/index.htm" TARGET="_new">Hans
+ Summers web pages</A>.<P ALIGN=JUSTIFY>
+ This site has many interesting projects including the CPCNG prototype design page,
+ an Amstrad CPC - Next Generation comaptible machine, and an IDE interface for it.
+</TD>
+<TD ALIGN=CENTER><A HREF="http://www.hanssummers.com/computers/cpcng/ide/"
+ TARGET="_new"><IMG SRC="hanssummers.jpg" HEIGHT=112 WIDTH=196 BORDER=1
+ ALT="Amstrad CPC - NG"></A></TD>
+</TR>
+</TABLE>
+<BR clear=all>
+</BLOCKQUOTE>
+<BR clear=all>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ If there is something here that you object to or you have a site that should be included
+ then please e-mail me at the address below.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 10th May, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&CC=uk"></script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=56cc4493&adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="//secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

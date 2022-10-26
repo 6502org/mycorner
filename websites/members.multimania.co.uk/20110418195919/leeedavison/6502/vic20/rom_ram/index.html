@@ -1,0 +1,118 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish2ea3dcb3{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if IE]>
+<style>
+#catfish2ea3dcb3{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip2ea3dcb3{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad2ea3dcb3"></div>
+<HTML><HEAD><TITLE>32k ROM/RAM expansion</TITLE></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=25%>
+<A HREF="../index.html#rom_ram">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>32k ROM/RAM expansion </FONT></B><FONT SIZE=-1>by Lee Davison</FONT>
+</TD>
+<TD WIDTH=25%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="romram.html"><IMG SRC="romram_s.jpg" ALIGN=RIGHT BORDER=1
+ ALT="Vic 20 ROM/RAM expansion" HSPACE=8></A>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I wanted to make an <A HREF="../isa/index.html">ISA card slot</A> for my Vic 20 and
+ decided to use a scrap 8k RAM expansion cartridge (the same as the 16k cart but only
+ half populated) as the physical base for that. While I was about it it seemed a shame
+ not to use some of the space to give me some extra ROM and RAM capacity.
+<P ALIGN=JUSTIFY>
+ 256k bit size devices are used for both the ROM and RAM and, as most of the pins are the
+ same as those for the original 16k bit RAM chips, these were located in the same
+ positions (with a little overlap) as two of the original devices. This gives enough RAM
+ to fully populate the Vic with 32k of continuous RAM, or add up to 24k continuous RAM and
+ populate the cartridge addresses with RAM.
+</BLOCKQUOTE>
+<BR CLEAR=ALL>
+<B><U>The Circuit</U></B>
+<IMG SRC="rom_ram.png" ALIGN=RIGHT BORDER=1 ALT="Vic 20 ROM/RAM expansion" HSPACE=8>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<P ALIGN=JUSTIFY>
+ Most of the connections are direct from the Vic expansion connector and only the two
+ chip selects and the address lines A14 and A13 need to be generated. These are generated
+ by a GAL used for nearly all the glue logic on the card. The equations for this GAL are
+ in <A HREF="mempld.html" NAME=pld>mem.pld</A> and can be compiled with WinCUPL. The fuse
+ file, <A HREF="memjed.html" NAME=jed>mem.jed</A> and the compiler listing, <A
+ HREF="memtxt.html" NAME=txt>mem.txt</A> are also included.
+<P ALIGN=JUSTIFY>
+ The 150ns delay line is only needed if you want the <A HREF="../isa/index.html">ISA card
+ slot</A> as well as the ROM/RAM expansion. If it's not needed just omit it and tie the
+ dlyÿ2 pin on the GAL to +V.
+<P ALIGN=JUSTIFY>
+ The Vic expansion connector is shown in the diagram as if you are holding the expansion
+ card component side up with the edge connector towards you.
+ The upper side is, from left to right, 22 to 1 and the lower side is, again from left
+ to right, Z to A. <B>Note</B> that there are some letters not used in identifying
+ connections on the lower side, the missing ones being G, I, O and Q.
+</BLOCKQUOTE><BR CLEAR=ALL>
+<B><U>Construction</U></B>
+<A HREF="pins.html" NAME=pins><IMG SRC="pins_s.jpg" ALIGN=RIGHT BORDER=1
+ ALT="28 pin overlap of
+ 24 pin position" HSPACE=8></A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Two of the positions that the original RAM chips occupied were populated with 24 pin
+ turned pin type sockets and into these were pushed the 28 pin turned pin sockets needed
+ for the 256k bit devices. The track to pin 24 on the original position was cut for both
+ positions as was the pin 21 track. The connections to these pins was made by soldering
+ wire to the pads and the extra four pins were connected by soldering wires direct to the
+ socket pins. This just gives enough clearance to get the modified board into the Vic
+ cartridge slot but the cartridge case will never fit again! It should be possible using
+ this method to mount 32 pin devices as enough room is available on the board. Some form
+ of bank switching could be provided by using a bigger GAL and a latch for the upper
+ address lines.
+<P ALIGN=JUSTIFY>
+ The GAL was mounted by soldering a 20 pin turned pin socket to a small piece of
+ stripboard with the strip side up (remembering to cut the tracks between the pins first!)
+ and glueing this to the top side of the card using quick set epoxy adhesive. Once the
+ adhesive had set the connections to the GAL were made by soldering to the strips with
+ tinned copper wire for the supplies and insulated solid copper wire for all the other
+ connections.
+</BLOCKQUOTE>
+<A HREF="gal_n_bug.html" NAME=gal_n_bug><IMG SRC="gal_n_bug_s.jpg" ALIGN=RIGHT BORDER=1
+ ALT="Details of GAL and delay
+line mounting" HSPACE=8></A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The 150ns delay line was added after some testing and is held in place, 'dead bug' style,
+ by the tinned wire that supplies the Vcc and GND connections. This may later be glued in
+ place.
+</BLOCKQUOTE>
+<BR CLEAR=ALL>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 26th February, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish2ea3dcb3" style="display:none"></div>
+<script src="http://ads.mmania.com/displaycf.js.php?r=2ea3dcb3&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

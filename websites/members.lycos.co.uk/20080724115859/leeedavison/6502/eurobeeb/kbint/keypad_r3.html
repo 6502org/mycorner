@@ -1,0 +1,178 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=4171f829&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>
+  Euro Beeb - Keypad interface assembly listing
+</TITLE>
+<META name="description" content="Content.">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="index.html">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>CUBE - Keypad interface assembly listing. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+</BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; assembly code for CUBE keyboard interface
+
+; notes for R6501AQ ....
+
+; internal RAM is from $0040 to $00FF
+; the contents of the 32 bytes from $0040 to $005F may be maintained
+; by battery (not used)
+; the stack pointer is 8 bits and ranges from $00FF down to $0040
+
+LAB_00	= $00				; port A
+					; bit	function
+					; ---	--------
+					; 7	serial Rx
+					; 6	serial Tx
+					; 5	enable serial Tx buffer
+					; 0	buzzer driver
+					; other bits unused
+
+LAB_01	= $01				; port B
+					; bit	function
+					; ---	--------
+					; 7	watchdog timer reset
+					; other bits unused
+
+LAB_02	= $02				; port C
+
+LAB_12	= $12				; interrupt enable register
+LAB_14	= $14				; mode control register
+LAB_15	= $15				; serial comms control register
+LAB_16	= $16				; serial comms status register
+LAB_17	= $17				; serial comms Tx/Rx byte
+LAB_18	= $18				; lower latch A
+LAB_1A	= $1A				; upper latch A
+LAB_1C	= $1C				; lower latch B
+LAB_1E	= $1E				; upper latch B
+
+LAB_40	= $40				; keyboard matrix p (written)
+LAB_41	= $41				; keyboard matrix q (read)
+LAB_42	= $42				; this key
+LAB_43	= $43				; last key
+LAB_44	= $44				; key held flag (bit 0 only)
+LAB_45	= $45				; 1/2 cycle count low byte
+LAB_46	= $46				; 1/2 cycle count high byte
+
+					; $47 to $FF is the available stack space
+	.ORG	$F000
+
+; reset vector gets here
+
+LAB_F000
+	JMP	LAB_F00C		; go do reset
+
+; IRQ vector gets here
+
+LAB_F003
+	JMP	LAB_F070		; go do IRQ
+
+; NMI vector gets here
+
+LAB_F006
+	JMP	LAB_F00C		; go do NMI
+
+; start main code from here
+
+LAB_F009
+	JMP	LAB_F09E		; go do main
+
+; reset vector gets here - eventually
+; NMI vector gets here - eventually
+
+LAB_F00C
+	LDX	#$40			; set index
+	LDA	#$00			; set byte
+LAB_F010
+	STA	LAB_00,X		; clear memory byte
+	INX				; increment index
+	CPX	#$00			; all done? (redundant compare)
+	BNE	LAB_F010		; loop if not
+
+	LDX	#$FF			; set X
+	TXS				; set stack
+
+					; note that the 6501 stack grows down from $00FF
+					; not $01FF as on the 6502!
+
+	CLD				; clear decimal flag
+	JSR	LAB_F02B		; set A, B and C ports as inputs (floating)
+	JSR	LAB_F038		; set serial comms control & status
+	JSR	LAB_F041		; set A and B timer values
+	JSR	LAB_F052		; set modes and interrupts
+	CLI				; enable interrupts
+	JMP	LAB_F009		; go do main loop (goes to LAB_F09E)
+
+; set A, B and C ports as inputs
+
+LAB_F02B
+	LDA	#$FF			; byte all 1's
+	STA	LAB_00			; float port A
+	LDA	#$FF			; byte all 1's
+	STA	LAB_01			; float port B
+	LDA	#$FF			; byte all 1's
+	STA	LAB_02			; float port C
+	RTS
+
+; set serial comms control & status
+
+LAB_F038
+	LDA	#$C0			; set for enable Tx/Rx, ASYNC, 8NO
+	STA	LAB_15			; set serial comms control register
+	LDA	#$00			; disable wake-up and EOTx
+	STA	LAB_16			; set serial comms status register
+	RTS
+
+; set A and B timer values
+
+LAB_F041
+	LDA	#$19			; set 4800 baud for 2MHz clock
+	STA	LAB_18			; save to lower latch A
+	LDA	#$00			; set 4800 baud for 2MHz clock
+	STA	LAB_1A			; save to upper latch A, init counter, clr flag
+	LDA	#$D0			; set 1mS timeout low byte
+	STA	LAB_1C			; save to lower latch B
+	LDA	#$07			; set 1mS timeout high byte
+	STA	LAB_1E			; save to upper latch B, init counter, clr flag
+	RTS
+
+; the 6501 is set in 'normal' mode which means 14 bit addressing only
+; A13 and A14 are not present.
+
+; set modes and interrupts
+
+LAB_F052
+	LDA	#$40			; normal, tristate D, input B, timer B, timer A
+	STA	LAB_14			; set mode control register
+	LDA	#$20			; counter B underflow only
+	STA	LAB_12			; set interrupt enable register
+	RTS
+
+; serial Tx byte
+
+LAB_F05B
+	RMB	#5,LAB_00		; enable Tx buffer
+	PHA				; save A
+	STA	LAB_17			; Tx serial comms byte
+LAB_F060
+	BBR	#6,LAB_16,LAB_F060	; wait for Tx empty
+
+LAB_F063
+	BBR	#7,LAB_16,LAB_F063	; wait for Tx under run
+
+	SMB	#5,LAB_00		; disa

@@ -1,0 +1,131 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=3cacccbc&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD><TITLE>LCD port - Driver assembly source file.</TITLE>
+<META name="description" content="An LCD driver for the SuprDupr.">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=25%>
+<A HREF="index.html#source"><IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER><B><FONT SIZE=+1>LCD port driver </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT></TD><TD WIDTH=25%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="asm.zip">Download this file <IMG SRC="../../../zip_sm.png" ALT="[Download]"
+ border=0></A>
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; suprdupr LCD driver ver$ 0.1
+
+; Some basic routines to drive an LCD graphic module in both graphic and
+; alpha modes. This code is mostly a translation of my Z80 LCD drivers
+; for the MPF
+
+; The display plugs into the LCD port on the SuprDupr board.
+
+Port6		= $0C		; LCD control port data register
+PDir6		= $0D		; LCD control port direction register
+Port8		= $10		; LCD port data register
+PDir8		= $11		; LCD port direction register
+
+LCD_c		= Port6		; LCD control port data register
+LCD_d		= PDir6		; LCD control port direction register
+LCD_E		= 2		; LCD E pin
+LCD_WR		= 6		; LCD /WR line
+LCD_RS		= 7		; LCD register select line
+LCD_DA		= Port8		; LCD port data register
+LCD_DIR		= PDir8		; LCD port direction register
+
+DispMode	= $52		; display mode byte off/master/noblink/nocsr/cgr/intcg)
+ChrHigh		= $53		; current character height (8 default)
+ChrWidt		= $54		; current character width (8 default)
+LineLen		= $55		; current visible line length (32 default)
+CursorAt	= $56		; cursor address in display
+StrtOff		= $58		; default display start offset
+DispOff		= $5A		; offset for display
+
+; Display attribute equates
+
+DispOn		= $20		; display on bit
+DispBlnk	= $08		; cursor blink bit
+DispCrsr	= $04		; cursor on bit
+DispGrap	= $02		; display graph mode bit
+DispExCg	= $01		; external GC bit
+
+	*=	$8000		; code origin
+
+; set default LCD parameters
+
+LCD_default:
+	LDM	#$20,DispMode	; display mode byte (on/master/noblink/nocsr/cgr/intcg)
+	LDM	#$70,ChrHigh	; current character height (8 default)
+	LDM	#$07,ChrWidt	; current character width (8 default)
+	LDM	#$20,LineLen	; current visible line length (32 default)
+	LDM	#$00,CursorAt	; cursor address in display
+	LDM	#$00,CursorAt+1	; cursor address in display
+	LDM	#$E0,StrtOff	; default display start offset
+	LDM	#$FF,StrtOff+1	; default display start offset
+	LDM	#$00,DispOff	; offset for display
+	LDM	#$00,DispOff+1	; offset for display
+	RTS
+
+; initialise 240x40 LCD display. Sets line length to 64 and time divisions
+; to 40
+
+LCD_init:
+	CLB	LCD_E,LCD_c	; disable LCD's port
+	SEB	LCD_E,LCD_d	; set control bit to output
+	SEB	LCD_WR,LCD_d	; set control bit to output
+	SEB	LCD_RS,LCD_d	; set control bit to output
+
+	LDA	#$03		; set time divisions instruction
+	JSR	LCD_instr	; send display control instruction
+	LDA	#$28		; set refresh to 40 lines
+	JMP	LCD_data	; go write data byte & return
+
+; output instruction. We need to wait until the busy flag is clear before
+; attempting to write a new instruction.
+
+LCD_instr:
+	JSR	LCD_busy	; wait until ready
+	SEB	LCD_RS,LCD_c	; register select line high
+	BRA	LCD_inst	; go write data byte
+
+; output data. We don't need to wait until the busy flag is clear before
+; attempting to write data.
+
+LCD_data:
+	CLB	LCD_RS,LCD_c	; register select line low
+LCD_inst:
+	STA	LCD_DA		; byte out to port
+	CLB	LCD_WR,LCD_c	; control line to write
+	LDM	#$FF,LCD_DIR	; data port to output
+
+	SEB	LCD_E,LCD_c	; LCD E high
+	CLB	LCD_E,LCD_c	; LCD E low
+
+	RTS
+
+; wait until the display is not busy.
+
+LCD_busy:
+	PHA			; save data or instruction
+	LDM	#$00,LCD_DIR	; data port to input
+	SEB	LCD_WR,LCD_c	; control line to read
+	SEB	LCD_RS,LCD_c	; register select line high
+LCD_busy1:
+	SEB	LCD_E,LCD_c	; enable LCD
+	LDA	LCD_DA		; in from display port
+	CLB	LCD_E,LCD_c	; disable LCD
+	BBS	7,A,LCD_busy1	; loop while LCD busy
+
+	PLA			; restore data or instruction
+	RTS
+
+; Clear LCD display. Turns off display, checks mode and then fills 2048 display bytes
+; with either $00 (graph mode) or $20 (chr mode). It also homes the cursor.
+
+; If the commented ou

@@ -1,0 +1,142 @@
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC, errata for 25th July 2002</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>Enhanced BASIC, errata for 25th July 2002 </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="errata.html">[Back]</A>
+<BR clear=all><P>
+<HR>
+<B>Symptoms</B>
+<BLOCKQUOTE>
+ Any command that has an integer first parameter can fail, e.g. try this ..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+ POKE 760,0 : POKE761,255
+ PRINT PEEK(760);PEEK(761)
+  0 255
+
+ Ready
+ _
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ .. so far so good, but now do ..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+ POKE 761,PEEK(760)
+ PRINT PEEK(760);PEEK(761)
+  0 255
+
+ Ready
+ _
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ .. which is obviously wrong as both bytes should now be zero.
+</BLOCKQUOTE>
+<B>Cause</B>
+<BLOCKQUOTE>
+ When BASIC commands have an integer parameter, such as an address, it is stored in the
+ temporary integer word. If, during the evaluation of following parameters, a function
+ that has an integer parameter is called then the temporary integer is overwritten.
+ This can happen with commands such as PEEK, WAIT, BITSET etc.
+</BLOCKQUOTE>
+<B>The fix</B>
+<BLOCKQUOTE>
+ One routine is changed to fix this, just after LAB_SCGB was ..
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+LAB_SCGB
+	JSR	LAB_1C01	; scan for "," else do syntax error/warm start
+	JMP	LAB_GTBY	; get byte parameter & RET
+</PRE>
+</TD></TR></TABLE>
+<P>
+ .. this needs to stack the temporary integer, so it becomes ..
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+LAB_SCGB
+	JSR	LAB_1C01	; scan for "," else do syntax error/warm start
+	LDA	Itemph		; save temporary integer high byte
+	PHA			; on stack
+	LDA	Itempl		; save temporary integer low byte
+	PHA			; on stack
+	JSR	LAB_GTBY	; get byte parameter
+	PLA			; pull low byte
+	STA	Itempl		; restore temporary integer low byte
+	PLA			; pull high byte
+	STA	Itemph		; restore temporary integer high byte
+	RTS			;
+</PRE>
+</TD></TR></TABLE>
+<P>
+ .. This is done in version 1.05.<P>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 25th July, 2002.</FONT>
+</BODY>
+</HTML>
+
+</xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.2 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+</noscript><script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3ddd5e48&adpref="></script>

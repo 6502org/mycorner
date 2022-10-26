@@ -1,0 +1,58 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD><TITLE>SuprDupr driver for LCD port</TITLE>
+<META name="description" content="An LCD driver for the SuprDupr.">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=25%>
+<A HREF="../index.html#lcd"><IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER><B><FONT SIZE=+1>LCD port driver </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT></TD><TD WIDTH=25%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<IMG SRC="sdpr_lcd.jpg" ALIGN=RIGHT BORDER=1 ALT="SuprDupr with graphics LCD" HSPACE=8>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The SuprDupr has a port wired to enable use of many inteligent LC displays. The
+ display, pictured right, is an LC7980 type though most of the other graphics and
+ text types are similarly driven.
+<P ALIGN=JUSTIFY>
+ One change needed to be made to the SuprDupr to use this display and that was to
+ disconnect the earthy end of the contrast pot from 0v and connect it to the -ve
+ charge pump output on the MAX232 chip. This is because the greater multiplex on
+ these graphics displays requires a more -ve bias to maintain the viewing angle.
+<P ALIGN=JUSTIFY>
+ A down side to this is that display contrast is effected by the loading on the
+ RS232 port and use of such things as a RS232 line monitor can have an adverse
+ effect on the display. Also if the load from the display is to great then the
+ MAX232 charge pump will not start. However this <I>should</I> not be a problem in
+ normal use.
+<P ALIGN=JUSTIFY>
+ Another change made to the SuprDupr was to wire +12v to the spare pin on the LCD
+ port to provide power for the backlight. This could be connected through a PNP
+ transistor and controlled by software via one of the port pins.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>

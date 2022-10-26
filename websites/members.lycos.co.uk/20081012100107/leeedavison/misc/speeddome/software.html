@@ -1,0 +1,35 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=40580120&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>SpeedDome - software</TITLE>
+<META name="description" content="Sensormatic SpeedDome RA486LC"></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>SpeedDome - software. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+ <IMG SRC="domee.jpg" HSPACE=8 ALIGN=RIGHT ALT="SpeedDome PTZ camera" BORDER=1>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ SpeedDome cameras talk to the outside world in RS422 serial using a byte oriented
+ protocol that has an address byte, data byte(s) and a checksum byte. The only document
+ I found on this protocol is called "RS-422 protocol.pdf" but it's for later models of
+ SpeedDome cameras so this one does not respond to all the commands.
+<P ALIGN=JUSTIFY>
+ The first tests were done using HyperTerm which is one of the communication tools that
+ come with Windows 95/98. By carefull choice of camera address the command sequence and
+ checksum could, with some difficulty, be entered directly from the keyboard. This at
+ least proved that the camera would listen to the outside world and respond.The novelty
+ soon wore off however so a short QuickBASIC program was written to do the job a little
+ better.
+</BLOCKQUOTE>
+<B><U>The program.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The program is fairly simple. At startup it asks you the camera address, this is the
+ number shown on the two thumbwheel switches on the controller top PCB and is viewed
+ edge on with the switches uppermost. There is no other configuration to do.
+<P ALIGN=JUSTIFY>
+ To initiate a movement a key is pressed. To stop the movement either the same key is
+ pressed or the all stop key, which is the space bar, is pressed. If you keep a key
+ pressed for any length of time it will eventually start to repeat and the camera will
+ continually 

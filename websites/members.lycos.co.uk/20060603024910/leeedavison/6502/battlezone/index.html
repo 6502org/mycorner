@@ -1,0 +1,277 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>Adventures in the Battlezone</TITLE></HEAD>
+<BODY BACKGROUND="bzbg.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR VALIGN=TOP><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><IMG SRC="logo.gif" TITLE="Battlezone" BORDER=0><BR>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<map name="Map"> 
+  <area shape="poly" href="tank_01.html"		coords="0,0, 320,0, 0,240"
+   ALT="On to a gallery of 2D images
+rendered using game data
+from Atari vector games">
+  <area shape="poly" href="3d_logo_01.html"	coords="320,0, 320,240, 0,240"
+   ALT="On to a gallery of 3D images
+rendered using game data
+from Atari vector games">
+</map>
+<IMG SRC="attract.png" TITLE="On to a gallery of images
+rendered using game data
+from Atari vector games" USEMAP="#Map" BORDER=0 HSPACE=8 ALIGN=RIGHT>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ I've had one of these machines, a full size periscope model, for many years now. The
+ smaller cabiret model was picked up a few years later. The first one, bought from a
+ second hand shop, cost twice as much to ship as it did to buy. The second, rescued
+ from ending up in a skip after the wiring loom had caught fire, was a freebie but was
+ in a pretty sorry state when I got it.
+</BLOCKQUOTE>
+<B><U>The Battlezone world</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Battlezone is essentially a 2D tank game with a 3D first person perspective view. A 360
+ degree background made from eight 2D tiles provides the illusion of distant mountains
+ with a cresent lit Earth in the sky. This background is infinitely far away, actually
+ outside the game area, and never gets any closer no matter how long you continue in one
+ direction.
+<P ALIGN=JUSTIFY>
+ The game area itself is a square that wraps round in both axes, the player can see
+ <I>almost</I> half way across this area. There are twenty one objects populating this
+ otherwise featureless world, eleven pyramids and ten cuboids. These are scattered in
+ an apparently random but fixed pattern across the <A HREF="world.html">game area</A>.
+<P ALIGN=JUSTIFY>
+ As well as the passive scenery there are also objects for the player to interact with.
+ Tanks that move like the player's, missiles that appear to drop from the sky and super
+ tanks that turn and move quicker than the player's tank can. As well as these hostile
+ objects there are saucers that only distract the player by offering a high point score
+ for their destruction.
+<P ALIGN=JUSTIFY>
+ There are some objects that, though they never appear for long, add to the game. These
+ are the objects that make up the fragments of tank, super tank or missile that you see
+ fly apart in gracefull parabolic paths.
+<P ALIGN=JUSTIFY>
+ Finally there is the huge Battlezone logo that is only seen on the attract screen that
+ is really three objects with a common origin that are always seen together.
+</BLOCKQUOTE>
+<B><U>Nice touches</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There are some really good effects in the game, some of them are easy to overlook. The
+ most noticeable is the volcano with it's random spew of glowing rocks, it's pleasant just
+ to watch it sometimes, until you get killed for daydreaming that is.
+<P ALIGN=JUSTIFY>
+ The crescent lit Earth in the sky shows Eastern Australia and part of Alaska, I think, in
+ the lit part. That's a nice touch that gives the play area a <B>really <I>really</I></B>
+ big feel to it.
+<P ALIGN=JUSTIFY>
+ When you kill something it explodes. But each enemy, tank, super tank and missile,
+ explodes into different bits. No two explosions are quite the same either.
+<P ALIGN=JUSTIFY>
+ The player's gunsight changes when a target is near the centre of view, the new sight has
+ fine central lines for that genuine 'enemy in your sights' feel, this little touch adds
+ quite a bit to the feel of the game. Also the player's gunsight flashes while a player's
+ shell is in flight. This continues until the shell hits something and explodes, which is
+ itself an animated event, or the shell runs out of range, then the player can fire again.
+<P ALIGN=JUSTIFY>
+ The missile has an animated 'shadow' that it casts on the ground even when it's too high
+ up to be seen. This gives the player an 'it's over there' cue as it drops from the sky.
+<P ALIGN=JUSTIFY>
+ The enemy tank's tracks are animated, but just the end you can, sometimes not quite, see.
+ This is an early example of hidden line removal.
+<P ALIGN=JUSTIFY>
+ The size of the player, as a target, changes depending on the approach of the shot. You
+ are a much smaller target when being shot at from behind.
+</BLOCKQUOTE>
+<B><U>Subtle bugs</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Unlike some arcade games this one is <I>almost</I> bug free. Even the bugs that do exist
+ don't affect gameplay much so this is more of a subtle <I><B>undocumented
+ features</B></I> list.
+</BLOCKQUOTE>
+<IMG SRC="corners.png"  TITLE="Edge pop ups" BORDER=1 HSPACE=8 ALIGN=RIGHT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sometimes while turning, blocks will flash into view at the edge of the monitor but then
+ disappear as they move towards the centre of the view. This is because the field of view
+ is terminated by a straight line at a fixed distance in front of the player, which is
+ quicker to calculate, and not a radial distance. See the image to the right.
+<P ALIGN=JUSTIFY>
+ You can run into blocks you can't see but should be able to. Close up blocks pop out of
+ the player's view just <I>before</I> the player's tank passes them, this means the player
+ can get caught up on something that seems not to be there. Distant objects popping in and
+ out of view is no problem as there's no chance of hitting them but the close up pop outs
+ can be a real nusiance, especially when playing 'peek a boo' with the enemy.
+<P ALIGN=JUSTIFY>
+ When playing the game tanks become super tanks after the sixth missile, but they
+ become normal tanks again after the 129th missile, usually somewhere around the 800,000
+ points score. Super tanks then don't reappear until after the 262nd missile, and
+ something like 1,600,000 points, have been and gone. For most players though that is
+ never. Presumably an eight bit counter is being used as the 257th missile comes straight
+ at you from directly ahead, just like the first one did. I would expect that this cycle
+ then repeats - but I've never been <I>that</I> bored.
+<P ALIGN=JUSTIFY>
+ Another counter problem is with the game credits which I found out when using one of my
+ games as an interactive piggy bank. If you put in enough credit for 256 games you end up
+ back at the <FONT COLOR=#00FF00><B>INSERT COIN</B></FONT> attract screen. This probably
+ never happened in an arcade but it <I>could</I> have done so.
+</BLOCKQUOTE>
+<IMG SRC="missing.png"  TITLE="Missing vertex" BORDER=1 HSPACE=8 ALIGN=RIGHT>
+<B><U>Missing bits</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ One curious thing I've noticed is that the super tank is missing a vertex, the top left
+ edge of the gun barrel has gone awol!
+<P ALIGN=JUSTIFY>
+ Normally you would never see this as the top edge of the super tank's gun is at the
+ player's eyesight level, so this edge would be behind or in front of the other barrel
+ edges. However when you collide with something the viewpoint is shifted upward briefly to
+ simulate the shock of the collision, when you collide with a super tank you can see where
+ the vertex should be but isn't.
+<P ALIGN=JUSTIFY>
+ I'm not sure why this was done, not to save space as it only saves a couple of bytes, but
+ I think the top edge of the super tank's gun barrel would look a bit too bright
+ otherwise. If my curiosity ever gets the better of me I'll <I>fix</I> the missing vertex
+ and try it out on one of my machines.
+</BLOCKQUOTE>
+<B><U>Bent bits</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ One one of the attract screens the game logo drifts gracefully up the screen and off into
+ the distance. What you never notice, because it can't be seen from the usual angle, is
+ that the A in <FONT COLOR=#00FF00><B>BATTLE</B></FONT> is bent out of shape. If you
+ modify the game so you can wander about the world as you will however, you can see the
+ logo from some unexpected angles.
+<P ALIGN=JUSTIFY><A NAME=logo></A><CENTER>
+<A HREF="logo.html"><IMG SRC="logo_b.png" TITLE="Note bent A" BORDER=1 HSPACE=8></A>
+<A HREF="logo.html"><IMG SRC="logo_f.png" TITLE="Fixed A" BORDER=1 HSPACE=8></A></CENTER>
+<P ALIGN=JUSTIFY>
+ These two images are looking along the underside of the logo from beneath the leading
+ edge of the <FONT COLOR=#00FF00><B>B</B></FONT>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ More soon ...
+<P ALIGN=JUSTIFY>
+<FONT SIZE=-2>Some screenshots made using &#77;&#97;&#109;&#101; 0.97</FONT>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 20th November, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&CC=uk"></script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=982d7a21&adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="//secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

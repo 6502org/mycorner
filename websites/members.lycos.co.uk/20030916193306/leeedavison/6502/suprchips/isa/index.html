@@ -1,0 +1,199 @@
+<script language="javascript">
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>8 Bit ISA slot</TITLE>
+<META name="description" content="8 bit ISA slot.">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=25%>
+<A HREF="../index.html#isa">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>8 Bit ISA slot. </FONT></B><FONT SIZE=-1>by Lee Davison</FONT>
+</TD>
+<TD WIDTH=25%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<IMG SRC="isa.png" ALIGN=RIGHT BORDER=1
+ ALT="SuprChip V 8 bit ISA slot." HSPACE=8>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE>
+ I wanted a quick way to connect an 8 bit ISA slot, only to access the IO adresse range,
+ to the SuprChip V microcontroller. The circuit I came up with appears on the right.
+<P>
+ The address lines A5 to A15 can either be set using jumpers or switches (I used switches)
+ or, if you only need one address range, can be hard wired to the corresponding address.
+<P>
+ Any of the five interrupt lines, from IRQ3 to IRQ7, can be selected by the use of a
+ jumper. Again if you will only need one (or none) of these then the desired interrupt
+ can be hard wired.
+<P>
+ This circuit could be fairly easily adapted as a memory mapped device by connecting the
+ corresponding address and data lines (possibly through buffers), by driving the IOR and
+ IOW pins with decoded read and write signals, and by connecting the interrupt, via an
+ invertor, to the NMI input on the processor. The RESET line can be driven, again via
+ an invertor, by the processor RESET line or by an output port line. This line is active
+ high.
+<P>
+ While experimenting with different network cards I discovered some of them need the +12v
+ supply in addition to the +5v supply. This additional connection is shown in <FONT
+ COLOR=RED>red</FONT> on the diagram.
+</BLOCKQUOTE>
+<BR CLEAR=ALL>
+<B><U>Software</U></B>
+<BLOCKQUOTE>
+ Though the slot can be accessed entirely from EhBASIC it was decided to create two short
+ routines to make accessing the slot faster and easier. To that end one function, to read
+ a byte, and one subroutine, to write a byte, were written.
+<P>
+ After initialising the function and subroutine addresses thus ..<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+..
+30 DOKE $44,$EF20 : REM USR(n) = read from IO address $xxnn	
+31 rr = $EF00 : REM call address for write to IO address
+..
+</PRE>
+</TD></TR></TABLE><P>
+ It is a simple matter to write a byte by doing ..<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+20500 CALL rr,cr,dd : REM set control register			
+20505 REM cr is the IO address - $00 to $1F
+20510 REM dd is the byte value for that IO address
+</PRE>
+</TD></TR></TABLE><P>
+ .. and read a byte by doing ..<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10050 by = USR(cr)						
+10055 REM cr is the IO address - $00 to $1F
+10060 REM the byte value is returned to by
+</PRE>
+</TD></TR></TABLE><P>
+<A NAME="source"></A>
+ You can <A HREF="slot_drv.zip">download<IMG SRC="../../../zip_sm.png" BORDER=0
+ alt="Download"></A> or <A HREF="slot_drv.html">view</A> the assembly source for the
+ read and write routines.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 11th August, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.9 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location);
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        //parent.LycosAdFrame.location.href=ad_url;
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        //top.LycosAdFrame.location.href=ad_url;
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+
+</script>
+
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3f676571&adpref="></script>

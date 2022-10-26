@@ -1,0 +1,100 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>Vic PSU repair</TITLE>
+<META name="description" content="Vic PSU repair">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=25%>
+<A HREF="../index.html#isa">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>Vic 20 PSU repair </FONT></B><FONT SIZE=-1>by Lee Davison</FONT>
+</TD>
+<TD WIDTH=25%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="outofbox.html" NAME=outofbox><IMG SRC="outofbox_s.jpg" ALIGN=RIGHT BORDER=1
+ ALT="Vic 20 PSU
+ revealed" HSPACE=8></A>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ I'd not long made a new EPROM for my TCP software and was watching ICMP echo requests
+ scrolling up a DOS window in the background while I added some polish to the code
+ comments, when I realised that the lines in the DOS box had all changed to "Request
+ timed out." Bother!. A quick try on Internet Explorer and it became clear that for one
+ reason or another the Vic 20 wasn't responding.
+<P ALIGN=JUSTIFY>
+ Upstairs in the Laboratory (really - it says so on the door) there was a blank screen
+ and a barely visible power light on the Vic, a quick check with the voltmeter showed
+ that the +5v line was as about 1.1 volts. Switching off I picked up the PSU to find it
+ was too hot to hold for any length of time, looks like I had found what had failed.
+</BLOCKQUOTE>
+<B><U>Dismantling</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Opening the PSU is fairly straightforward, locate the seam at one corner and, using a
+ sharp blade, pry enough of a gap to insert a screwdriver blade. This screwdriver blade
+ can then be tapped along the seam breaking any adhesion as it goes. Repeat this for each
+ side and then the base of the PSU can be pulled free.
+</BLOCKQUOTE>
+<A HREF="noresin.html" NAME=noresin><IMG SRC="noresin_s.jpg" ALIGN=LEFT BORDER=1
+ ALT="Potting compound removed" HSPACE=8></A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Getting the block of resin that encapsulates all the components out was suprisingly
+ easy. All it needed was one sharp impact, open side down, onto a hard surface to break
+ any bond and repeated tapping on each side to persuade it far enough out to hold. Then
+ the top cover was wriggled free leaving the three parts as seen here.
+<P ALIGN=JUSTIFY>
+ The resin was already cracked in many places and large peices were pulled free by hand
+ before it was needed to use a little more force. The resin covering the PCB was quite
+ thin but had stuck well in places as can be seen by the patches of solder resist that
+ were pulled free with it. It was removed by tapping a sharp blade down the join and then
+ prying the blade up by sliding a screwdriver in between it and the PCB.
+<P ALIGN=JUSTIFY>
+ With as much as could be easily removed done it was then a case of using a fairly sharp
+ screwdriver as a chisel to remove the remaining resin as far as the PCB edges. This whole
+ process took less than ten minutes.
+</BLOCKQUOTE><BR CLEAR=ALL>
+<A HREF="nosolder.html" NAME=nosolder><IMG SRC="nosolder_s.jpg" ALIGN=RIGHT BORDER=1
+ ALT="Solder removed" HSPACE=8></A>
+<B><U>Removing the PCB</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ With the resin now mostly clear it was an easy enough task to desolder the DC wires from
+ the PCB and the AC wires from the transformer. Once the AC wires had been freed from the
+ resin by further carefull use of the screwdriver the whole cable was free. Now the center
+ tapped winding that supplies the DC side was desoldered and the wires pulled free from
+ the holes. The center tap, the two wires twisted together on the right, needed a little
+ more effort as it was also held by the resin beneath the PCB. The component leads that
+ protruded through the board were desoldered and, this done, each was checked to ensure
+ it was free from the board.
+<P ALIGN=JUSTIFY>
+ With the wires out of the way the screwdriver was again used to clear the resin far
+ enough so that each edge of the PCB could be seen along it's length, also the resin that
+ protruded through the hole in the middle of the PCB was chipped clear. Then a blade
+ was inserted between the top side of the PCB and the resin and the

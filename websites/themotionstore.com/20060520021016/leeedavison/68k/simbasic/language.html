@@ -1,0 +1,331 @@
+<HTML><HEAD><TITLE>Enhanced 68k BASIC, language reference</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the EASy68k
+ Assembly Language Programming Tool."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_1"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Language reference. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This language reference will only refer to those commands which differ from, or are
+ in addition to, those in the main <A HREF="../ehbasic/language.html">EhBASIC68 language
+ reference</A>. 
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B><U>Notes on graphic commands</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B>Co-ordinates</B>
+<P ALIGN=JUSTIFY>
+ In all instances X and Y co-ordinate values may vary from -32768 to +32767.
+ Attempting to use values outside this range will cause a function call error.
+ Only parts of a structure that appear within the visible window, (0,0) to
+ (639,479), will be drawn.
+<P ALIGN=JUSTIFY>
+<B>Colour values</B>
+<P ALIGN=JUSTIFY>
+ Colour values are longword integers and are interpreted as follows ..<P ALIGN=JUSTIFY>
+<CENTER>
+<TABLE WIDTH=480 CELLPADDING=4 CELLSPACING=1 BORDER=1 BGCOLOR=WHITE>
+<TR>
+<TD ALIGN=CENTER WIDTH=25%><B>Bits 31 to 24</B></TD>
+<TD ALIGN=CENTER WIDTH=25%><B>Bits 23 to 16</B></TD>
+<TD ALIGN=CENTER WIDTH=25%><B>Bits 15 to 8</B></TD>
+<TD ALIGN=CENTER><B>Bits 7 to 0</B></TD></TR>
+<TR>
+<TD ALIGN=CENTER>Ignored</TD>
+<TD ALIGN=CENTER>Blue value</TD>
+<TD ALIGN=CENTER>Green value</TD>
+<TD ALIGN=CENTER>Red value</TD></TR>
+</TABLE>
+</CENTER>
+<P ALIGN=JUSTIFY>
+ As bits 31 to 24 are ignored -ve values may be used where convenient. E.g. you could
+ use -1 instead of $FFFFFF for white.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B><U>BASIC Keywords</B></U>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Here is a list of EASy68k BASIC keywords. Keywords are only valid when entered in upper
+ case as shown, spaces may not be included in them. So, for example, GOTO would be a valid
+ keyword but GO TO would not.
+<P ALIGN=JUSTIFY>
+<CENTER>
+<TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+<TR>
+ <TD WIDTH=14%><A HREF="#BUFFER">BUFFER</A></TD>
+ <TD WIDTH=14%><A HREF="#CLS">CLS</A></TD>
+ <TD WIDTH=14%><A HREF="#CURSOR">CURSOR</A></TD>
+ <TD WIDTH=14%><A HREF="#ELLIPSE">ELLIPSE</A></TD>
+ <TD WIDTH=14%><A HREF="#ELLIPSEF">ELLIPSEF</A></TD>
+ <TD WIDTH=14%><A HREF="#FILL">FILL</A></TD>
+ <TD WIDTH=14%><A HREF="#KEYS">KEYS()</A></TD>
+</TR>
+<TR>
+ <TD><A HREF="#LINE">LINE</A></TD>
+ <TD><A HREF="#LOAD">LOAD</A></TD>
+ <TD><A HREF="#MODE">MODE</A></TD>
+ <TD><A HREF="#MOVE">MOVE</A></TD>
+ <TD><A HREF="#POINT">POINT</A></TD>
+ <TD><A HREF="#POINTF">POINT()</A></TD>
+ <TD><A HREF="#RECT">RECT</A></TD>
+</TR>
+<TR>
+ <TD><A HREF="#RECTF">RECTF</A></TD>
+ <TD><A HREF="#SAVE">SAVE</A></TD>
+ <TD><A HREF="#SIZE">SIZE</A></TD>
+ <TD><A HREF="#TI">TI</A></TD>
+</TR>
+</TABLE>
+</CENTER>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B><U>BASIC Commands</U></B>
+
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<A name=BUFFER></A>
+<B>BUFFER</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Copies the screen buffer to the visible screen when double buffered mode is enabled. Has
+ no effect if double buffered mode is not enabled. See <A HREF=#MODE>MODE</A> for how to
+ set double buffered mode.
+</BLOCKQUOTE>
+
+<A name=CLS></A>
+<B>CLS</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Clears the screen. When double buffered mode is enabled it clears the screen buffer.
+</BLOCKQUOTE>
+
+<A name=CURSOR></A>
+<B>CURSOR &lt;exprX&gt;,&lt;exprY&gt;</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sets the position of the text cursor as defined by exprX and exprY.
+<P ALIGN=JUSTIFY>
+ Values must be 0 &lt;= exprX &lt;= 79 and 0 &lt;= exprY &lt;= 31. If either is outside
+ this range it will cause a <I>Function Call</I> error.
+</BLOCKQUOTE>
+
+<A name=ELLIPSE></A>
+<B>ELLIPSE [&lt;exprX1&gt;,&lt;exprY1&gt;,&lt;exprX2&gt;,&lt;exprY2&gt;][,][&lt;exprLC&gt;[,&lt;exprFC&gt;]]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Draws an unfilled ellipse bounded by the rectangle defined by exprX1 and exprX2, for
+ the X axis, and exprY1 and exprY2, for the Y axis, of colour exprLC. The width of the
+ line used to draw the ellipse is set by the <A HREF="#SIZE">SIZE</A> command.
+<P ALIGN=JUSTIFY>
+ If exprLC is present then the line colour will be set before the ellipse is drawn.
+<P ALIGN=JUSTIFY>
+ If exprFC is present then the fill colour will be set before the ellipse is drawn.
+ If you want to set the fill colour then the line colour must also be set.
+<P ALIGN=JUSTIFY>
+ If the co-ordinates are omitted then only the line colour, and the fill colour if
+ given, will be set without drawing.
+</BLOCKQUOTE>
+<A name=ELLIPSEF></A>
+<B>ELLIPSEF [&lt;exprX1&gt;,&lt;exprY1&gt;,&lt;exprX2&gt;,&lt;exprY2&gt;][,][&lt;exprLC&gt;[,&lt;exprFC&gt;]]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The same as <A HREF="#ELLIPSE">ELLIPSE</A> except the ellipse is filled with
+ the current fill colour.
+</BLOCKQUOTE>
+<A name=FILL></A>
+<B>FILL [&lt;exprX&gt;,&lt;exprY&gt;][,][&lt;exprFC&gt;]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Flood fill the area starting from &lt;exprX&gt;,&lt;exprY&gt;. The fill will
+ continue until it reaches the screen edge or a pixel of a different colour to that
+ originally at &lt;exprX&gt;,&lt;exprY&gt;.
+<P ALIGN=JUSTIFY>
+ If &lt;exprFC&gt; is specified then the current fill colour is set before the fill
+ starts. If &lt;exprX&gt;,&lt;exprY&gt; is omitted and just &lt;exprFC&gt; is
+ specified then the fill colour is set without drawing.
+</BLOCKQUOTE>
+<A name=LINE></A>
+<B>LINE [&lt;exprX1&gt;,&lt;exprY1&gt;[,&lt;exprX2&gt;,&lt;exprY2&gt;]][,][&lt;exprLC&gt;]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Draws a line from &lt;exprX1&gt;,&lt;exprY1&gt; to &lt;exprX2&gt;,&lt;exprY2&gt;.
+ If &lt;exprX2&gt;,&lt;exprY2&gt; is omitted then the line is drawn from the current
+ graphics position to &lt;exprX1&gt;,&lt;exprY1&gt;.
+<P ALIGN=JUSTIFY>
+ If &lt;exprLC&gt; is specified then the line colour will be set to that value before
+ the line is drawn. Also just giving &lt;exprLC&gt; will set the line colour without
+ drawing.
+</BLOCKQUOTE>
+<A name=LOAD></A>
+<B>LOAD &lt;expression$&gt;</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Attempts to load the file expression$. It will recognise the file format (binary or
+ ASCII) and invoke the necessary routines.
+<P ALIGN=JUSTIFY>
+ During an ASCII load you will see the program as it is being read from the file. This
+ file is merged with any program lines currently in the memory so to completely replace
+ a program in memory NEW should be performed before LOAD.
+<P ALIGN=JUSTIFY>
+ Binary files load <I>much</I> faster and over write any program currently in memory but
+ may not be readable by future versions.
+</BLOCKQUOTE>
+<A name=MODE></A>
+<B>MODE &lt;expression&gt;</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Set the draw mode to &lt;expression&gt;. Valid values are 0 to 17.
+<P ALIGN=JUSTIFY>
+<CENTER>
+<TABLE CELLPADDING=4 CELLSPACING=1 BORDER=1 BGCOLOR=WHITE>
+<TR><TD ALIGN=CENTER><B>Mode</B></TD>
+    <TD ALIGN=CENTER><B>Function</B></TD>
+    <TD ALIGN=CENTER><B>Effect</B></TD></TR>
+<TR><TD ALIGN=CENTER>0</TD><TD>False</TD>
+    <TD>Drawing is always black</TD></TR>
+<TR><TD ALIGN=CENTER>1</TD><TD>True</TD>
+    <TD>Drawing is always white</TD></TR>
+<TR><TD ALIGN=CENTER>2</TD><TD>Null</TD>
+    <TD>Nothing is drawn but the cursor is moved</TD></TR>
+<TR><TD ALIGN=CENTER>3</TD><TD>Inverse</TD>
+    <TD>The inverse of the background is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>4</TD><TD>Colour</TD>
+    <TD>The colour is drawn (default)</TD></TR>
+<TR><TD ALIGN=CENTER>5</TD><TD>Inverse colour</TD>
+    <TD>The inverse of the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>6</TD><TD>Inverse OR</TD>
+    <TD>The inverse of the background OR the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>7</TD><TD>Inverse AND</TD>
+    <TD>The inverse of the background AND the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>8</TD><TD>OR Inverse</TD>
+    <TD>The background OR the inverse of the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>9</TD><TD>AND Inverse</TD>
+    <TD>The background AND the inverse of the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>10</TD><TD>OR</TD>
+    <TD>The background OR the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>11</TD><TD>NOR</TD>
+    <TD>The background NOR the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>12</TD><TD>AND</TD>
+    <TD>The background AND the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>13</TD><TD>NAND</TD>
+    <TD>The background NAND the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>14</TD><TD>EOR</TD>
+    <TD>The background ExclusiveOR the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>15</TD><TD>ENOR</TD>
+    <TD>The background ExclusiveNOR the colour is drawn</TD></TR>
+<TR><TD ALIGN=CENTER>16</TD><TD>Single</TD>
+    <TD>Turn off double buffer mode (default)</TD></TR>
+<TR><TD ALIGN=CENTER>17</TD><TD>Double</TD>
+    <TD>Turn on double buffer mode</TD></TR>
+</TABLE>
+</CENTER>
+</BLOCKQUOTE>
+<A name=MOVE></A>
+<B>MOVE &lt;exprX&gt;,&lt;exprY&gt;</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Move the current graphics point to &lt;exprX&gt;,&lt;exprY&gt;. Nothing is drawn.
+</BLOCKQUOTE>
+<A name=POINT></A>
+<B>POINT [&lt;exprX&gt;,&lt;exprY&gt;][,][&lt;exprLC&gt;]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Set the colour of the point &lt;exprX&gt;,&lt;exprY&gt; to the current line colour.
+<P ALIGN=JUSTIFY>
+ If &lt;exprLC&gt; is specified then the current line colour is set before the point
+ is plotted. If &lt;exprX&gt;,&lt;exprY&gt; is omitted and just &lt;exprLC&gt; is
+ specified then the line colour is set without drawing.
+</BLOCKQUOTE>
+<A name=RECT></A>
+<B>RECT [&lt;exprX1&gt;,&lt;exprY1&gt;,&lt;exprX2&gt;,&lt;exprY2&gt;][,][&lt;exprLC&gt;[,&lt;exprFC&gt;]]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The same as <A HREF="#ELLIPSE">ELLIPSE</A> except the bounding rectangle
+ itself is drawn.
+</BLOCKQUOTE>
+<A name=RECTF></A>
+<B>RECTF [&lt;exprX1&gt;,&lt;exprY1&gt;,&lt;exprX2&gt;,&lt;exprY2&gt;][,][&lt;exprLC&gt;[,&lt;exprFC&gt;]]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The same as <A HREF="#RECT">RECT</A> except the bounding rectangle is filled
+ with the current fill colour.
+</BLOCKQUOTE>
+<A name=SAVE></A>
+<B>SAVE &lt;expression$&gt;[,a[n1][-n2]]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Attempts to save the program memory to the file expression$. If the command has the
+ <B>,a</B> appended then the program will be saved in ASCII format. If saving in ASCII
+ format then the range of the save can be specified as with the <A
+ HREF="../ehbasic/language.html#LIST">LIST</A> command.
+<P ALIGN=JUSTIFY>
+ A program saved as binary loads much faster however, it is not recomended for archiving
+ as binary programs may not be readable by different versions of EhBASIC.
+</BLOCKQUOTE>
+<A name=SIZE></A>
+<B>SIZE &lt;expression&gt;</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sets the width of lines drawn using the <A HREF="#LINE">LINE</A> command and the width
+ of the outlines drawn using any of the shape commands.
+<P ALIGN=JUSTIFY>
+ The valid range of &lt;expression&gt; is from 0 to 255 but setting a value of zero
+ will actually give a width of one.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>BASIC Functions</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<A name=KEYS></A>
+<B>KEYS(&lt;expression&gt;)</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the current state of up to four specified keys. &lt;expression&gt; can be
+ either string or numeric, if it is numeric then each byte of it's value as a longword
+ is one key code and the flag for that code is returned in the corresponding byte of the
+ returned value.
+<P ALIGN=JUSTIFY>
+ If &lt;expression&gt; is string then the first four characters of the string are used
+ to form a right justified test string and the flag for that code is returned in the
+ corresponding byte of the returned value. Characters beyond the fourth character are
+ ignored.
+<P ALIGN=JUSTIFY>
+ If &lt;expression&gt; is numeric zero or a null string then the scan code of the last
+ key pressed is returned.
+<P ALIGN=JUSTIFY>
+ All letter keys correspond to the upper case form of that letter, all numeric keys on the
+ top row correspond to their number. Other key codes are given in the table below.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=4 CELLSPACING=1 BORDER=1 BGCOLOR=WHITE WIDTH=78%>
+<TR><TD WIDTH=40%><B>Key</B></TD><TD WIDTH=10%><B>Code</B></TD>
+<TD WIDTH=40%><B>Key</B></TD><TD WIDTH=10%><B>Code</B></TD></TR>
+<TR><TD WIDTH=40%>Backspace</TD><TD WIDTH=10%>$08</TD>
+<TD WIDTH=40%>keypad 5</TD><TD WIDTH=10%>$0C</TD></TR>
+<TR><TD>Keypad Enter or Enter</TD><TD>$0D</TD><TD>Shift</TD><TD>$10</TD></TR>
+<TR><TD>Control</TD><TD>$11</TD><TD>Alt</TD><TD>$12</TD></TR>
+<TR><TD>Pause</TD><TD>$13</TD><TD>Caps Lock</TD><TD>$14</TD></TR>
+<TR><TD>Esc</TD><TD>$1B</TD><TD>Space</TD><TD>$20</TD></TR>
+<TR><TD>Keypad 9 or Page Up</TD><TD>$21</TD><TD>Keypad 3 or Page Down</TD><TD>$22</TD></TR>
+<TR><TD>Keypad 1 or End</TD><TD>$23</TD><TD>Keypad 7 or Home</TD><TD>$24</TD></TR>
+<TR><TD>Keypad 4 or Left Arrow</TD><TD>$25</TD><TD>Keypad 8 or Up Arrow</TD><TD>$26</TD>
+</TR>
+<TR><TD>Keypad 6 or Right Arrow</TD><TD>$27</TD><TD>Keypad 2 or Down Arrow</TD><TD>$28</TD>
+</TR>
+<TR><TD>Keypad 0 or Insert</TD><TD>$2D</TD><TD>Keypad . or Delete</TD><TD>$2E</TD></TR>
+<TR><TD>Keypad *</TD><TD>$6A</TD><TD>Keypad +</TD><TD>$6B</TD></TR>
+<TR><TD>Keypad -</TD><TD>$6D</TD><TD>Keypad /</TD><TD>$6F</TD></TR>
+<TR><TD>F2</TD><TD>$71</TD><TD>F3</TD><TD>$73</TD></TR>
+<TR><TD>F4</TD><TD>$74</TD><TD>F5</TD><TD>$75</TD></TR>
+<TR><TD>F11</TD><TD>$7A</TD><TD>F12</TD><TD>$7B</TD></TR>
+<TR><TD>Num Lock</TD><TD>$90</TD><TD>Scroll Lock</TD><TD>$91</TD></TR>
+<TR><TD>;</TD><TD>$BA</TD><TD>=</TD><TD>$BB</TD></TR>
+<TR><TD>,</TD><TD>$BC</TD><TD>-</TD><TD>$BD</TD></TR>
+<TR><TD>.</TD><TD>$BE</TD><TD>/</TD><TD>$BF</TD></TR>
+<TR><TD>`</TD><TD>$C0</TD><TD>[</TD><TD>$DB</TD></TR>
+<TR><TD>\</TD><TD>$DC</TD><TD>]</TD><TD>$DD</TD></TR>
+<TR><TD>'</TD><TD>$DE</TD><TD>&nbsp;</TD><TD>&nbsp;</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+<A name=POINTF></A>
+<B>POINT(&lt;exprX&gt;,&lt;exprY&gt;)</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the pixel colour value at point &lt;exprX&gt;,&lt;exprY&gt;.
+</BLOCKQUOTE>
+<A name=TI></A>
+<B>TI</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the time since midnight in 1/100ths of seconds.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 17th August, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

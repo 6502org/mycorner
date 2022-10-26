@@ -1,0 +1,100 @@
+<HTML><HEAD><TITLE>POKE problems</TITLE>
+<META name="description" content="Vic 20 network interface"></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=25%><A HREF="index.html#poke">
+  <IMG SRC="../../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD ALIGN=CENTER>
+<B><FONT SIZE=+1>POKE problems </FONT></B><FONT SIZE=-1>by Lee Davison</FONT>
+</TD><TD WIDTH=25%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ If you're thinking of using Vic BASIC, or just about any other NMOS 6502 machine with
+ MicroSoft BASIC, for PC card I/O there is a gotcha with POKE that you need to be aware
+ of.
+</BLOCKQUOTE>
+<B><U>Reason</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ On the NMOS 6502 and similar CPUs when using indirect indexed addressing a spurious read
+ cycle is generated. This can occur at the indexed address or, if the indexing has caused
+ an overflow into the high byte, at $100 less than the indexed address. Look at the
+ sequence of machine cycles for the NMOS chip during an indirect indexed write.
+<P ALIGN=JUSTIFY>
+ Cycle by cycle detail for &nbsp;<B><TT>LDA (zp),Y</TT></B>
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+cycle	type	address		description
+-----	----	-------		-----------
+  1	read	PC		fetch opcode, increment PC
+  2	read	PC		fetch pointer address, increment PC
+  3	read	pointer		fetch effective address low
+  4	read	pointer+1	fetch effective address high,
+				add Y to low byte of effective address		
+  5	read	address+Y	read from effective address,
+				fix high byte of effective address
+  6	write	address+Y	write to effective address
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ During cycle 5 there is a spurious read from the indexed address, if this is to a
+ sequence sensetive device such as a network card or ATA drive it can cause unpredicatble
+ results.
+</BLOCKQUOTE>
+<B><U>Code for POKE</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ So how does this affect POKE, well lets take a look at the code from the Vic 20 BASIC ROM
+ and see what happens during a POKE command.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+; perform POKE
+
+LAB_D824
+	JSR	LAB_D7EB	; Get parameters for POKE/WAIT			
+	TXA			; copy byte to POKE to A
+	LDY	#$00		; clear index
+	STA	($14),Y		; write byte
+	RTS
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ We can see from this that POKE uses the indirect indexed addressing mode with an index of
+ zero, so it will generate a spurious read cycle at the target address just before it
+ writes the byte. For this reason the Vic 20 network interface code was done entirely in
+ assembly.
+</BLOCKQUOTE>
+<B><U>The fix</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The fix is to patch BASIC to use indexed indirect addressing instead of indeirect
+ indexed. This still causes spurious read cycles but this time they are to page zero and
+ not to the intended destination.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+; perform POKE
+
+LAB_D824
+	JSR	LAB_D7EB	; Get parameters for POKE/WAIT			
+	TXA			; copy byte to POKE to A
+	<B>LDX</B>	#$00		; clear index
+	STA	<B>($14,X)</B>		; write byte
+	RTS
+</PRE>
+</TD></TR></TABLE>
+
+<P ALIGN=JUSTIFY>
+ This is how poke is implemented in <A HREF="../../ehbasic/index.html">EhBASIC</A>. This
+ is something to remember when using either POKE in MicroSoft BASIC, or indirect indexed
+ addressing on an NMOS 6502.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 6th February, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

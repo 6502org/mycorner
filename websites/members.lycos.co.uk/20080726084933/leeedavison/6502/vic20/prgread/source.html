@@ -1,0 +1,194 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=35624ed5&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>Vic 20 .prg file reader</TITLE>
+<META name="description" content="Vic 20 lister"></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Vic 20 .prg reader source </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+Download <A HREF="source.zip">zipped <IMG SRC="../../../zip_sm.png" border=0></A>.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+' Vic 20 .prg file viewer Ver 1.42 - Quick BASIC 4.5 (c) L.Davison 2005
+
+' Takes a raw .prg Vic 20 program file and outputs it to the screen and optionally to
+' both text and html output files. The text file has special C= characters replaced by  
+' names in curly braces, e.g. [CTRL]1 which is Black is rendered as {BLK}. With the
+' html output file there is the option to display these keys as small, 8 by 8 pixel,
+' graphics resembling the actual characters that would be seen in a listing.
+
+' All the standard BASIC 2.0 keywords, as well as the Super Expander keywords, are
+' supported.
+
+' comments, suggestions, additions, offers of monetary reward etc to ..
+'
+' leeedavison@lycos.co.uk
+
+
+CONST false = 0, true = -1			' define these
+
+DIM token%(255)					' token flags
+DIM token$(255,1)				' token decoder
+DIM symbol$(255,1)				' symbol decoder
+
+esc$ = CHR$(27)					' define ESCAPE
+quote$ = CHR$(34)				' " as a string
+cr$ = CHR$(13)					' [CR] as a string
+
+fe$ = "&lt;/FONT&gt;"					' end of &lt;FONT&gt;&lt;/FONT&gt;
+fl$ = "&lt;FONT COLOR=blue&gt;"			' line number font colour
+fq$ = "&lt;FONT COLOR=green&gt;"			' quote string font colour
+ft$ = "&lt;FONT COLOR=red&gt;"			' token font colour
+
+text% = false					' default to no text output
+html% = false					' default to no html output
+imgs% = false					' default to no html graphics
+
+SCREEN 12					' 640 x 480 x 16
+CLS						' clear it
+
+PRINT "Vic 20 .PRG file reader v1.42. (c) Lee Davison 2005."
+PRINT
+
+GOSUB Initialise				' set up arrays
+
+INPUT "Enter .PRG file name "; filename$	' get the filename without the .prg
+IF filename$ = "" THEN END			' no file then just quit
+
+IF RIGHT$(UCASE$(filename$), 4) = ".PRG" THEN	' ensure no ".prg" end
+  filename$ = LEFT$(filename$, LEN(filename$) - 4)
+END IF
+
+PRINT "Text output file   [Y]es/[n]o ?"		' prompt user
+DO
+  DO
+    key$ = UCASE$(INKEY$)			' get key
+  LOOP WHILE key$ = ""				' wait for press
+  IF key$ = cr$ THEN				' user just hit [RETURN]
+    key$ = "Y"					'  so default to yes
+  END IF
+  IF key$ = "Y" THEN				' if text wanted
+    text% = true				' set the flag
+  END IF
+LOOP WHILE (key$ &lt;&gt; "N") AND (key$ &lt;&gt; "Y")	' loop until "N" or "Y"
+
+PRINT "HTML output file   [Y]es/[n]o ?"		' prompt user
+DO
+  DO
+    key$ = UCASE$(INKEY$)			' get key
+  LOOP WHILE key$ = ""				' wait for press
+  IF key$ = cr$ THEN				' user just hit [RETURN]
+    key$ = "Y"					'  so default to yes
+  END IF
+  IF key$ = "Y" THEN				' if html wanted
+    html% = true				' set the flag
+  END IF
+LOOP WHILE (key$ &lt;&gt; "N") AND (key$ &lt;&gt; "Y")	' loop until "N" or "Y"
+
+IF html% THEN
+  PRINT "HTML file graphics [y]es/[N]o ?"	' prompt user
+  DO
+    DO
+      key$ = UCASE$(INKEY$)			' get key
+    LOOP WHILE key$ = ""			' wait for press
+    IF key$ = cr$ THEN				' user just hit [RETURN]
+      key$ = "N"				'  so default to no
+    END IF
+    IF key$ = "Y" THEN				' if graphics
+      imgs% = 1					' set the flag
+    END IF
+  LOOP WHILE (key$ &lt;&gt; "N") AND (key$ &lt;&gt; "Y")	' loop until "N" or "Y"
+END IF
+
+GOSUB DoFile					' process the file
+
+COLOR 15					' white
+
+PRINT "Press any key to exit."			' prompt user
+DO
+LOOP WHILE INKEY$ = ""				' wait for press
+END						' all done, bye.
+
+
+' process file. open the input file and the output file(s), process the input
+' file then close all files as needed
+
+DoFile:
+  OPEN filename$ + ".prg" FOR BINARY ACCESS READ AS #1
+						' open the .prg file
+  IF text% THEN					' if the user wants text output
+    OPEN filename$ + ".txt" FOR OUTPUT AS #2	' open the text write file
+  END IF
+  IF html% THEN					' if the user wants html output
+    OPEN filename$ + ".htm" FOR OUTPUT AS #3	' open the html write file
+  END IF
+
+  i% = 0%					' clear the read index
+  GOSUB DoStream				' process the byte stream
+
+  IF html% THEN					' if the user wanted html output
+    CLOSE #3					' close the html output file
+  END IF
+  IF text% THEN					' if the user wanted text output
+    CLOSE #2					' close the text output file
+  END IF
+  CLOSE #1					' close the input file
+RETURN
+
+
+' process a stream of bytes until no input remains
+
+DoStream:
+  GOSUB HTMLHeader				' write the html header
+  GOSUB GetWord					' get the LOAD address
+  address$ = "LOAD address $" + RIGHT$("000" + HEX$(word&amp;), 4)
+  PRINT address$				' print load address to screen
+  IF html% THEN					' if the user wants html output
+    PRINT #3, "&amp;nbsp;"; address$		' print load address to html file
+    PRINT #3,
+  END IF
+  DO
+    GOSUB DoLine				' do a program line
+    IF INKEY$ = esc$ THEN			' check for user quit
+      eoprog% = true				' flag exit if [ESCAPE] pressed
+    END IF
+  LOOP WHILE NOT eoprog%			' loop until program end or abort
+  GOSUB HTMLFooter				' write the html footer
+RETURN
+
+
+' write the header to the html file
+
+HTMLHeader:
+  IF html% THEN					' if the user wants html output
+    PRINT #3, "&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;"; filename$;
+    PRINT #3, ".prg for the Vic 20&lt;/TITLE&gt;&lt;/HEAD&gt;"
+    PRINT #3, "&lt;BODY&gt;"
+    PRINT #3, "Program listing of &lt;TT&gt;&lt;B&gt;"; filename$;
+    PRINT #3, ".prg&lt;/B&gt;&lt;/TT&gt; for the Vic 20"
+    PRINT #3, "&lt;HR&gt;"
+    PRINT #3, "&lt;PRE&gt;"
+  END IF
+RETURN
+
+
+' write the footer to the html file
+
+HTMLFooter:
+  IF html% THEN					' if the user wants html output
+    PRINT #3, "&lt;/PRE&gt;"
+    PRINT #3, "&lt;HR&gt;"
+    PRINT #3, "Converted to HTML using &lt;TT&gt;&lt;B&gt;";
+    PRINT #3, "prgread.exe v1.42&lt;/TT&gt;&lt;/B&gt; by ";
+    PRINT #3, "&lt;A HREF="; quote$; "mailto:leeedavison";
+    PRINT #3, "@lycos.co.uk"; quote$; "&gt;Lee Davison&lt;/A&gt;"
+    PRINT #3, "&lt;/BODY&gt;&lt;/HTML&gt;"
+  END IF
+RETURN
+
+
+' set the

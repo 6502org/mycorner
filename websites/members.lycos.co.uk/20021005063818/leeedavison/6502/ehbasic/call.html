@@ -1,0 +1,176 @@
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC, extending CALL</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>Enhanced BASIC, extending CALL </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="index.html#link_1">[Back]</A>
+<BR clear=all><P>
+<HR>
+<P>
+<P>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE>
+  CALL &#60;address&#62; calls a machine code routine at location address. While this
+  in itself is useful it can be extended by adding parameters to the CALL and parsing
+  them from within the routine.<BR>
+
+  This technique can also be used to pass extra parameters to the USR() function.
+</BLOCKQUOTE>
+<P>
+<B><U>How to.</U></B>
+<BLOCKQUOTE>
+  First you need to define the parameters for your CALL. This example is for an
+  imaginary bitmapped graphic device.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=3 CELLSPACING=0 BORDER=0>
+  <TR>
+    <TD><B>CALL PLOT,x,y</B></TD>
+    <TD>Set the pixel at x,y</TD>
+  <TR>
+    <TD></TD>
+    <TD>&nbsp;PLOT&nbsp;</TD>
+    <TD>routine address</TD>
+  </TR>
+  <TR>
+    <TD></TD>
+    <TD>&nbsp;x</TD>
+    <TD>x axis value, range 0 to 255</TD>
+  </TR>
+  <TR>
+    <TD></TD>
+    <TD>&nbsp;y</TD>
+    <TD>y axis value, range 0 to 64</TD>
+  </TR>
+</TABLE>
+</BLOCKQUOTE>
+ This will then be the form that the call will always take.
+<P>
+ Now you need to write the code.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.include BASIC.DIS		; include the BASIC labels file. this allows you
+				; easy access to the internal routines you need
+				; to parse the command stream and access some of
+				; the internals of BASIC. It is usually output
+				; by the assembler as part of the listing or as a
+				; separate, optional, file.
+
+; for now we'll put this in the spare RAM @ $F400
+
+	*=	$F400
+
+PLOT
+	JSR	LAB_SCGB	; scan for "," and get byte
+	STX	PLOT_XBYT	; save plot x
+	JSR	LAB_SCGB	; scan for "," and get byte
+	CPX	#$40		; compare with max+1
+	BCS	PLOT_FCER	; if 64d or greater do function call error
+
+	STX	PLOT_YBYT	; save plot y
+
+; now would be your code to perform the plot command
+;.
+;.
+;.
+;.
+;.
+
+	RTS			; return to BASIC
+
+; does BASIC function call error
+
+PLOT_FCER
+	JMP	LAB_FCER	; do function call error, then warm start
+
+; now we just need the variable storage
+
+PLOT_XBYT
+	.byte	$00		; set default
+
+PLOT_YBYT
+	.byte	$00		; set default
+
+	END
+</PRE>
+</TD></TR></TABLE>
+<BR>
+<P>
+ Finally you need to set the value of PLOT in your BASIC program and use that to call
+ it.<BR>
+ E.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.
+10 PLOT = $F400
+.
+.
+145 CALL PLOT,25,14 : REM set pixel
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 8th July, 2002.</FONT>
+</BODY>
+</HTML>
+
+</xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.2 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+</noscript><script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3d9e88e6&adpref="></script>

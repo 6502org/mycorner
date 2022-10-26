@@ -1,0 +1,62 @@
+<HTML><HEAD><TITLE>6502 Shorts - Toggle carry</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Toggle carry. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE>
+ Carry bit the wronge sense? Want a 0 when it's 1? Read on....
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Recently in some otherwise elegant code the result of a compare left the carry bit in
+ exactly the wrong sense for the following add. The usual way to fix that is to do
+ something like ..<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	BCC	WasClear	; if clear go set it	
+
+	CLC			; was set so clear it
+	BCC	AllDone		; continue
+
+WasClear
+	SEC			; was clear so set it
+AllDone
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ While this works there had to be a more elegant way of doing this. It turns out there
+ is, you do this ..<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	ROL	A		; Cb into b0		
+	EOR	#$01		; toggle bit
+	ROR	A		; b0 into Cb
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The ROL puts the carry into bit 0 in the accumulator.<BR>
+ The EOR toggles the state of that bit without affecting any other bits.<BR>
+ The ROR puts the bit back into the carry, restores the accumulator and sets the N
+ and Z flags.<P>
+ There are a couple of advantages of doing things this way instead of the branch and set
+ (or clear) given earlier ..
+<BLOCKQUOTE>
+<LI>It only takes four bytes instead of six.
+<LI>It always takes six cycles, not five or seven depending on the state of the carry.
+</BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There is one possible disadvantage in that it sets the N and Z flags from what is in A
+ at the time. But, most of the time, if you're interested in the carry state the N and Z
+ states are unimportant.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 28th August, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

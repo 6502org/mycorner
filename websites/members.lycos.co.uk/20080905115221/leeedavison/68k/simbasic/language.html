@@ -1,0 +1,119 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=61ec1be&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>Enhanced 68k BASIC, language reference</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the EASy68k
+ Assembly Language Programming Tool."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_1"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Language reference. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This language reference will only refer to those commands which differ from, or are
+ in addition to, those in the main <A HREF="../ehbasic/language.html">EhBASIC68 language
+ reference</A>. 
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B><U>Notes on graphic commands</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B>Co-ordinates</B>
+<P ALIGN=JUSTIFY>
+ In all instances X and Y co-ordinate values may vary from -32768 to +32767.
+ Attempting to use values outside this range will cause a function call error.
+ Only parts of a structure that appear within the visible window, (0,0) to
+ (639,479), will be drawn.
+<P ALIGN=JUSTIFY>
+<B>Colour values</B>
+<P ALIGN=JUSTIFY>
+ Colour values are longword integers and are interpreted as follows ..<P ALIGN=JUSTIFY>
+<CENTER>
+<TABLE WIDTH=480 CELLPADDING=4 CELLSPACING=1 BORDER=1 BGCOLOR=WHITE>
+<TR>
+<TD ALIGN=CENTER WIDTH=25%><B>Bits 31 to 24</B></TD>
+<TD ALIGN=CENTER WIDTH=25%><B>Bits 23 to 16</B></TD>
+<TD ALIGN=CENTER WIDTH=25%><B>Bits 15 to 8</B></TD>
+<TD ALIGN=CENTER><B>Bits 7 to 0</B></TD></TR>
+<TR>
+<TD ALIGN=CENTER>Ignored</TD>
+<TD ALIGN=CENTER>Blue value</TD>
+<TD ALIGN=CENTER>Green value</TD>
+<TD ALIGN=CENTER>Red value</TD></TR>
+</TABLE>
+</CENTER>
+<P ALIGN=JUSTIFY>
+ As bits 31 to 24 are ignored -ve values may be used where convenient. E.g. you could
+ use -1 instead of $FFFFFF for white.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B><U>BASIC Keywords</B></U>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Here is a list of EASy68k BASIC keywords. Keywords are only valid when entered in upper
+ case as shown, spaces may not be included in them. So, for example, GOTO would be a valid
+ keyword but GO TO would not.
+<P ALIGN=JUSTIFY>
+<CENTER>
+<TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+<TR>
+ <TD WIDTH=14%><A HREF="#BUFFER">BUFFER</A></TD>
+ <TD WIDTH=14%><A HREF="#CLS">CLS</A></TD>
+ <TD WIDTH=14%><A HREF="#CURSOR">CURSOR</A></TD>
+ <TD WIDTH=14%><A HREF="#ELLIPSE">ELLIPSE</A></TD>
+ <TD WIDTH=14%><A HREF="#ELLIPSEF">ELLIPSEF</A></TD>
+ <TD WIDTH=14%><A HREF="#FILL">FILL</A></TD>
+ <TD WIDTH=14%><A HREF="#KEYS">KEYS()</A></TD>
+</TR>
+<TR>
+ <TD><A HREF="#LINE">LINE</A></TD>
+ <TD><A HREF="#LOAD">LOAD</A></TD>
+ <TD><A HREF="#MODE">MODE</A></TD>
+ <TD><A HREF="#MOVE">MOVE</A></TD>
+ <TD><A HREF="#POINT">POINT</A></TD>
+ <TD><A HREF="#POINTF">POINT()</A></TD>
+ <TD><A HREF="#RECT">RECT</A></TD>
+</TR>
+<TR>
+ <TD><A HREF="#RECTF">RECTF</A></TD>
+ <TD><A HREF="#SAVE">SAVE</A></TD>
+ <TD><A HREF="#SIZE">SIZE</A></TD>
+ <TD><A HREF="#TI">TI</A></TD>
+</TR>
+</TABLE>
+</CENTER>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B><U>BASIC Commands</U></B>
+
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<A name=BUFFER></A>
+<B>BUFFER</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Copies the screen buffer to the visible screen when double buffered mode is enabled. Has
+ no effect if double buffered mode is not enabled. See <A HREF=#MODE>MODE</A> for how to
+ set double buffered mode.
+</BLOCKQUOTE>
+
+<A name=CLS></A>
+<B>CLS</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Clears the screen. When double buffered mode is enabled it clears the screen buffer.
+</BLOCKQUOTE>
+
+<A name=CURSOR></A>
+<B>CURSOR &lt;exprX&gt;,&lt;exprY&gt;</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sets the position of the text cursor as defined by exprX and exprY.
+<P ALIGN=JUSTIFY>
+ Values must be 0 &lt;= exprX &lt;= 79 and 0 &lt;= exprY &lt;= 31. If either is outside
+ this range it will cause a <I>Function Call</I> error.
+</BLOCKQUOTE>
+
+<A name=ELLIPSE></A>
+<B>ELLIPSE [&lt;exprX1&gt;,&lt;exprY1&gt;,&lt;exprX2&gt;,&lt;exprY2&gt;][,][&lt;exprLC&gt;[,&lt;exprFC&gt;]]</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Draws an unfilled ellipse bounded by the rectangle defined by exprX1 and exprX2, for
+ the X axis, and exprY1 and exprY2, for the Y axis, of colour exprLC. The width of the
+ line used to draw the ellipse is set by the <A HREF="#SIZE">SIZE</A> command.
+<P ALIG

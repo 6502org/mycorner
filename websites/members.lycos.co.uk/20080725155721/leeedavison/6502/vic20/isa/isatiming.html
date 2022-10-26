@@ -1,0 +1,46 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=761352b6&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD><TITLE>Vic 20 ISA slot timing.</TITLE></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#timing">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Vic 20 ISA slot timing </FONT></B><FONT SIZE=-1>by Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Timing problems</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ With all the wires going to the right places the 3Com card wasn't talking. After a go
+ with the logic analyser revealed that the correct bytes in the correct order were being
+ sent to the card a closer look at the access timings seemed to be called for. A short
+ bit of test code that writes repeatedly, and regularly, to the I/O block used produced
+ the following display.
+</BLOCKQUOTE>
+<CENTER>
+<IMG SRC="ohbother.jpg" BORDER=1 ALT="Timing looks like this" HSPACE=8>
+<IMG SRC="isatiming.png" BORDER=1 ALT="But should look like this" HSPACE=8>
+</CENTER>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Looking at the spec for ISA 8 bit I/O cycles gives a minumum figure for 11 (write data
+ setup) of 7 to -45ns, that is 7ns before to 45ns after IOW goes low. A quick check on
+ the scope reveals that on the interface the data is not stable for <B>at least</B> 110ns
+ after IOW has gone low. Faliure because of his also shows that the I/O data is latched
+ by the leading edge of the IOW signal and not by the trailing edge as I would have
+ expected.
+</BLOCKQUOTE>
+<B><U>The fix</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The easy way to fix the write problem would be to just delay the 6502 phase 2 signal,
+ this is done using a 150ns hybrid delay line removed from an old DRAM memory card.
+ Unfortunately this effects both the read and write timing and it would also mean the
+ delayed phase 2 is active after the processor has finished it's cycle.
+</BLOCKQUOTE>
+<CENTER>
+<IMG SRC="delay.jpg" BORDER=1 ALT="The 'dead bug' is a 150ns delay" HSPACE=8>
+<IMG SRC="150delay.jpg" BORDER=1 ALT="Delayed phase 2 top" HSPACE=8>
+</CENTER>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The solution is to only delay the leading ed

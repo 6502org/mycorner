@@ -1,0 +1,357 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>Enhanced 68k BASIC, graphics.bas</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 68k microprocessor
+ family.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="examples.html#link_1">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>graphics.bas. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+ Download <A HREF="graphics.zip">zipped <IMG SRC="../../zip_sm.png" BORDER=0
+ ALT="Download zip file"></A>.
+<P ALIGN=JUSTIFY>
+<U><B>Introduction</B></U>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This program demonstrates some of the graphics commands available in the EASy68K version
+ of EhBASIC. It isn't an exhastive demo but shows all the major commands.
+</BLOCKQUOTE>
+<U><B>graphics.bas</B></U>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+: EhBASIC 68k for EASy68K simulator graphics demo program		
+: (c) Lee Davison 2003/4 mailto:leeedavison@lycos.co.uk
+:
+: http://www.themotionstore.com/leeedavison/index.html
+: http://members.lycos.co.uk/leeedavison/index.html
+
+10 RECT $FFFFFF,0 : CLS : SIZE 1 : MODE 4
+
+15 DIM COLR(7)
+20 COLR(0)=$000000 : REM Black
+21 COLR(1)=$FF0000 : REM Blue
+22 COLR(2)=$0000FF : REM Red
+23 COLR(3)=$FF00FF : REM Magenta
+24 COLR(4)=$00FF00 : REM Green
+25 COLR(5)=$FFFF00 : REM Cyan
+26 COLR(6)=$00FFFF : REM Yellow
+27 COLR(7)=$FFFFFF : REM White
+28 DIM DMOD$(15)
+30 DMOD$(0)="0 False         "
+31 DMOD$(1)="1 True          "
+32 DMOD$(2)="2 Null          "
+33 DMOD$(3)="3 Inverse       "
+34 DMOD$(4)="4 Colour        "
+35 DMOD$(5)="5 Inverse colour"
+36 DMOD$(6)="6 Inverse OR    "
+37 DMOD$(7)="7 Inverse AND   "
+38 DMOD$(8)="8 OR Inverse    "
+39 DMOD$(9)="9 AND Inverse   "
+40 DMOD$(10)="10 OR           "
+41 DMOD$(11)="11 NOR          "
+42 DMOD$(12)="12 AND          "
+43 DMOD$(13)="13 NAND         "
+44 DMOD$(14)="14 EOR          "
+45 DMOD$(15)="15 ENOR         "
+
+50 ENT$=CHR$(13) : ESC$=CHR$(27)
+60 CURSOR 32,14 : PRINT "Graphics demo"
+70 CURSOR 30,15 : PRINT "Hit ENTER to start"
+80 P$="Hit ENTER to continue, ESC to exit - "
+90 DO : GET Q$ : LOOP UNTIL Q$=ENT$
+
+100 CLS
+110 PRINT P$;"CURSOR X,Y"
+120 DO
+125 Y=INT(RND(0)*31)+1
+130 XX=74+(Y&gt;9)
+135 X=INT(RND(0)*XX)
+140 CURSOR X,Y
+145 X$=STR$(X) : Y$=STR$(Y)
+150 GET Q$
+160 PRINT "*(";RIGHT$(X$,LEN(X$)-1);",";RIGHT$(Y$,LEN(Y$)-1);")";
+170 LOOP UNTIL Q$=ENT$ OR Q$=ESC$
+175 IF Q$=ESC$ THEN 9999
+
+180 CLS
+190 PRINT P$;"POINT X,Y,colour"
+200 DO : GET Q$
+210 X=INT(RND(0)*640)
+220 Y=INT(RND(0)*465)+15
+230 POINT X,Y,(RND(0)*$1000000)
+240 LOOP UNTIL Q$=ENT$ OR Q$=ESC$
+245 IF Q$=ESC$ THEN 9999
+
+250 CLS
+260 PRINT P$;"LINE X1,Y1,X2,Y2,colour"
+270 DO : GET Q$
+280 X1=INT(RND(0)*640)
+290 Y1=INT(RND(0)*465)+15
+300 X2=INT(RND(0)*640)
+310 Y2=INT(RND(0)*465)+15
+320 LINE X1,Y1,X2,Y2,(RND(0)*$1000000)
+330 LOOP UNTIL Q$=ENT$ OR Q$=ESC$
+335 IF Q$=ESC$ THEN 9999
+
+340 CLS
+350 PRINT P$;"LINE X,Y,colour"
+355 MOVE INT(RND(0)*640),INT(RND(0)*465)+15
+360 DO : GET Q$
+370 X=INT(RND(0)*640)
+380 Y=INT(RND(0)*465)+15
+390 LINE X,Y,(RND(0)*$1000000)
+400 LOOP UNTIL Q$=ENT$ OR Q$=ESC$
+405 IF Q$=ESC$ THEN 9999
+
+410 CLS
+420 PRINT P$;"RECT X1,Y1,X2,Y2,line_colour"
+430 DO : GET Q$
+440 X1=INT(RND(0)*640)
+450 Y1=INT(RND(0)*465)+15
+460 X2=INT(RND(0)*640)
+470 Y2=INT(RND(0)*465)+15
+480 RECT X1,Y1,X2,Y2,(RND(0)*$1000000)
+490 LOOP UNTIL Q$=ENT$ OR Q$=ESC$
+500 IF Q$=ESC$ THEN 9999
+
+505 RECT $FFFFFF,0
+510 CLS
+520 PRINT P$;"ELLIPSE X1,Y1,X2,Y2,line_colour"
+530 DO : GET Q$
+540 X1=INT(RND(0)*640)
+550 Y1=INT(RND(0)*465)+15
+560 X2=INT(RND(0)*640)
+570 Y2=INT(RND(0)*465)+15
+580 ELLIPSE X1,Y1,X2,Y2,(RND(0)*$1000000)
+590 LOOP UNTIL Q$=ENT$ OR Q$=ESC$
+600 IF Q$=ESC$ THEN 9999
+
+605 RECT $FFFFFF,0
+610 CLS
+620 PRINT P$;"RECTF X1,Y1,X2,Y2,0,fill_colour"
+630 DO : GET Q$
+640 X1=INT(RND(0)*640)
+650 Y1=INT(RND(0)*465)+15
+660 X2=INT(RND(0)*640)
+670 Y2=INT(RND(0)*465)+15
+680 RECTF X1,Y1,X2,Y2,$0,(RND(0)*$1000000)
+690 LOOP UNTIL Q$=ENT$ OR Q$=ESC$
+700 IF Q$=ESC$ THEN 9999
+
+705 RECT $FFFFFF,0
+710 CLS
+720 PRINT P$;"ELLIPSEF X1,Y1,X2,Y2,0,fill_colour"
+730 DO : GET Q$
+740 X1=INT(RND(0)*640)
+750 Y1=INT(RND(0)*465)+15
+760 X2=INT(RND(0)*640)
+770 Y2=INT(RND(0)*465)+15
+780 ELLIPSEF X1,Y1,X2,Y2,$0,(RND(0)*$1000000)
+790 LOOP UNTIL Q$=ENT$ OR Q$=ESC$
+800 IF Q$=ESC$ THEN 9999
+
+805 RECT $FFFFFF,0
+810 CLS
+820 PRINT P$;"SIZE S"
+830 S=255 : Y1=240 : Y2=Y1
+840 DO : GET Q$
+850 SIZE S:DEC S,S
+860 X1=320-S-40
+870 X2=320+S+40
+880 LINE X1,Y1,X2,Y2,(RND(0)*$1000000)
+890 LOOP UNTIL (Q$=ENT$ OR Q$=ESC$) OR (S&lt;0)
+895 IF Q$=ESC$ THEN 9999
+900 IF S&lt;0 THEN 830
+
+905 CLS : SIZE 1
+910 PRINT P$;"SPACE to step - MODE"
+915 M=0
+920 DO
+925 RECT $FFFFFF,0
+930 CURSOR LEN(P$)+21,0
+935 PRINT DMOD$(M)
+940 MODE 4
+941 RECTF 0,16,639,479,COLR(0),COLR(0)
+942 RECTF 80,16,159,479,COLR(1),COLR(1)
+943 RECTF 160,16,239,479,COLR(2),COLR(2)
+944 RECTF 240,16,319,479,COLR(3),COLR(3)
+945 RECTF 320,16,399,479,COLR(4),COLR(4)
+946 RECTF 400,16,479,479,COLR(5),COLR(5)
+947 RECTF 480,16,559,479,COLR(6),COLR(6)
+948 RECTF 560,16,639,479,COLR(7),COLR(7)
+949 MODE M
+950 RECTF 0,16,639,73,COLR(0),COLR(0)
+951 RECTF 0,74,639,131,COLR(1),COLR(1)
+952 RECTF 0,132,639,189,COLR(2),COLR(2)
+953 RECTF 0,190,639,247,COLR(3),COLR(3)
+954 RECTF 0,248,639,305,COLR(4),COLR(4)
+955 RECTF 0,306,639,363,COLR(5),COLR(5)
+956 RECTF 0,364,639,421,COLR(6),COLR(6)
+957 RECTF 0,422,639,479,COLR(7),COLR(7)
+960 DO : GET Q$ : LOOP WHILE Q$=""
+965 INC M
+970 LOOP UNTIL (Q$=ENT$) OR (Q$=ESC$) OR (M=16)
+975 IF Q$=ESC$ THEN 9999
+980 RECT $FFFFFF,0 : MODE 4
+985 IF M=16 THEN 905
+
+1100 CLS
+1110 PRINT P$;"Moire patterns"
+1120 DO
+1130 MODE 4 : RECTF 0,15,639,479,0,0 : MODE 14
+1140 X1=INT(RND(0)*560)+40
+1150 Y1=INT(RND(0)*400)+40
+1160 CO=RND(0)*$1000000
+1170 DX=1:DY=0
+1180 X2=0:Y2=16
+1190 DO : GET Q$
+1200 LINE X1,Y1,X2,Y2,CO
+1210 X2=X2+DX:Y2=Y2+DY
+1220 IF X2=640 THEN SWAP DX,DY:X2=639:Y2=17
+1230 IF Y2=480 THEN SWAP DX,DY:DX=-DX:Y2=479:X2=638
+1240 IF X2=-1 THEN SWAP DX,DY:X2=0:Y2=478
+1250 IF Y2=15 THEN Y2=0
+1260 LOOP WHILE (X2 OR Y2) AND Q$=""
+1270 LOOP UNTIL Q$=ENT$ OR Q$=ESC$
+1280 IF Q$=ESC$ THEN 9999
+1290 MODE 4
+
+9990 GOTO 100
+9999 RECT $FFFFFF,0 : SIZE1 : CLS : END
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 26th May, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=685fb0&adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="//secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

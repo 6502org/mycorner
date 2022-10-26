@@ -1,0 +1,234 @@
+<HTML><HEAD><TITLE>ATX power supply</TITLE>
+<META name="description" content="recycling old computers"></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>ATX power supply. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<TABLE><TR><TD>
+<A HREF="atx01.html" NAME=001><IMG SRC="atx01s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="A metal box .."></A>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ ATX power supplies, even dead ones, can have a whole host of recyclable parts hidden
+ within them. Some of the usefull parts are right there <A
+ HREF="../../linear/index.html#psu03">looking at you</A>.
+<P ALIGN=JUSTIFY>
+ Ok so we have a mains socket, a switch (sometimes not), a fan, a metal box and some
+ wires.
+<P ALIGN=JUSTIFY>
+ What else is there?
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx02.html" NAME=002><IMG SRC="atx02s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE=".. full of goodies!"></A>
+<B><U>Inside.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Look at all the parts! There's capacitors, heatsinks, a big iron cored choke for the
+ passive power factor corrrection, ferrite transformers (see how to recycle those <A
+ HREF="../ferrite/index.html">here</A>), transistors - both high and low voltage, diodes,
+ resistors and more.
+<P ALIGN=JUSTIFY>
+ Often what has gone wrong with the supply, and hence what is broken, can be seen from
+ just a visual inspection of the components.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx11.html" NAME=011><IMG SRC="atx11s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="The fuse"></A>
+<B><U>The fuse.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The fuse is usually a good indicator of what's gone wrong. If it's blown, like this one
+ is, it usually means bad things happened and there will be other blown parts.
+<P ALIGN=JUSTIFY>
+ If however the fuse is intact it can often mean that it is just a startup resistor or,
+ more likely, an electrolytic or two that has failed.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx13.html" NAME=013><IMG SRC="atx13s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="Electrolytic capacitors"></A>
+<B><U>Electrolytic capacitors.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ As long as there are electrolytic capacitors there will be dead switch mode power
+ supplies. Like most of the failures the two on the left are in the standby supply
+ circuit.
+<P ALIGN=JUSTIFY>
+ While it isn't overly obvious in the image, the two failed capacitors have bulging tops
+ much like two of the capacitors you can see <A
+ HREF="../../../gallery/broken/cap02.html">here</A>.
+<P ALIGN=JUSTIFY>
+ Visual identification like this is usually a dead giveaway of a failure but to test all
+ the electrolytic capacitors that still look good you really need an <A
+ HREF="../../../misc/esr/index.html">ESR meter</A>.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx03.html" NAME=003><IMG SRC="atx03s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="Thermistor"></A>
+<B><U>Thermistor.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ In any ATX power supply that has fan speed control you will usually find one of these
+ attached to one or other of the heatsinks. Most likely, as in this case, the low voltage
+ side diode heatsink.
+<P ALIGN=JUSTIFY>
+ This is a type of resistor whose value changes significantly with temperature and is
+ used in this case to monitor the heatsink temperature. When the temperature rises the
+ value of the thermistor changes and the fan speed control circuit makes the fan spin
+ faster.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx04.html" NAME=004><IMG SRC="atx04s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="Standby supply"></A>
+<B><U>Standby supply.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is the most likely part to fail in an ATX power supply because it is usually left
+ on all the time, even when the computer itself is off.
+<P ALIGN=JUSTIFY>
+ If you're lucky it will just be one or two electrolytic capacitors that need replacing
+ but often the first sign that anything is wrong is when the switching transistor fails
+ and blows the fuse.
+<P ALIGN=JUSTIFY>
+ That said you can often source enough parts from the rest of the power supply to get the
+ standby supply to work. While the standby output is only a single 5V rail there is often
+ also an internal 12V to 18V supply used to power the main switch mode controller circuit.
+ This can make a handy low wattage supply for other projects.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx05.html" NAME=005><IMG SRC="atx05s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="TL431"></A>
+<B><U>Adjustable shunt regulator.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There is usually at least one of these, sometimes with a different suffix such as LM431
+ or AZ431, in every switch mode power supply. It is the part that does the sensing for
+ the standby supply output voltage regulation in ATX power supplies.
+<P ALIGN=JUSTIFY>
+ This is a very usefull part which I've put to work in <A
+ HREF="../../linear/index.html#schem02">other projects</A>.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx06.html" NAME=006><IMG SRC="atx06s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="Optoisolator"></A>
+<B><U>Optoisolator.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Where there is feedback across the mains isolation barrier there is usually one or more
+ of these.
+<P ALIGN=JUSTIFY>
+ These are an LED and a phototransistor all in one opaque package. Current through the
+ LED makes it shine on the phototransistor, this allows current to pass from the
+ collector to the emitter just like any other bipolar transistor. The advantage here is
+ that the LED and phototransistor are electrically isolated and no current will flow from
+ one to the other even if there is many hundreds of volts difference in potential between
+ them.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx07.html" NAME=007><IMG SRC="atx07s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="Power transistors"></A>
+<B><U>Power transistors.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There are usually two high voltage power transistors that go to make up the main power
+ half bridge switch. These can be bipolar, as in this case, or MOSFET and are often rated
+ at 400V and 6A or more.
+<P ALIGN=JUSTIFY>
+ As it is usually the standby circuit that fails in ATX power supplies this pair of
+ transistors are often good and can be reused.
+<P ALIGN=JUSTIFY>
+ The standby supply transistor usually isn't rated for the same current as the main
+ supply transistors and may not even be a discrete transistor but a complete power
+ control IC in a TO220 case, such as a TOP222.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx16.html" NAME=016><IMG SRC="atx16s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="Small signal transistors"></A>
+<B><U>Small signal transistors.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ You will usually find a few small signal transistors like these.
+<P ALIGN=JUSTIFY>
+ The transistors pictured are quite common and are 2SC945 equivalents. They can have a
+ variety of prefixes before the 945 number but they are all the same 50V, 100mA, NPN
+ transistor with an Hfe of around 200, very usefull for lots of circuits.
+<P ALIGN=JUSTIFY>
+ There is often a couple of PNP small signal
+ devices as well, one in the fan control circuit and one in the 3.3V regulator circuit.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx08.html" NAME=008><IMG SRC="atx08s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="Saturable core inductor"></A>
+<B><U>Saturable core inductor.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is a special type of inductor that can be easily saturated and is often used in the
+ 3.3V regulator circuit.
+<P ALIGN=JUSTIFY>
+ This inductor, along with the 3.3V filter inductor, is used as a type of magnetic
+ amplifier to control the 3.3V rail voltage.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx09.html" NAME=009><IMG SRC="atx09s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="Power resistors"></A>
+<B><U>Power resistors.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There are usually a few of these large size, low value, high power resistors scattered
+ around the ATX circuit.
+<P ALIGN=JUSTIFY>
+ The ones here fulfill the minimum load requirement for the power supply and have been
+ built into every ATX supply that I've ever opened up. Even the cheapest of them that
+ omit every component they can get away with, <I>like the mains filters</I>, have them.
+<P ALIGN=JUSTIFY>
+ So if you're using an ATX power supply as a bench PSU then you don't need to add some
+ huge ass expensive power resistors just to make it play nice. If it doesn't work without
+ an external load then it is broken and needs fixing - or recycling.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx10.html" NAME=010><IMG SRC="atx10s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="Wires"></A>
+<B><U>Wires.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Who doesn't need wires, lots and lots of not very long and not very short wires.
+<P ALIGN=JUSTIFY>
+ Black wires, red wires, yellow wires, orange wires, blue, green, grey and purple wires.
+<P ALIGN=JUSTIFY>
+ Wires!
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx12.html" NAME=012><IMG SRC="atx12s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="NTC power thermistor"></A>
+<B><U>NTC power thermistor.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Like the thermistor that is used to control the fan this one also changes value with
+ temperature.
+<P ALIGN=JUSTIFY>
+ Unlike the fan control one though this one is designed to pass a relatively high current
+ and have a relatively low value, usually less than an ohm, at the operating current. The
+ relative change in resistance can be as much as 30:1 between its high, cold value and
+ its low, warm value.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx14.html" NAME=014><IMG SRC="atx14s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="Silicon diodes"></A>
+<B><U>Silicon diodes.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The diodes that make up the main bridge rectifier are usually high voltage silicon
+ diodes.
+<P ALIGN=JUSTIFY>
+ These are your standard diodes with the standard 0.7V or so forward drop.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="atx15.html" NAME=015><IMG SRC="atx15s.jpg" ALIGN=RIGHT WIDTH=320
+ HEIGHT=240 BORDER=1 HSPACE=8 TITLE="Schottky diodes"></A>
+<B><U>Schottky diodes.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The diodes on the output side of an ATX power supply are usually paired high current
+ schottky diodes in TO220, or bigger, packages.
+<P ALIGN=JUSTIFY>
+ There are often also a number of discrete schottky diodes used for the low current
+ negative rails two of which can be seen in the lower left of this image.
+<P ALIGN=JUSTIFY>
+ These will have a much lower forward drop than silicon diodes, about 0.3V or so.
+</BLOCKQUOTE>
+</TD></TR></TABLE>
+<BR CLEAR=ALL>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 18th August, 2012.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

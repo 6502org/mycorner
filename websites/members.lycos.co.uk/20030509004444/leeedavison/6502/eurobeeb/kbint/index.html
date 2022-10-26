@@ -1,0 +1,126 @@
+<HTML>
+<HEAD>
+<TITLE>
+  Euro Beeb - Keypad interface
+</TITLE>
+<META name="description" content="Content.">
+</HEAD>
+<BODY
+  BACKGROUND="../../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<B>
+<FONT SIZE=+1>BBC micro compatible - Keypad interface. </FONT></B><FONT SIZE=-1>By Lee Davison.</FONT>
+<BR clear=all>
+<A HREF="../index.html">Back</A>
+<P>
+<HR>
+<A HREF="kbint_l.jpg"><IMG SRC="kbintp_t.jpg" ALT="Eurobeeb keypad interface" ALIGN=RIGHT></A>
+<U><B>Introduction</B></U>
+<BLOCKQUOTE>
+ This is the CUBE keypad interface. This is a single board computer in it's own right. It
+ uses the Rockwell R6501AQ 'One-Chip Microprocessor' which, while very similar to the
+ 6502, boasts four 8 bit I/O ports, one of which can be latched, two 16 bit
+ counter/timers, 192 bytes of RAM, 32 of which can be battery backed, a UART and four edge
+ triggered interrupt inputs.<P>
+ It also has two extra instructions for setting and resetting individual memory or
+ register bits, and two extra branch instructions for testing the state of individual
+ bits in registers or memory.<P>
+ Another difference from the 6502 is the stack which is in page zero. This allows the
+ R6501 to run with no external RAM at all.<P>
+ The A version of the chip, which this is, runs at 2MHz (4MHz XTAL) and is in the
+ unusual Quad in line package.
+ The board contains the following...
+<BLOCKQUOTE>
+<LI> R6501AQ CPU
+<LI> 16k EPROM
+<LI> 2 x relays
+<LI> 2 x RS422/485 drivers
+<LI> AMPAL16L8
+<LI> Misc 74 and 4000 series logic
+<LI> 7 x 2N7000 MOSFETs
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<U><B>EPROM and PROMs</B></U>
+<BLOCKQUOTE>
+ I've done a dump of the 27128 16k EPROM that contains the interface code. You can
+ download it as either a binary dump or Motorola S record.
+<BLOCKQUOTE>
+<LI>Download the interface EPROM as a zipped <A HREF="keypad_r3_hex.zip">Motorola
+ S record</A> file.
+<LI>Download the interface EPROM as a zipped <A HREF="keypad_r3_bin.zip">binary dump</A>.
+</BLOCKQUOTE>
+ There is also an AMPAL16L8. You can download the jdec fuse file for it here.
+<BLOCKQUOTE>
+<LI>Download IC7 as a <A HREF="ms10_1100_ic7.jed">jdec</A> fuse file.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<U><B>Assembly code.</B></U>
+<BLOCKQUOTE>
+ I've completed a commented assembly listing for the EPROM contents above. The 16k byte
+ EPROM is almost empty, only 534 bytes being used.<P>
+ Read it as html <A HREF="keypad_r3.html">here</A>, or download it as a zipped file
+ <A HREF="keypad_r3_asm.zip">here<IMG SRC="../../../zip_sm.png" ALT="[Download]"
+ border=0></A>.
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 6th September, 2002.</FONT>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.3 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3ebaf9fc&adpref="></script>

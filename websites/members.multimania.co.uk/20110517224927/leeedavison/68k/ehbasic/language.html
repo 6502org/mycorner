@@ -1,0 +1,1379 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish6bf2b903{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if IE]>
+<style>
+#catfish6bf2b903{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip6bf2b903{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad6bf2b903"></div>
+<HTML><HEAD><TITLE>Enhanced 68k BASIC, language reference</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 680x0
+ family of microprocessors."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_1"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Language reference. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Numbers</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Floating numbers may range from zero to plus or minus 1.70141173x10^38 and will, when
+ assigned as variables, have an accuracy of just under 1 part in 1.68 x 10^7. During
+ calculations the mantissa is extended to 32 bits with a corresponding increase in
+ accuracy.
+<P ALIGN=JUSTIFY>
+ Numbers can be preceded by a sign, + or -, and are written as a string of numeric digits
+ with or without a decimal point and can also have a positive or negative exponent as a
+ power of 10 multiplier e.g.
+<P ALIGN=JUSTIFY>
+<CENTER>
+<TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+<TR>
+<TD>-142</TD><TD>96.3</TD><TD>0.25</TD><TD>-136.42E-3</TD><TD>-1.3E7</TD><TD>1</TD> 
+</TR>
+</TABLE>
+</CENTER>
+<P ALIGN=JUSTIFY>
+ .. are all valid numbers.
+<P ALIGN=JUSTIFY>
+ Integer numbers may range from -2147483648 to 4294967295 but numbers above 2147483647
+ will 'wrap round' to their equivalent 2s complement negative value.
+
+ Integers can also be expressed in either hexadecimal or binary. Hexadecimal numbers
+ should be preceded by <B>$</B> and binary numbers preceded by <B>%</B>, e.g.
+<P ALIGN=JUSTIFY>
+<CENTER>
+<TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+<TR>
+<TD>%101010</TD><TD>-$FFE0</TD><TD>$A0127BD</TD>
+<TD>-%10011001</TD><TD>%00001010</TD><TD>$0A</TD> 
+</TR>
+</TABLE>
+</CENTER>
+<P ALIGN=JUSTIFY>
+ .. again are all valid numbers.
+</BLOCKQUOTE>
+<B><U>Strings</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Strings are any string of printable characters enclosed in a pair of quotation marks.
+ Non printing characters may be converted to single character strings using the
+ <A HREF="#CHR"><B><TT>CHR$()</TT></B></A> functions.
+<P ALIGN=JUSTIFY>
+<CENTER>
+<TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+<TR>
+<TD>"Hello world"</TD><TD>"-136.42E-3"</TD>
+<TD>"+----+----+"</TD><TD>"[Y/n]"</TD><TD>"Y"</TD>
+</TR>
+</TABLE>
+</CENTER>
+<P ALIGN=JUSTIFY>
+ Are all valid strings.
+</BLOCKQUOTE>
+<B><U>Variables</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Variables of floating point, integer and string type are available. String variables
+ are distinguished by the <B>$</B> suffix, integer variables are distinguished by the
+ <B>&</B> suffix. As well as simple variables arrays are also available and these may
+ be floating point, integer or string and are distinguished by their bracketed indices
+ after the variable name.
+<P ALIGN=JUSTIFY>
+ Variable names may be any length but only the first four name characters are significant.
+ The first character must be one of "A" to "Z" or "a" to "z", any other characters may
+ also include numbers. E.g.
+<P ALIGN=JUSTIFY>
+<CENTER>
+<TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+<TR>
+<TD>A</TD><TD>A$</TD><TD>NAME$</TD><TD>x2LIM</TD> 
+<TD>y&</TD><TD>colour</TD><TD>s1</TD><TD>s2&</TD> 
+</TR>
+</TABLE>
+</CENTER>
+<P ALIGN=JUSTIFY>
+ Variable names are case sensitive so AB, Ab, aB and ab are all separate variables.
+<P ALIGN=JUSTIFY>
+ Variable names may not contain BASIC keywords. Keywords are only valid in upper
+ case so '<B><TT>PRINTER</TT></B>' is not allowed (it would be interpreted as
+ <B><TT>PRINT ER</TT></B>) but 'printer' is.
+<P ALIGN=JUSTIFY>
+ Note that spaces in variable names are ignored so '<B><TT>print e r</TT></B>',
+ '<B><TT>print er</TT></B>' and '<B><TT>pri nter</TT></B>' will all be interpreted the
+ same way.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B><U>BASIC Keywords</B></U>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Here is a list of BASIC keywords. They are only valid when entered in upper case as
+ shown and spaces may not be included in them. So <B><TT>GOTO</TT></B> is valid but
+ <B><TT>GO TO</TT></B> is not.
+  <P ALIGN=JUSTIFY>
+  <CENTER>
+    <TABLE WIDTH=85% CELLPADDING=3 CELLSPACING=0 BORDER=0>
+    <TR>
+      <TD><A HREF="#ABS"><TT>ABS</TT></A></TD>
+      <TD><A HREF="#AND"><TT>AND</TT></A></TD>
+      <TD><A HREF="#ASC"><TT>ASC</TT></A></TD>
+      <TD><A HREF="#ATN"><TT>ATN</TT></A></TD>
+      <TD><A HREF="#BIN"><TT>BIN$</TT></A></TD>
+      <TD><A HREF="#BITCLR"><TT>BITCLR</TT></A></TD>
+      <TD><A HREF="#BITSET"><TT>BITSET</TT></A></TD>
+      <TD><A HREF="#BITTST"><TT>BITTST</TT></A></TD>
+    </TR>
+    <TR>
+      <TD><A HREF="#CALL"><TT>CALL</TT></A></TD>
+      <TD><A HREF="#CHR"><TT>CHR$</TT></A></TD>
+      <TD><A HREF="#CLEAR"><TT>CLEAR</TT></A></TD>
+      <TD><A HREF="#CONT"><TT>CONT</TT></A></TD>
+      <TD><A HREF="#COS"><TT>COS</TT></A></TD>
+      <TD><A HREF="#DATA"><TT>DATA</TT></A></TD>
+      <TD><A HREF="#DEC"><TT>DEC</TT></A></TD>
+      <TD><A HREF="#DEEK"><TT>DEEK</TT></A></TD>
+    </TR>
+    <TR>
+      <TD><A HREF="#DEF"><TT>DEF</TT></A></TD>
+      <TD><A HREF="#DIM"><TT>DIM</TT></A></TD>
+      <TD><A HREF="#DO"><TT>DO</TT></A></TD>
+      <TD><A HREF="#DOKE"><TT>DOKE</TT></A></TD>
+      <TD><A HREF="#ELSE"><TT>ELSE</TT></A></TD>
+      <TD><A HREF="#END"><TT>END</TT></A></TD>
+      <TD><A HREF="#AND"><TT>EOR</TT></A></TD>
+      <TD><A HREF="#EXP"><TT>EXP</TT></A></TD>
+    </TR>
+    <TR>
+      <TD><A HREF="#FN"><TT>FN</TT></A></TD>
+      <TD><A HREF="#FOR"><TT>FOR</TT></A></TD>
+      <TD><A HREF="#FRE"><TT>FRE</TT></A></TD>
+      <TD><A HREF="#GET"><TT>GET</TT></A></TD>
+      <TD><A HREF="#GOSUB"><TT>GOSUB</TT></A></TD>
+      <TD><A HREF="#GOTO"><TT>GOTO</TT></A></TD>
+      <TD><A HREF="#HEX"><TT>HEX$</TT></A></TD>
+      <TD><A HREF="#IF"><TT>IF</TT></A></TD>
+    </TR>
+    <TR>
+      <TD><A HREF="#INC"><TT>INC</TT></A></TD>
+      <TD><A HREF="#INPUT"><TT>INPUT</TT></A></TD>
+      <TD><A HREF="#INT"><TT>INT</TT></A></TD>
+      <TD><A HREF="#LCASE"><TT>LCASE$</TT></A></TD>
+      <TD><A HREF="#LEEK"><TT>LEEK</TT></A></TD>
+      <TD><A HREF="#LEFT"><TT>LEFT$</TT></A></TD>
+      <TD><A HREF="#LEN"><TT>LEN</TT></A></TD>
+      <TD><A HREF="#LET"><TT>LET</TT></A></TD>
+    </TR>
+    <TR>
+      <TD><A HREF="#LIST"><TT>LIST</TT></A></TD>
+      <TD><A HREF="#LOAD"><TT>LOAD</TT></A></TD>
+      <TD><A HREF="#LOG"><TT>LOG</TT></A></TD>
+      <TD><A HREF="#LOKE"><TT>LOKE</TT></A></TD>
+      <TD><A HREF="#LOOP"><TT>LOOP</TT></A></TD>
+      <TD><A HREF="#MAX"><TT>MAX</TT></A></TD>
+      <TD><A HREF="#MID"><TT>MID$</TT></A></TD>
+      <TD><A HREF="#MIN"><TT>MIN</TT></A></TD>
+    </TR>
+    <TR>
+      <TD><A HREF="#NEW"><TT>NEW</TT></A></TD>
+      <TD><A HREF="#NEXT"><TT>NEXT</TT></A></TD>
+      <TD><A HREF="#NOT"><TT>NOT</TT></A></TD>
+      <TD><A HREF="#NULL"><TT>NULL</TT></A></TD>
+      <TD><A HREF="#ON"><TT>ON</TT></A></TD>
+      <TD><A HREF="#AND"><TT>OR</TT></A></TD>
+      <TD><A HREF="#PEEK"><TT>PEEK</TT></A></TD>
+      <TD><A HREF="#PI"><TT>PI</TT></A></TD>
+    </TR>
+    <TR>
+      <TD><A HREF="#POKE"><TT>POKE</TT></A></TD>
+      <TD><A HREF="#POS"><TT>POS</TT></A></TD>
+      <TD><A HREF="#PRINT"><TT>PRINT</TT></A></TD>
+      <TD><A HREF="#RAM"><TT>RAMBASE</TT></A></TD>
+      <TD><A HREF="#READ"><TT>READ</TT></A></TD>
+      <TD><A HREF="#REM"><TT>REM</TT></A></TD>
+      <TD><A HREF="#RESTORE"><TT>RESTORE</TT></A></TD>
+      <TD><A HREF="#RETURN"><TT>RETURN</TT></A></TD>
+    </TR>
+    <TR>
+      <TD><A HREF="#RIGHT"><TT>RIGHT$</TT></A></TD>
+      <TD><A HREF="#RND"><TT>RND</TT></A></TD>
+      <TD><A HREF="#RUN"><TT>RUN</TT></A></TD>
+      <TD><A HREF="#SADD"><TT>SADD</TT></A></TD>
+      <TD><A HREF="#SAVE"><TT>SAVE</TT></A></TD>
+      <TD><A HREF="#SIN"><TT>SIN</TT></A></TD>
+      <TD><A HREF="#SGN"><TT>SGN</TT></A></TD>
+      <TD><A HREF="#SPC"><TT>SPC(</TT></A></TD>
+    </TR>
+    <TR>
+      <TD><A HREF="#SQR"><TT>SQR</TT></A></TD>
+      <TD><A HREF="#STEP"><TT>STEP</TT></A></TD>
+      <TD><A HREF="#STOP"><TT>STOP</TT></A></TD>
+      <TD><A HREF="#STR"><TT>STR$</TT></A></TD>
+      <TD><A HREF="#SWAP"><TT>SWAP</TT></A></TD>
+      <TD><A HREF="#TAB"><TT>TAB(</TT></A></TD>
+      <TD><A HREF="#TAN"><TT>TAN</TT></A></TD>
+      <TD><A HREF="#THEN"><TT>THEN</TT></A></TD>
+    </TR>
+    <TR>
+      <TD><A HREF="#TO"><TT>TO</TT></A></TD>
+      <TD><A HREF="#TWOPI"><TT>TWOPI</TT></A></TD>
+      <TD><A HREF="#UCASE"><TT>UCASE$</TT></A></TD>
+      <TD><A HREF="#UNTIL"><TT>UNTIL</TT></A></TD>
+      <TD><A HREF="#USING"><TT>USING$</TT></A></TD>
+      <TD><A HREF="#USR"><TT>USR</TT></A></TD>
+      <TD><A HREF="#VAL"><TT>VAL</TT></A></TD>
+      <TD><A HREF="#VARPTR"><TT>VARPTR</TT></A></TD>
+    </TR>
+    <TR>
+      <TD><A HREF="#WAIT"><TT>WAIT</TT></A></TD>
+      <TD><A HREF="#WHILE"><TT>WHILE</TT></A></TD>
+      <TD><A HREF="#WIDTH"><TT>WIDTH</TT></A></TD>
+      <TD><A HREF="#AND"><TT>+</TT></A></TD>
+      <TD><A HREF="#AND"><TT>-</TT></A></TD>
+      <TD><A HREF="#AND"><TT>*</TT></A></TD>
+      <TD><A HREF="#AND"><TT>/</TT></A></TD>
+      <TD><A HREF="#AND"><TT>^</TT></A></TD>
+    </TR>
+    <TR>
+      <TD><A HREF="#AND"><TT>&lt;&lt;</TT></A></TD>
+      <TD><A HREF="#AND"><TT>&gt;</TT></A></TD>
+      <TD><A HREF="#AND"><TT>=</TT></A></TD>
+      <TD><A HREF="#AND"><TT>&gt;&gt;</TT></A></TD>
+      <TD><A HREF="#AND"><TT>&lt;</TT></A></TD>
+    </TR>
+    </TABLE>
+  </CENTER>
+ </BLOCKQUOTE>
+<UL>
+<LI>Anything in upper case is part of the command/function structure and must be present
+<LI>Anything in lower case enclosed in &lt; &gt; is to be supplied by the user
+<LI>Anything enclosed in [ ] is optional
+<LI>Anything enclosed in { } and separated by | characters are multi choice options
+<LI>Any items followed by an ellipsis, ... , may be repeated any number of times
+<LI>Any punctuation and symbols, except those above, are part of the structure and must
+    be included
+</UL>
+
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0>
+<TR><TD>var</TD><TD>is a valid variable name</TD></TR>
+<TR><TD>var$</TD><TD>is a valid string variable name</TD></TR>
+<TR><TD>var()</TD><TD>is a valid array name</TD></TR>
+<TR><TD>var$()</TD><TD>is a valid string array name</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD>expression</TD><TD>is any expression returning a result</TD></TR>
+<TR><TD>expression$&nbsp;&nbsp;&nbsp;</TD>
+<TD>is any expression returning a string result</TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD>addr</TD><TD>is an integer in the range -2147483648 to 4294967295 that will be
+ wrapped to the range 0 to 4294967295</TD></TR>
+<TR><TD>b</TD><TD>is a byte value from 0 to 255</TD></TR>
+<TR><TD>n</TD><TD>is a positive integer in the range 0 to 2147483647</TD></TR>
+<TR><TD>w</TD><TD>is an integer in the range -32768 to 32767</TD></TR>
+<TR><TD>uw</TD><TD>is a positive integer in the range 0 to 65535</TD></TR>
+<TR><TD>l</TD><TD>is an integer in the range -2147483648 to 4294967295 that will be
+ wrapped to the range -2147483648 to 2147483647</TD></TR>
+<TR><TD>i</TD><TD>is a +ve integer value</TD></TR>
+<TR><TD>r</TD><TD>is real number</TD></TR>
+<TR><TD>+r</TD><TD>is a +ve value real number (0 is considered +ve)</TD></TR>
+<TR><TD>$</TD><TD>is a string literal</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B><U>BASIC Commands</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+
+<A name=ELSE></A>
+<FONT SIZE=+1><B><TT>ELSE</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ See <A HREF="#IF"><B><TT>IF</TT></B></A>.
+</BLOCKQUOTE>
+
+<A name=END></A>
+<FONT SIZE=+1><B><TT>END</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Terminates program execution and returns control to the command line (direct mode).
+ <B><TT>END</TT></B> may be placed anywhere in a program and any number, including none,
+ is allowed.
+<P ALIGN=JUSTIFY>
+ Note. <A HREF="#CONT"><B><TT>CONT</TT></B></A> may be used after and <B><TT>END</TT></B>
+ to resume execution from the next statement.
+</BLOCKQUOTE>
+
+<A name=FOR></A>
+<FONT SIZE=+1><B><TT>FOR &lt;var[&]&gt; = &lt;expression&gt; TO &lt;expression&gt;
+ [STEP expression]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Assigns a variable to a loop counter and optionally sets the step size. If
+ <B><TT>STEP</TT></B> expression is omitted then a default step size of +1 will be
+ assumed.
+<P ALIGN=JUSTIFY>
+ Note that <B><TT>&lt;var[&]&gt;</TT></B> may only be a plain variable. Trying to use an
+ array element as <B><TT>&lt;var[&]&gt;</TT></B> will result in a type mismatch error.
+</BLOCKQUOTE>
+
+<A name=NEXT></A>
+<FONT SIZE=+1><B><TT>NEXT [var[,var]...]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Increments a loop variable and checks for the terminating condition. If the terminating
+ condition has been reached then execution continues with the next command, else
+ execution continues with the command after the <A HREF="#FOR"><B><TT>FOR</TT></B></A>
+ assignment.
+</BLOCKQUOTE>
+
+<A name=DATA></A>
+<FONT SIZE=+1><B><TT>DATA [{r|$}[,{r|$}]...]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Defines a constant or series of constants. Real constants are held as strings in program
+ memory and can be read as numeric values or string values. String constants may contain
+ spaces but if they need to contain commas then they must be enclosed in quotes.
+</BLOCKQUOTE>
+
+<A name=INPUT></A>
+<FONT SIZE=+1><B><TT>INPUT ["prompt$";] &lt;var&gt;[,var]...</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Get a variable, or list of variables from the input stream. A question mark,
+ "<B><TT>?</TT></B>", is always output (after the prompt string if there is one) and if
+ further input is required i.e. there are more variables in the list than the user
+ entered values, then a double question mark, "<B><TT>??</TT></B>", will be output until
+ enough values have been entered.
+<P ALIGN=JUSTIFY>
+ Note that the prompt string, <B><TT>prompt$</TT></B>, must always be a literal string
+ enclosed in quotes and can not be a string variable or string expression.
+<P ALIGN=JUSTIFY>
+ There are two possible messages that may appear during the execution of an
+ <B><TT>INPUT</TT></B> statement:
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ <P ALIGN=JUSTIFY>
+ <I><B>Extra ignored</B></I>
+ <BLOCKQUOTE><P ALIGN=JUSTIFY>
+  The user has attempted to enter more values than are required. Program execution will
+  continue but the extraneous data entered has been discarded.
+ </BLOCKQUOTE>
+ <P ALIGN=JUSTIFY>
+ <I><B>Redo from start</B></I>
+ <BLOCKQUOTE><P ALIGN=JUSTIFY>
+  The user has attempted to enter a string where a number was expected. The reverse never
+  causes an error as numbers are also valid strings.
+ </BLOCKQUOTE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+
+<A name=DIM></A>
+<FONT SIZE=+1><B><TT>DIM
+ &lt;var[{$|&}](i1[,i2[,i3]])&gt;[,var[{$|&}](i1[,i2[,i3]])...]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Dimension arrays. Creates arrays of either string, integer or floating variables. The
+ arrays can have one, two or three dimensions. The lower limit is always zero and the
+ upper limit is i. If you do not dimension an array then when you first try to access it
+ an 'Undimensioned array' error will be generated.
+ <P ALIGN=JUSTIFY>
+ The array created by the <B><TT>DIM</TT></B> statement will have all it's elements
+ zeroed on creation.
+</BLOCKQUOTE>
+
+<A name=READ></A>
+<FONT SIZE=+1><B><TT>READ &lt;var&gt;[,var...]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Reads values from <A HREF="#DATA"><B><TT>DATA</TT></B></A> statements and assigns them
+ to variables. Trying to read a string literal into a numeric variable will cause a
+ syntax error.
+</BLOCKQUOTE>
+
+<A name=LET></A>
+<FONT SIZE=+1><B><TT>LET &lt;var&gt; = &lt;expression&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Assign the value of expression to var. Both var and expression bust be of the same basic
+ type, i.e. both numeric or both string.<BR><BR>
+ The <B><TT>LET</TT></B> command word is optional and just <B><TT>&lt;var&gt; =
+ &lt;expression&gt;</TT></B> will give exactly the same result. It is only maintained for
+ historical reasons.
+</BLOCKQUOTE>
+
+<A name=DEC></A>
+<FONT SIZE=+1><B><TT>DEC &lt;var&gt;[,var...]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Decrement variables. The variables listed will have their values decremented by one.
+ Trying to decrement a string variable will give a type mismatch error.
+ <B><TT>DEC A</TT></B> is much faster than doing <B><TT>A=A-1</TT></B> and
+ <B><TT>DEC A,A</TT></B> is slightly faster than doing <B><TT>A=A-2</TT></B>.
+</BLOCKQUOTE>
+
+<A name=SWAP></A>
+<FONT SIZE=+1><B><TT>SWAP &lt;var[{$|&}]&gt;,&lt;var[{$|&}]&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Swap two variables. The variables listed will have their values exchanged. Both must be
+ of the same type, floating, integer or string, and either, or both, may be array
+ elements. Trying to swap variables of different types will give a type mismatch error.
+</BLOCKQUOTE>
+
+<A name=GOTO></A>
+<FONT SIZE=+1><B><TT>GOTO &lt;n&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Continue execution from line number n
+</BLOCKQUOTE>
+
+<A name=RUN></A>
+<FONT SIZE=+1><B><TT>RUN [n]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Begins execution of the program currently in memory at the lowest numbered line.
+ <B><TT>RUN</TT></B> erases all variables and functions, resets <A
+ HREF="#FOR"><B><TT>FOR</TT></B></A> .. <A HREF="#NEXT"><B><TT>NEXT</TT></B></A>, <A
+ HREF="#GOSUB"><B><TT>GOSUB</TT></B></A> .. <A HREF="#RETURN"><B><TT>RETURN</TT></B></A>
+ and <A HREF="#DO"><B><TT>DO</TT></B></A> .. <A HREF="#LOOP"><B><TT>LOOP</TT></B></A>
+ states and sets the data pointer to the program start.
+<P ALIGN=JUSTIFY>
+ If n is specified then programme execution will start at the specified line number.
+</BLOCKQUOTE>
+
+<A name=IF></A>
+<FONT SIZE=+1><B><TT>IF &lt;expression&gt;
+ {GOTO&lt;n&gt;|THEN&lt;{n|statement}&gt;}[ELSE&lt;{n|statement}&gt;]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Evaluates expression. If the result of expression is non zero then the <A
+ HREF="#GOTO"><B><TT>GOTO</TT></B></A> or the statement after the <B><TT>THEN</TT></B>
+ is executed. If the result of expression is zero then execution continues with the next
+ line.
+<P ALIGN=JUSTIFY>
+ If the result of expression is zero and the optional <B><TT>ELSE</TT></B> clause is
+ included then the statement after the <B><TT>ELSE</TT></B> is executed.
+<P ALIGN=JUSTIFY>
+ <B><TT>IF .. THEN .. ELSE ..</TT></B> behaves as a single statement so in the line ..
+<BLOCKQUOTE><B><TT>
+ IF &lt;expression&gt; THEN &lt;statement one&gt; ELSE &lt;statement two&gt; :
+ &lt;statement three&gt;</TT></B></BLOCKQUOTE>
+ .. statement three will always be executed regardless of the outcome of the
+ <B><TT>IF</TT></B> as long as the executed statement was not a <A
+ HREF="#GOTO"><B><TT>GOTO</TT></B></A> or a <A HREF="#RETURN"><B><TT>RETURN</TT></B></A>.
+</BLOCKQUOTE>
+
+
+<A name=RESTORE></A>
+<FONT SIZE=+1><B><TT>RESTORE [n]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Reset the <A HREF="#DATA"><B><TT>DATA</TT></B></A> pointer. If n is specified then the
+ pointer will be reset to the beginning of line n else it will be reset to the start of
+ the program. If n is specified but doesn't exist an error will be generated.
+</BLOCKQUOTE>
+
+<A name=GOSUB></A>
+<FONT SIZE=+1><B><TT>GOSUB &lt;n&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Call a subroutine at line n. Program execution is diverted to line n but the calling
+ point is remembered. Upon encountering a <A HREF="#RETURN"><B><TT>RETURN</TT></B></A>
+ statement program execution will continue with the next statement, or line if the
+ <B><TT>GOSUB</TT></B> was last statement on a line, after the <B><TT>GOSUB</TT></B>.
+</BLOCKQUOTE>
+
+<A name=RETURN></A>
+<FONT SIZE=+1><B><TT>RETURN</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns program execution to the next statement, or line, after the last <A
+ HREF="#GOSUB"><B><TT>GOSUB</TT></B></A> encountered.
+</BLOCKQUOTE>
+
+<A name=REM></A>
+<FONT SIZE=+1><B><TT>REM</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Everything following this statement on this program line will be ignored, even colons.
+</BLOCKQUOTE>
+
+<A name=STOP></A>
+<FONT SIZE=+1><B><TT>STOP</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Halts program execution and generates a "Break in line n" message where n is the line in
+ which the <B><TT>STOP</TT></B> was encountered.
+</BLOCKQUOTE>
+
+<A name=ON></A>
+<FONT SIZE=+1><B><TT>ON &lt;expression&gt; {GOTO|GOSUB} &lt;n&gt;[,n]...</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The integer value of expression is calculated and then the nth number after the <A
+ HREF="#GOTO"><B><TT>GOTO</TT></B></A> or <A HREF="#GOSUB"><B><TT>GOSUB</TT></B></A> is
+ taken (where n is the result of
+ expression). If the result of <B><TT>&lt;expression&gt;</TT></B> is zero, or greater
+ than the number of destination line numbers, then execution will continue with the
+ instruction following this one.
+<P ALIGN=JUSTIFY>
+ Note that valid results for expression range only from zero to 255. Any result
+ outside this range will cause a 'Function call' error.
+</BLOCKQUOTE>
+
+<A name=NULL></A>
+<FONT SIZE=+1><B><TT>NULL &lt;n&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sets the number of null characters printed by BASIC after every carriage  return. n may
+ be specified in the range 0 to 255.
+</BLOCKQUOTE> 
+
+<A name=INC></A>
+<FONT SIZE=+1><B><TT>INC &lt;var&gt;[,var]...</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Increment variables. The variables listed will have their values incremented by one.
+ Trying to increment a string variable will give a type mismatch error.
+ <B><TT>INC A</TT></B> is much faster than doing <B><TT>A=A+1</TT></B> and
+ <B><TT>INC A,A</TT></B> is slightly faster than doing <B><TT>A=A+2</TT></B>.
+</BLOCKQUOTE>
+
+<A name=WAIT></A>
+<FONT SIZE=+1><B><TT>WAIT &lt;addr,b1&gt;[,b2]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Program execution will wait at this point until the value of the location addr exclusive
+ ORed with b2 then ANDed with b1 is non zero. If b2 is not defined then it is assumed to
+ be zero. Note b1 and b2 must both be byte values.
+</BLOCKQUOTE>
+
+<A name=LOAD></A>
+<FONT SIZE=+1><B><TT>LOAD [&lt;expression$&gt;]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Usually does nothing but does it via a vector in RAM so is easily patched.
+<P ALIGN=JUSTIFY>
+ For the EASy68k simulator this attempts to open and load the ASCII file
+ <B><TT>&lt;expression$&gt;</TT></B>. If no file is given then it will open the EASy68K
+ file requester and attempt to open and load any file returned by that.
+<P ALIGN=JUSTIFY>
+ During loading you will see the program as it is being read from the file and the
+ result of any immediate commands embedded in the file. Any program lines in the file
+ will be merged with any existing lines but having <A HREF="#NEW"><B><TT>NEW</TT></B></A>
+ before any program lines will erase all existing program lines first.
+<P ALIGN=JUSTIFY>
+ Binary loading is no longer supported.
+</BLOCKQUOTE>
+
+<A name=SAVE></A>
+<FONT SIZE=+1><B><TT>SAVE [&lt;expression$&gt;][,[n1][-n2]]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Usually does nothing but does it via a vector in RAM so is easily patched.
+<P ALIGN=JUSTIFY>
+ For the EASy68k simulator this attempts to open and save the program memory to the file
+ expression$ as ASCII listing. If no file is given then it will open the EASy68K file
+ requester and attempt to open and save the program memory to the file returned by that.
+<P ALIGN=JUSTIFY>
+ The range of the save can be specified as with the <A
+ HREF="#LIST"><B><TT>LIST</TT></B></A> command.
+<P ALIGN=JUSTIFY>
+ Binary saving is no longer supported.
+</BLOCKQUOTE>
+
+<A name=DEF></A>
+<FONT SIZE=+1><B><TT>DEF FN &lt;name[{$|&}]&gt;(&lt;var[{$|&}]&gt;) =
+ &lt;statement&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Defines &lt;statement&gt; as function &lt;name&gt;. &lt;name&gt; can be any valid
+ variable name, of any type, of one or more characters. &lt;var&gt; can be any simple
+ variable (i.e. not an array element), again of any type, and is used to pass the
+ function argument into the function.
+<P ALIGN=JUSTIFY>
+ Note that the value of &lt;var&gt; will be unchanged by it's use in the
+ function so &lt;var&gt; should be considered to be a local variable name.
+</BLOCKQUOTE>
+
+<A name=POKE></A>
+<FONT SIZE=+1><B><TT>POKE &lt;addr,b&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Writes the byte value b into the address addr.
+</BLOCKQUOTE>
+
+<A name=DOKE></A>
+<FONT SIZE=+1><B><TT>DOKE &lt;addr,w&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Writes the word value w into the addresses addr and addr+1, the upper byte of w is in
+ addr.
+<P ALIGN=JUSTIFY>
+ <B>Note:</B> addr must be an even integer or an 'address' error will be generated.
+</BLOCKQUOTE>
+
+<A name=LOKE></A>
+<FONT SIZE=+1><B><TT>LOKE &lt;addr,l&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Writes the longword value l into the addresses addr, addr+1, addr+2, and addr+3. The
+ most significant byte of l is in addr.
+<P ALIGN=JUSTIFY>
+ <B>Note:</B> addr must be an even integer or an 'address' error will be generated.
+</BLOCKQUOTE>
+
+<A name=CALL></A>
+<FONT SIZE=+1><B><TT>CALL &lt;addr&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ <TT>CALL</TT>s a user subroutine at address addr. No values are passed or returned and
+ so this is much faster than using <A HREF="#USR"><B><TT>USR()</TT></B></A>.
+</BLOCKQUOTE>
+
+<A name=DO></A>
+<FONT SIZE=+1><B><TT>DO</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Marks the beginning of a <B><TT>DO .. LOOP</TT></B> loop (see <A
+ HREF="#LOOP"><B><TT>LOOP</TT></B></A>). No parameters. This command can be nested like
+ <A HREF="#FOR"><B><TT>FOR</TT></B></A> .. <A HREF="#NEXT"><B><TT>NEXT</TT></B></A> or
+ <A HREF="#GOSUB"><B><TT>GOSUB</TT></B></A> .. <A
+ HREF="#RETURN"><B><TT>RETURN</TT></B></A>.
+</BLOCKQUOTE>
+
+<A name=LOOP></A>
+<FONT SIZE=+1><B><TT>LOOP [{UNTIL|WHILE} expression]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Marks the end of a <B><TT>DO .. LOOP</TT></B> loop. There are three possible variations
+ on the <B><TT>LOOP</TT></B> command ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ <P ALIGN=JUSTIFY>
+ <FONT SIZE=+1><B><TT>LOOP</TT></B></FONT>
+ <BLOCKQUOTE><P ALIGN=JUSTIFY>
+  Repeats forever. With just this command control is passed back to the next command
+  (line) after the <TT>DO</TT>.
+ </BLOCKQUOTE>
+ <P ALIGN=JUSTIFY>
+ <FONT SIZE=+1><B><TT>LOOP UNTIL expression</TT></B></FONT>
+ <BLOCKQUOTE><P ALIGN=JUSTIFY>
+  This loop will repeat until the value of expression is non zero. Once that occurs
+  execution will continue with the next command, or line, after this one.
+ </BLOCKQUOTE>
+ <P ALIGN=JUSTIFY>
+ <FONT SIZE=+1><B><TT>LOOP WHILE expression</TT></B></FONT>
+ <BLOCKQUOTE><P ALIGN=JUSTIFY>
+  This loop will repeat while the value of expression is non zero. Once expression is
+  zero execution will continue with the next command, or line, after this one.
+ </BLOCKQUOTE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+
+<A name=PRINT></A>
+<FONT SIZE=+1><B><TT>PRINT [expression][{;|,}expression]...[{;|,}]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Outputs the value of each expressions. If the list of expressions to  be output does not
+ end with a comma or a semi-colon, then a carriage return and linefeed is output after
+ the values. 
+<P ALIGN=JUSTIFY>
+ Expressions on the line can be separated with either a semi-colon, causing the next
+ expression to follow immediately, or a comma which will advance the output to the next
+ tab stop before continuing to print. If there are no expressions and no comma or
+ semi-colon after the <B><TT>PRINT</TT></B> statement then a carriage return and linefeed
+ is output.
+<P ALIGN=JUSTIFY>
+ When entering a program line, or immediate statement, <B><TT>PRINT</TT></B> can be
+ abbreviated to <B><TT>?</TT></B> .
+</BLOCKQUOTE>
+
+<A name=CONT></A>
+<FONT SIZE=+1><B><TT>CONT</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Continues program execution after <B><TT>CTRL-C</TT></B> has been typed, a <A
+ HREF="#STOP"><B><TT>STOP</TT></B></A> has been encountered during program execution, a
+ null input was given to an <A HREF="#INPUT"><B><TT>INPUT</TT></B></A> request or <A
+ HREF="#END"><B><TT>END</TT></B></A> was reached.
+<P ALIGN=JUSTIFY>
+ If <B><TT>CONT</TT></B> is used to restart from an aborted <A
+ HREF="#INPUT"><B><TT>INPUT</TT></B></A> command then the <A
+ HREF="#INPUT"><B><TT>INPUT</TT></B></A>, along with any prompt string will be repeated.
+</BLOCKQUOTE>
+
+<A name=LIST></A>
+<FONT SIZE=+1><B><TT>LIST [n1][-n2]</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Lists the entire program held in memory. If n1 is specified then the listing will start
+ from line n1 and run to the end of the program. If -n2 is specified then the listing
+ will terminate after line n2 has been listed. If n1 and -n2 are specified then all the
+ lines from n1 to n2 inclusive will be listed.
+<P ALIGN=JUSTIFY>
+ Note. If n1 does not exist then the list will start from the next line numbered after
+ n1. If n2 does not exist then the listing will stop with the last line numbered before
+ n2.
+<P ALIGN=JUSTIFY>
+ Also note. <B><TT>LIST</TT></B> can be executed from within a program, first a [CR][LF]
+ is printed and then the specified lines, if any, each terminated with another [CR][LF].
+ Program execution then continues as normal.
+</BLOCKQUOTE>
+
+<A name=CLEAR></A>
+<FONT SIZE=+1><B><TT>CLEAR</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Erases all variables and functions and resets <A HREF="#FOR"><B><TT>FOR</TT></B></A> ..
+ <A HREF="#NEXT"><B><TT>NEXT</TT></B></A>, <A HREF="#GOSUB"><B><TT>GOSUB</TT></B></A> ..
+ <A HREF="#RETURN"><B><TT>RETURN</TT></B></A> and <A HREF="#DO"><B><TT>DO</TT></B></A> ..
+ <A HREF="#LOOP"><B><TT>LOOP</TT></B></A> states.
+</BLOCKQUOTE>
+
+<A name=NEW></A>
+<FONT SIZE=+1><B><TT>NEW</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Deletes the current program and all variables from memory.
+</BLOCKQUOTE>
+
+<A name=WIDTH></A>
+<FONT SIZE=+1><B><TT>WIDTH {b1|,b2|b1,b2}</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sets the terminal width and <B><TT>TAB</TT></B> spacing. b1 is the terminal width and b2
+ is the tab spacing, the defaults are 80 and 14. Width can be zero, for "infinite"
+ terminal width, or from 16 to 255. The tab size is from 2 to width-1 or 127, whichever
+ is smaller.
+</BLOCKQUOTE>
+
+<A name=GET></A>
+<FONT SIZE=+1><B><TT>GET &lt;var[{$|&}]&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Gets a key, if there is one, from the input device. If there is no key waiting then var
+ will be set to 0 and var$ will return a null string "". <B><TT>GET</TT></B> does not
+ halt and execution will continue.
+</BLOCKQUOTE>
+
+<A name=TAB></A>
+<FONT SIZE=+1><B><TT>TAB(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sets the cursor position to &lt;expression&gt;. If the cursor is already beyond that
+ point then the cursor will be left where it is. <B><TT>TAB()</TT></B> has an implied
+ semicolon after it so there would be no [CR][LF] printed after <B><TT>PRINT
+ TAB(n)</TT></B>, this is the same as with the <A HREF="#SPC"><B><TT>SPC()</TT></B></A>
+ command. This command is only valid in a <A HREF="#PRINT"><B><TT>PRINT</TT></B></A>
+ statement.
+</BLOCKQUOTE>
+
+<A name=TO></A>
+<FONT SIZE=+1><B><TT>TO</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sets the range in a <A HREF="#FOR"><B><TT>FOR</TT></B></A> .. <A
+ HREF="#NEXT"><B><TT>NEXT</TT></B></A> loop.
+</BLOCKQUOTE>
+
+<A name=FN></A>
+<FONT SIZE=+1><B><TT>FN&lt;name[{$|&}]&gt;(&lt;expression[{$|&}]&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the result of <B><TT>FNname()</TT></B> for the value of <B>expression</B>. See
+ <A HREF="#DEF"><B><TT>DEF</TT></B></A> for more details.
+</BLOCKQUOTE>
+
+<A name=SPC></A>
+<FONT SIZE=+1><B><TT>SPC(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Prints <B><TT>&lt;expression&gt;</TT></B> spaces. <B><TT>SPC()</TT></B> has an implied
+ semicolon after it so there would be no [CR][LF] printed after <B><TT>PRINT
+ SPC(n)</TT></B>, this is the same as with the <A HREF="#TAB"><B><TT>TAB()</TT></B></A>
+ command. This command is only valid in a <A HREF="#PRINT"><B><TT>PRINT</TT></B></A>
+ statement.
+</BLOCKQUOTE>
+
+<A name=THEN></A>
+<FONT SIZE=+1><B><TT>THEN</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ See <A HREF="#IF"><B><TT>IF</TT></B></A>.
+</BLOCKQUOTE>
+
+<A name=NOT></A>
+<FONT SIZE=+1><B><TT>NOT &lt;expression&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Generates the bitwise <B><TT>NOT</TT></B> of then signed integer value of
+ <B><TT>&lt;expression&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=STEP></A>
+<FONT SIZE=+1><B><TT>STEP</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sets the step size in a <A HREF="#FOR"><B><TT>FOR</TT></B></A> .. <A
+ HREF="#NEXT"><B><TT>NEXT</TT></B></A> loop.
+</BLOCKQUOTE>
+
+<A name=UNTIL></A>
+<FONT SIZE=+1><B><TT>UNTIL</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ See <A HREF="#DO"><B><TT>DO</TT></B></A> and <A HREF="#LOOP"><B><TT>LOOP</TT></B></A>.
+</BLOCKQUOTE>
+
+<A name=WHILE></A>
+<FONT SIZE=+1><B><TT>WHILE</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ See <A HREF="#DO"><B><TT>DO</TT></B></A> and <A HREF="#LOOP"><B><TT>LOOP</TT></B></A>.
+</BLOCKQUOTE>
+
+<A name=BITCLR></A>
+<FONT SIZE=+1><B><TT>BITCLR &lt;addr&gt;,&lt;b&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Clears bit b of address addr. Valid bit numbers are 0, the least significant bit, to 7,
+ the most significant bit. Values outside this range will cause a function call error.
+</BLOCKQUOTE>
+
+<A name=BITSET></A>
+<FONT SIZE=+1><B><TT>BITSET &lt;addr&gt;,&lt;b&gt;</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sets bit b of address addr. Valid bit numbers are 0, the least significant bit, to 7,
+ the most significant bit. Values outside this range will cause a function call error.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+
+<P ALIGN=JUSTIFY><B><U>BASIC Operators</B></U>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Operators perform mathematical or logical operations on values and return the result.
+ The operation is usually preceded by a variable name and equality sign or is part of
+ an <TT>IF</TT> .. <TT>THEN</TT> statement.
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<A name=AND></A>
+<TABLE CELLPADDING=3 CELLSPACING=0 BORDER=0>
+<TR>
+ <TD><B><TT>+</TT></B></TD>
+ <TD>Add. c = a + b will assign the sum of a and b to c.</TD></TR>
+<TR>
+ <TD><B><TT>-</TT></B></TD>
+ <TD>Subtract. c = a - b will assign the result of a minus b to c.</TD></TR>
+<TR>
+ <TD><B><TT>*</TT></B></TD>
+ <TD>Multiply. c = a * b will assign the product of a and b to c.</TD></TR>
+<TR>
+ <TD><B><TT>/</TT></B></TD>
+ <TD>Divide. c = a / b will assign the result of a divided by b to c.</TD></TR>
+<TR>
+ <TD><B><TT>^</TT></B></TD>
+ <TD>Raise to the power of.  c = a ^ b will assign the result of a raised to the power of
+     b to c.</TD></TR>
+<TR>
+ <TD><B><TT>AND</TT></B></TD>
+ <TD>Logical <TT>AND</TT>. c = a <TT>AND</TT> b will assign the logical <TT>AND</TT> of a
+ and b to c</TD></TR>
+<TR>
+ <TD><B><TT>EOR</TT></B></TD>
+ <TD>Logical exclusive <TT>OR</TT>.  c = a <TT>EOR</TT> b will assign the logical
+ exclusive <TT>OR</TT> of a and b to c.</TD></TR>
+<TR>
+ <TD><B><TT>OR</TT></B></TD>
+ <TD>Logical <TT>OR</TT>.  c = a <TT>OR</TT> b will assign the logical inclusive
+ <TT>OR</TT> of a and b to c.</TD>
+</TR>
+<TR>
+ <TD><B><TT>&lt;&lt;</TT></B></TD>
+ <TD>Shift left.  c = a &lt;&lt; b will assign the result of a shifted left by b bits
+     to c.</TD></TR>
+<TR>
+ <TD><B><TT>&gt;&gt;</TT></B></TD>
+ <TD>Shift right.  c = a &gt;&gt; b will assign the result of a shifted right by b bits
+     to c.</TD></TR>
+<TR>
+ <TD><B><TT>=</TT></B></TD>
+ <TD>Equals.  c = a = b will assign the result of the comparison a = b to c.</TD></TR>
+<TR>
+ <TD><B><TT>&gt;</TT></B></TD>
+ <TD>Greater than.  c = a &lt; b will assign the result of the comparison a &gt; b to
+     c.</TD></TR>
+<TR>
+ <TD><B><TT>&lt;</TT></B></TD>
+ <TD>Less than.  c = a &lt; b will assign the result of the comparison of a &lt; b to
+     c.</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+ The three comparison operators can be mixed to provide further operators ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=3 CELLSPACING=0 BORDER=0>
+<TR><TD>&gt;= or =&gt;</TD>
+ <TD>Greater than or equal to.</TD></TR>
+<TR><TD>&lt;= or =&lt;</TD>
+ <TD>Less than or equal to.</TD></TR>
+<TR><TD>&lt;&gt; or &gt;&lt;</TD>
+ <TD>Not equal to (greater than or less than).</TD></TR>
+<TR><TD>&lt;=&gt; any order</TD>
+ <TD>Always true (greater than or equal to or less than).</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>BASIC Functions</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Functions always return a value, be it numeric or string, so are used on the right hand
+ side of the = sign or in commands requiring an expression e.g. after
+ <B><TT>PRINT</TT></B>, within expressions, or in other functions.
+
+<P ALIGN=JUSTIFY><A name=SGN></A>
+<FONT SIZE=+1><B><TT>SGN(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the sign of <B><TT>&lt;expression&gt;</TT></B>. If the value is positve
+ <B><TT>SGN</TT></B> returns +1, if the value is negative then <B><TT>SGN</TT></B>
+ returns -1. If the value is zero then <B><TT>SGN</TT></B> returns 0.
+</BLOCKQUOTE>
+
+<A name=INT></A>
+<FONT SIZE=+1><B><TT>INT(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the integer of <B><TT>&lt;expression&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=ABS></A>
+<FONT SIZE=+1><B><TT>ABS(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the absolute value of <B><TT>&lt;expression&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=USR></A>
+<FONT SIZE=+1><B><TT>USR(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Takes the value of <B><TT>&lt;expression&gt;</TT></B> and places it in the floating
+ accumulator and then calls the USeR routine pointed to by the USeR vector. What the
+ routine does with this value is entirely up to the user, it can even be safely ignored
+ if it isn't needed. The routine, after the user code has done an RTS, takes whatever is
+ in the floating accumulator and returns that. Note it can be either a floating, integer
+ or string value.
+<P ALIGN=JUSTIFY>
+ If no value needs to be passed or returned then <A HREF="#CALL"><B><TT>CALL</TT></B></A>
+ is a better option.
+</BLOCKQUOTE>
+
+<A name=FRE></A>
+<FONT SIZE=+1><B><TT>FRE(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the amount of free program memory. The value of
+ <B><TT>&lt;expression&gt;</TT></B> is ignored and can be numeric or string.
+</BLOCKQUOTE>
+
+<A name=POS></A>
+<FONT SIZE=+1><B><TT>POS(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the POSition of the cursor on the terminal line. The value of
+ <B><TT>&lt;expression&gt;</TT></B> is ignored.
+</BLOCKQUOTE>
+
+<A name=SQR></A>
+<FONT SIZE=+1><B><TT>SQR(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the square root of <B><TT>&lt;expression&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=RND></A>
+<FONT SIZE=+1><B><TT>RND(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns a random number in the range 0 to 1. If the value of
+ <B><TT>&lt;expression&gt;</TT></B> is non zero then it will be used as the seed for the
+ returned pseudo random number otherwise the next number in the sequence will be returned.
+</BLOCKQUOTE>
+
+<A name=LOG></A>
+<FONT SIZE=+1><B><TT>LOG(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the natural logarithm (base e) of <B><TT>&lt;expression&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=EXP></A>
+<FONT SIZE=+1><B><TT>EXP(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the natural antilog of <B><TT>&lt;expression&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=COS></A>
+<FONT SIZE=+1><B><TT>COS(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the cosine of <B><TT>&lt;expression&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=SIN></A>
+<FONT SIZE=+1><B><TT>SIN(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the sine of <B><TT>&lt;expression&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=TAN></A>
+<FONT SIZE=+1><B><TT>TAN(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>  
+ Returns the tangent of <B><TT>&lt;expression&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=ATN></A>
+<FONT SIZE=+1><B><TT>ATN(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the arctangent of <B><TT>&lt;expression&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=PEEK></A>
+<FONT SIZE=+1><B><TT>PEEK(&lt;addr&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the byte value of the contents of <B><TT>&lt;addr&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=DEEK></A>
+<FONT SIZE=+1><B><TT>DEEK(&lt;addr&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the word value of <B><TT>&lt;addr&gt;</TT></B> and
+ <B><TT>&lt;addr&gt;+1</TT></B>. <B><TT>&lt;addr&gt;</TT></B> holds the word high byte.
+<P ALIGN=JUSTIFY>
+ <B>Note:</B> <B><TT>&lt;addr&gt;</TT></B> must be an even integer or an 'address' error
+ will be generated.
+</BLOCKQUOTE>
+
+<A name=LEEK></A>
+<FONT SIZE=+1><B><TT>LEEK(&lt;addr&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the longword value of <B><TT>&lt;addr&gt;</TT></B>,
+ <B><TT>&lt;addr&gt;+1</TT></B>, <B><TT>&lt;addr&gt;+2</TT></B> and
+ <B><TT>&lt;addr&gt;+3</TT></B>. <B><TT>&lt;addr&gt;</TT></B> holds the most significant
+ byte, <B><TT>&lt;addr&gt;+3</TT></B> the least significant byte.
+<P ALIGN=JUSTIFY>
+ <B>Note:</B> <B><TT>&lt;addr&gt;</TT></B> must be an even integer or an 'address' error
+ will be generated.
+</BLOCKQUOTE>
+
+<A name=SADD></A>
+<FONT SIZE=+1><B><TT>SADD(&lt;{var$|var$()|expression$}&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the address of <B><TT>var$</TT></B>, <B><TT>var$()</TT></B> or
+ <B><TT>expression$</TT></B>. This returns a pointer to the actual string in memory not
+ the descriptor.
+<P ALIGN=JUSTIFY>
+ If the string is zero length then <B><TT>SADD</TT></B> will return zero.
+<P ALIGN=JUSTIFY>
+ If the variable does not exist and non existant variable errors have been supressed then
+ <B><TT>SADD</TT></B> will return zero.
+</BLOCKQUOTE>
+
+<A name=LEN></A>
+<FONT SIZE=+1><B><TT>LEN(&lt;expression$&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the length of <B><TT>&lt;expression$&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=STR></A>
+<FONT SIZE=+1><B><TT>STR$(&lt;expression&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the result of <B><TT>&lt;expression&gt;</TT></B> as a string.
+</BLOCKQUOTE>
+
+<A name=VAL></A>
+<FONT SIZE=+1><B><TT>VAL(&lt;expression$&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the value of <B><TT>&lt;expression$&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=ASC></A>
+<FONT SIZE=+1><B><TT>ASC(&lt;expression$&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the ASCII value of the first character of <B><TT>&lt;expression$&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=LCASE></A>
+<FONT SIZE=+1><B><TT>LCASE$(&lt;expression$&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns <B><TT>&lt;expression$&gt;</TT></B> with all the alpha characters in lower case.
+</BLOCKQUOTE>
+
+<A name=UCASE></A>
+<FONT SIZE=+1><B><TT>UCASE$(&lt;expression$&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns <B><TT>&lt;expression$&gt;</TT></B> with all the alpha characters in upper case.
+</BLOCKQUOTE>
+
+<A name=CHR></A>
+<FONT SIZE=+1><B><TT>CHR$(b)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns single character string of character <B><TT>&lt;b&gt;</TT></B>.
+</BLOCKQUOTE>
+
+<A name=HEX></A>
+<FONT SIZE=+1><B><TT>HEX$(&lt;expression&gt;[,b])</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns <B><TT>&lt;expression&gt;</TT></B> as a hex string. If b is omitted, or if b = 0,
+ then the string is returned with all leading zeroes removed and is of variable length. If
+ b is set (permissible set values are 1 to 8) then a string of length b will be returned.
+ The result is always unsigned and calling this function with expression&gt;2^32-1
+ or b&gt;8 will cause a function call error.
+</BLOCKQUOTE>
+
+<A name=BIN></A>
+<FONT SIZE=+1><B><TT>BIN$(&lt;expression&gt;[,b])</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns <B><TT>&lt;expression&gt;</TT></B> as a binary string. If b is omitted, or if b
+ = 0, then the string is returned with all leading zeroes removed and is of variable
+ length. If b is set, permissible set values are 1 to 32, then a string of length b will
+ be returned. The result is always unsigned and calling this function with
+ expression&gt;2^32-1 or b&gt;24 will cause a function call error.
+</BLOCKQUOTE>
+
+<A name=BITTST></A>
+<FONT SIZE=+1><B><TT>BITTST(&lt;addr&gt;,&lt;b&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Tests bit b of address addr. Valid bit numbers are 0, the least significant bit, to 7,
+ the most significant bit. Values outside this range will cause a function call error.
+ Returns zero if the bit was zero, returns -1 if the bit was 1.
+</BLOCKQUOTE>
+
+<A name=MAX></A>
+<FONT SIZE=+1><B><TT>MAX(&lt;expression&gt;[,&lt;expression&gt;]...)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the maximum value from a list of numeric expressions. There must be at least one
+ expression but the upper limit is dictated by the line length. Each expression is
+ evaluated in turn and the value of the largest of them returned.
+</BLOCKQUOTE>
+
+<A name=MIN></A>
+<FONT SIZE=+1><B><TT>MIN(&lt;expression&gt;[,&lt;expression&gt;]...)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the minimum value from a list of numeric expressions. There must be at least one
+ expression but the upper limit is dictated by the line length. Each expression is
+ evaluated in turn and the value of the smallest of them returned.
+</BLOCKQUOTE>
+
+<A name=RAM></A>
+<FONT SIZE=+1><B><TT>RAMBASE</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the address of the start of EhBASIC's RAM.
+</BLOCKQUOTE>
+
+<A name=PI></A>
+<FONT SIZE=+1><B><TT>PI</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the value of pi as 3.14159265347 (closest floating value).
+</BLOCKQUOTE>
+
+<A name=TWOPI></A>
+<FONT SIZE=+1><B><TT>TWOPI</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the value of 2*pi as 6.28318530694 (closest floating value).
+</BLOCKQUOTE>
+
+<A name=VARPTR></A>
+<FONT SIZE=+1><B><TT>VARPTR(&lt;var[{$|&}]&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns a pointer to the variable memory space. If the variable is numeric, or a numeric
+ array element, then <B><TT>VARPTR</TT></B> returns the pointer to the value of that
+ variable in memory. If the variable is a string, or a string array element, then
+ <B><TT>VARPTR</TT></B> returns a pointer to the descriptor for that string.
+<P ALIGN=JUSTIFY>
+ If the variable does not exist and non existant variable errors have been supressed then
+ <B><TT>VARPTR</TT></B> will return zero.
+</BLOCKQUOTE>
+
+<A name=LEFT></A>
+<FONT SIZE=+1><B><TT>LEFT$(&lt;expression$,uw&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the leftmost uw characters of <B><TT>&lt;expression$&gt;</TT></B>. If uw=0 then
+ a null string will be returned.
+</BLOCKQUOTE>
+
+<A name=RIGHT></A>
+<FONT SIZE=+1><B><TT>RIGHT$(&lt;expression$,uw&gt;)</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the rightmost uw characters of <B><TT>&lt;expression$&gt;</TT></B>. If uw=0 then
+ a null string will be returned.
+</BLOCKQUOTE>
+
+<A name=MID></A>
+<FONT SIZE=+1><B><TT>MID$(&lt;expression$,uw1&gt;[,uw2])</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the sub string from character uw1 of <B><TT>&lt;expression$&gt;</TT></B> of
+ length uw2. The characters of <B><TT>&lt;expression$&gt;</TT></B> are numbered from 1
+ starting with the leftmost. If uw1=0 then a 'Function call' error will be generated. If
+ uw1>string length or uw2=0 then a null string will be returned.
+</BLOCKQUOTE>
+
+<A name=USING></A>
+<FONT SIZE=+1><B><TT> 
+USING$(&lt;expression$&gt;,&lt;expression&gt;[,&lt;expression&gt;[...]])</TT></B></FONT>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Returns the result of <B><TT>&lt;expression&gt;</TT></B> as a string formatted by
+ <B><TT>&lt;expression$&gt;</TT></B>. If there is more than one
+ <B><TT>&lt;expression&gt;</TT></B> each is formatted in turn and added to the returned
+ string. If there is more than one group of special format characters in
+ <B><TT>&lt;expression$&gt;</TT></B> each group is used in turn to format each
+ <B><TT>&lt;expression&gt;</TT></B> encountered.
+<P ALIGN=JUSTIFY><B><U>Special format characters</U></B>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=3 CELLSPACING=0 BORDER=0>
+<TR><TD WIDTH=30>#</TD><TD>A numeric character or " " if no digit</TD></TR>
+<TR><TD>%</TD><TD>A numeric character or "0" if no digit</TD></TR>
+<TR><TD> </TD><TD>These can be mixed in a string but both will output a "0" if there is
+ no digit in the fractional part of the number.</TD></TR>
+<TR><TD>&nbsp;</TD><TD></TD></TR>
+<TR><TD>.</TD><TD>A decimal point</TD></TR>
+<TR><TD>,</TD><TD>A comma, only output if there is an integer part digit to the
+ left</TD></TR>
+<TR><TD>+</TD><TD>Always output the sign</TD></TR>
+<TR><TD>-</TD><TD>Only output the sign if negative</TD></TR>
+<TR><TD>&nbsp;</TD><TD></TD></TR>
+<TR><TD></TD><TD>Any other character will be reproduced in the output string</TD></TR>
+</TABLE></BLOCKQUOTE>
+ Each <B><TT>&lt;expression&gt;</TT></B> is rounded to the last digit to be returned
+ which, for strings without a decimal point, will be units or the same number of decimal
+ digits as "#" or "%" characters after the decimal point.
+<P ALIGN=JUSTIFY><B><U>Overflow indication</U></B>
+<P ALIGN=JUSTIFY>If there are insufficient integer digits to represent the value of
+ <B><TT>&lt;expression&gt;</TT></B> then all the special format characters relating to
+ that <B><TT>&lt;expression&gt;</TT></B> will be replaced by <B><TT>'#'</TT></B>
+ characters. This will also occur when there is no room for a mandatory sign or no room
+ for an optional negative sign and the value of <B><TT>&lt;expression&gt;</TT></B> was
+ negative.
+<P ALIGN=JUSTIFY>Examples
+<BLOCKQUOTE>
+<B><TT>PRINT USING$("Temp  ##.## Deg ", 100, -100, 99, -99)</TT></B><BR>
+<B><TT>Temp  ##### Deg Temp  ##### Deg Temp  99.00 Deg Temp  99.00 Deg</TT></B><BR>
+<BR>
+<B><TT>PRINT USING$("Temp +##.## Deg ", 100, -100, 99, -99)</TT></B><BR>
+<B><TT>Temp ###### Deg Temp ###### Deg Temp +99.00 Deg Temp -99.00 Deg</TT></B><BR>
+<BR>
+<B><TT>PRINT USING$("Temp -##.## Deg ", 100, -100, 99, -99)</TT></B><BR>
+<B><TT>Temp 100.00 Deg Temp ###### Deg Temp  99.00 Deg Temp -99.00 Deg</TT></B>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ Values of <B><TT>&lt;expression&gt;</TT></B> that are large enough to be expressed in
+ scientific notation will cause a function call error.
+<P ALIGN=JUSTIFY><B><U>Underflow indication</U></B>
+<P ALIGN=JUSTIFY>
+ Values of <B><TT>&lt;expression&gt;</TT></B> that are small enough to be expressed in
+ scientific notation will be resolved to fit into <B>s.00000000</B> and that string will
+ be processed to into the format string.
+<P ALIGN=JUSTIFY>
+ Specifying a format string with more than eight digits after the decimal point will just
+ end up with zeroes in the ninth digit onwards, no error will be generated.
+<P ALIGN=JUSTIFY>Examples
+<BLOCKQUOTE>
+<B><TT>PRINT USING$(" #.#######", PI/1000)</TT></B><BR>
+<B><TT> 0.0031416</TT></B><BR>
+<BR>
+<B><TT>PRINT USING$(" #.#######", EXP(-TWOPI))</TT></B><BR>
+<B><TT> 0.0018674</TT></B><BR>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+
+<B><U>BASIC Error Messages</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ These will all be followed by the word Error and, if the error occurred while executing
+ a program, will be followed by "in line &lt;n&gt;" where &lt;n&gt; is the number of
+ the line in which the error occurred.
+<P ALIGN=JUSTIFY>
+<B>NEXT without FOR</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ <A HREF="#NEXT"><B><TT>NEXT</TT></B></A> has been encountered and no matching <A
+ HREF="#FOR"><B><TT>FOR</TT></B></A> could be found.
+</BLOCKQUOTE>
+<B>Syntax</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Just generally worng. 8^)=
+</BLOCKQUOTE>
+<B>RETURN without GOSUB</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ <A HREF="#RETURN"><B><TT>RETURN</TT></B></A> has been encountered and no matching
+ <A HREF="#GOSUB"><B><TT>GOSUB</TT></B></A> could be found.
+</BLOCKQUOTE>
+<B>Out of DATA</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ A <A HREF="#READ"><B><TT>READ</TT></B></A> has tried to read data beyond the last item.
+ Usually because you either mistyped the <A HREF="#DATA"><B><TT>DATA</TT></B></A> lines,
+ miscounted the <A HREF="#DATA"><B><TT>DATA</TT></B></A>, <A
+ HREF="#RESTORE"><B><TT>RESTORE</TT></B></A>d to the wrong place or just plain forgot to
+ restore.
+</BLOCKQUOTE>
+<B>Function call</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Some parameter of a function was outside it's limits. E.g. Trying to
+ <A HREF="#POKE"><B><TT>POKE</TT></B></A> a value of less than 0 or greater than 255.
+</BLOCKQUOTE>
+<B>Overflow</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The result of a calculation has exceeded the numerical range of BASIC. This is plus or
+ minus 1.7014117+E38
+</BLOCKQUOTE>
+<B>Out of memory</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Anything that uses memory can cause this but mostly it's writing and running programmes
+ that does it.
+</BLOCKQUOTE>
+<B>Undefined statement</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Either a <A HREF="#GOTO"><B><TT>GOTO</TT></B></A>, <A
+ HREF="#GOSUB"><B><TT>GOSUB</TT></B></A>, <A HREF="#RUN"><B><TT>RUN</TT></B></A> or <A
+ HREF="#RESTORE"><B><TT>RESTORE</TT></B></A> was attempted to a line that doesn't exist
+ or the line referred to in an <A HREF="#ON"><B><TT>ON</TT></B></A>
+ <B><TT>&lt;expression&gt;</TT></B> {<A HREF="#GOTO"><B><TT>GOTO</TT></B></A>|<A
+ HREF="#GOSUB"><B><TT>GOSUB</TT></B></A>} doesn't exist.
+</BLOCKQUOTE>
+<B>Array bounds</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ An attempt was made to access an element of an array that was outside it's bounding
+ dimensions.
+</BLOCKQUOTE>
+<B>Double dimension</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ An attempt has been made to dimension an already dimensioned array.
+</BLOCKQUOTE>
+<B>Divide by zero</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The right hand side of an A/B expression was zero.
+</BLOCKQUOTE>
+<B>Illegal direct</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ An attempt was made to execute a function in direct mode which is disallowed in that
+ mode e.g. <A HREF="#INPUT"><B><TT>INPUT</TT></B></A> or <A
+ HREF="#DEF"><B><TT>DEF</TT></B></A>.
+</BLOCKQUOTE>
+<B>Type mismatch</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ An attempt was made to pass a numeric value to a string, a string value to a numeric
+ variable or an attempt at a relational operation between a string value and a numeric
+ value was made.
+<P ALIGN=JUSTIFY>
+ This will also appear when an attempt is made to use an array element where only a plain
+ variable may be used.
+</BLOCKQUOTE>
+<B>String too long</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ String lengths can be from zero to 65535 characters, more than that and you will see
+ this.
+</BLOCKQUOTE>
+<B>String too complex</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ A string expression caused an overflow on the descriptor stack. Try splitting the
+ expression into smaller pieces.
+</BLOCKQUOTE>
+<B>Can't continue</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Execution can't be continued because either the program execution ended because an error
+ occurred, <A HREF="#NEW"><B><TT>NEW</TT></B></A> or <A
+ HREF="#CLEAR"><B><TT>CLEAR</TT></B></A> have been executed since the program was
+ interrupted or the program has been edited.
+</BLOCKQUOTE>
+<B>Undefined function</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ <B><TT><A HREF="#FN">FN</A>&lt;name[{$|&}]&gt;</TT></B> was called but not found.
+</BLOCKQUOTE>
+<B>LOOP without DO</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ <A HREF="#LOOP"><B><TT>LOOP</TT></B></A> has been encountered and no matching <A
+ HREF="#DO"><B><TT>DO</TT></B></A> could be found.
+</BLOCKQUOTE>
+<B>Undefined variable</B> 
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ A variable has been referenced that has yet to have a value assigned to it.
+</BLOCKQUOTE>
+<B>Undimensioned array</B> 
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Aa array has been referenced that has yet to be dimensioned.
+</BLOCKQUOTE>
+<B>Wrong dimensions</B> 
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Aa array has been referenced with either too many or too few dimensions in the reference.
+</BLOCKQUOTE>
+<B>Address</B> 
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Some function that requires an even address as a parameter has been passed an odd
+ address.
+</BLOCKQUOTE>
+<A name=FORMAT></A>
+<B>Format</B> 
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The format string for the <A HREF="#USING"><B><TT>USING$()</TT></B></A> function is
+ missing, is of zero length or has no special format characters.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 15th December, 2010.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish6bf2b903" style="display:none"></div>
+<script src="http://ads.mmania.com/displaycf.js.php?r=6bf2b903&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

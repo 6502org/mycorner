@@ -1,0 +1,724 @@
+<HTML><HEAD><TITLE>Vic 20 .prg file reader</TITLE>
+<META name="description" content="Vic 20 lister"></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Vic 20 .prg reader source </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+Download <A HREF="source.zip">zipped <IMG SRC="../../../zip_sm.png" border=0></A>.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+' Vic 20 .prg file viewer Ver 1.42 - Quick BASIC 4.5 (c) L.Davison 2005
+
+' Takes a raw .prg Vic 20 program file and outputs it to the screen and optionally to
+' both text and html output files. The text file has special C= characters replaced by  
+' names in curly braces, e.g. [CTRL]1 which is Black is rendered as {BLK}. With the
+' html output file there is the option to display these keys as small, 8 by 8 pixel,
+' graphics resembling the actual characters that would be seen in a listing.
+
+' All the standard BASIC 2.0 keywords, as well as the Super Expander keywords, are
+' supported.
+
+' comments, suggestions, additions, offers of monetary reward etc to ..
+'
+' leeedavison@lycos.co.uk
+
+
+CONST false = 0, true = -1			' define these
+
+DIM token%(255)					' token flags
+DIM token$(255,1)				' token decoder
+DIM symbol$(255,1)				' symbol decoder
+
+esc$ = CHR$(27)					' define ESCAPE
+quote$ = CHR$(34)				' " as a string
+cr$ = CHR$(13)					' [CR] as a string
+
+fe$ = "&lt;/FONT&gt;"					' end of &lt;FONT&gt;&lt;/FONT&gt;
+fl$ = "&lt;FONT COLOR=blue&gt;"			' line number font colour
+fq$ = "&lt;FONT COLOR=green&gt;"			' quote string font colour
+ft$ = "&lt;FONT COLOR=red&gt;"			' token font colour
+
+text% = false					' default to no text output
+html% = false					' default to no html output
+imgs% = false					' default to no html graphics
+
+SCREEN 12					' 640 x 480 x 16
+CLS						' clear it
+
+PRINT "Vic 20 .PRG file reader v1.42. (c) Lee Davison 2005."
+PRINT
+
+GOSUB Initialise				' set up arrays
+
+INPUT "Enter .PRG file name "; filename$	' get the filename without the .prg
+IF filename$ = "" THEN END			' no file then just quit
+
+IF RIGHT$(UCASE$(filename$), 4) = ".PRG" THEN	' ensure no ".prg" end
+  filename$ = LEFT$(filename$, LEN(filename$) - 4)
+END IF
+
+PRINT "Text output file   [Y]es/[n]o ?"		' prompt user
+DO
+  DO
+    key$ = UCASE$(INKEY$)			' get key
+  LOOP WHILE key$ = ""				' wait for press
+  IF key$ = cr$ THEN				' user just hit [RETURN]
+    key$ = "Y"					'  so default to yes
+  END IF
+  IF key$ = "Y" THEN				' if text wanted
+    text% = true				' set the flag
+  END IF
+LOOP WHILE (key$ &lt;&gt; "N") AND (key$ &lt;&gt; "Y")	' loop until "N" or "Y"
+
+PRINT "HTML output file   [Y]es/[n]o ?"		' prompt user
+DO
+  DO
+    key$ = UCASE$(INKEY$)			' get key
+  LOOP WHILE key$ = ""				' wait for press
+  IF key$ = cr$ THEN				' user just hit [RETURN]
+    key$ = "Y"					'  so default to yes
+  END IF
+  IF key$ = "Y" THEN				' if html wanted
+    html% = true				' set the flag
+  END IF
+LOOP WHILE (key$ &lt;&gt; "N") AND (key$ &lt;&gt; "Y")	' loop until "N" or "Y"
+
+IF html% THEN
+  PRINT "HTML file graphics [y]es/[N]o ?"	' prompt user
+  DO
+    DO
+      key$ = UCASE$(INKEY$)			' get key
+    LOOP WHILE key$ = ""			' wait for press
+    IF key$ = cr$ THEN				' user just hit [RETURN]
+      key$ = "N"				'  so default to no
+    END IF
+    IF key$ = "Y" THEN				' if graphics
+      imgs% = 1					' set the flag
+    END IF
+  LOOP WHILE (key$ &lt;&gt; "N") AND (key$ &lt;&gt; "Y")	' loop until "N" or "Y"
+END IF
+
+GOSUB DoFile					' process the file
+
+COLOR 15					' white
+
+PRINT "Press any key to exit."			' prompt user
+DO
+LOOP WHILE INKEY$ = ""				' wait for press
+END						' all done, bye.
+
+
+' process file. open the input file and the output file(s), process the input
+' file then close all files as needed
+
+DoFile:
+  OPEN filename$ + ".prg" FOR BINARY ACCESS READ AS #1
+						' open the .prg file
+  IF text% THEN					' if the user wants text output
+    OPEN filename$ + ".txt" FOR OUTPUT AS #2	' open the text write file
+  END IF
+  IF html% THEN					' if the user wants html output
+    OPEN filename$ + ".htm" FOR OUTPUT AS #3	' open the html write file
+  END IF
+
+  i% = 0%					' clear the read index
+  GOSUB DoStream				' process the byte stream
+
+  IF html% THEN					' if the user wanted html output
+    CLOSE #3					' close the html output file
+  END IF
+  IF text% THEN					' if the user wanted text output
+    CLOSE #2					' close the text output file
+  END IF
+  CLOSE #1					' close the input file
+RETURN
+
+
+' process a stream of bytes until no input remains
+
+DoStream:
+  GOSUB HTMLHeader				' write the html header
+  GOSUB GetWord					' get the LOAD address
+  address$ = "LOAD address $" + RIGHT$("000" + HEX$(word&amp;), 4)
+  PRINT address$				' print load address to screen
+  IF html% THEN					' if the user wants html output
+    PRINT #3, "&amp;nbsp;"; address$		' print load address to html file
+    PRINT #3,
+  END IF
+  DO
+    GOSUB DoLine				' do a program line
+    IF INKEY$ = esc$ THEN			' check for user quit
+      eoprog% = true				' flag exit if [ESCAPE] pressed
+    END IF
+  LOOP WHILE NOT eoprog%			' loop until program end or abort
+  GOSUB HTMLFooter				' write the html footer
+RETURN
+
+
+' write the header to the html file
+
+HTMLHeader:
+  IF html% THEN					' if the user wants html output
+    PRINT #3, "&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;"; filename$;
+    PRINT #3, ".prg for the Vic 20&lt;/TITLE&gt;&lt;/HEAD&gt;"
+    PRINT #3, "&lt;BODY&gt;"
+    PRINT #3, "Program listing of &lt;TT&gt;&lt;B&gt;"; filename$;
+    PRINT #3, ".prg&lt;/B&gt;&lt;/TT&gt; for the Vic 20"
+    PRINT #3, "&lt;HR&gt;"
+    PRINT #3, "&lt;PRE&gt;"
+  END IF
+RETURN
+
+
+' write the footer to the html file
+
+HTMLFooter:
+  IF html% THEN					' if the user wants html output
+    PRINT #3, "&lt;/PRE&gt;"
+    PRINT #3, "&lt;HR&gt;"
+    PRINT #3, "Converted to HTML using &lt;TT&gt;&lt;B&gt;";
+    PRINT #3, "prgread.exe v1.42&lt;/TT&gt;&lt;/B&gt; by ";
+    PRINT #3, "&lt;A HREF="; quote$; "mailto:leeedavison";
+    PRINT #3, "@lycos.co.uk"; quote$; "&gt;Lee Davison&lt;/A&gt;"
+    PRINT #3, "&lt;/BODY&gt;&lt;/HTML&gt;"
+  END IF
+RETURN
+
+
+' set the token flag and font colour
+
+HTMLToken:
+  IF html% THEN					' if the user wants html output
+    IF NOT oquote% THEN				' if we're not quoting a string
+      IF token%(byte%) THEN			' if this is a token and ..
+        IF NOT token% THEN			' .. we're not already doing tokens
+          PRINT #3, ft$;			'  then set the token colour
+          token% = true				'  and flag we're doing tokens
+        END IF
+      ELSE					' else if this isn't a token ..
+        IF token% THEN				' .. and we were doing tokens
+          PRINT #3, fe$;			'  then end the token colour
+          token% = false			'  and flag we're not doing tokens
+        END IF
+      END IF
+    END IF
+  END IF
+RETURN
+
+
+' set the quote flag and font colour
+
+HTMLQuote:
+  IF html% THEN					' if the user wants html output
+    IF oquote% THEN				' if this is a close quote
+      PRINT #3,  byte$; fe$;			'  print the quote
+    ELSE					' else it's an open quote
+      PRINT #3, fq$; byte$;			'  print the quote
+    END IF
+  END IF
+RETURN
+
+
+' print the text quote
+
+TEXTQuote:
+  IF text% THEN					' if the user wants text output
+    PRINT #2, byte$;				' print the quote
+  END IF
+RETURN
+
+
+' print the html line number
+
+HTMLLine:
+  IF html% THEN					' if the user wants html output
+    PRINT #3, fl$; " "; word$; fe$;		' print a space and the line number
+  END IF
+RETURN
+
+
+' print the text line number
+
+TEXTLine:
+  IF text% THEN					' if the user wants text output
+    PRINT #2, word$;				' print the line number
+  END IF
+RETURN
+
+
+' print the html byte
+
+HTMLByte:
+  IF html% THEN					' if the user wants html output
+    IF oquote% THEN				' if we're quoting a string
+      html$ = symbol$(byte%, imgs%)		' set the symbol
+    ELSE
+      html$ = token$(byte%, imgs%)		' set the token
+    END IF
+
+    IF html$ = "&amp;" THEN				' if it's an apersand
+      html$ = "&amp;amp;"				'  make it an html ampersand
+    ELSEIF html$ = "&lt;" THEN			' if it's less than
+      html$ = "&amp;lt;"				'  make it an html less than
+    ELSEIF html$ = "&gt;" THEN			' if it's greater than
+      html$ = "&amp;gt;"				'  make it an html greater than
+    END IF
+
+    PRINT #3, html$;				' print the html
+  END IF
+RETURN
+
+
+' print the text byte
+
+TEXTByte:
+  IF text% THEN					' if the user wants text output
+    IF oquote% THEN				' if we're quoting a string
+      PRINT #2, symbol$(byte%, 0);		'  print the symbol
+    ELSE					' else
+      PRINT #2, token$(byte%, 0);		'  print the token
+    END IF
+  END IF
+RETURN
+
+
+' print the html new line
+
+HTMLNewline:
+  IF html% THEN					' if the user wants html output
+    IF oquote% or token% THEN			' if open quote or token is flagged
+      PRINT #3, fe$;				'  close the font
+    END IF
+    PRINT #3,					' print the new line
+  END IF
+RETURN
+
+
+' print the text new line
+
+TEXTNewline:
+  IF text% THEN					' if the user wants text output
+    PRINT #2,					'  new line
+  END IF
+RETURN
+
+
+' do a line from the program, return the EOF flag
+
+DoLine:
+  GOSUB GetWord					' get the next line pointer
+  oquote% = false				' not quoting a string
+  token% = false				' not listing tokens
+  eoprog% = (word&amp; = 0)				' flag if this is the last line
+  IF NOT eoprog% THEN				' if not end
+    isline% = true				' flag if there's a line to do 
+    GOSUB GetWord				' get the line number
+    word$ = STR$(word&amp;)				' convert to string
+    word$ = RIGHT$(word$, LEN(word$) - 1) + " "	' shift leading space to trailing
+    COLOR 1 : PRINT word$; : COLOR 15		' print the line number
+    GOSUB TEXTLine				' print text line number
+    GOSUB HTMLLine				' print html line number
+    DO
+      GOSUB GetByte				' get program line byte
+      GOSUB HTMLToken				' set the html token colour
+      IF byte% = 0 THEN				' if it's the EOL marker
+        isline% = false				' flag EOL
+      ELSEIF byte% = 34 THEN			' if it's open or close quote
+        COLOR 2					' blue for the line number
+        PRINT byte$;				' print the quote
+        GOSUB TEXTQuote				' do the text quote
+        GOSUB HTMLQuote				' do the html quote and colour
+        oquote% = NOT oquote%			' toggle quote flag
+      ELSE
+        IF oquote% THEN				' if we're quoting a string
+          COLOR 2				' green for quotes
+          PRINT symbol$(byte%, 0);		' print the symbol
+        ELSE
+          IF token%(byte%) THEN			' if it's a token
+            COLOR 4				' red for tokens
+          END IF
+          PRINT token$(byte%, 0);		' print the token
+        END IF
+        GOSUB TEXTByte				' print the html byte
+        GOSUB HTMLByte				' print the html byte
+      END IF
+      COLOR 15					' back to white
+    LOOP WHILE isline%				' loop until [EOL]
+
+    PRINT					' new line
+    GOSUB TEXTNewline				' print the text new line
+    GOSUB HTMLNewline				' print the html new line
+  END IF
+RETURN
+
+
+' get a byte from the input stream. return the value as a string and a number
+
+GetByte:
+  byte$ = " "					' one byte long string
+  GET #1, (i% + 1), byte$			' get LEN(byte$) bytes
+  i% = i% + 1%					' increment the index
+  byte% =  ASC(byte$)				' get numeric byte value
+RETURN
+
+
+' get a low byte high byte pair as a word
+
+GetWord:
+  GOSUB GetByte					' get address low byte
+  word&amp; = byte%					' copy it
+  GOSUB GetByte					' get address high byte
+  word&amp; = word&amp; + (byte% * 256&amp;)		' convert and add it
+RETURN
+
+
+' set up the conversion and flag arrays
+
+Initialise:
+  RESTORE
+						' for text or non graphic html
+  FOR index% = 0 TO 255
+    READ token$(index%,0)			' read in the token strings
+  NEXT
+
+  FOR index% = 0 TO 255
+    READ symbol$(index%,0)			' read in the symbol strings
+  NEXT
+						' for graphic html
+  FOR index% = 0 TO 255
+    READ token$(index%,1)			' read in the token strings
+  NEXT
+
+  FOR index% = 0 TO 255
+    READ symbol$(index%,1)			' read in the symbol strings
+  NEXT
+
+						' flags for valid token values
+  FOR index% = 0 TO 255
+    READ token%(index%)				' read in the token flags
+  NEXT
+
+
+' ** tokens **********************************************************************
+
+'$00
+  DATA "{SYM}","{SYM}","{SYM}","{STOP}","{SYM}","{WHT}","{SYM}","{SYM}"
+  DATA "{DIS}","{ENA}","{SYM}","{SYM}","{SYM}","{SYM}","{LOWER}","{SYM}"
+'$10
+  DATA "{SYM}","{DOWN}","{RVS ON}","{HOME}","{DEL}","{SYM}","{SYM}","{SYM}"
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{RED}","{RIGHT}","{GRN}","{BLU}"
+'$20
+  DATA " ","!","","#","$","%","&amp;","'"
+  DATA "(",")","*","+",",","-",".","/"
+'$30
+  DATA "0","1","2","3","4","5","6","7"
+  DATA "8","9",":",";","&lt;","=","&gt;","?"
+'$40
+  DATA "@","A","B","C","D","E","F","G"
+  DATA "H","I","J","K","L","M","N","O"
+'$50
+  DATA "P","Q","R","S","T","U","V","W"
+  DATA "X","Y","Z","[","{POUND}","]","^","{L ARROW}"
+'$60
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+'$70
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+'$80
+  DATA "END","FOR","NEXT","DATA","INPUT#","INPUT","DIM","READ"
+  DATA "LET","GOTO","RUN","IF","RESTORE","GOSUB","RETURN","REM"
+'$90
+  DATA "STOP","ON","WAIT","LOAD","SAVE","VERIFY","DEF","POKE"
+  DATA "PRINT#","PRINT","CONT","LIST","CLR","CMD","SYS","OPEN"
+'$A0
+  DATA "CLOSE","GET","NEW","TAB(","TO","FN","SPC(","THEN"
+  DATA "NOT","STEP","+","-","*","/","^","AND"
+'$B0
+  DATA "OR","&gt;","=","&lt;","SGN","INT","ABS","USR"
+  DATA "FRE","POS","SQR","RND","LOG","EXP","COS","SIN"
+'$C0
+  DATA "TAN","ATN","PEEK","LEN","STR$","VAL","ASC","CHR$"
+  DATA "LEFT$","RIGHT$","MID$","GO","KEY","GRAPHIC","SCNCLR","CIRCLE"
+'$D0
+  DATA "DRAW","REGION","COLOR","POINT","SOUND","CHAR","PAINT","RPOT"
+  DATA "RPEN","RSND","RCOLR","RGR","RJOY","RDOT","{SYM}","{SYM}"
+'$E0
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+'$F0
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{PI}"
+
+
+' ** symbol **********************************************************************
+
+'$00
+  DATA "{SYM}","{SYM}","{SYM}","{STOP}","{SYM}","{WHT}","{SYM}","{SYM}"
+  DATA "{DIS}","{ENA}","{SYM}","{SYM}","{SYM}","{SYM}","{LOWER}","{SYM}"
+'$10
+  DATA "{SYM}","{DOWN}","{RVS ON}","{HOME}","{DEL}","{SYM}","{SYM}","{SYM}"
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{RED}","{RIGHT}","{GRN}","{BLU}"
+'$20
+  DATA " ","!","","#","$","%","&amp;","'"
+  DATA "(",")","*","+",",","-",".","/"
+'$30
+  DATA "0","1","2","3","4","5","6","7"
+  DATA "8","9",":",";","&lt;","=","&gt;","?"
+'$40
+  DATA "@","A","B","C","D","E","F","G"
+  DATA "H","I","J","K","L","M","N","O"
+'$50
+  DATA "P","Q","R","S","T","U","V","W"
+  DATA "X","Y","Z","[","{POUND}","]","{U ARROW}","{L ARROW}"
+'$60
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+'$70
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+'$80
+  DATA "{SYM}","{C=1}","{SYM}","{RUN}","{SYM}","{F1}","{F3}","{F5}"
+  DATA "{F7}","{F2}","{F4}","{F6}","{F8}","{SYM}","{UPPER}","{SYM}"
+'$90
+  DATA "{BLK}","{UP}","{RVS OFF}","{CLR}","{INST}","{C=2}","{C=3}","{C=4}"
+  DATA "{C=5}","{C=6}","{C=7}","{C=8}","{PUR}","{LEFT}","{YEL}","{CYN}"
+'$A0
+  DATA "{^SPC}","{C=K}","{C=I}","{C=T}","{C=@}","{C=G}","{C=+}","{C=M}"
+  DATA "{C=POUND}","{^POUND}","{C=N}","{C=Q}","{C=D}","{C=Z}","{C=S}","{C=P}"
+'$B0
+  DATA "{C=A}","{C=E}","{C=R}","{C=W}","{C=H}","{C=J}","{C=L}","{C=Y}"
+  DATA "{C=U}","{C=O}","{^@}","{C=F}","{C=C}","{C=X}","{C=V}","{C=B}"
+'$C0
+  DATA "{^*}","{^A}","{^B}","{^C}","{^D}","{^E}","{^F}","{^G}"
+  DATA "{^H}","{^I}","{^J}","{^K}","{^L}","{^M}","{^N}","{^O}"
+'$D0
+  DATA "{^P}","{^Q}","{^R}","{^S}","{^T}","{^U}","{^V}","{^W}"
+  DATA "{^X}","{^Y}","{^Z}","{^+}","{C=-}","{^-}","{^RET}","{C=*}"
+'$E0
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+'$F0
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}"
+  DATA "{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{SYM}","{PI}"
+
+
+' ** tokens **********************************************************************
+
+'$00
+  DATA " ","&lt;IMG SRC=81.bmp&gt;"
+  DATA "&lt;IMG SRC=82.bmp&gt;","&lt;IMG SRC=83.bmp ALT={STOP}&gt;"
+  DATA "&lt;IMG SRC=84.bmp&gt;","&lt;IMG SRC=85.bmp ALT={WHT}&gt;"
+  DATA "&lt;IMG SRC=86.bmp&gt;","&lt;IMG SRC=87.bmp&gt;"
+  DATA "&lt;IMG SRC=88.bmp ALT={DIS}&gt;","&lt;IMG SRC=89.bmp ALT={ENA}&gt;"
+  DATA "&lt;IMG SRC=8a.bmp&gt;","&lt;IMG SRC=8b.bmp&gt;"
+  DATA "&lt;IMG SRC=8c.bmp&gt;","&lt;IMG SRC=8d.bmp&gt;"
+  DATA "&lt;IMG SRC=8e.bmp ALT={LOWER}&gt;","&lt;IMG SRC=8f.bmp&gt;"
+'$10
+  DATA "&lt;IMG SRC=90.bmp&gt;","&lt;IMG SRC=91.bmp ALT={DOWN}&gt;"
+  DATA "&lt;IMG SRC=92.bmp ALT={RVSON}&gt;","&lt;IMG SRC=93.bmp ALT={HOME}&gt;"
+  DATA "&lt;IMG SRC=94.bmp ALT={DEL}&gt;","&lt;IMG SRC=95.bmp&gt;"
+  DATA "&lt;IMG SRC=96.bmp&gt;","&lt;IMG SRC=97.bmp&gt;"
+  DATA "&lt;IMG SRC=98.bmp&gt;","&lt;IMG SRC=99.bmp&gt;"
+  DATA "&lt;IMG SRC=9a.bmp&gt;","&lt;IMG SRC=9b.bmp&gt;"
+  DATA "&lt;IMG SRC=9c.bmp ALT={RED}&gt;","&lt;IMG SRC=9d.bmp ALT={RIGHT}&gt;"
+  DATA "&lt;IMG SRC=9e.bmp ALT={GRN}&gt;","&lt;IMG SRC=9f.bmp ALT={BLU}&gt;"
+'$20
+  DATA " ","!","","#","$","%","&amp;","'"
+  DATA "(",")","*","+",",","-",".","/"
+'$30
+  DATA "0","1","2","3","4","5","6","7"
+  DATA "8","9",":",";","&lt;","=","&gt;","?"
+'$40
+  DATA "@","A","B","C","D","E","F","G"
+  DATA "H","I","J","K","L","M","N","O"
+'$50
+  DATA "P","Q","R","S","T","U","V","W"
+  DATA "X","Y","Z","["
+  DATA "&lt;IMG SRC=2c.bmp ALT={POUND}&gt;","]"
+  DATA "&lt;IMG SRC=2e.bmp&gt;","&lt;IMG SRC=2f.bmp ALT={LARROW}&gt;"
+'$60
+  DATA "&lt;IMG SRC=40.bmp&gt;","&lt;IMG SRC=41.bmp&gt;","&lt;IMG SRC=42.bmp&gt;","&lt;IMG SRC=43.bmp&gt;"
+  DATA "&lt;IMG SRC=44.bmp&gt;","&lt;IMG SRC=45.bmp&gt;","&lt;IMG SRC=46.bmp&gt;","&lt;IMG SRC=47.bmp&gt;"
+  DATA "&lt;IMG SRC=48.bmp&gt;","&lt;IMG SRC=49.bmp&gt;","&lt;IMG SRC=4a.bmp&gt;","&lt;IMG SRC=4b.bmp&gt;"
+  DATA "&lt;IMG SRC=4c.bmp&gt;","&lt;IMG SRC=4d.bmp&gt;","&lt;IMG SRC=4e.bmp&gt;","&lt;IMG SRC=4f.bmp&gt;"
+'$70
+  DATA "&lt;IMG SRC=50.bmp&gt;","&lt;IMG SRC=51.bmp&gt;","&lt;IMG SRC=52.bmp&gt;","&lt;IMG SRC=53.bmp&gt;"
+  DATA "&lt;IMG SRC=54.bmp&gt;","&lt;IMG SRC=55.bmp&gt;","&lt;IMG SRC=56.bmp&gt;","&lt;IMG SRC=57.bmp&gt;"
+  DATA "&lt;IMG SRC=58.bmp&gt;","&lt;IMG SRC=59.bmp&gt;","&lt;IMG SRC=5a.bmp&gt;","&lt;IMG SRC=5b.bmp&gt;"
+  DATA "&lt;IMG SRC=5c.bmp&gt;","&lt;IMG SRC=5d.bmp&gt;","&lt;IMG SRC=5e.bmp&gt;","&lt;IMG SRC=5f.bmp&gt;"
+'$80
+  DATA "END","FOR","NEXT","DATA","INPUT#","INPUT","DIM","READ"
+  DATA "LET","GOTO","RUN","IF","RESTORE","GOSUB","RETURN","REM"
+'$90
+  DATA "STOP","ON","WAIT","LOAD","SAVE","VERIFY","DEF","POKE"
+  DATA "PRINT#","PRINT","CONT","LIST","CLR","CMD","SYS","OPEN"
+'$A0
+  DATA "CLOSE","GET","NEW","TAB(","TO","FN","SPC(","THEN"
+  DATA "NOT","STEP","+","-","*","/","^","AND"
+'$B0
+  DATA "OR","&gt;","=","&lt;","SGN","INT","ABS","USR"
+  DATA "FRE","POS","SQR","RND","LOG","EXP","COS","SIN"
+'$C0
+  DATA "TAN","ATN","PEEK","LEN","STR$","VAL","ASC","CHR$"
+  DATA "LEFT$","RIGHT$","MID$","GO","KEY","GRAPHIC","SCNCLR","CIRCLE"
+'$D0
+  DATA "DRAW","REGION","COLOR","POINT","SOUND","CHAR","PAINT","RPOT"
+  DATA "RPEN","RSND","RCOLR","RGR","RJOY","RDOT","&lt;IMG SRC=5e.bmp&gt;","&lt;IMG SRC=5f.bmp&gt;"
+'$E0
+  DATA " ","&lt;IMG SRC=61.bmp&gt;","&lt;IMG SRC=62.bmp&gt;","&lt;IMG SRC=63.bmp&gt;"
+  DATA "&lt;IMG SRC=64.bmp&gt;","&lt;IMG SRC=65.bmp&gt;","&lt;IMG SRC=66.bmp&gt;","&lt;IMG SRC=67.bmp&gt;"
+  DATA "&lt;IMG SRC=68.bmp&gt;","&lt;IMG SRC=69.bmp&gt;","&lt;IMG SRC=6a.bmp&gt;","&lt;IMG SRC=6b.bmp&gt;"
+  DATA "&lt;IMG SRC=6c.bmp&gt;","&lt;IMG SRC=6d.bmp&gt;","&lt;IMG SRC=6e.bmp&gt;","&lt;IMG SRC=6f.bmp&gt;"
+'$F0
+  DATA "&lt;IMG SRC=70.bmp&gt;","&lt;IMG SRC=71.bmp&gt;","&lt;IMG SRC=72.bmp&gt;","&lt;IMG SRC=73.bmp&gt;"
+  DATA "&lt;IMG SRC=74.bmp&gt;","&lt;IMG SRC=75.bmp&gt;","&lt;IMG SRC=76.bmp&gt;","&lt;IMG SRC=77.bmp&gt;"
+  DATA "&lt;IMG SRC=78.bmp&gt;","&lt;IMG SRC=79.bmp&gt;","&lt;IMG SRC=7a.bmp&gt;","&lt;IMG SRC=7b.bmp&gt;"
+  DATA "&lt;IMG SRC=7c.bmp&gt;","&lt;IMG SRC=7d.bmp&gt;"
+  DATA "&lt;IMG SRC=7e.bmp&gt;","&lt;IMG SRC=5e.bmp ALT={PI}&gt;"
+
+
+' ** symbol **********************************************************************
+
+'$00
+  DATA " ","&lt;IMG SRC=81.bmp&gt;"
+  DATA "&lt;IMG SRC=82.bmp&gt;","&lt;IMG SRC=83.bmp ALT={STOP}&gt;"
+  DATA "&lt;IMG SRC=84.bmp&gt;","&lt;IMG SRC=85.bmp ALT={WHT}&gt;"
+  DATA "&lt;IMG SRC=86.bmp&gt;","&lt;IMG SRC=87.bmp&gt;"
+  DATA "&lt;IMG SRC=88.bmp ALT={DIS}&gt;","&lt;IMG SRC=89.bmp ALT={ENA}&gt;"
+  DATA "&lt;IMG SRC=8a.bmp&gt;","&lt;IMG SRC=8b.bmp&gt;"
+  DATA "&lt;IMG SRC=8c.bmp&gt;","&lt;IMG SRC=8d.bmp&gt;"
+  DATA "&lt;IMG SRC=8e.bmp ALT={LOWER}&gt;","&lt;IMG SRC=8f.bmp&gt;"
+'$10
+  DATA "&lt;IMG SRC=90.bmp&gt;","&lt;IMG SRC=91.bmp ALT={DOWN}&gt;"
+  DATA "&lt;IMG SRC=92.bmp ALT={RVSON}&gt;","&lt;IMG SRC=93.bmp ALT={HOME}&gt;"
+  DATA "&lt;IMG SRC=94.bmp ALT={DEL}&gt;","&lt;IMG SRC=95.bmp&gt;"
+  DATA "&lt;IMG SRC=96.bmp&gt;","&lt;IMG SRC=97.bmp&gt;"
+  DATA "&lt;IMG SRC=98.bmp&gt;","&lt;IMG SRC=99.bmp&gt;"
+  DATA "&lt;IMG SRC=9a.bmp&gt;","&lt;IMG SRC=9b.bmp&gt;"
+  DATA "&lt;IMG SRC=9c.bmp ALT={RED}&gt;","&lt;IMG SRC=9d.bmp ALT={RIGHT}&gt;"
+  DATA "&lt;IMG SRC=9e.bmp ALT={GRN}&gt;","&lt;IMG SRC=9f.bmp ALT={BLU}&gt;"
+'$20
+  DATA " ","!","","#","$","%","&amp;","'"
+  DATA "(",")","*","+",",","-",".","/"
+'$30
+  DATA "0","1","2","3","4","5","6","7"
+  DATA "8","9",":",";","&lt;","=","&gt;","?"
+'$40
+  DATA "@","A","B","C","D","E","F","G"
+  DATA "H","I","J","K","L","M","N","O"
+'$50
+  DATA "P","Q","R","S","T","U","V","W"
+  DATA "X","Y","Z","["
+  DATA "&lt;IMG SRC=2c.bmp ALT={POUND}&gt;","]"
+  DATA "&lt;IMG SRC=2e.bmp ALT={UARROW}&gt;","&lt;IMG SRC=2f.bmp ALT={LARROW}&gt;"
+'$60
+  DATA "&lt;IMG SRC=40.bmp&gt;","&lt;IMG SRC=41.bmp&gt;","&lt;IMG SRC=42.bmp&gt;","&lt;IMG SRC=43.bmp&gt;"
+  DATA "&lt;IMG SRC=44.bmp&gt;","&lt;IMG SRC=45.bmp&gt;","&lt;IMG SRC=46.bmp&gt;","&lt;IMG SRC=47.bmp&gt;"
+  DATA "&lt;IMG SRC=48.bmp&gt;","&lt;IMG SRC=49.bmp&gt;","&lt;IMG SRC=4a.bmp&gt;","&lt;IMG SRC=4b.bmp&gt;"
+  DATA "&lt;IMG SRC=4c.bmp&gt;","&lt;IMG SRC=4d.bmp&gt;","&lt;IMG SRC=4e.bmp&gt;","&lt;IMG SRC=4f.bmp&gt;"
+'$70
+  DATA "&lt;IMG SRC=50.bmp&gt;","&lt;IMG SRC=51.bmp&gt;","&lt;IMG SRC=52.bmp&gt;","&lt;IMG SRC=53.bmp&gt;"
+  DATA "&lt;IMG SRC=54.bmp&gt;","&lt;IMG SRC=55.bmp&gt;","&lt;IMG SRC=56.bmp&gt;","&lt;IMG SRC=57.bmp&gt;"
+  DATA "&lt;IMG SRC=58.bmp&gt;","&lt;IMG SRC=59.bmp&gt;","&lt;IMG SRC=5a.bmp&gt;","&lt;IMG SRC=5b.bmp&gt;"
+  DATA "&lt;IMG SRC=5c.bmp&gt;","&lt;IMG SRC=5d.bmp&gt;","&lt;IMG SRC=5e.bmp&gt;","&lt;IMG SRC=5f.bmp&gt;"
+'$80
+  DATA "&lt;IMG SRC=c0.bmp&gt;","&lt;IMG SRC=c1.bmp ALT={C=1}&gt;"
+  DATA "&lt;IMG SRC=c2.bmp&gt;","&lt;IMG SRC=c3.bmp ALT={RUN}&gt;"
+  DATA "&lt;IMG SRC=c4.bmp&gt;","&lt;IMG SRC=c5.bmp ALT={F1}&gt;"
+  DATA "&lt;IMG SRC=c6.bmp ALT={F3}&gt;","&lt;IMG SRC=c7.bmp ALT={F5}&gt;"
+  DATA "&lt;IMG SRC=c8.bmp ALT={F7}&gt;","&lt;IMG SRC=c9.bmp ALT={F2}&gt;"
+  DATA "&lt;IMG SRC=ca.bmp ALT={F4}&gt;","&lt;IMG SRC=cb.bmp ALT={F6}&gt;"
+  DATA "&lt;IMG SRC=cc.bmp ALT={F8}&gt;","&lt;IMG SRC=cd.bmp&gt;"
+  DATA "&lt;IMG SRC=ce.bmp ALT={UPPER}&gt;","&lt;IMG SRC=cf.bmp&gt;"
+'$90
+  DATA "&lt;IMG SRC=d0.bmp ALT={BLK}&gt;","&lt;IMG SRC=d1.bmp ALT={UP}&gt;"
+  DATA "&lt;IMG SRC=d2.bmp ALT={RVSOFF}&gt;","&lt;IMG SRC=d3.bmp ALT={CLR}&gt;"
+  DATA "&lt;IMG SRC=d4.bmp ALT={INST}&gt;","&lt;IMG SRC=d5.bmp ALT={C=2}&gt;"
+  DATA "&lt;IMG SRC=d6.bmp ALT={C=3}&gt;","&lt;IMG SRC=d7.bmp ALT={C=4}&gt;"
+  DATA "&lt;IMG SRC=d8.bmp ALT={C=5}&gt;","&lt;IMG SRC=d9.bmp ALT={C=6}&gt;"
+  DATA "&lt;IMG SRC=da.bmp ALT={C=7}&gt;","&lt;IMG SRC=db.bmp ALT={C=8}&gt;"
+  DATA "&lt;IMG SRC=dc.bmp ALT={PUR}&gt;","&lt;IMG SRC=dd.bmp ALT={LEFT}&gt;"
+  DATA "&lt;IMG SRC=de.bmp ALT={YEL}&gt;","&lt;IMG SRC=df.bmp ALT={CYN}&gt;"
+'$A0
+  DATA " ","&lt;IMG SRC=61.bmp ALT={C=K}&gt;"
+  DATA "&lt;IMG SRC=62.bmp ALT={C=I}&gt;","&lt;IMG SRC=63.bmp ALT={C=T}&gt;"
+  DATA "&lt;IMG SRC=64.bmp ALT={C=@}&gt;","&lt;IMG SRC=65.bmp ALT={C=G}&gt;"
+  DATA "&lt;IMG SRC=66.bmp ALT={C=+}&gt;","&lt;IMG SRC=67.bmp ALT={C=M}&gt;"
+  DATA "&lt;IMG SRC=68.bmp ALT={C=POUND}&gt;","&lt;IMG SRC=69.bmp ALT={^POUND}&gt;"
+  DATA "&lt;IMG SRC=6a.bmp ALT={C=N}&gt;","&lt;IMG SRC=6b.bmp ALT={C=Q}&gt;"
+  DATA "&lt;IMG SRC=6c.bmp ALT={C=D}&gt;","&lt;IMG SRC=6d.bmp ALT={C=Z}&gt;"
+  DATA "&lt;IMG SRC=6e.bmp ALT={C=S}&gt;","&lt;IMG SRC=6f.bmp ALT={C=P}&gt;"
+'$B0
+  DATA "&lt;IMG SRC=70.bmp ALT={C=A}&gt;","&lt;IMG SRC=71.bmp ALT={C=E}&gt;"
+  DATA "&lt;IMG SRC=72.bmp ALT={C=R}&gt;","&lt;IMG SRC=73.bmp ALT={C=W}&gt;"
+  DATA "&lt;IMG SRC=74.bmp ALT={C=H}&gt;","&lt;IMG SRC=75.bmp ALT={C=J}&gt;"
+  DATA "&lt;IMG SRC=76.bmp ALT={C=L}&gt;","&lt;IMG SRC=77.bmp ALT={C=Y}&gt;"
+  DATA "&lt;IMG SRC=78.bmp ALT={C=U}&gt;","&lt;IMG SRC=79.bmp ALT={C=O}&gt;"
+  DATA "&lt;IMG SRC=7a.bmp ALT={^@}&gt;","&lt;IMG SRC=7b.bmp ALT={C=F}&gt;"
+  DATA "&lt;IMG SRC=7c.bmp ALT={C=C}&gt;","&lt;IMG SRC=7d.bmp ALT={C=X}&gt;"
+  DATA "&lt;IMG SRC=7e.bmp ALT={C=V}&gt;","&lt;IMG SRC=7f.bmp ALT={C=B}&gt;"
+'$C0
+  DATA "&lt;IMG SRC=40.bmp ALT={^*}&gt;","&lt;IMG SRC=41.bmp ALT={^A}&gt;"
+  DATA "&lt;IMG SRC=42.bmp ALT={^B}&gt;","&lt;IMG SRC=43.bmp ALT={^C}&gt;"
+  DATA "&lt;IMG SRC=44.bmp ALT={^D}&gt;","&lt;IMG SRC=45.bmp ALT={^E}&gt;"
+  DATA "&lt;IMG SRC=46.bmp ALT={^F}&gt;","&lt;IMG SRC=47.bmp ALT={^G}&gt;"
+  DATA "&lt;IMG SRC=48.bmp ALT={^H}&gt;","&lt;IMG SRC=49.bmp ALT={^I}&gt;"
+  DATA "&lt;IMG SRC=4a.bmp ALT={^J}&gt;","&lt;IMG SRC=4b.bmp ALT={^K}&gt;"
+  DATA "&lt;IMG SRC=4c.bmp ALT={^L}&gt;","&lt;IMG SRC=4d.bmp ALT={^M}&gt;"
+  DATA "&lt;IMG SRC=4e.bmp ALT={^N}&gt;","&lt;IMG SRC=4f.bmp ALT={^O}&gt;"
+'$D0
+  DATA "&lt;IMG SRC=50.bmp ALT={^P}&gt;","&lt;IMG SRC=51.bmp ALT={^Q}&gt;"
+  DATA "&lt;IMG SRC=52.bmp ALT={^R}&gt;","&lt;IMG SRC=53.bmp ALT={^S}&gt;"
+  DATA "&lt;IMG SRC=54.bmp ALT={^T}&gt;","&lt;IMG SRC=55.bmp ALT={^U}&gt;"
+  DATA "&lt;IMG SRC=56.bmp ALT={^V}&gt;","&lt;IMG SRC=57.bmp ALT={^W}&gt;"
+  DATA "&lt;IMG SRC=58.bmp ALT={^X}&gt;","&lt;IMG SRC=59.bmp ALT={^Y}&gt;"
+  DATA "&lt;IMG SRC=5a.bmp ALT={^Z}&gt;","&lt;IMG SRC=5b.bmp ALT={^+}&gt;"
+  DATA "&lt;IMG SRC=5c.bmp ALT={C=-}&gt;","&lt;IMG SRC=5d.bmp ALT={^-}&gt;"
+  DATA "&lt;IMG SRC=5e.bmp ALT={^RET}&gt;","&lt;IMG SRC=5f.bmp ALT={C=*}&gt;"
+'$E0
+  DATA " ","&lt;IMG SRC=61.bmp&gt;","&lt;IMG SRC=62.bmp&gt;","&lt;IMG SRC=63.bmp&gt;"
+  DATA "&lt;IMG SRC=64.bmp&gt;","&lt;IMG SRC=65.bmp&gt;","&lt;IMG SRC=66.bmp&gt;","&lt;IMG SRC=67.bmp&gt;"
+  DATA "&lt;IMG SRC=68.bmp&gt;","&lt;IMG SRC=69.bmp&gt;","&lt;IMG SRC=6a.bmp&gt;","&lt;IMG SRC=6b.bmp&gt;"
+  DATA "&lt;IMG SRC=6c.bmp&gt;","&lt;IMG SRC=6d.bmp&gt;","&lt;IMG SRC=6e.bmp&gt;","&lt;IMG SRC=6f.bmp&gt;"
+'$F0
+  DATA "&lt;IMG SRC=70.bmp&gt;","&lt;IMG SRC=71.bmp&gt;","&lt;IMG SRC=72.bmp&gt;","&lt;IMG SRC=73.bmp&gt;"
+  DATA "&lt;IMG SRC=74.bmp&gt;","&lt;IMG SRC=75.bmp&gt;","&lt;IMG SRC=76.bmp&gt;","&lt;IMG SRC=77.bmp&gt;"
+  DATA "&lt;IMG SRC=78.bmp&gt;","&lt;IMG SRC=79.bmp&gt;","&lt;IMG SRC=7a.bmp&gt;","&lt;IMG SRC=7b.bmp&gt;"
+  DATA "&lt;IMG SRC=7c.bmp&gt;","&lt;IMG SRC=7d.bmp&gt;"
+  DATA "&lt;IMG SRC=7e.bmp&gt;","&lt;IMG SRC=5e.bmp ALT={PI}&gt;"
+
+' ** token flags *****************************************************************
+
+  DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  DATA -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+  DATA -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+  DATA -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+  DATA -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+  DATA -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+  DATA -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0
+  DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1
+
+RETURN
+</PRE>
+</TD></TR></TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 22nd February, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+

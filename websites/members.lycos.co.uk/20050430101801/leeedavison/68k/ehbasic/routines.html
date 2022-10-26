@@ -1,0 +1,383 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>Enhanced 68k BASIC, useful routines</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 68k microprocessor
+ family.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#link_1">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Useful routines. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<P>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There are many subroutines within BASIC that can be useful if you wish to use your own
+ assembly routines with it. Here are some of them with a brief description of their
+ function. For full details see the source code.
+</BLOCKQUOTE>
+<B><U>The routines.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B>LAB_IGBY</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ BASIC increment and get byte routine. gets the next byte from the BASIC command stream.
+ If the byte is a numeric character then the carry flag will be set, if the byte is a
+ termination byte, either null or a statement separator, then the zero flag will be set.
+ Spaces in the command stream will automatically be ignored.
+</BLOCKQUOTE>
+<B>LAB_GBYT </B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ BASIC get byte routine. Gets the current byte from the BASIC command stream but does not
+ increment the execute pointer. Otherwise the same as above.
+</BLOCKQUOTE>
+<B>LAB_COLD</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Performs a cold start. BASIC is reset and all BASIC memory is cleared.
+</BLOCKQUOTE>
+<B>LAB_WARM</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Performs a warm start. Execution is stopped and BASIC returns to immediate mode.
+</BLOCKQUOTE>
+<B>LAB_XERR</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ With d0 set, do error #d0, then warm start.
+<P>
+ The equivalent can be achieved by calling the routine in the name column.
+<BR>
+<BR>
+<TABLE BGCOLOR="white" WIDTH=80% CELLPADDING=2 CELLSPACING=0 BORDER=1>
+<TR>
+<TD WIDTH=12% ALIGN=CENTER><B><U>Name</U></B></TD>
+<TD WIDTH=7%  ALIGN=CENTER><B><U>d0</U></B></TD>
+<TD WIDTH=31%><B><U>Error</U></B></TD>
+<TD WIDTH=12% ALIGN=CENTER><B><U>Name</U></B></TD>
+<TD WIDTH=7%  ALIGN=CENTER><B><U>d0</U></B></TD>
+<TD WIDTH=31%><B><U>Error</U></B></TD>
+</TR>
+<TR>
+<TD>LAB_NFER</TD><TD ALIGN=CENTER>$00</TD><TD>NEXT without FOR</TD>
+<TD>LAB_SNER</TD><TD ALIGN=CENTER>$04</TD><TD>syntax</TD>
+</TR>
+<TR>
+<TD>LAB_RGER</TD><TD ALIGN=CENTER>$08</TD><TD>RETURN without GOSUB</TD>
+<TD>LAB_ODER</TD><TD ALIGN=CENTER>$0C</TD><TD>out of data</TD>
+</TR>
+<TR>
+<TD>LAB_FCER</TD><TD ALIGN=CENTER>$10</TD><TD>function call</TD>
+<TD>LAB_OFER</TD><TD ALIGN=CENTER>$14</TD><TD>overflow</TD>
+</TR>
+<TR>
+<TD>LAB_OMER</TD><TD ALIGN=CENTER>$18</TD><TD>out of memory</TD>
+<TD>LAB_USER</TD><TD ALIGN=CENTER>$1C</TD><TD>undefined statement</TD>
+</TR>
+<TR>
+<TD>LAB_ABER</TD><TD ALIGN=CENTER>$20</TD><TD>array bounds</TD>
+<TD>LAB_DDER</TD><TD ALIGN=CENTER>$24</TD><TD>double dimension array</TD>
+</TR>
+<TR>
+<TD>LAB_DZER</TD><TD ALIGN=CENTER>$28</TD><TD>divide by 0</TD>
+<TD>LAB_IDER</TD><TD ALIGN=CENTER>$2C</TD><TD>illegal direct</TD>
+</TR>
+<TR>
+<TD>LAB_TMER</TD><TD ALIGN=CENTER>$30</TD><TD>type mismatch</TD>
+<TD>LAB_SLER</TD><TD ALIGN=CENTER>$34</TD><TD>string too long</TD>
+</TR>
+<TR>
+<TD>LAB_SCER</TD><TD ALIGN=CENTER>$38</TD><TD>string too complex</TD>
+<TD>LAB_CCER</TD><TD ALIGN=CENTER>$3C</TD><TD>can't continue</TD>
+</TR>
+<TR>
+<TD>LAB_UFER</TD><TD ALIGN=CENTER>$40</TD><TD>undefined function</TD>
+<TD>LAB_LDER</TD><TD ALIGN=CENTER>$44</TD><TD>LOOP without DO</TD>
+</TR>
+<TR>
+<TD>LAB_UVER</TD><TD ALIGN=CENTER>$48</TD><TD>undefined variable</TD>
+<TD>LAB_UDER</TD><TD ALIGN=CENTER>$4C</TD><TD>undimensioned array</TD>
+</TR>
+<TR>
+<TD>LAB_WDER</TD><TD ALIGN=CENTER>$50</TD><TD>wrong dimensions</TD>
+<TD>LAB_ADER</TD><TD ALIGN=CENTER>$54</TD><TD>address</TD>
+</TR>
+</TABLE>
+<P>
+ You may add your own error messages by extending the error message pointer and error
+ message tables.
+</BLOCKQUOTE>
+<B>LAB_INLN</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Print "? " and get BASIC input. Returns a0 as a pointer to the start of the input line.
+ The input is null terminated.
+</BLOCKQUOTE>
+<B>LAB_SSLN</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Search Basic for a line, the line number required is held in the temporary integer, from
+ start of program memory. Returns carry set and a pointer to the line in a0 if found, if
+ not it returns carry and a pointer to the next numbered line in a0.
+</BLOCKQUOTE>
+<B>LAB_SHLN</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Search Basic for temporary integer line number from a0. Same as above but starts the
+ search from a0.
+</BLOCKQUOTE>
+<B>LAB_SNBS</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Scan for next BASIC statement (: or [EOL]). Returns d1 as index to : or [EOL] from
+ (a5).
+</BLOCKQUOTE>
+<B>LAB_SNBL</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Scan for next BASIC line. Same as above but only returns on [EOL].
+</BLOCKQUOTE>
+<B>LAB_REM</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Perform REM, skip (rest of) line.
+</BLOCKQUOTE>
+<B>LAB_GFPN</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Get fixed-point number into temporary integer.
+</BLOCKQUOTE>
+<B>LAB_CRLF</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Print [CR]/[LF] to output device.
+</BLOCKQUOTE>
+<B>LAB_PRNA</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Print character in d0 to output device.
+</BLOCKQUOTE>
+<B>LAB_GVAR</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Get variable address. Returns a pointer to the variable in Cvaral and a0 and sets the
+ data type flag, $80=string, $40=integer and $00=float.
+</BLOCKQUOTE>
+<B>LAB_EVNM</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Evaluates an expression and checks the result is numeric, if not it does a type
+ mismatch. The result of the expression is returned in FAC1.
+</BLOCKQUOTE>
+<B>LAB_CTNM</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Check if source is numeric, else do type mismatch.
+</BLOCKQUOTE>
+<B>LAB_CTST</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Check if source is string, else do type mismatch.
+</BLOCKQUOTE>
+<B>LAB_CKTM</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Type match check, set carry for string, clear carry for numeric.
+</BLOCKQUOTE>
+<B>LAB_EVEX</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Evaluate expression.
+</BLOCKQUOTE>
+<B>LAB_GVAL</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Get numeric value from line. Returns the result in FAC1.
+</BLOCKQUOTE>
+<B>LAB_SCCA</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Scan for the byte in d0 as the next byte. If so return here, else do syntax error then
+ warm start.
+</BLOCKQUOTE>
+<B>LAB_CASC</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Check byte is alpha ("A" to "Z" or "a" to "z"), return carry clear if so.
+</BLOCKQUOTE>
+<B>LAB_EVIN</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Evaluate integer expression. Return integer in d0 and Itemp.
+</BLOCKQUOTE>
+<B>LAB_EVPI</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Evaluate +ve integer expression.
+</BLOCKQUOTE>
+<B>LAB_EVIR</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Evaluate integer expression, no sign check.
+</BLOCKQUOTE>
+<B>LAB_CKRN</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Check that the interpreter is not in immediate mode. If not then return, if so do
+ illegal direct error.
+</BLOCKQUOTE>
+<B>LAB_GARB</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Perform garbage collection routine.
+</BLOCKQUOTE>
+<B>LAB_EVST</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Evaluate string.
+</BLOCKQUOTE>
+<B>LAB_SGBY</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Scan and get byte parameter, return the byte in d0 and Itemp.
+</BLOCKQUOTE>
+<B>LAB_GTBY</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Get byte parameter and ensure numeric type, else do type mismatch error. Return the byte
+ in d0 and Itemp.
+</BLOCKQUOTE>
+<B>LAB_EVBY</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Evaluate byte expression, return the byte in d0 and Itemp.
+</BLOCKQUOTE>
+<B>LAB_GADB</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Get two parameters as in POKE or WAIT. Return the first parameter in a0, second in d0.
+</BLOCKQUOTE>
+<B>LAB_SCGB</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Scan for "," and get byte, else do Syntax error then warm start. Return the byte in d0
+ and Itemp.
+</BLOCKQUOTE>
+<B>LAB_UFAC</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Unpack the four bytes starting (a0) into FAC1 as a floating point number.
+</BLOCKQUOTE>
+<B>LAB_PFAC</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Pack the floating point number in FAC1 into the current variable (Lvarpl).
+</BLOCKQUOTE>
+<B>LAB_AYFC</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Convert d0 to signed longword in FAC1.
+</BLOCKQUOTE>
+<B>LAB_RTST</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Put string address and length on descriptor stack & update stack pointers.
+ Pointer is in a0, length is in d1. This is how you return a string to BASIC.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 3rd May, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=6f02e4b1&adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="//secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

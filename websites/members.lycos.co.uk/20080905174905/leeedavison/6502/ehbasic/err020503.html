@@ -1,0 +1,82 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=26dd4f84&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC, errata for 3rd May 2002</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="errata.html">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Enhanced BASIC, errata. 3rd May 2002 </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<U><B>Symptoms</B></U>
+<BLOCKQUOTE>
+ STR$() always returns a null string.
+</BLOCKQUOTE>
+<U><B>Cause</B></U>
+<BLOCKQUOTE>
+ While juggling the page zero variables this reference got forgotten. The result is
+ it tries to read the returned string from the wrong location and always gets a null byte.
+</BLOCKQUOTE>
+<U><B>The fix</B></U>
+<BLOCKQUOTE>
+ The fix for this is easy, it just entails changing the reference.
+<P>
+ Just after LAB_STRS was ..
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+LAB_STRS
+	JSR	LAB_CTNM		; check if source is numeric
+	LDY	#$00			; set string index
+	JSR	LAB_2970		; convert FAC1 to string
+	PLA				; dump return address
+	PLA				; dump return address
+	LDA	#$FF			; set string start low byte
+	LDY	#$00			; set string start high byte
+</PRE>
+</TD></TR></TABLE>
+<P>
+ .. change the LDA and LDY and this now becomes ..
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+LAB_STRS
+	JSR	LAB_CTNM		; check if source is numeric
+	LDY	#$00			; set string index
+	JSR	LAB_2970		; convert FAC1 to string
+	PLA				; dump return address
+	PLA				; dump return address
+	LDA	#&#60;(Decss+1)		; set result string low pointer
+	LDY	#&#62;(Decss+1)		; set result string high pointer
+</PRE>
+</TD></TR></TABLE>
+<P>
+ .. This is done in version 1.02.<P>
+ If you change Decss be carefull that it remains in page zero or the branch after the
+ LDY will fail.
+</BLOCKQUOTE>
+<B>Symptoms</B>
+<BLOCKQUOTE>
+ NEXT followed by a colon gives a Syntax ERROR. E.g.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+DO:FORA=0TOTWOPISTEPPI/10:?SPC(SIN(A)*18.5+20);"Hello world":NEXT:LOOP
+</PRE>
+</TD></TR></TABLE>
+<P>
+ should work (oh yes it should!) but

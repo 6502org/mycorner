@@ -1,0 +1,347 @@
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC on your system</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>Enhanced BASIC on your system </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="index.html#link_!">[Back]</A>
+<BR clear=all><P>
+<HR>
+<P>
+<P>
+<B><U>Hardware.</U></B>
+<BLOCKQUOTE>
+ EhBASIC can be made to work on nearly any 6502 system, it <A
+ HREF="requirements.html">requires</A> very little. The system it was developed on
+ is a combination of my <A HREF="../sbc/index.html">SBC</A> and <A
+ HREF="../acia/index.html">6551</A> projects.
+</BLOCKQUOTE>
+<B><U>Memory.</U></B>
+<BLOCKQUOTE>
+ EhBASIC makes extensive use of page zero and some use of page 2. Some areas may be
+ re-used as long as care is taken. Program and variable space is from $0300 up to
+ whatever is available, the more the better. The interpreter can be ROM or RAM based
+ and can be assembled to reside almost anywhere in memory, only minor changes need
+ to be made.
+</BLOCKQUOTE>
+<B><U>Software.</U></B>
+<BLOCKQUOTE>
+ For minimal functionality the interpreter needs only two external routines, a
+ character get routine and a character send routine.
+<P>
+ For full functionality two other external routines, load and save, along with
+ two interrupt service routines are needed.
+<P>
+ Minimal set-up is required, most of the set-up is performed by the interpreter cold
+ start routine.
+</BLOCKQUOTE>
+<B><U>How to.</U></B>
+<BLOCKQUOTE>
+ The interpreter calls the system routines via RAM based vectors and, as long as the
+ requirements for each routine are met, these can be changed on the fly if needs be.
+<P>
+ All the routines exit via an RTS.
+<P>
+ The routines are ..
+<BLOCKQUOTE>
+<DL>
+<DT>
+<B>Input</B>
+<DD>
+  This is a non halting scan of the input device. If a character is ready it should be
+  placed in A and the carry flag set, if there is no character then A, and the carry
+  flag, should be cleared.
+</DD>
+</DT>
+<DT>
+<B>Output</B>
+<DD>
+  The character to be sent is in A and should not be changed by the routine. Also on
+  return, the N and Z flags should reflect the character in A.
+</DD>
+</DT>
+<DT>
+<B>Load</B>
+<DD>
+  This is entirely system dependant.
+</DD>
+</DT>
+<DT>
+<B>Save</B>
+<DD>
+  This is entirely system dependant.
+</DD>
+</DT>
+</DL>
+</BLOCKQUOTE>
+ Also if you wish to use the <A HREF="language.html#ON2">ON {IRQ|NMI}</A> commands ..
+<BLOCKQUOTE>
+<DL>
+<DT>
+<B>Irq</B>
+<DD>
+  If no other valid interrupt has happened then this routine should, after checking that
+  the interrupt is set-up, set the IRQ interrupt happened flag.
+</DD>
+</DT>
+<DT>
+<B>Nmi</B>
+<DD>
+  If no other valid interrupt has happened then this routine should, after checking that
+  the interrupt is set-up, set the NMI interrupt happened flag.
+</DD>
+</DT>
+</DL>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>Example code.</U></B>
+<BLOCKQUOTE>
+ This is for a simple 6502 system with RAM from $0000 to $BFFF, the interpreter in ROM
+ from $C000 to $EFFF (12k), an 6551 ACIA at $F000 and this code in a 2k ROM from $F800
+ to $FFFF<P>
+<TABLE WIDTH=90% CELLSPACING=0 CELLPADDING=8 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; Minimum monitor routines for extended BASIC. Has set-up and
+; 6551 ACIA code, nothing else.
+
+LAB_0000	= $0000		; BASIC warm start
+
+NmiBase		= $D8		; NMI handler flag byte
+;		= $D9		; NMI handler addr low byte
+;		= $DA		; NMI handler addr high byte
+IrqBase		= $DB		; IRQ handler flag byte
+;		= $DC		; IRQ handler addr low byte
+;		= $DD		; IRQ handler addr high byte
+
+ccflag		= $0200		; BASIC CTRL-C flag, 00 = en, 01 = dis
+ccbyte		= ccflag+1	; BASIC CTRL-C byte
+ccnull		= ccbyte+1	; BASIC CTRL-C byte timeout
+
+VECCC		= ccnull+1	; ctrl c check vector
+
+VECIN		= VECCC+2	; input vector
+VECOUT		= VECIN+2	; output vector
+VECLD		= VECOUT+2	; load vector
+VECSV		= VECLD+2	; save vector
+
+IRQ_vec		= VECSV+2	; IRQ/BRK jump
+NMI_vec		= IRQ_vec+$0A	; NMI jump
+
+LANGROM		= $C000		; start of BASIC ROM
+
+A_rxd		= $F000		; ACIA receive data port
+A_txd		= $F000		; ACIA transmit data port
+A_sts		= $F001		; ACIA status port
+A_res		= $F001		; ACIA reset port
+A_cmd		= $F002		; ACIA command port
+A_ctl		= $F003		; ACIA control port
+
+	*=	$F800
+
+; reset vector points here
+
+RESET
+	CLD			; clear decimal mode
+	LDX	#$FF		; load byte
+	TXS			; set the stack
+
+				; initialise UART (6551 ACIA)
+	STA	A_res		; soft reset
+	LDA	#$8B		; set specific modes and functions
+	STA	A_cmd		; save to command register
+;	LDA	#$1A		; 8-N-1, 2400 baud
+	LDA	#$1C		; 8-N-1, 4800 baud
+;	LDA	#$1E		; 8-N-1, 9600 baud
+	STA	A_ctl		; set control register
+
+				; initialise page 2 variables
+	LDY	#PG2_END-PG2_TAB	; byte count
+PG2_LOOP
+	LDA	PG2_TAB-1,Y	; get byte
+	STA	VECIN-1,Y	; store in page 2
+	DEY			; decrement count
+	BNE	PG2_LOOP	; loop if not done
+
+LAB_SMSG
+	LDA	TAB_MSG,Y	; get byte from start-up message
+	JSR	OUTPUT		; call output routine
+	INY			; next byte
+	CPY	#LAB_END-TAB_MSG-1	; compare with loop limit
+	BNE	LAB_SMSG	; loop if not complete
+
+WAIT_LP
+	JSR	RINPUT		; call input routine
+	BCC	WAIT_LP		; loop if no key
+
+	AND	#$DF		; mask case bit (make upper case)
+	CMP	#"W"		; compare with 'W' (warm)
+	BNE	LAB_NWRM	; branch if not
+
+	JMP	LAB_0000	; jump to warm start vector
+
+LAB_NWRM
+	CMP	#"C"		; compare with 'C' (cold)
+	BNE	WAIT_LP		; loop if not
+
+	JMP	LANGROM		; go do BASIC cold start
+
+; now come the required BASIC routines
+
+; scan the input device
+; if byte available return carry set and byte in A
+; else return carry clear and $00 in A
+
+RINPUT
+	LDA	A_sts		; get ACIA status
+	AND	#$08		; mask rx buffer full flag
+	CMP	#$08		; is bit set
+	BNE	RD_EXIT		; exit with Cb=0 if buffer empty
+
+	LDA	A_rxd		; get byte from ACIA data port (Cb=1)
+RD_EXIT
+	RTS			;
+
+; wait for ACIA and tx byte
+; return sent byte in A and N and Z flags set
+
+OUTPUT
+	PHA			; save A
+OUTLOOP
+	LDA	A_sts		; get status byte
+	AND	#$10		; transmit data register empty?
+	BEQ	OUTLOOP		; loop if tx buffer full
+
+	PLA			; restore A, set flags
+	STA	A_txd		; save to data port
+	RTS			;
+
+; load BASIC program routine, default (do nothing)
+
+SETLOD
+
+; save BASIC program routine, default (do nothing)
+
+SETSAV
+	RTS			; 
+
+; table of initial values for page 2
+
+PG2_TAB
+	.word	RINPUT		; input vector
+	.word	OUTPUT		; output vector
+	.word	SETLOD		; load vector
+	.word	SETSAV		; save vector
+
+; If you want to use the ON {IRQ|NMI} commands you will
+; need this interrupt handling code.
+
+; code needed to set the interrupt flags.
+; will only set the happened flag the set-up bit is set.
+
+IRQ_CODE
+	PHA			; save A
+	LDA	IrqBase		; get set-up byte
+	LSR	A		; shift bit to right
+	ORA	IrqBase		; OR with set-up byte
+	STA	IrqBase		; save set-up byte
+	PLA			; restore A
+	RTI
+
+NMI_CODE
+	PHA			; save A
+	LDA	NmiBase		; get set-up byte
+	LSR	A		; shift bit to right
+	ORA	NmiBase		; OR with set-up byte
+	STA	NmiBase		; save set-up byte
+	PLA			; restore A
+	RTI
+END_CODE
+
+PG2_END
+
+; start-up message
+
+TAB_MSG
+	.byte	"EhBASIC for 6502 (C) 2001 C/W?"
+LAB_END
+
+	*=	$FFFA
+
+; 6502 vectors
+
+	.word	NMI_vec		; NMI vector set to BASIC NMI code
+	.word	RESET		; RES vector
+	.word	IRQ_vec		; IRQ vector set to BASIC IRQ code
+
+	END
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 28th April, 2002.</FONT>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.3 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3e868795&adpref="></script>

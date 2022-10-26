@@ -1,0 +1,155 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=9c345470&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>EPAC 68008.</TITLE><META name="description" content="EPAC 68008, EPAC,
+ 68008, MC68008, single board computer"></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#atlas"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>EPAC BIOS. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The EPAC I received came without an EPROM or any other software. To be able to use it I
+ worte a BIOS that supports EhBASIC, can download code as s-records and run or trace it
+ and also supports a lot of EASy68K's TRAP #15 I/O calls so EASy68K can be used to write,
+ assemble and test code for the EPAC.
+</BLOCKQUOTE>
+<B><U>Source</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<!-- The source as presented will not run on an unmodified EPAC. It requires that IC7, the
+ address decoder, be changed for one that supports a more expandable <A
+ HREF="mem.html">memory map</A>. This is so that just one version of the BIOS will run to
+ some degree on all memory sizes.-->
+ The source as presented will not run on an unmodified EPAC. It requires that IC7, the
+ address decoder, be changed for one that supports a more expandable memory map. This is
+ so that just one version of the BIOS will run to some degree on all memory sizes.
+</BLOCKQUOTE>
+<B><U>Instructions</U></B>
+<PRE>
+  ***************************************************************************************
+  *											*
+  *	BIOS for EPAC 68008 2006/1/27. V0.70						*
+  *											*
+  *											*
+  *	More 68000 and other projects can be found on my website at ..			*
+  *											*
+  *	 http://www.themotionstore.com/leeedavison/index.html				*
+  *											*
+  *	.. or ..									*
+  *											*
+  *	 http://members.lycos.co.uk/leeedavison/index.html				*
+  *											*
+  *	mail : leeedavison@lycos.co.uk							*
+  *											*
+  ***************************************************************************************
+
+ Startup
+
+	When started the BIOS will announce itself and then present a prompt for user
+ input. Commands are case insensetive and may be entered in either case, as are the
+ characters A to F when used in hexadecimal values. The following commands are available.
+
+	<B>help</B> or <B>?</B>
+		Displays the brief help message.
+
+	<B>ver</B>
+		Display the BIOS version string.
+
+	<B>dn</B> &lt;hex&gt;
+		Display or set the value of data register n, where n is a single digit
+		0 to 7 and &lt;hex&gt; is an optional, unsigned hexadecimal longword. So if
+		you type d0 [Enter] the BIOS will respond with ..
+
+		 = $xxxxxxxx
+
+		.. where xxxxxxxx is the hexadecimal contents of d0. If however you type
+		d0 deadbeef [Enter] then d0 will be set to the hexadevimal value DEADBEEF.
+
+	<B>an</B> &lt;hex&gt;
+		Display or set the value of address register n, where n is a single digit
+		0 to 7 and &lt;hex&gt; is an optional, unsigned, hexadecimal longword.
+
+	<B>us</B> &lt;hex&gt;
+		Display or set the value of the user stack pointer. &lt;hex&gt; is an
+		optional, unsigned, hexadecimal longword.
+
+	<B>pc</B> &lt;hex&gt;
+		Display or set the value of the user program counter. &lt;hex&gt; is an
+		optional, unsigned, hexadecimal longword.
+
+	<B>regs</B>
+		Display the saved user registers. All the 680x0 registers are displayed
+		in a layout similar to that used in the simulator window in Sim68K. 'A7'
+		and the user stack pointer 'US' are the same register, changing one will
+		change the other. When the monitor is first started the register contents
+		will look like this ..
+
+	                                                              T S  INT   XNZVC
+	 D0 = 00000000 D4 = 00000000 A0 = 00000000 A4 = 00000000 SR = 0000000000000000
+	 D1 = 00000000 D5 = 00000000 A1 = 00000000 A5 = 00000000 US = 00000000
+	 D2 = 00000000 D6 = 00000000 A2 = 00000000 A6 = 00000000 SS = 000007FC
+	 D3 = 00000000 D7 = 00000000 A3 = 00000000 A7 = 00000000 PC = 00000000
+
+
+		These register values will be loaded into the corresponding registers when
+		code is run or traced. After each instruction while tracing and at the end
+		of a run program the saved values will be updated to reflect the current
+		register values.
+
+	<B>run</B> &lt;hex&gt;
+		Executes code, in user mode, from the current user pc value or the hex
+		value entered. Programs loaded with the load command (see later) can be
+		started with run if the start address was set correctly in the assembly.
+		&lt;hex&gt; is an optional, unsigned, hexadecimal longword.
+
+	<B>trace</B> &lt;hex&gt;
+		Single step code, in user mode, from the current user pc value or the hex
+		value entered. Programs loaded with the load command (see later) can be
+		started with trace if the start address was set correctly in the assembly.
+		&lt;hex&gt; is an optional, unsigned, hexadecimal longword.
+
+		The first time trace is executed after a load, or when trace &lt;hex&gt; is
+		entered will just display the registers and the instruction at the user
+		program counter. The prompt will change from '&gt;&gt;' to 'T&gt;' and can
+		now be stepped, instruction by instruction, by pressing enter. Registers can
+		be examined or set though setting the program counter will exit the trace
+		mode and the prompt will change back to '&gt;&gt;' requiring trace to be
+		entered again to continue tracing.
+
+	<B>restart</B>
+		Restart the monitor. This executes the code in exactly the way that a power
+		on reset would. The vector addresses are reset and the system base address
+		and stack pointers reset to their original values. The time is reset to
+		$00000000 and all the saved registers are cleared. Also the I/O devices are
+		initialized.
+
+	<B>load</B>
+		Load an S-Record file into the host memory. After entering load the user
+		will  be prompted to 'Send S-Record now'. As each record is received and
+		loaded a '.' character is output to give some idea of progress. Most S-
+		Record record types are recognised and used. Type 0 records are decoded
+		and displayed as ASCII strings, types 7, 8 and 9 are used to load the
+		start address of the code and also act as end of file markers.
+
+		If all goes well then after the end record has been loaded the message
+		'S-Record(s) loaded' will be displayed however during loading other mesages
+		may appear.
+
+		'S-Record error'
+			There was an error in the record, either a non hex character in the
+			stream or the checksum was incorrect. In this case nothing is saved
+			to memory and the loader disregards the entire record.
+
+		'S-Record too long'
+			The record was too long to fit in the buffer and so was dropped. As
+			records are not supposed to exceede 78 characters and the buffer is
+			long enough for eighty character pairs this should never happen.
+
+		'Unrecognised S-Record type'
+			The record was received correctly but is of a type not used by the
+			loader and so has been disregarded. Only record types 4, 5 and 6
+			will cause this.
+
+	<B>time</B> &lt;hex&gt;
+		Display or set the sy

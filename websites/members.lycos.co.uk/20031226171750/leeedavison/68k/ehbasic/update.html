@@ -1,0 +1,280 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC, update</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 68k microprocessor
+ family.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>Enhanced BASIC, update  </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="index.html#link_1">[Back]</A>
+<BR clear=all><P>
+<HR>
+ Download version 1.10
+ <A HREF="source.zip">source <IMG SRC="../../zip_sm.png" ALT="[Download]"
+ border=0></A>.
+<P>
+<A NAME=030425></A>
+<B>25th April 2003.</B>
+<BLOCKQUOTE>
+ The LIST command has changed internally to use the same tables that are used for
+ tokenising by EhBASIC. This removes the need to keep two tables of keywords maintained.
+ The downside is that the size has increased but the speed of the LIST command is better.
+<P>
+ There have also been changes to the table orders, all byte sized data tables are now at
+ the end so I no longer have to worry about word and longword tables being correctly
+ aligned. Other small changes have been made to progress the code to becomming pure, i.e.
+ both relocatable and reentrant, for possible use in multitasking systems.
+<P>
+ The version number is now 1.10. Enjoy.
+</BLOCKQUOTE>
+<A NAME=030416></A>
+<B>16th April 2003.</B>
+<BLOCKQUOTE>
+ A fix to the math routines reduces errors in some cases. This was due to a potential
+ carry being ignored and some results being truncated instead of rounded. The result of
+ this is that ..
+<BLOCKQUOTE>
+<B>PI * PI / PI / PI - 1</B>
+</BLOCKQUOTE>
+ .. now = 0 instead of -4.65661E-10 and ..
+<BLOCKQUOTE>
+<B>COS( 3 * PI / 2 )</B>
+</BLOCKQUOTE>
+ .. now = 0 instead of -1.05849E-5
+<P>
+ The version number is now 1.09. Enjoy.
+</BLOCKQUOTE>
+<A NAME=030414></A>
+<B>14th April 2003.</B>
+<BLOCKQUOTE>
+ Small changes to the way strings are compared which prevents A$="" from failing sometimes
+ even when A$ is null. Also a change to the LOOP command which could sometimes terminate
+ program execution if it was conditional on a string compare.
+<P>
+ The version number is now 1.08. Enjoy.
+</BLOCKQUOTE>
+<A NAME=030411></A>
+<B>11th April 2003.</B>
+<BLOCKQUOTE>
+ Some changes to the way INPUT and READ parse the data stream. This also corrects some
+ inconsistencies in the way different types of data (string, hex integer or floating)
+ were handled.
+<P>
+ The version number is now 1.07. Enjoy.
+</BLOCKQUOTE>
+<A NAME=030409></A>
+<B>9th April 2003.</B>
+<BLOCKQUOTE>
+ Some small changes to the way long integers are handled.
+<P>
+ The version number is now 1.06. Enjoy.
+</BLOCKQUOTE>
+<A NAME=030328></A>
+<B>28th March 2003.</B>
+<BLOCKQUOTE>
+ An <I>undocumented feature</I> of the SQR() function was that it returned zero for
+ roots in the 0.5 to 0.999999 range. This has been fixed.
+<P>
+ The version number is now 1.05. Enjoy.
+</BLOCKQUOTE>
+<A NAME=030313></A>
+<B>13th March 2003.</B>
+<BLOCKQUOTE>
+ More internal changes and a fix to DEEK() and LEEK() which I'd managed to break.
+ There has also been an update to the language reference.
+<P>
+ The version number is now 1.04. Enjoy.
+</BLOCKQUOTE>
+<P>
+<A NAME=030307></A>
+<B>7th March 2003.</B>
+<BLOCKQUOTE>
+ Minor changes to speed critical code and some internal functions modified. Simulator
+ specific code changed to take advantage of updated features.
+<P>
+ The behaviour of LEFT$(), RIGHT$() and MID$() have been changed. Now if the length of the
+ required string is zero then a null string will be returned. MID$() has been changed so
+ that a starting point beyond the end of the referenced string will return a null string.
+ Also all string function values can now go up to 65535 which is the maximum string
+ length.
+<P>
+ Weeded out two instances where the result of a calculation could be minus zero. While
+ there may not be much difference numerically, between plus and minus zero, when a
+ function is expecting a positive value it will often choke on minus zero.
+<P>
+ The version number is now 1.03. Enjoy.
+</BLOCKQUOTE>
+<P>
+<A NAME=030305></A>
+<B>5th March 2003.</B>
+<BLOCKQUOTE>
+ Some small patches to code and a change in the way the power function works. Now if you
+ raise a negative value to an integer power the sign is calculated correctly, also raising
+ a negative number to a fractional power will now give a 'Function call' error.
+<P>
+ The version number is now 1.02. Enjoy.
+</BLOCKQUOTE>
+<P>
+<A NAME=030304></A>
+<B>4th March 2003.</B>
+<BLOCKQUOTE>
+ Due to a connection problem I never did get the source, mentioned below, uploaded.
+ So to make up for it there are a few less undocumented features in this version. As a
+ result the version is now 1.01. Enjoy.
+</BLOCKQUOTE>
+<P>
+<A NAME=030303></A>
+<B>3rd March 2003.</B>
+<BLOCKQUOTE>
+ Just a small update and, as it was only yesterday I released the source there's no
+ version increment for this one.
+<P>
+ Fixed a small <I>undocumented feature</I> with the <B>LIST</B> command and added ASCII
+ <B>SAVE</B> and <B>LOAD</B> capabilities. To <B>SAVE</B> a program as ASCII just append
+ the <B>SAVE</B> command with <B>,a</B>. For more details see the <A
+ HREF="language.html#SAVE">language reference</A>.
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 25th April, 2003.</FONT>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.10 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=3fec6d3d&adpref="></script>

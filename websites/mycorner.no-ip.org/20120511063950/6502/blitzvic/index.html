@@ -1,0 +1,66 @@
+<HTML><HEAD><TITLE>Blitz BASIC VIC 20 emulation</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=25%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER><B><FONT SIZE=+1>Blitz BASIC VIC 20 emulation </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=25%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<IMG SRC="blitzvic.png" ALIGN=RIGHT BORDER=1 TITLE="VIC 20 in Blitz BASIC" HSPACE=8>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I recently debugged a <A HREF="../blitzc64/index.html">Commodore 64 emulator</A> and
+ then improved it just a little.
+<P ALIGN=JUSTIFY>
+ It got me thinking about just how hard it would be to make it look like a VIC 20 and
+ run the VIC 20 ROMs.
+<P ALIGN=JUSTIFY>
+ It turns out to be not very hard at all. Mostly a case of changing the memory map to
+ that of the VIC 20 and changing the screen emulation to a 22 by 23 screen. The hardest
+ part was making the new character image as it needed to be 24 by 16 pixels, instead of
+ 16 by 16 pixels as for the C64 emulator, for each character.
+</BLOCKQUOTE>
+<B><U>What does it do?</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ It does just enough 6502 emulation to run the VIC 20 ROMs, it doesn't do decimal mode
+ yet and there are some incorrect cycle counts for instructions. It also emulates the
+ VIC 20 memory map, a fixed address character screen mode and jams key codes into the
+ keyboard buffer while the emulated 6502 isn't looking.
+</BLOCKQUOTE>
+<B><U>What's been changed.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The cycle counter has been corrected for a PAL CPU.
+<P ALIGN=JUSTIFY>
+ Added a virtual i/o area so that upper case and lower case characters can be displayed.
+ It's a bit crap but POKE 36869,242 will change a whole screen of characters to lower
+ case and POKE 36869,240 will change them back to upper case.
+<P ALIGN=JUSTIFY>
+ Corrected the remaining address,{X|Y} cycle timings.
+<P ALIGN=JUSTIFY>
+ Maped the cursor, backspace, delete, insert and home keys to CBM keycodes.
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ V0.67 <A HREF="bbvic.zip">is here<IMG SRC="../../zip_sm.png" TITLE="[Download]"
+ border=0></A> and includes the character set image needed to make it work.
+<P ALIGN=JUSTIFY>
+ To get it to run you will also need Blitz3D and images of the kernal, basic and
+ character ROMs and will need to call them kernal.rom, basic.rom and char.rom
+ respectively. The images are readily available online.
+<P ALIGN=JUSTIFY>
+ This includes the details of the author of the original C64 emulator PASCAL source,
+ Marc Dendooven.
+</BLOCKQUOTE>
+<B><U>What's left to do?</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Just about everything apart from the CPU and some pretend I/O. There's no colour, no
+ colour RAM, no graphics, no sound. No joystick port, no user port, no cartridge port,
+ no memory switching, no VIC memory mapping, no storage devices. There's not even a
+ fully working keyboard, yet.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 13th June, 2011.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

@@ -1,0 +1,102 @@
+<HTML>
+<HEAD>
+<TITLE> Memory Plus manual </TITLE>
+</HEAD>
+<BODY
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="01.html"><IMG SRC="index.png" ALIGN=RIGHT BORDER=0 ALT="Index"></A>
+<B><FONT SIZE=+2>MEMORY PLUS Manual </FONT></B><FONT SIZE=-2>By Lee Davison</FONT>
+<BR CLEAR=all>
+<BR>
+<A HREF="11.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="13.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 12
+</CENTER>
+<BR CLEAR=all>
+<HR>
+ <PRE>
+  5.	Set up the following parasetera for the EPRON Programming Program:
+
+		0000 and 0001 Starting address of memory to be copied from.
+		0002 and 0003 First address in EPRON to be copied to.
+		0004 and 0005 Last address +1 of memory to be copied from.
+
+	For example, to copy from RAM locations 2000 through 217A into the
+	EPROM starting at location 0300, the following values would be set:
+
+		0000 30 Low byte of Starting address 2000
+		0001 20 High byte of Starting address 2000
+		0002 30 Low byte of First address in EPROM 0300
+		0003 33 High byte of First address in EPROM 0300
+		0004 7B Low byte of Last address +1 217A = 7B
+		0005 21 High byte of Last address +1 217A
+
+  6.	Turn on +25 volt supply connected to MP A-22 or unregulated +27 to +30
+	volt supply connected to MP E-3.
+
+  7.	After double checking that all prior steps have been done correctly,
+	start the program at 0011.
+
+  8.	It will take about 50 milliseconds per location for programming.
+	This means about 100 seconds to program an entire 2K EPROM.  When
+	the program is done it will return to the MICRO Monitor with an
+	address which will indicate successful completion of the requested
+	programming.  The address value is given in the table in 10. below.
+
+  9.	Turn off the +25 volt (or +27 to +30 volt) supply and the rest of the
+	power to the system.  Then remove the EPROM from the programming socket.
+	The EPROM may now be placed in its operational socket and used.
+
+  10.	The EPROM Programming Program performs several tests and may exit to
+	the Monitor to indicate an error or successful completion.  The address
+	which will be displayed depends on which Monitor/MICRO you are using.
+
+	AIM 00B8	Program ran successfully to completion.
+	KIM 00B9
+	SYM 00BA
+
+	AIM 009E	A Verify error.  The correct data has not been programmed
+	KIM 009F	into the EPROM.  This may be caused by:
+	SYM 00A0
+			An EPROM which was not "clean" (all 1's) to start.
+			A defective EPROM.
+			One or more address lines from the MICRO not properly
+			hooked up or not properly functioning.
+
+	AIM 00A9	A Starting address error.  The memory address pointer has
+	KIM 00AA 	tried to go beyond location FFFF.  This may be caused by:
+	SYM 00AB
+			Providing an incorrect Starting address in locations 0000
+			and 0001.
+			Providing an incorrect Last address in locations 0004 and
+			0005.
+
+	AIM 00C3	An EPROM address error.  The EPROM address pointer has
+	KIM 00C4	tried to go beyond location FFFF.  This may be caused by:
+	SYM 00C5
+			Providing an incorrect First address in locations 0002
+			and 0003.
+			Providing an incorrect Last address in locations 0004 and
+			0005.
+ </PRE>
+<BR CLEAR=all>
+<HR>
+<A HREF="11.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="13.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 12
+</CENTER>
+<BR CLEAR=all>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 8th December, 2002.</FONT>
+</BODY>
+</HTML>

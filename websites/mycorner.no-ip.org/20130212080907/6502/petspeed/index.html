@@ -1,0 +1,545 @@
+<HTML><HEAD><TITLE>PetSpeed 64 manual</TITLE></HEAD>
+<BODY BACKGROUND="cover.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../c64/index.html#spee"><IMG SRC="../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>PetSpeed 64 Manual.</FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Index</U></B>
+<P ALIGN=JUSTIFY>
+<TABLE ALIGN=CENTER BORDER=0>
+<TR>
+<TH COLSPAN=3 WIDTH=300><U>C O N T E N T S</U></TH><TD WIDTH=40></TD>
+<TH COLSPAN=3 WIDTH=300><U>C O N T E N T S</U></TH><TR>
+<TR>
+<TD>Copyright Notice & Disclaimer        </TD><TD>--</TD><TD ALIGN=RIGHT>1</TD><TD></TD>
+<TD>Extra programming facilities         </TD><TD>--</TD><TD ALIGN=RIGHT>6</TD><TD></TD>
+<TR>
+<TD>Hardware Requirements                </TD><TD>--</TD><TD ALIGN=RIGHT>1</TD><TD></TD>
+<TD>Errors                               </TD><TD>--</TD><TD ALIGN=RIGHT>8</TD></TR>
+<TR>
+<TD>Product Description                  </TD><TD>--</TD><TD ALIGN=RIGHT>1</TD><TD></TD>
+<TD>Compile time errors                  </TD><TD>--</TD><TD ALIGN=RIGHT>8</TD></TR>
+<TR>
+<TD>Diskette Care                        </TD><TD>--</TD><TD ALIGN=RIGHT>1</TD><TD></TD>
+<TD>Run time errors                      </TD><TD>--</TD><TD ALIGN=RIGHT>8</TD></TR>
+<TR>
+<TD>Introduction                         </TD><TD>--</TD><TD ALIGN=RIGHT>2</TD><TD></TD>
+<TD>The ERRORS utility program           </TD><TD>--</TD><TD ALIGN=RIGHT>8</TD></TR>
+<TR>
+<TD>Preparing Petspeed for Use           </TD><TD>--</TD><TD ALIGN=RIGHT>2</TD><TD></TD>
+<TD>Interfacing Petspeed and Machine code</TD><TD>--</TD><TD ALIGN=RIGHT>9</TD></TR>
+<TR>
+<TD>Running Petspeed                     </TD><TD>--</TD><TD ALIGN=RIGHT>3</TD><TD></TD>
+<TD>The Memory Map                       </TD><TD>--</TD><TD ALIGN=RIGHT>9</TD></TR>
+<TR>
+<TD>3Dimensional Arrays                  </TD><TD>--</TD><TD ALIGN=RIGHT>4</TD><TD></TD> 
+<TD>Accessing Variables                  </TD><TD>--</TD><TD ALIGN=RIGHT>9</TD></TR>
+<TR>
+<TD>Compatibility with BASIC 2.0         </TD><TD>--</TD><TD ALIGN=RIGHT>5</TD><TD></TD>
+<TD>Variable Formats                     </TD><TD>--</TD><TD ALIGN=RIGHT>10</TD></TR>
+<TR>
+<TD>Facilities not available             </TD><TD>--</TD><TD ALIGN=RIGHT>5</TD></TR>
+</TABLE><P>
+<A NAME=PAGE1></A>
+<B><U>Copyright</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Petspeed 64 is copyrighted and all rights to it are reserved by SYSTEMS SOFTWARE (OXFORD)
+ LTD. The product is intended for use by the original purchaser only. The purchaser of
+ Petspeed 64 is hereby licensed only to read the software from its medium into the memory
+ of the Commodore 64 computer solely for the purpose of executing it therein. Duplicating,
+ copying (other than for backup purposes), selling or otherwise distributing this product
+ is a violation of the law. It is the policy of the manufacturers to vigorously pursue
+ litigation against all infringements of their copyright. Having said this we hope you
+ will enjoy using Petspeed and that you will find it the useful utility that it is
+ intended to be. 
+</BLOCKQUOTE>
+<B><U>Disclaimer</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Although Petspeed 64 has been thoroughly tested, no claim is made by the authors or
+ manufacturers concerning the adherence of the software to any particular specification
+ or the suitability of Petspeed 64 for any particular purpose.
+</BLOCKQUOTE>
+<B><U>Hardware</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ In order to run Petspeed 64 you will need<BR><BR>
+<TABLE BORDER=0>
+<TR VALIGN=TOP><TD WIDTH=20><LI>1</LI></TD><TD WIDTH=10></TD><TD>A Commodore 64
+ computer</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>2</LI></TD><TD WIDTH=10></TD><TD>A Commodore Disk
+ drive</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+<B><U>Product description</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+The Petspeed 64 product comprises the following<BR><BR>
+<TABLE BORDER=0>
+<TR VALIGN=TOP><TD WIDTH=20><LI>1</LI></TD><TD WIDTH=10></TD><TD>This manual</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>2</LI></TD><TD WIDTH=10></TD><TD>A 5.25 inch floppy
+ diskette (known as the system disk) containing the compiler and associated files.</TD>
+</TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>3</LI></TD><TD WIDTH=10></TD><TD>A protection sheet
+ showing a matrix of coloured squares. This sheet is either enclosed in the manual or
+ printed on the front inside cover of the manual.</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+<B><U>Diskette care</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The method used to protect Petspeed (sorry but we must do this), unlike other protection
+ methods, does at least allow you to make backup copies of the system disk. You are
+ advised to make backups and to keep them in a safe place. All the usual rules apply to
+ the care of the system disk; don't sit on it, don't eat lunch on it and so on. 
+</BLOCKQUOTE>
+<A NAME=PAGE2></A>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Petspeed was first released in the early days of Commodore computing and has been
+ implemented on most of the major Commodore machines. Petspeed offers a very high level
+ of compatibility with BASIC 2.0. It has always been and continues to be the BASIC
+ compiler which produces the fastest running compiled programs.
+<P ALIGN=JUSTIFY>
+ A section of the manual devoted to the technical details of Petspeed compiled programs
+ provides all information needed to interface machine code routines.
+<P ALIGN=JUSTIFY>
+ Readers of this manual are expected to be familiar with BASIC 2.0 and its resident
+ interpreter. No attempt is made to teach BASIC programming to the novice. The manual
+ only discusses aspects of BASIC which are affected by compilation.
+</BLOCKQUOTE>
+<B><U>Preparing PetSpeed for use</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The system disk supplied with this manual cannot itself be used to compile programs.
+ Before Petspeed can be used it is necessary to create two Master disks, a Petspeed
+ Master and a Utilities Master. When these have been created using the instructions
+ below, they should be backed up (using the program supplied) and thereafter kept, along
+ with the system disk, in a safe place. When further Petspeed or utility disks are
+ required, they should be made from the Masters and not the system disk. The system disk
+ should only be used in the event of the Masters becoming corrupt. To create the Masters,
+ proceed as follows:<BR><BR>
+<TABLE BORDER=0>
+<TR VALIGN=TOP><TD WIDTH=20><LI>1</LI></TD><TD WIDTH=10></TD><TD>Format four disks and
+ mark them <TT><B>PETSPEED MASTER, UTILITIES MASTER, PETSPEED WORK</B></TT> and
+ <TT><B>UTILITIES WORK</B></TT></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>2</LI></TD><TD WIDTH=10></TD><TD>Place the system
+ disk in the disk drive, <TT><B>LOAD"BACKUP",8</B></TT> and <TT><B>RUN</B></TT>.<BR>
+ The <TT><B>BACKUP</B></TT> program displays five menu options. When one of these is
+ selected the menu will remain on the screen and the selected option will light up in
+ reverse field. When the processing associated with that option terminates, the menu
+ will be restored to standard video.<BR></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>3</LI></TD><TD WIDTH=10></TD><TD>From the five menu
+ options displayed, select <TT><b>MAKE PETSPEED MASTER</B></TT> and follow the
+ instructions given in the program.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>4</LI></TD><TD WIDTH=10></TD><TD>When the menu
+ reappears, select <TT><B>MAKE UTILITIES MASTER</B></TT> and again follow the
+ instructions displayed the system disk may now be put away.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>5</LI></TD><TD WIDTH=10></TD><TD>Select <TT><B>BACKUP
+ PETSPEED</B></TT> and follow the instructions to make a Petspeed work disk.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>6</LI></TD><TD WIDTH=10></TD><TD>Select <TT><B>BACKUP
+ UTILITIES</B></TT> and follow the instructions to make a utilities work disk.</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+<A NAME=PAGE3></A>
+<IMG SRC="fig1.png" ALIGN=RIGHT BORDER=1 HSPACE=8 TITLE="Figure 1">
+<B><U>Running  PetSpeed</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Before using Petspeed it is necessary to follow a brief protection sequence to establish
+ you as an authorised user of the software. We hope that you will not find the protection
+ too tiresome: software does have to be protected and this method does at least allow you
+ to make backup copies of the system disk. Proceed as follows:<BR><BR>
+<TABLE BORDER=0>
+<TR VALIGN=TOP><TD WIDTH=20><LI>1</LI></TD><TD WIDTH=10></TD><TD>Save the program to be
+ compiled on the Petspeed <TT><B>WORK</B></TT> disk.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>2</LI></TD><TD WIDTH=10></TD><TD>Type
+ <TT><B>LOAD"PETSPEED",8</B></TT> followed by <TT><B>[RETURN]</B></TT> and then
+ <TT><B>RUN</B></TT>.</TD></TR>
+</TABLE>
+<BR CLEAR=ALL>
+<A HREF="chart.html">
+<IMG SRC="chart.jpg" ALIGN=RIGHT BORDER=1 HSPACE=8 VSPACE=8
+ TITLE="Click for bigger image"></A>
+<P ALIGN=JUSTIFY>
+ At this point, Petspeed makes the protection check. On the inside cover of this manual
+ or on a separate sheet, <I>or by clicking on the image on the left</I>, will be found a
+ matrix of coloured squares. Each square can be identified by means of a simple grid
+ reference. For example to find square E-7, identify column E (marked along the bottom of
+ the matrix) and row 7 (marked along the left hand edge). Square E-7 is where column E
+ and row 7 meet. (see fig 1).
+<P ALIGN=JUSTIFY>
+ The protection check is very simple; all you have to do is correctly identify three
+ squares and enter their colours. Petspeed will give instructions as follows:
+<BLOCKQUOTE>
+<TT><B>WHAT COLOUR IS SQUARE X-XX ?</B></TT>
+</BLOCKQUOTE><P ALIGN=JUSTIFY>
+ where <TT><B>X-XX</B></TT> is a grid reference. When you have found the square, enter
+ one of the letters <TT><B>W,Y,G</B></TT> or <TT><B>R</B></TT> depending upon whether
+ the square is white, yellow, green or red. When you have correctly answered three such
+ questions the protection check is complete.<BR><BR>
+<TABLE BORDER=0>
+<TR VALIGN=TOP><TD WIDTH=20><LI>3</LI></TD><TD WIDTH=10></TD><TD>When requested, enter
+ your disk configuration (by menu selection) and the source program name followed by
+ <TT><B>[RETURN]</B></TT>. The compiler scans the source program four times and as it
+ does so displays the numbers of the lines being processed. When compilation is complete,
+ the screen will clear and the statement <TT><B>RUN: NNNNN</B></TT> bytes free will appear
+ at the top of the screen. The compiled program is now both in memory and saved to disk.
+ To run, simply type the <TT><B>[HOME]</B></TT> key followed by
+ <TT><B>[RETURN]</B></TT>.</TD></TR>
+</TABLE>
+<A NAME=PAGE4></A>
+<P ALIGN=JUSTIFY>
+ The compiled program on the work disk has the same name as the original source program
+ but with the characters <TT><B>.WOW</B></TT> appended. It will <TT><B>LOAD</B></TT> and
+ <TT><B>RUN</B></TT> just as a normal BASIC program. 
+</BLOCKQUOTE>
+<B><U>Disk space</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ During compilation Petspeed generates several work files. The largest of these, the
+ parse tree, will often run into several hundred blocks and in some cases there will
+ be insufficient space to accommodate it. Whenever the compiler is used the disk should
+ contain only the Petspeed system files and the source program.
+</BLOCKQUOTE>
+<B><U>3 Dimensional arrays</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Petspeed 64 cannot cope directly with 3D arrays. If a program you wish to compile
+ contains 3D arrays you must use the program <TT><B>PRE-SCAN</B></TT> on your Utilities
+ Work disk. <TT><B>PRE-SCAN</B></TT> takes a BASIC source program as input and produces
+ another BASIC program with all 3D arrays converted into 2D arrays. To use
+ <TT><B>PRE-SCAN</B></TT> proceed as follows:<BR><BR>
+<TABLE BORDER=0>
+<TR VALIGN=TOP><TD WIDTH=20><LI>1</LI></TD><TD WIDTH=10></TD><TD>Save the program to be
+ converted onto the Utilities Work disk.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>2</LI></TD><TD WIDTH=10></TD><TD><TT><B>LOAD"PRE-SCAN"</B>
+</TT>. and <TT><B>RUN</B></TT>.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>3</LI></TD><TD WIDTH=10></TD><TD>Enter your disk
+ configuration (by menu selection) and then the name of the program to be
+ converted.</TD></TR>
+</TABLE>
+<P ALIGN=JUSTIFY>
+ <TT><B>PRE-SCAN</B></TT> makes two passes through the program. On completion the disk
+ will contain the converted program. The converted program has the same name as the
+ original program but preceded by the slash /. character. This program is suitable for
+ compilation. 
+</BLOCKQUOTE>
+<A NAME=PAGE5></A>
+<B><U>Compatibility with BASIC 2.0</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Petspeed 64 aims for maximum compatibility with BASIC 2.0. There are some trivial
+ differences but these can be allowed for very easily. They fall into two groups:
+ Facilities not available under Petspeed and extra facilities provided by Petspeed.
+<P ALIGN=JUSTIFY>
+<U>Facilities not available under Petspeed</U><BR><BR>
+<TABLE BORDER=0>
+<TR VALIGN=TOP><TD WIDTH=20><LI>1</LI></TD><TD WIDTH=10></TD><TD>When a program is
+ overlayed all variables are normally cleared</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>2</LI></TD><TD WIDTH=10></TD><TD> Petspeed needs to
+ know at compile time the dimensions of all arrays. If an array is not dimensioned
+ explicitly in a program it will, as it is in BASIC, be dimensioned to eleven elements
+ times the number of subscripts. If an array is dimensioned however it must be
+ dimensioned with constants. Although this slight restriction may sometimes be a problem,
+ it does give Petspeeded programs the ability to access array elements much more rapidly
+ than would otherwise be possible. Most programs spend a high proportion of their run
+ time accessing array elements and it is a great advantage for a compiler to be able to
+ allocate array space and fix addresses during compilation. For example a statement like
+<P ALIGN=JUSTIFY>
+<BLOCKQUOTE>
+<TT><B>100 DIM A(N)</B></TT>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ is illegal in Petspeed because the compiler cannot know how much store to reserve.
+ Instead something like the following should be substituted.
+<BLOCKQUOTE>
+<TT><B>100 DIM A(50)</B></TT>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ If this is not done, the compiler will stop during pass 1 and ask for the dimension as
+ follows:
+<BLOCKQUOTE>
+<TT><B>LINE 100: DIM A(</B></TT>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ Once the dimension is typed in, compilation will continue.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>3</LI></TD><TD WIDTH=10></TD><TD><TT><B>RUN</B></TT> may
+ be used but not with a linenumber as its parameter. <TT><B>LIST, CONT</B></TT> and
+ <TT><B>SAVE</B></TT> are not allowed.
+<P ALIGN=JUSTIFY>
+ Because of the overhead of 35 blocks built into all compiled programs, those which
+ occupy less than about 70 blocks of disk space may become larger when compiled.
+ Programs larger than 70 blocks will usually compile smaller. Because Petspeed saves
+ variables and arrays along with the program, programs will appear larger on the disk
+ than they actually are.</TD></TR>
+</TABLE>
+<A NAME=PAGE6></A>
+<P ALIGN=JUSTIFY>
+<U>Extra programming facilities</U><BR><BR>
+<TABLE BORDER=0>
+<TR VALIGN=TOP><TD WIDTH=20><LI>1</LI></TD><TD WIDTH=10></TD><TD>User defined string
+ and mixed functions are allowed. Either the function itself or its argument or both may
+ be of either string or numeric type. That is, all the following are possible:
+<BLOCKQUOTE>
+<TT><B>DEF FN A(X), DEF FN A$(X), DEF EN A(XS), DEF FN A$(X$)</B></TT>
+</BLOCKQUOTE></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>2</LI></TD><TD WIDTH=10></TD><TD>Integer
+ <TT><B>FOR</B></TT> loops such as the following are allowed:
+<BLOCKQUOTE>
+<TT><B>FOR I%=0 TO 10:. . . . . :NEXT I%</B></TT>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ There is a slight speed advantage in using integer <TT><B>FOR</B></TT> loops. This is
+ because Petspeed can be sure at compile time that the loop variable will not have a real
+ value assigned to it. The speed advantage is only slight because Petspeed will try to
+ run all <TT><B>FOR</B></TT> loops as integer loops anyway, only converting to floating
+ point if it is forced to do so.<BR><BR></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>3</LI></TD><TD WIDTH=10></TD><TD>In BASIC 2.0, variable,
+ array and function names can be of any length. The interpreter does however only take
+ notice of the first two characters together with any type descriptor (% or $). To
+ maintain compatibility, Petspeed treats names in the same way but provides the option
+ of making all characters significant. The following compiler directive is provided for
+ this purpose.
+<BLOCKQUOTE>
+<TT><B>REM !LN</B></TT>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ This must appear at the beginning of a program before any variables, arrays or functions
+ are defined.<BR><BR></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>4</LI></TD><TD WIDTH=10></TD><TD>Under Petspeed, the
+ <TT><B>[STOP]</B></TT> key is disabled by default. Two statements are provided to enable
+ and disable the <TT><B>[STOP]</B></TT> key when required; these are as follows:
+<BLOCKQUOTE>
+<TT><B>REM !ES	</B></TT> enables the <TT><B>[STOP]</B></TT> key.<BR>
+<TT><B>REM !DS	</B></TT> disables the <TT><B>[STOP]</B></TT> key.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ These are statements and <B><I>not</I></B> compiler directives, that is they will be
+ executed at run time. In the following:
+<BLOCKQUOTE>
+<TT><B>10 REM !ES<BR>
+ 20 GOSUB 100<BR>
+ 30 REM !DS<BR></B></TT>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ the subroutine at line 100 will be executed with the <TT><B>[STOP]</B></TT> key enabled. 
+<P ALIGN=JUSTIFY>
+ The <TT><B>REM !DS</B></TT> statement is to be preferred over other methods of disabling
+ the <TT><B>STOP</B></TT> key in that it has no side effects. Programs also run slightly
+ faster with <TT><B>STOP</B></TT> disabled.<BR><BR></TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>5</LI></TD><TD WIDTH=10></TD><TD>The # command.
+<P ALIGN=JUSTIFY>
+ BASIC 2.0 provides the command <TT><B>CMD</B></TT> in order to re-direct the 64's
+ standard output to a file. The use of <TT><B>CMD</B></TT> can often speed up file
+ writing as in the following code fragment which writes 101 strings to disk.
+<BLOCKQUOTE>
+<TT><B>10 OPEN 5,8,8,"0:diskfile,s,w"<BR>
+ 20 CMD 5<BR>
+ 30 FOR I=0 to 100<BR>
+ 40 PRINT "testdata"<BR>
+ 50 NEXT<BR>
+ 60 PRINT#5<BR>
+ 70 CLOSE 5<BR></B></TT>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ Unfortunately BASIC 2.0 provides no equivalent command to re-direct the 64's standard
+ input. This is the purpose of the # command. The statement:
+<BLOCKQUOTE>
+<TT><B>#F</B></TT>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ where <TT><B>F</B></TT> is the logical file number of an open read file will cause
+ <TT><B>INPUT</B></TT> or <TT><B>GET</B></TT> to accept input from the file associated
+ with <TT><B>F</B></TT> until the next <TT><B>INPUT#F</B></TT> or <TT><B>GET#F</B></TT>
+ statement is executed. For example, here is a program to read back the data written
+ in the example above:
+<BLOCKQUOTE>
+<TT><B>10 OPEN 5,8,8,"0:diskfile,s,r"<BR>
+ 20 #5<BR>
+ 30 FOR I=0 to 100<BR>
+ 40 INPUT A$:PRINT A$<BR>
+ 50 NEXT<BR>
+ 60 GET#5,a$<BR>
+ 70 CLOSE 5</B></TT>
+</BLOCKQUOTE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<A NAME=PAGE8></A>
+<B><U>Errors</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ All the usual BASIC 2.0 errors may occur during compilation and most of these will
+ cause compilation to abort. The only type of compile time error which will not cause
+ the compiler to abort corresponds to BASIC 2.0's <TT><B>UNDEF'D STATEMENT ERROR</B></TT>.
+ Such errors will be found during pass 4 and, in these circumstances, the linenumbers at
+ which the errors occur will appear in reverse field. A program containing references to
+ undefined statements will run, provided that the statements containing such references
+ are never executed. If this should happen the run will terminate with message:
+<BLOCKQUOTE>
+<TT><B>UNDEF'D STATEMENT ERROR IN XXXXX</B></TT>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ An error that may occur at compile time where it would not have done in BASIC 2.0 is
+ <TT><B>FORMULA TOO COMPLEX ERROR</B></TT>. This may happen if the third argument of a
+ <TT><B>MID$</B></TT> contains function or array references. The problem may be easily
+ solved by replacing the third argument with a variable. 
+<P ALIGN=JUSTIFY>
+ It should be noted that occasionally the line number given in an error report is off by
+ one line, that is, the error actually occurred in the line preceding the one reported.
+<P ALIGN=JUSTIFY>
+ When compilation is aborted due to a compile time error, certain work files are left on
+ the disk. In order to conserve disk space these may have to be scratched prior to the
+ next compilation. 
+</BLOCKQUOTE>
+<B><U>Run time errors</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ With the exception of <TT><B>BAD SUBSCRIPT ERROR</B></TT>, Petspeed can produce all the
+ BASIC 2.0 error messages at run time. 
+<P ALIGN=JUSTIFY>
+ All run time errors except <TT><B>UNDEF'D STATEMENT ERROR</B></TT> give a
+ <TT><B>SPEEDCODE</B></TT> address instead of a linenumber. Make a note of this number.
+ In order to locate the corresponding line, it is necessary to use the error locating
+ program <TT><B>ERRORS</B></TT> on the Utilities Work disk. Proceed as follows:<BR><BR>
+<TABLE BORDER=0>
+<TR VALIGN=TOP><TD WIDTH=20><LI>1</LI></TD><TD WIDTH=10></TD><TD>Mount the Utilities
+ Work Disk, <TT><B>LOAD"ERRORS",8</B></TT> and <TT><B>RUN</B></TT>.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>2</LI></TD><TD WIDTH=10></TD><TD>Select option 1: Copy
+ a <TT><B>.W</B></TT> file<BR>
+ Now mount the Petspeed Work disk containing your program and hit
+ <TT><B>[RETURN]</B></TT>. When requested, replace the Utilities Work disk and hit
+ <TT><B>[RETURN]</B></TT>.</TD></TR>
+<TR VALIGN=TOP><TD WIDTH=20><LI>3</LI></TD><TD WIDTH=10></TD><TD>Type <TT><B>RUN</B></TT>
+ again to restart the <TT><B>ERRORS</B></TT> program but this time select option 2:
+ Locate an error.<BR>
+ When requested enter the name of your program and the speedcode address as given in the
+ error report.</TD></TR>
+</TABLE>
+<P ALIGN=JUSTIFY>
+ After a short delay, <TT><B>ERRORS</B></TT> will respond with the BASIC linenumber where
+ the error occurred.
+</BLOCKQUOTE>
+<A NAME=PAGE9></A>
+<B><U>Interfacing machine code routines to PetSpeed</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Petspeed expects a clean Basic program as a source file. If the program to be compiled
+ contains machine code routines, these should be removed before compilation.
+<P ALIGN=JUSTIFY>
+ Machine language programs which access BASIC 2.0 variables will not work without
+ alteration as Petspeed holds its variables and arrays differently. The following notes
+ provide all the information required for making the necessary changes.
+<P ALIGN=JUSTIFY>
+ Object programs generated by Petspeed consist of a p-code (Speedcode) optimised version
+ of the source program and a run time interpreter. The full memory map is as follows:
+<P ALIGN=JUSTIFY>
+<BLOCKQUOTE><PRE>                             Address
+                             or name       Pointer
+                             -------       -------
++========================+ - TOPMEM            $37/$38
+| DYNAMIC STRINGS        |
++------------------------+ - TOPCODE       $0824/$0825
+| CODE                   |
++------------------------+ - STARTCODE     $0822/$0823
+| INITIALISATION DATA    |
++------------------------+ - STARTINIT     $0820/$0821
+| ARRAYS                 |
++------------------------+ - ARRAYTAB      $081E/$081F
+| DATA STATEMENTS        |
++------------------------+ - STARTDATA     $081C/$081D
+| VARIABLES              |
++------------------------+ - $2800
+| SPEEDCODE INTERPRETER  |
++------------------------+ - $0819
+| 10 SYS (2073) PETSPEED |
++========================+ - $0800
+| PAGE ZERO, STACK,      |
+| TAPE BUFFERS, SCREEN,  |
+| ETC.                   |
++------------------------+ - $0000
+</PRE></BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ The Speedcode version of a Basic program is usually between 0.5 and 0.65 the size of the
+ original Basic text. To this, however, must be added the 8k overhead of the Speedcode
+ interpreter. 
+<P ALIGN=JUSTIFY>
+ Whereas a BASIC 2.0 program creates its variables and arrays when it is run, a Petspeed
+ program does so at compile time. <TT><B>TOPCODE</B></TT> is the highest address used by
+ the program kept for dynamic strings which are built up from <TT><B>TOPMEM</B></TT>
+ downwards.
+</BLOCKQUOTE>
+<B><U>Accessing variables</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The location of each variable and array can be found by running the supplied program
+ <TT><B>REPORT</B></TT> on the Utilities disk. The program asks for the source file name
+ and allows output to be directed to screen or printer. <TT><B>REPORT</B></TT> lists all
+ variables, arrays and user defined functions and gives their addresses. In addition, the
+ locations of the main program segments are supplied. The only address missing from the
+ report is that of <TT><B>TOPCODE</B></TT> (see above) which may easily be determined
+ after compilation.
+<P ALIGN=JUSTIFY>
+ The diagram below gives the format of all Petspeed data types. Corresponding diagrams
+ illustrating the format of BASIC 2.0 variables are to be found in Commodore's own
+ documentation.
+<A NAME=PAGE10></A>
+<P ALIGN=JUSTIFY>
+ A word of warning is necessary here. Variables and array elements which are not
+ declared as integers using the % sign will not necessarily be held in floating point
+ format. The type of the data in an ordinary real variable or array element may change
+ frequently at run time. The way to transfer values from Petspeed variables to machine
+ code routines is to make them integer explicitly (e.g. <TT><B>A%, PQ%(1O,2)</B></TT>
+ etc). If this is not possible, the machine code routine can if necessary obtain the
+ current type of a variable by looking at the type descriptor (see below). Should the
+ programmer wish to pass a value back to Petspeed via a real/int variable, he may do so
+ by forcing the type descriptor to the value appropriate for the type of data being
+ passed.
+<P ALIGN=JUSTIFY>
+<TABLE BORDER=1 ALIGN=CENTER>
+<TR VALIGN=TOP><TD ROWSPAN=2>&nbsp;Variables</TD>
+<TD COLSPAN=7 ALIGN=CENTER>Byte offset</TD></TR>
+<TR ALIGN=CENTER>
+<TD WIDTH=60>$00</TD><TD WIDTH=60>$01</TD><TD WIDTH=60>$02</TD><TD WIDTH=60>$03</TD>
+<TD WIDTH=60>$04</TD><TD WIDTH=60>$05</TD><TD WIDTH=60>$06</TD></TR>
+<TR><TD>Floating point</TD>
+<TD ALIGN=CENTER>exponent</TD><TD COLSPAN=4>&nbsp;mantissa</TD><TD ALIGN=CENTER>sign</TD>
+<TD ALIGN=CENTER>$00</TD></TR>
+<TR><TD>Integer</TD>
+<TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>unused</TD><TD COLSPAN=2>&nbsp;word</TD>
+<TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>$01</TD></TR>
+<TR><TD>Declared integer</TD>
+<TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>unused</TD><TD COLSPAN=2>&nbsp;word</TD>
+<TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>$05</TD></TR>
+<TR><TD>String</TD>
+<TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>length</TD>
+<TD COLSPAN=2>&nbsp;pointer</TD><TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>$FF</TD></TR> 
+<TR><TD>Function</TD>
+<TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>unused</TD>
+<TD COLSPAN=2>&nbsp;pointer</TD><TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>unused</TD>
+</TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The <B>mantissa</B> and <B>word</B> values are <I><B>most significant byte first</B></I>.
+ The pointers in strings and functions are in the more usual low byte first format.
+<P ALIGN=JUSTIFY>
+ The 32 most frequently accessed variables are treated specially and contain an extra
+ unused byte at the end.
+<P ALIGN=JUSTIFY>
+
+<TABLE BORDER=1 ALIGN=CENTER>
+<TR VALIGN=TOP><TD ROWSPAN=2>&nbsp;Arrays</TD>
+<TD COLSPAN=7 ALIGN=CENTER>Byte offset</TD></TR>
+<TR ALIGN=CENTER>
+<TD WIDTH=60>$00</TD><TD WIDTH=60>$01</TD><TD WIDTH=60>$02</TD><TD WIDTH=60>$03</TD>
+<TD WIDTH=60>$04</TD></TR>
+<TR><TD>Floating point</TD>
+<TD ALIGN=CENTER>exponent</TD><TD COLSPAN=4>&nbsp;mantissa</TD></TR>
+<TR><TD>Integer</TD>
+<TD ALIGN=CENTER>$00</TD><TD ALIGN=CENTER>unused</TD><TD COLSPAN=2>&nbsp;word</TD>
+<TD ALIGN=CENTER>unused</TD></TR>
+<TR><TD>Declared integer</TD>
+<TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>unused</TD><TD COLSPAN=2>&nbsp;word</TD>
+<TD ALIGN=CENTER>unused</TD></TR>
+<TR><TD>String</TD>
+<TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>unused</TD><TD ALIGN=CENTER>length</TD>
+<TD COLSPAN=2>&nbsp;pointer</TD> 
+</TR></TABLE>
+<P ALIGN=JUSTIFY>
+ In floating point arrays the value is stored compressed with the <B>mantissa</B>
+ justified and the <B>sign</B> stored in <B>b7</B> of the most significant byte.
+</BLOCKQUOTE>
+<HR>
+<TABLE WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 3rd February, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

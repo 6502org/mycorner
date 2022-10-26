@@ -1,0 +1,346 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>2002 News and site updates</TITLE>
+<META name="description" content="My corner news & updates.">
+</HEAD>
+<BODY BACKGROUND="back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="index.html">
+  <IMG SRC="up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>2002 site news and updates. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="index.html">
+ <IMG SRC="epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<TABLE CELLSPACING=8><TR ALIGN=CENTER>
+<TD><B><A HREF="news.html">Current</A></B></TD>
+<TD><B><A HREF="news2003.html">2003</A></B></TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=5>
+<TR>
+<TD WIDTH=150><B></B></TD><TD></TD>
+</TR>
+<TR>
+<TD><B>21st December 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>To go with the <A HREF="6502/eurobeeb/index.html">EuroBeeb</A> I got
+ a long while back I've scored more Eurocards and parts. For a sample of what I got go
+ look <A HREF="6502/eurobeeb/score/index.html">here</A>.
+</TD>
+</TR>
+<TR>
+<TD><B>15th December 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Added a <A HREF="z80/mpf1p/index.html">Micro-Professor 1 Plus</A>
+ section to the <A HREF="z80/index.html">Z80</A> section.
+</TD>
+<TR>
+<TD><B>12th December 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Updated the <A HREF="6502/microchess/index.html">KIM MicroChess</A>
+ page. The source has changed so the board squares are now the correct way round
+ (black/white) and [C]lear now works properly. This was my fault and nothing to do with
+ the original code.
+</TD>
+</TR>
+<TR>
+<TD><B>8th December 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Added to the <A HREF="6502/index.html">6502</A> section is the <A
+ HREF="6502/memoryplus/index.html">MEMORY PLUS Manual</A>. While not exclusively a 6502
+ product it was aimed at the well heeled 6502 enthusiast.
+</TD>
+</TR>
+<TR>
+<TD><B>26th November 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Having recently re-discovered KIM MicroChess I made <A
+ HREF="6502/microchess/index.html">this version</A> which can be run on a 6502
+ simulator. This is posted with the permission of the original author. I've
+ also added a <A HREF="links/index.html">links</A> page with links to related sites
+ and a page about <A HREF="6502/symbasic/index.html">SYM 1 BASIC</A> to the 6502
+ section.
+</TD>
+</TR>
+<TR>
+<TD><B>20th November 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Added another page to <A HREF="6502/shorts/index.html">Shorts</A> ..
+ Another <A HREF="6502/shorts/range.html">short code bit</A>.
+</TD>
+</TR>
+<TR>
+<TD><B>16th November 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Added a <A HREF="68k/prng/index.html">68k version</A> of the pseudo
+ random number generator</A>. This one is 32 bit.</TD>
+</TR>
+<TR>
+<TD><B>13th November 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>I know it's been a while but what with being away from home and some
+ major project work there hasn't been a lot of time. To keep you going there is a new
+ section added to the 6502 pages .. <A HREF="6502/shorts/index.html">Shorts</A> .. Some
+ very short code bits.
+</TD>
+</TR>
+<TR>
+<TD><B>6th September 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Updated the <A HREF="6502/eurobeeb/kbint/index.html">keypad
+ interface</A> card page for the <A HREF="6502/eurobeeb/index.html">CUBE</A>. Included
+ now is an assembly listing for the interface code.</TD>
+</TR>
+<TR>
+<TD><B>4th September 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Added the <A HREF="z80/mpf1/epb04.html">EPROM pin assignments</A> to
+ the <A HREF="z80/mpf1/index.html">Micro Professor</A> <A
+ HREF="z80/mpf1/epb/index.html">EPROM programmer</A> page.</TD>
+</TR>
+<TR>
+<TD><B>2nd September 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Added the <A HREF="z80/mpf1/epb/index.html">EPROM programmer</A> for
+ the <A HREF="z80/mpf1/index.html">Micro Professor</A> Just the diagrams so far.
+ Some modification details and software lists to follow.</TD>
+</TR>
+<TR>
+<TD><B>15th August 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Added the <A
+ HREF="6502/eurobeeb/cpu/circuit.html">circuit diagram</A> for the <A
+ HREF="6502/eurobeeb/index.html">CUBE</A> BBC compatible Eurocard computer <A
+ HREF="6502/eurobeeb/cpu/index.html">CPU</A> card.</TD>
+</TR>
+<TR>
+<TD><B>7th August 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Added a section on the <A HREF="6502/eurobeeb/index.html">CUBE</A>
+ BBC compatible Eurocard computer to the <A HREF="6502/index.html">6502</A> pages.</TD>
+</TR>
+<TR>
+<TD><B>7th August 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>This site is the founder member of the 
+<A HREF="http://c.webring.com/go?ring=680x0webing&id=1&prev">
+<IMG SRC="ringprev.png" ALT="Previous Site" BORDER=0 HEIGHT=19 WIDTH=16></A>
+<A HREF="http://c.webring.com/hub?ring=680x0webing&id=1&hub">
+<IMG SRC="680x0ring.png" ALT="The 680x0 WebRing" BORDER=0 HEIGHT=19 WIDTH=124></A>
+<A HREF="http://c.webring.com/go?ring=680x0webing&id=1&next">
+<IMG SRC="ringnext.png" ALT="Next Site" BORDER=0 HEIGHT=19 WIDTH=16></A>
+. The navigation bars are also on the <A HREF="68k/index.html">68k projects</A> and the
+ <A HREF="index.html">home</A> pages.</TD>
+</TR>
+<TR>
+<TD><B>7th August 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>This site is a member of the 
+<A HREF="http://v.webring.com/go?ring=ez80webring&id=2&prev">
+<IMG SRC="ringprev.png" ALT="Previous Site" BORDER=0 HEIGHT=19 WIDTH=16></A>
+<A HREF="http://v.webring.com/hub?ring=ez80webring&id=2&hub">
+<IMG SRC="ez80ring.png" ALT="The eZ80 WebRing" BORDER=0 HEIGHT=19 WIDTH=124></A>
+<A HREF="http://v.webring.com/go?ring=ez80webring&id=2&next">
+<IMG SRC="ringnext.png" ALT="Next Site" BORDER=0 HEIGHT=19 WIDTH=16></A>
+. The navigation bars are also on the <A HREF="z80/index.html">Z80 projects</A> and the
+ <A HREF="index.html">home</A> pages.</TD>
+</TR>
+<TR>
+<TD><B>25th July 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>An update and another <I>undocumented feature</I> of
+ <A HREF="6502/ehbasic/index.html">EhBASIC</A> are both covered in the latest version.
+ Read about it <A HREF="6502/ehbasic/update.html#020725">here</A> and
+ <A HREF="6502/ehbasic/errata.html#020725">here</A>. Version is now 1.05</TD>
+</TR>
+<TR>
+<TD><B>8th July 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>An update to <A HREF="6502/ehbasic/index.html">EhBASIC</A> brings a
+ small increase in size and an improvement in speed for two functions. Also from this
+ version onward both binary and hex dumps will be available for download. Read about it
+ <A HREF="6502/ehbasic/update.html#020708">here</A>. Version is now 1.04</TD>
+</TR>
+<TR>
+<TD><B>14th May 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Added a jdec file of the PAL on the 6541
+ <A HREF="6502/mystery/index.html#ampal">mystery board</A></TD>
+</TR>
+<TR>
+<TD><B>4th May 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Another <I>undocumented feature</I> of <A
+ HREF="6502/ehbasic/index.html">EhBASIC</A> turned up. I didn't spot this one. Read all
+ about it <A HREF="6502/ehbasic/errata.html#020504">here</A>. Version is now 1.03</TD>
+</TR>
+<TR>
+<TD><B>3rd May 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Another <I>undocumented feature</I> (or two) of
+ <A HREF="6502/ehbasic/index.html">EhBASIC</A> turned up, good thing I spotted these
+ first. Read all about them, and some other small changes, in the errata
+ <A HREF="6502/ehbasic/errata.html#020503">here</A>. Version is now 1.02</TD>
+</TR>
+<TR>
+<TD><B>2nd May 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Yes I've been a busy bee the last few days....<BR>
+ Added the <A HREF="z80/torch/index.html">Torch Z80</A> to the
+ <A HREF="z80/index.html">Z80</A> section and added the
+ <A HREF="68k/torch/index.html">Torch 68000</A> and the
+ <A HREF="68k/torch/index.html#atlas">Torch Atlas</A> to the
+ <A HREF="68k/index.html">68000</A> section.
+ Added a <A HREF="6809/index.html">6809</A> section for the
+ <A HREF="6809/acorn/index.html">Acorn 6809 SBC</A> and the
+ <A HREF="6809/micromos/index.html">Micromos 6809 board</A>.
+ Added a <A HREF="6502/mystery/index.html">mystery board</A> to the
+ <A HREF="6502/index.html">6502</A> section and I've also added a
+ <A HREF="misc/compukit/index.html">Compukit</A> board to the new
+ <A HREF="misc/index.html">Miscellania</A> section, but probably not the one you'd
+ expect.</TD>
+</TR>
+<TR>
+<TD><B>1st May 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Added more to the <A HREF="68k/dart_pcb/index.html">68008 SBC</A>
+ section in the <A HREF="68k/index.html">68k</A> section. Also added a
+ <A HREF="z80/mpf1/index.html">Micro-Professor</A> section to the
+ <A HREF="z80/index.html">Z80</A> section.</TD>
+</TR>
+<TR>
+<TD><B>30th April 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>Updated the webring pointer so it now points to this site.</TD>
+</TR>
+<TR>
+<TD><B>28th April 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>You're reading this so you must be on the new Lycos hosted site.
+ More space, less adds and no pop ups. There are some minor changes to the layout from
+ the Yahoo site and that site will no longer be updated. So bookmark this site now.</TD>
+</TR>
+<TR>
+<TD><B>20th February 2002.</B></TD>
+<TD><P ALIGN=JUSTIFY>All of you who have a MicroBotics 8-UP!(DIP) RAM card for ZorroII
+ Amigas can now see the user guide <A HREF="68k/amiga/8up/8up.html">here</A>.</TD>
+</TR></TABLE>
+<TABLE CELLSPACING=8><TR ALIGN=CENTER>
+<TD><B><A HREF="news2001.html">2001</A></B></TD>
+</TR></TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 15th January, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.11 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=90de327e&adpref="></script>

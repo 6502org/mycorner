@@ -1,0 +1,135 @@
+<HTML><HEAD><TITLE>Intercom</TITLE></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html#int00"><IMG SRC="../../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Simple intercom. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<TABLE WIDTH=100%><TR><TD>
+<IMG SRC="schem.png" ALIGN=RIGHT WIDTH=640 HEIGHT=270 HSPACE=8 BORDER=1 TITLE="Half of an
+intercom">
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is a fairly simple intercom with an unusual use of a phase splitting circuit that
+ means both sides can talk and listen without either having to press a talk button. It
+ also has a mute button that lets either side mute their microphone so that the other
+ side can't hear them, much like a privacy button on a phone.
+<P ALIGN=JUSTIFY>
+ Much of this circuit is from the <A HREF="../audioamp/index.html">audio amplifier</A>
+ project, only the phase splitter and mute circuit are new. The biggest difference is you
+ will need to make at least two, one intercom by itself isn't a lot of use.
+<P ALIGN=JUSTIFY>
+ This circuit can be run from a six volt battery supply, such as four AA cells, or from
+ a six volt DC power supply. The actual voltage is not critical, it should work from four
+ volts upwards, but it is recommended not to go higher than twelve volts or the LM386 may
+ be damaged.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="int01" HREF="int01.html"><IMG SRC="int01.png" ALIGN=RIGHT HSPACE=8 WIDTH=320
+ HEIGHT=240 BORDER=1 TITLE="Breadboard layout"></A>
+<B><U>Breadboard layout.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The circuit is laid out on the breadboard in roughly the same arrangement as in the
+ schematic. The speakers used, one for each intercom, are old PC speakers so a pin header
+ is inserted into the breadboard to accept it. The connection for the microphone is also
+ shown as a pin header in the layout diagram but the electrets actually used to have wire
+ ends so headers weren't used.
+<P ALIGN=JUSTIFY>
+ Speakers don't much care which way round they are connected, if the connections are
+ reversed all that changes is the phase, but they are usually marked + and - and it is
+ good practice to always connect the + lead to the signal and the - lead to 0V.
+<P ALIGN=JUSTIFY>
+ Electret microphones are polarised and will not work connected the wrong way round so
+ you must connect the + lead to the amplifier input and the - lead to 0V.
+<P ALIGN=JUSTIFY>
+ The connection between the intercom(s) should be made with screened wire and all
+ connected with the shield going to 0V.
+<P ALIGN=JUSTIFY>
+ In the layout diagram the + end of all connections are marked by a red stripe or block,
+ the 0V end being the other pin.
+<P ALIGN=JUSTIFY>
+ The pots only had short leads so tinned wires were soldered to each so that they would
+ plug into the breadboard. If the volume pot works in the reverse sense, i.e. turning it
+ clockwise makes it quieter, then fitting it rotated 180 degrees should correct this.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<B><U>How it works.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B><U>Mute switch.</U></B>
+<P ALIGN=JUSTIFY>
+ When the mute switch is pressed it connects the 10uF capacitor between the microphone
+ circuit output and 0V. This effectively shorts the microphone signal to 0V silencing
+ the microphone. The 150K resistor across the switch provides a charge path for the 10uF
+ capacitor so that when the switch is pressed there isn't a loud click heard at the other
+ end (there will be a small click due to leakage current through the capacitor).
+<P ALIGN=JUSTIFY>
+<B><U>Phase splitter.</U></B>
+<P ALIGN=JUSTIFY>
+ The signal from the microphone is reproduced, with almost the same amplitude and the
+ same phase, at the emitter of the phase splitter transistor. Because the current for
+ the emitter circuit comes from the collector circuit the signal from the microphone is
+ also reproduced, with almost the same amplitude but the opposite phase, at the collector
+ of the phase splitter transistor. These two opposite phase signals are summed in the
+ null pot and at some point along the pot they will always sum to zero. If the pot is set
+ to this point then no signal from the microphone will pass to the following amplifier.
+<P ALIGN=JUSTIFY>
+ However, the microphone signal reproduced at the collector circuit will all be passed to
+ the other intercom so there it will be heard. Conversely the signal from the other
+ intercom appears at one end of the null with no matching but out of phase signal at the
+ other end pot so it will not sum to zero at any point and will pass through to the
+ amplifier and be heard at this end.
+<P ALIGN=JUSTIFY>
+ The 4K7 resistor from the bottom of the null pot almost ballances the apparent AC
+ impedance of the other intercom connected to the other end of the null pot, dominated by
+ the 4K7 collector resistor of the other intercom, making it easier to null the local
+ microphone signal.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="int02.html" NAME="int02"><IMG SRC="int02s.jpg" ALIGN=RIGHT HSPACE=8
+ WIDTH=320 HEIGHT=240 BORDER=1 TITLE="Practical layout"></A>
+<B><U>Practical circuit.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Here the is one of two circuits laid out and working on an actual breadboard. You can
+ see the speaker and microphone wires and the screened wire that connects to the other
+ intercom.
+<P ALIGN=JUSTIFY>
+ This is just a small section of a much larger breadboard. The extra components are
+ capacitors that I usually have scattered across the breadboard to eliminate noise from
+ the power rails. They make no difference to this circuit.
+<P ALIGN=JUSTIFY>
+ The extra links are because this particular breadboard has a break in the horizontal
+ rails at the mid point. I don't want this break so I usually keep these positions
+ jumpered.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A HREF="int03.html" NAME="int03"><IMG SRC="int03s.jpg" ALIGN=RIGHT HSPACE=8
+ WIDTH=320 HEIGHT=240 BORDER=1 TITLE="The other intercom"></A>
+<B><U>Setting up.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There is a small amount of setting up needed before the intercoms can be used.
+<P ALIGN=JUSTIFY>
+ Start with the intercoms on and connected together, the volume pots set to minimum and
+ the null pots set to about midway.
+<P ALIGN=JUSTIFY>
+ Make some noise at the microphone, I find running one finger over the front of the
+ microphone makes more than enough, and turn up the volume until you can hear it. Now,
+ using the null pot, find the point where the noise is quietest. Repeat increasing the
+ volume and nulling out the sound until you are sure you have it as best you can. It
+ should be possible to get it good enough so that even with the microphone adjacent to
+ the speaker there is no feedback.
+<P ALIGN=JUSTIFY>
+ Once one intercom is done return the volume on that intercom to minimum and repeat the
+ above setting up on the other intercom(s).
+<P ALIGN=JUSTIFY>
+ Ths done the intercoms are ready for use, just set the volume to a suitable level.
+</BLOCKQUOTE>
+</TD></TR></TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 29th July, 2011.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+
+

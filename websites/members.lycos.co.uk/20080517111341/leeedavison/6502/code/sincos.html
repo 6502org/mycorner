@@ -1,0 +1,77 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>6502 Code - SIN and COS Calculator</TITLE>
+<META name="description" content="How to calculate sines and cosines in 6502 assembly.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>SIN and COS Calculator. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<U><B>Introduction.</B></U>
+<BLOCKQUOTE>
+ These routines calculate the signed 16-bit sine and cosine of an 8-bit angle. The
+ returned value is a fixed point value with the point effectively being after the sign
+ bit.
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+;----------------------------------------------------------------	
+;
+; SIN(A) COS(A) routines. A full circle is represented by $00 to
+; $00 in 256 1.40625 degree steps. returned value is signed 16
+; bit with X being the high byte and ranges over +/-0.99997
+
+; The routine never returns +1.0 as it is out of the range of the
+; returned value. The routine also never returns -1.0 as, although
+; it is in range, the calculation is symetrical for both positive
+; and negative results.
+
+
+;----------------------------------------------------------------
+;
+; get COS(A) in AX
+
+cos_A
+      CLC                     ; clear carry for add
+      ADC   #$40              ; add 1/4 rotation
+
+;----------------------------------------------------------------
+;
+; get SIN(A) in AX. enter with the Z flag reflecting the contents
+; of A
+
+sin_A
+      BPL   sin_cos           ; just get SIN/COS and return if +ve
+
+      AND   #$7F              ; else make +ve
+      JSR   sin_cos           ; get SIN/COS
+                              ; now do twos complement
+      EOR   #$FF              ; toggle the low byte
+      CLC                     ; clear carry for add
+      ADC   #$01              ; add 1 to the low 

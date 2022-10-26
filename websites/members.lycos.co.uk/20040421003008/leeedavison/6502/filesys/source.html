@@ -1,0 +1,646 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>6502 ROM file system - Source</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#source">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>ROM file system source. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>The source.</U></B><P>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; constants for the file system
+
+none		=	$00		; no flags
+
+; flags:
+
+deleted		=	$80		; file is deleted but not removed	
+directory	=	$40		; file is really a directory
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Self explanitory really, the deleted flag is not used yet.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; variables for the file system
+
+; zero page
+
+filesys_l	.ds	1		; file system pointer low byte
+filesys_h	.ds	1		; file system pointer high byte
+
+lensys_l	.ds	1		; file system length low byte
+lensys_h	.ds	1		; file system length high byte
+
+file_l		.ds	1		; current file pointer low byte
+file_h		.ds	1		; current file pointer high byte
+
+length_l	.ds	1		; current file length low byte
+length_h	.ds	1		; current file length high byte
+
+fileflags	.ds	1		; current file's flag byte
+
+findname_l	.ds	1		; filename to find pointer low byte
+findname_h	.ds	1		; filename to find pointer high byte	
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ filesys is the pointer returned by the find routine, it is only valid if a file was
+ found, i.e. Cb is = 1.
+<P ALIGN=JUSTIFY>
+ lensys is the length of the returned file and like filesys is only valid if a file
+ was found.
+<P ALIGN=JUSTIFY>
+ file and length are used internally by the find routine.
+<P ALIGN=JUSTIFY>
+ fileflags is used internally by the find routine.
+<P ALIGN=JUSTIFY>
+ findname points to the start of the null yerminated path/name of the file to find. Like
+ the HTTP "GET" it must start with "/" and "/" is used to separate directories so "/",$00
+ is valid as is "/index.html",$00 but "o.html",$00 isn't.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; file format is ..
+
+f_start		.ds	1		; flag byte
+					; bit	function
+					; ---	--------
+					;  7	deleted
+					;  6	directory
+					; 5-0	unassigned
+f_length	.ds	2		; file payload length word
+f_name		.ds	1		; filename and null terminator byte
+;		.ds	length		; here to here+length-1 is the payload	
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ This is used to define the header, f_name is used realtive to f_start and will remain
+ correct even if other parameters, such as a parent pointer for reverse tree searches,
+ are added to the header.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; find file, searches the file system for the filename pointed to by the find
+; name pointer. returns with Cb = 1 and the pointer to the file payload in
+; filesys, if found.
+;
+; file name to search for should be "/[path[path]][name]" where path is the
+; directory name followed by a "/". the path may be many deep and both the
+; path and the name may be null. if the name is null then the default_file
+; name will be searched for the path given.
+
+LAB_find
+	LDA	root+1			; get root payload length low byte
+	STA	lensys_l		; save payload length low byte
+	LDA	root+2			; get root payload length high byte
+	STA	lensys_h		; save payload length high byte
+
+	LDA	#&lt;root_b		; get root body pointer low byte
+	STA	filesys_l		; set file system pointer low byte
+	LDA	#&gt;root_b		; get body pointer high byte
+	STA	filesys_h		; set file system pointer high byte
+	LDY	#$00			; clear index
+	LDA	(findname_l),Y		; get the first byte of the find name
+	CMP	#'/'			; compare with separator
+	BNE	LAB_exit_n_found	; exit if not "/" at start
+
+	JSR	LAB_directory		; search the root for the file
+	BIT	fileflags		; get the flags for this file
+	BVC	LAB_exit_find		; exit if it's a file
+
+	JSR	LAB_find_default	; a directory so find the default file	
+LAB_exit_find
+	RTS
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The routine above returns either a found file pointer and it's length or flags not
+ found. If the match turns out to be a directory, e.g. "/images", then the search
+ routine is re-entered at the find default file entry so the file searched becomes
+ effectively "/images/index.html"
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; flag file found and exit
+
+LAB_exit_found
+	BIT	fileflags		; test the flags, set Vb for a directory
+	SEC				; flag found
+	RTS
+
+
+; flag file not found and exit
+
+LAB_exit_n_foun
+	CLV				; flag not a directory
+	CLC				; flag not found
+	RTS
+
+
+; increment filesys to the next file pointer in the directory
+
+LAB_nextfile
+	CLC				; clear carry for add
+	LDA	filesys_l		; get filesys low byte
+	ADC	#$02			; increment to next pointer
+	STA	filesys_l		; save filesys low byte
+	BCC	ni_inc_h		; branch if no rollover
+
+	INC	filesys_h		; else increment filesys high byte
+ni_inc_h
+	SEC				; set carry for subtract
+	LDA	lensys_l		; get remaining length low byte
+	SBC	#$02			; increment to next pointer
+	STA	lensys_l		; save remaining length low byte
+	BCS	LAB_comparefile		; branch if no rollunder
+
+	DEC	lensys_h		; decerment remaining length high byte
+
+LAB_comparefile
+	LDA	lensys_l		; get remaining length low byte
+	ORA	lensys_h		; OR remaining length high byte
+	BEQ	LAB_exit_n_found	; exit if no more directory entries
+
+	LDY	#$00			; clear index
+	LDA	(filesys_l),Y		; get file pointer low byte
+	STA	file_l			; save this file pointer low byte
+	INY				; increment index
+	LDA	(filesys_l),Y		; get file pointer high byte
+	STA	file_h			; save this file pointer high byte
+
+	DEY				; clear index
+	LDA	(file_l),Y		; get the file's flags
+	STA	fileflags		; save the file's flag byte
+	INY				; point to payload length low byte
+	LDA	(file_l),Y		; get file's payload length low byte
+	STA	length_l		; save file's length low byte
+	INY				; point to payload length high byte
+	LDA	(file_l),Y		; get file's payload length high byte
+	STA	length_h		; save file's length high byte
+
+	CLC				; clear carry for add
+	LDA	file_l			; get this file pointer low byte
+	ADC	#f_name-f_start		; add offset to the file name
+	STA	file_l			; save this file pointer low byte
+	BCC	nf_inc_h		; branch if no rollover
+
+	INC	file_h			; increment this file pointer high byte
+nf_inc_h
+	LDY	#$FF			; set so first increment clears index
+
+; compare this file's name, pointed to by file, with the find file
+; name pointed to by findname. exits with Y indexed to the next byte
+; in the name if the whole name matched.
+
+LAB_comparename
+	INY				; increment index
+	LDA	(file_l),Y		; get next byte of name to test
+	BEQ	LAB_cnameexit		; exit if end of name (match)
+
+	EOR	(findname_l),Y		; compare with next byte of name to find
+	BEQ	LAB_comparename		; loop if character match
+
+	BNE	LAB_nextfile		; branch if not this file
+
+LAB_cnameexit
+	LDA	(findname_l),Y		; get next byte of name to find
+	BEQ	LAB_end_find		; branch if end of name to find
+
+	CMP	#'/'			; compare with separator
+	BNE	LAB_nextfile		; branch if not end of name to find
+
+LAB_end_find
+	PHA				; save next byte of name to find
+
+					; name matched so update lensys
+	LDA	length_l		; get length low byte
+	STA	lensys_l		; save length low byte
+	LDA	length_h		; get length high byte
+	STA	lensys_h		; save length high byte
+
+					; name matched so update filesys
+	SEC				; set carry for add +1
+	TYA				; copy offset
+	ADC	file_l			; add this file pointer low byte
+	STA	filesys_l		; save as file system pointer low byte
+	LDA	file_h			; get this file pointer high byte
+	ADC	#$00			; add in the carry
+	STA	filesys_h		; save as file system pointer high byte
+
+	PLA				; restore next byte of name to find
+	BEQ	LAB_exit_found		; branch if end of name to find
+
+	BIT	fileflags		; else test the flags byte
+	BVC	LAB_exit_n_found	; branch if not a directory
+
+
+; searches the directory pointed to by the file system pointer for the
+; filename pointed to by the find name pointer. the routine is entered
+; with filesys pointing to the first directory byte after the file header
+; and lensys holding the remaining directory size
+
+LAB_directory
+	SEC				; set carry for add +1
+	TYA				; copy offset
+	LDY	#$00			; clear index
+	ADC	findname_l		; add offset to findname low byte
+	STA	findname_l		; save findname low byte
+	TYA				; set $00 for add carry
+	ADC	findname_h		; add findname high byte
+	STA	findname_h		; save findname high byte
+
+	LDA	(findname_l),Y		; get next byte of name to find
+	BNE	LAB_comparefile		; go compare file if not null filename
+
+LAB_find_default
+	LDA	#&lt;default_file		; get default filename pointer low byte
+	STA	findname_l		; set pointer of name to find low byte
+	LDA	#&gt;default_file		; get default filename pointer high byte
+	STA	findname_h		; set pointer of name to find high byte
+	BNE	LAB_comparefile		; go compare file (branch always)
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The routine above is the main file tree search routine. The path/name to find is
+ compared byte at a time with each filename in turn until a file is found that is a
+ complete match to it's end. Once there the find string is tested and if it's at a
+ separator, "/",  a directory change is made (assuming the found file was a directory),
+ the search then continues.
+<P ALIGN=JUSTIFY>
+ If the find string ends in "/" then the pointer is changed to point to the default file
+ name "index.html" and this file is searched for in the target directory. So "/" as a
+ find string will search for, and return, the pointer and size for "/index.html",
+ where as "/images/" as a find string will search for, and fail to find,
+ "/images/index.html" as there is no index.html file in the images directory.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+default_file
+	.byte	"index.html",$00	; default filename for "/xxx/" finds	
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Finally the test filesystem files. There is one additional, zero payload length, file
+ "index" which is to test that matches with partial names don't trigger false matches.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; this is the test data for the filesystem. it is made up of the HTML
+; pages and other files for the Vic 20 mini web server plus a dummy
+; file to test the file match.
+
+; structure for this trial is ..
+
+; root+--errors+--404			; error 404, really an html file
+;	|
+;	+--images+--e.gif		; small .gif image
+;	|
+;	+--b.html			; button page
+;	+--index			; dummy file for test
+;	+--index.html			; default page
+;	+--o.html			; other page
+
+
+; *********************************************************************		
+; the root file is always a directory
+
+root
+	.byte	directory		; flags
+	.word	root_end-root_b		; file payload length
+	.byte	$00			; filename, null in this case
+root_b
+	.word	errors			; errors directory
+	.word	images			; images directory
+					; done directories, now do files
+	.word	b_html			; the button page
+	.word	index_html		; default web page
+	.word	o_html			; other web page
+root_end
+
+
+; *********************************************************************
+; dummy file for test
+
+index
+	.byte	none			; flags
+	.word	$0000			; file payload length
+	.byte	"index",$00		; filename, null terminator
+
+; *********************************************************************
+; default web page, served for "GET / "
+
+index_html
+	.byte	none			; flags
+	.word	index_end-index_html_b	; file payload length
+	.byte	"index.html",$00	; filename, null terminator
+					; rest is file payload
+index_html_b
+	.byte	"HTTP/1.0 200 OK",$0D,$0A,"Content-Type: text/html"
+	.byte	$0D,$0A,$0D,$0A
+	.byte	"&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Vic 20 WEB Server&lt;/TITLE&gt;"
+	.byte	"&lt;/HEAD&gt;&lt;BODY BGCOLOR=#CC6502 TEXT=WHITE&gt;"
+	.byte	"&lt;TABLE ALIGN=CENTER WIDTH=80% HEIGHT=90%&gt;"
+	.byte	"&lt;TR&gt;&lt;TD VALIGN=CENTER&gt;"
+	.byte	"&lt;FONT SIZE=+1&gt;Vic 20 WEB Server &lt;/FONT&gt;"
+	.byte	"- &lt;A HREF=b.html&gt;The button page&lt;/A&gt;"
+	.byte	" - &lt;A HREF=o.html&gt;The other page&lt;/A&gt;"
+	.byte	"&lt;P&gt;&lt;FONT SIZE=+4&gt;&lt;B&gt;Welcome&lt;/B&gt;&lt;/FONT&gt;"
+	.byte	"&lt;FONT FACE=Courier&gt; - to the default page&lt;/FONT&gt;"
+	.byte	"&lt;P&gt;"
+	.byte	"&lt;A HREF=mailto:leeedavison@lycos.co.uk&gt;&amp;nbsp;e-mail "
+	.byte	"me &lt;IMG SRC=images/e.gif BORDER=0 ALT=e-mail&gt;&lt;/A&gt;"
+	.byte	"&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;&lt;/BODY&gt;&lt;/HTML&gt;"
+index_end
+ 
+; *********************************************************************
+; other web page, served for "GET /o.html"
+
+o_html
+	.byte	none			; flags
+	.word	o_html_end-o_html_b	; file payload length
+	.byte	"o.html",$00		; filename, null terminator
+					; rest is file payload
+o_html_b
+	.byte	"HTTP/1.0 200 OK",$0D,$0A,"Content-Type: text/html"
+	.byte	$0D,$0A,$0D,$0A
+	.byte	"&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Vic 20 WEB Server&lt;/TITLE&gt;"
+	.byte	"&lt;/HEAD&gt;&lt;BODY BGCOLOR=#65CC02 TEXT=WHITE&gt;"
+	.byte	"&lt;TABLE ALIGN=CENTER WIDTH=80% HEIGHT=90%&gt;"
+	.byte	"&lt;TR&gt;&lt;TD VALIGN=CENTER&gt;"
+	.byte	"&lt;FONT SIZE=+1&gt;Vic 20 WEB Server &lt;/FONT&gt;"
+	.byte	"- &lt;A HREF=&gt;The home page&lt;/A&gt;"
+	.byte	" - &lt;A HREF=b.html&gt;The button page&lt;/A&gt;"
+	.byte	"&lt;P&gt;"
+	.byte	"&lt;FONT SIZE=+4&gt;&lt;B&gt;Welcome&lt;/B&gt;&lt;/FONT&gt;"
+	.byte	"&lt;FONT FACE=Courier&gt; - to the other page&lt;/FONT&gt;"
+	.byte	"&lt;P&gt;"
+	.byte	"&lt;A HREF=mailto:leeedavison@lycos.co.uk&gt;&amp;nbsp;e-mail "
+	.byte	"me &lt;IMG SRC=images/e.gif BORDER=0 ALT=e-mail&gt;&lt;/A&gt;"
+	.byte	"&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;&lt;/BODY&gt;&lt;/HTML&gt;"
+o_html_end
+
+
+; *********************************************************************
+; the button page, served for "GET /b.html"
+
+b_html
+	.byte	none			; flags
+	.word	b_html_end-b_html_b	; file payload length
+	.byte	"b.html",$00		; filename, null terminator
+					; rest is file payload
+b_html_b
+	.byte	"HTTP/1.0 200 OK",$0D,$0A,"Content-Type: text/html"
+	.byte	$0D,$0A,$0D,$0A
+	.byte	"&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Vic 20 WEB Server&lt;/TITLE&gt;"
+	.byte	"&lt;/HEAD&gt;&lt;BODY BGCOLOR=#065C02 TEXT=WHITE&gt;"
+	.byte	"&lt;TABLE ALIGN=CENTER WIDTH=90% HEIGHT=90%&gt;"
+	.byte	"&lt;TR&gt;&lt;TD VALIGN=CENTER&gt;"
+	.byte	"&lt;FONT SIZE=+1&gt;Vic 20 WEB Server &lt;/FONT&gt;"
+	.byte	"- &lt;A HREF=&gt;The home page&lt;/A&gt;"
+	.byte	" - &lt;A HREF=o.html&gt;The other page&lt;/A&gt;"
+	.byte	"&lt;P&gt;"
+	.byte	"&lt;FONT SIZE=+4&gt;&lt;B&gt;Welcome&lt;/B&gt;&lt;/FONT&gt;"
+	.byte	"&lt;FONT FACE=Courier&gt; - to the button page&lt;/FONT&gt;"
+	.byte	"&lt;P&gt;"
+	.byte	"&lt;A HREF=mailto:leeedavison@lycos.co.uk&gt;&amp;nbsp;e-mail "
+	.byte	"me &lt;IMG SRC=images/e.gif BORDER=0 ALT=e-mail&gt;&lt;/A&gt;&lt;/TD&gt;"
+	.byte	"&lt;TD WIDTH=20% ALIGN=CENTER&gt;Are you easily confused?"
+	.byte	"&lt;FORM METHOD=GET ACTION=b.html&gt;"
+	.byte	"&lt;PRE&gt;"
+	.byte	"yes &lt;INPUT TYPE=RADIO NAME=4 VALUE=0&gt;",$0D,$0A
+	.byte	"no  &lt;INPUT TYPE=RADIO NAME=4 VALUE=1&gt;",$0D,$0A
+	.byte	"fish&lt;INPUT TYPE=RADIO NAME=4 VALUE=2 CHECKED&gt;"
+	.byte	"&lt;/PRE&gt;"
+	.byte	"&lt;INPUT TYPE=SUBMIT VALUE=Submit&gt;"
+	.byte	"&lt;/FORM&gt;&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;&lt;/BODY&gt;&lt;/HTML&gt;"
+b_html_end
+
+
+; *********************************************************************
+; errors directory
+
+errors
+	.byte	directory		; flags
+	.word	errors_end-errors_b	; file payload length
+	.byte	"errors",$00		; filename, null terminator
+errors_b
+	.word	e_404			; error 404
+errors_end
+
+
+; error 404, served for not found files
+
+e_404
+	.byte	none			; flags
+	.word	e_404_end-e_404_b	; file payload length
+	.byte	"404",$00		; filename, null terminator
+					; rest is file payload
+e_404_b
+	.byte	"HTTP/1.0 200 OK",$0D,$0A,"Content-Type: text/html"
+	.byte	$0D,$0A,$0D,$0A
+	.byte	"&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Error 404&lt;/TITLE&gt;"
+	.byte	"&lt;/HEAD&gt;&lt;BODY BGCOLOR=#CC0265 TEXT=WHITE&gt;"
+	.byte	"&lt;TABLE ALIGN=CENTER WIDTH=80% HEIGHT=90%&gt;"
+	.byte	"&lt;TR&gt;&lt;TD VALIGN=CENTER&gt;"
+	.byte	"&lt;FONT SIZE=+1&gt;Vic 20 WEB Server &lt;/FONT&gt;"
+	.byte	"- &lt;A HREF=&gt;The home page&lt;/A&gt;"
+	.byte	"&lt;P&gt;"
+	.byte	"&lt;FONT SIZE=+4&gt;&lt;B&gt;Error 404&lt;/B&gt;&lt;/FONT&gt;"
+	.byte	"&lt;FONT FACE=Courier&gt; - File not found&lt;/FONT&gt;"
+	.byte	"&lt;P&gt;"
+	.byte	"&lt;A HREF=mailto:leeedavison@lycos.co.uk&gt;&amp;nbsp;e-mail "
+	.byte	"me &lt;IMG SRC=images/e.gif BORDER=0 ALT=e-mail&gt;&lt;/A&gt;"
+	.byte	"&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;&lt;/BODY&gt;&lt;/HTML&gt;"
+e_404_end
+
+
+; *********************************************************************
+; images directory
+
+images
+	.byte	directory		; flags
+	.word	images_end-images_b	; file payload length
+	.byte	"images",$00		; filename, null terminator
+images_b
+	.word	e_gif			; small image
+images_end
+
+
+; small image, served for "GET /email.gif"
+
+e_gif
+	.byte	none			; flags
+	.word	e_gif_end-e_gif_b	; file payload length
+	.byte	"e.gif",$00		; filename, null terminator
+					; rest is file payload
+e_gif_b
+	.byte	"HTTP/1.0 200 OK",$0D,$0A,"Content-Type: image/gif",$0D,$0A
+	.byte	$0D,$0A,$47,$49,$46,$38,$39,$61,$10,$00,$10,$00,$C4,$00,$00
+	.byte	$F7,$00,$5F,$33,$03,$9A,$33,$03,$CA,$03,$03,$83,$5F,$5F,$F7
+	.byte	$33,$63,$FA,$63,$9B,$FB,$63,$CB,$FB,$03,$9B,$CB,$63,$FA,$FA
+	.byte	$FA,$FA,$CB,$97,$00,$00,$CB,$03,$03,$FA,$FA,$FA,$63,$63,$63
+	.byte	$03,$03,$03,$FF,$FF,$FF,$00,$00,$00,$00,$00,$00,$00,$00,$00
+	.byte	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+	.byte	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+	.byte	$00,$00,$00,$00,$00,$00,$21,$F9,$04,$01,$00,$00,$10,$00,$2C
+	.byte	$00,$00,$00,$00,$10,$00,$10,$00,$00,$05,$69,$20,$24,$8E,$C6
+	.byte	$91,$24,$63,$9A,$96,$49,$11,$18,$AA,$28,$40,$85,$59,$40,$46
+	.byte	$A0,$3A,$8E,$20,$20,$07,$01,$6F,$38,$7C,$38,$1A,$3F,$84,$40
+	.byte	$C1,$6C,$36,$8D,$C8,$02,$62,$E0,$64,$02,$18,$0A,$E8,$60,$BB
+	.byte	$AD,$32,$16,$D9,$63,$A3,$51,$2D,$43,$C9,$E5,$EA,$B9,$2C,$28
+	.byte	$B8,$A9,$D0,$B4,$42,$70,$82,$3B,$E4,$F3,$7A,$F8,$C1,$EF,$F3
+	.byte	$05,$26,$5B,$7C,$2A,$2F,$10,$02,$25,$37,$03,$31,$10,$04,$01
+	.byte	$05,$06,$06,$37,$8B,$23,$01,$03,$6D,$31,$21,$00,$3B
+e_gif_end
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+<P ALIGN=JUSTIFY></BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 24th February, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.10 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=4085c08f&adpref="></script>

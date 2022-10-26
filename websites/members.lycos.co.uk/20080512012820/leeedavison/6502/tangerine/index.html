@@ -1,0 +1,53 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>Tangerine Microtan</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=25%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER><B><FONT SIZE=+1>Tangerine Microtan </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=25%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<IMG SRC="tangerine_t.jpg" ALIGN=RIGHT BORDER=1 ALT="Tangerine Microtan 65" HSPACE=8>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I didn't have one of these when they were current, I'd already gone with the Compukit
+ UK101 but I always wanted the 'Space Invasion' program that appeared in ETI. I wonder
+ how namy Microtan 65s were sold by that program? I do remember seeing a stall at the
+ Hobby Electronics show in London one year selling the Microtan with the Space Invasion
+ ROM and a specially made sound board and control pannel for £129.
+</BLOCKQUOTE>
+<B><U>What I got.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Bright orange documentation, nice, a lot of disks but no drive, the funky black and
+ orange rack system and the original hex keypad. Tangerine cards are Microtan 65, TANEX,
+ TANRAM, DISK/GPIB and hires graphics card. Non Tangerine cards are 'Ralph Allen' 6809
+ CPU, 80 column video, 32KB ROM/RAM and 14KB RAM card.
+<P ALIGN=JUSTIFY>
+ First thing to do is get the Microtan 65 card running and make a 'Space Invasion' ROM
+ for it.
+</BLOCKQUOTE>
+<B><U>Other stuff.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<TABLE WIDTH=89% BORDER=0>
+<TR><TD WIDTH=50%><B>Projects</B></TD><TD WIDTH=50%

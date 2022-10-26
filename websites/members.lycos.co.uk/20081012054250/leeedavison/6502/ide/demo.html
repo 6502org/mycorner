@@ -1,0 +1,142 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=4c9d423b&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE> IDE Bus interface - Demo BASIC program.</TITLE>
+<META name="description" content="An IDE bus interface for the 6502.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#link_2">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Demo BASIC program </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="idedemo.bas">Download this file <IMG SRC="../../zip_sm.png" ALT="Download"
+ BORDER=0></A>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=WHITE><TR><TD>
+<PRE>
+10 REM set disk interface values
+20 REM enhanced BASIC version
+
+30 REM supports ATA but not ATAPI devices
+
+100 AD=$F100 : REM interface base address
+110 IO=AD+$00 : REM input/output register - 16 bits
+120 ER=AD+$02 : REM error/precomp register
+130 SC=AD+$04 : REM sector count
+140 SS=AD+$06 : REM LBA bits 0 to 7
+150 CL=AD+$08 : REM LBA bits 8 to 15
+160 CH=AD+$0A : REM LBA bits 26 to 23
+170 HR=AD+$0C : REM drive/LBA bits 24 to 27
+180 SR=AD+$0E : REM status/command
+190 RR=AD+$0C+$10 : REM alternate status/device control
+200 AS=AD+$0E+$10 : REM drive address
+210 MD=%10100000 : REM these bits must always be set
+220 BK=%01000000 : REM value to set LBA mode
+
+1000 REM set parameters to defaults
+
+1005 DOKE RR,6 : REM write device control
+1010 DOKE SC,1 : REM sector count
+1020 DOKE SS,0 : REM LBA bits 0 to 7
+1030 DOKE CL,0 : REM LBA bits 8 to 15
+1040 DOKE CH,0 : REM LBA bits 26 to 23
+1050 DOKE HR,MD+BK : REM drive/LBA upper 4 bits
+1055 DOKE RR,2 : REM write device control
+
+1060 GOSUB 1300
+1065 PRINT : GOSUB 3100
+1070 PRINT
+1080 PRINT "0  Select drive"
+1090 PRINT "1  Reset device"
+1100 PRINT "2  Identify device"
+1110 PRINT "3  Sleep device"
+1120 PRINT "4  Idle device"
+1130 PRINT "5  Standby device"
+1140 PRINT "6  Query power mode"
+1150 PRINT "7  Execute diagnostics"
+1160 PRINT "8  Recalibrate"
+1170 PRINT "9  Test read"
+1175 PRINT "10 Write BASIC""
+1180 PRINT
+1190 PRINT "Choose one";
+
+1200 INPUT I
+1210 I=I+1
+1220 IF (I<1) OR (I>11) THEN 1200
+1230 PRINT
+1240 ON I GOSUB 3000,1300,6000,2200,2300,2400,2500,2600,2900,2700,20000
+1250 GOTO 1065
+
+1300 REM reset device(s)
+
+1310 DOKE HR,(MD+BK) EOR 16 : REM select other drive
+1320 CMD=8 
+1330 GOSUB 11020
+1340 DOKE HR,MD+BK : REM select drive
+1350 CMD=8 
+1360 GOSUB 11020
+1370 RETURN
+
+2200 REM go to sleep
+
+2210 CMD=230
+2220 DOKE SR,CMD : REM send command
+2230 RETURN
+
+2300 REM go to idle mode
+
+2310 CMD=225
+2320 GOTO 11000
+
+2400 REM go to standby mode
+
+2410 CMD=224
+2420 GOTO 11000
+
+2500 REM query device power mode
+
+2510 CMD=229
+2520 GOSUB 11000
+2530 I=DEEK(SC) AND 255 : REM sector count
+2540 PRINT "Device is in ";
+2550 IF I=0 THEN PRINT "standby"; : GOTO 2590
+2560 IF I=128 THEN PRINT "idle"; : GOTO 2590
+2570 IF I=255 THEN PRINT "active"; : GOTO 2590
+2580 PRINT "unknown";
+2590 PRINT " mode"
+2595 RETURN
+
+2600 REM execute diagnostics
+
+2610 CMD=144
+2620 GOSUB 11000
+2630 I=(DEEK(ER) AND 255) : REM read error register
+2640 PRINT "Device 0 ";
+2650 IF (I AND 127)=1 THEN PRINT "passed" : GOTO 2670
+2660 PRINT "failed"
+2670 PRINT "Device 1 ";
+2680 IF (I AND 128) THEN PRINT "failed" : GOTO 2695
+2690 PRINT "passed or not present"
+2695 RETURN
+
+2700 REM test read
+
+2710 INPUT "Sector number";IX
+2725 GOSUB 10000
+2730 CMD=32
+2740 GOSUB 11000
+
+2750 REM display sector
+
+2760 S$=""
+2770 PRINT
+2780 FOR WC=0 TO 255
+2790 GOSUB 12000
+
+2800 HH=(HI/

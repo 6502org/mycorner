@@ -1,0 +1,58 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=27b78fb5&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>Vic 20 ROM/RAM expansion - GAL logic equations file.</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#pld">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>GAL logic equations file </FONT></B><FONT SIZE=-1>by Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="../vic20_pld.zip">Download this file <IMG SRC="../../../zip_sm.png"
+ ALT="Download" BORDER=0>
+</A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This file includes the equations for the ISA slot logic as well as the ROM/RAM expansion
+ logic. Only those lines that are needed for the ROM/RAM expansion have been rendered in
+ <B>bold</B>.
+<P ALIGN=JUSTIFY>
+ By changing the lines that define the ROM and RAM any one of a number possible
+ combinations of ROM and RAM can be accommodated.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+<B>Name     vic_ISA ;
+PartNo   00 ;
+Date     01/10/03 ;
+Revision 01 ;
+Designer Lee ;
+Company  ;
+Assembly None ;
+Location  ;
+Device   g16v8as ;</B>
+
+/* This is the glue for the vic 20 ISA card & RAM/ROM expansion	*/	
+
+/* Logic minimisations			None			*/
+/* Optimizations			None			*/
+/* Download				JEDEC/POF/PRG		*/
+/* Doc File Options			fuse plot, equations	*/
+/* Output				None			*/
+
+/* INPUT PINS 							*/
+
+PIN	1 = dlp2	;		/* delayed phase 2	*/
+<B>PIN	2 = VRW		;		/* VIC read write	*/
+PIN	3 = !BLK1	;		/* block select		*/
+PIN	4 = !BLK2	;		/* block select		*/
+PIN	5 = !BLK3	;		/* block select		*/
+PIN	6 = !BLK5	;		/* block select		*/</B>
+PIN	7 = CRW		;		/* CPU read write	*/
+PIN	8 = p2		;		/* phase 2		*/
+PIN	9

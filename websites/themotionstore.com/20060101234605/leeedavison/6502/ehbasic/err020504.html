@@ -1,0 +1,104 @@
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC, errata for 4th May 2002</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="errata.html">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Enhanced BASIC, errata. 4th May 2002 </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<U><B>Symptoms</B></U>
+<BLOCKQUOTE>
+ Assigning a string in immediate mode doesn't work properly, i.e. doing ..
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+<B>A$="TESTING"
+?A$</B>
+</PRE>
+</TD></TR></TABLE>
+<P>
+ .. gives either ..
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+<B>TSTING</B>
+</PRE>
+</TD></TR></TABLE>
+<P>
+ .. or ..
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+<B>T STING</B>
+</PRE>
+</TD></TR></TABLE>
+<P>
+ .. depending on how your console handles null characters (ASCII 0)
+</BLOCKQUOTE>
+<U><B>Cause</B></U>
+<BLOCKQUOTE>
+ When BASIC assigns a value to a string it tests to see if the string is in the program
+ code. If it isn't then the string is copied to string memory (if the string is in program
+ memory no copy is made and the string pointer points to the string embedded in the
+ program code). In this case moving the input buffer out of page zero meant that this test
+ fails to copy a string from the input buffer to string memory. The string can then be
+ overwritten by any following commands.
+</BLOCKQUOTE>
+<U><B>The fix</B></U>
+<BLOCKQUOTE>
+ One small change is needed to fix this, just after LAB_20DC was ..
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+LAB_20DC
+	STX	Sendh			; save string end high byte
+	LDA	ssptr_h			; get string start high byte
+	BNE	LAB_RTST		; branch if not in utility area
+</PRE>
+</TD></TR></TABLE>
+<P>
+ .. this needs to test if the string start is &#60;Ram_base so it becomes ..
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+LAB_20DC
+	STX	Sendh			; save string end high byte
+	LDA	ssptr_h			; get string start high byte
+	CMP	#>Ram_base		; compare with start of program memory
+	BCS	LAB_RTST		; branch if not in utility area
+</PRE>
+</TD></TR></TABLE>
+<P>
+ .. This is done in version 1.03.<P>
+ If you move the input buffer from before the start of program memory be carefull that
+ this test is changed to suit or the problem will recurr.
+</BLOCKQUOTE>
+ Thanks to <A HREF="http://65c02.tripod.com/">Daryl</A> for finding that "feature".
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 14th July, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%>
+</TD></TR></TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,160 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=13210253&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC, advanced examples</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="index.html#link_1">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Enhanced BASIC, advanced examples </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<P>
+<B><U>Creating buffer space.</U></B>
+<BLOCKQUOTE>
+ Sometimes there is a need for a byte oriented buffer space. This can be achieved by
+ lowering the top of BASIC memory and using the "protected" space created thus. The
+ main problem with this is that there may not be the same RAM configuration in all
+ the systems this code is to run on.
+<P>
+ One way round this is to allocate the space from BASIC's array memory by dimensioning
+ an array big enough to hold your data. As arrays always start from zero then to work
+ out the array size needed you do ..<P>
+ Array dimension = (bytes needed/4)-1.<P>
+ E.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 DIM b1(19) : REM need 80 bytes for input buffer
+20 DIM b2($100) : REM need $0400 bytes for screen buffer
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ So you've allocated the buffer but where is it? This is one use of the <A
+ HREF="language.html#VARPTR">VARPTR</A> function, it is used in this case to return
+ the start of the array's data space.<P>
+ E.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 a1 = VARPTR(b1(0)) : REM get the address of the buffer space
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ But wait, there is another problem here. Because variables are created when they are
+ first assigned a value any new variable created after the array is dimensioned will
+ move the array in memory. So the following will not work..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 DIM b1(19) : REM 80 bytes for buffer
+20 a1 = VARPTR(b1(0)) : REM get the address of the buffer space
+40 FOR x = 0 to 79
+50 POKE a1+x,ASC(" ")
+60 NEXT
+.
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ When we get to line 40, a1, the pointer to the array data space, is wrong because the
+ variable x has been created and moved all the arrays up by six bytes.
+
+ The way round this is to ensure that all variables that you will use have been created
+ prior to getting the pointer. This also means you start with known values in all your
+ variables.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 DIM b1(19) : REM 80 bytes for buffer
+20 x = 0 : REM loop counter
+30 a1 = VARPTR(b1(0)) : REM get the address of the buffer space
+40 FOR x = 0 to 79
+50 POKE a1+x,ASC(" ")
+60 NEXT
+.
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ Another way is to get the pointer every time you use it. This has the advantage of
+ always being correct but is somewhat slower.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 DIM b1(19) : REM 80 bytes for buffer
+40 FOR x = 0 to 79
+50 POKE VARPTR(b1(0))+x,ASC(" ")
+60 NEXT
+.
+.
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ One thing to remember, never try to use a string array as a buffer. Everything will
+ seem to work until you run out of string space and the garbage collection routine is
+ called. Once this happens it's likely that your buffer will get trashed and you may
+ even find that the program freezes because the garbage collection routine now thinks
+ that there are more string bytes than there are memory.
+</BLOCKQUOTE>
+<BR>
+<B><U>Creating short code space.</U></B>
+<BLOCKQUOTE>
+ While the techniques explained above can also be used to create space for machine code
+ routines there is a simpler way for position independant routines up to 255 bytes long
+ to be held in memory.
+<P>
+ Assemble the code and use the hex output from your assembler to create a set of BASIC
+ data statements.<BR>
+  E.g.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+1000 DATA $A5,$11,$C9,$3A,$B0,$08,$38,$E9
+1010 DATA $30,$38,$E9,$D0,$90,$0D,$09,$20
+1020 DATA $38,$E9,$61,$90,$0B,$C9,$06,$B0
+1030 DATA $07,$69,$3A,$E9,$2F,$85,$11,$60
+1040 DATA $18,$60
+1050 DATA -1
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ Now we just use a loop like this to load this hex code into a string.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 RESTORE 1000
+20 READ by : REM assume at least one byte
+30 DO
+40 co$ = co$+CHR$(by)
+50 READ by
+60 LOOP UNTIL by=-1
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ The code can now be called by doing ..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+140 CALL(SADD(co$))
+</PRE>
+</TD></TR></TABLE>
+<

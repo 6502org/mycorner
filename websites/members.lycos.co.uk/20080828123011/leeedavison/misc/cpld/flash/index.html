@@ -1,0 +1,66 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=6a35dbd4&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>LED flash</TITLE></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>LED flash. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../../index.html">
+<IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<A HREF="ledon.html"><IMG SRC="ledon_t.jpg" ALIGN=RIGHT TITLE="The finished device"
+ BORDER=1 HSPACE=8></A>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I like free things, or at least no money things and, in a deal with my ex-employer that
+ saw the exchange of some <S>old shi</S> quality NOS microprocessors for some
+ programmable logic, I finally got all the bits together to try CPLD programming with the
+ 8 Bit Baby.
+<P ALIGN=JUSTIFY>
+ This circuit, being the first 8 Bit Baby project, is made deliberately simple, mostly so
+ that there is less to go wrong but also because I'm lazy and I wanted something to show
+ for just a little work. Apart from the 8 Bit Baby, the programming lead and software
+ all that's needed is an LED, a resistor and an 8 bit computer to plug it into or,
+ lacking that, an XTAL oscillator and a socket.
+<BR CLEAR=ALL>
+</BLOCKQUOTE>
+<IMG SRC="circuit.png" ALIGN=RIGHT ALT="Circuit diagram" BORDER=1 HSPACE=8>
+<B><U>The circuit.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Yes that's it. Even I can't mess that up<A HREF="messup.html"><B><SUP>1</SUP></B></A>.
+ The circuit works by taking the clock input, which is either Ø2 from the host CPU or
+ one to two MHz from an XTAL oscillator, and divides it by 1048576 to give a roughly
+ one Hz flash rate.
+<P ALIGN=JUSTIFY>
+ As I didn't want to make room on the bench for a Vic 20 or C64 I decided to go with
+ the XTAL oscillator. For this a socket was mounted on the 8 Bit Baby and wired to the
+ +5v, ground and the EPM3064. The LED was fitted and a short bridge soldered between the
+ anode and the +5v and finally the 270 ohm resistor was fitted with one end soldered to
+ the LED cathode and the other to pin 6 on the EPM3064.
+</BLOCKQUOTE>
+<B><U>The design.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The design uses three cascaded 8 bit synchronous counters to make a 20 bit divider. The
+ first counter is enabled continuously and the carry out from that counter is high for
+ one count in every 256 counts. This carry signal is inverted and used to enable the
+ second counter so that it only counts once in every 256 cycles. The carry out from this
+ counter is again inverted and used to enable the third counter, this counter only counts
+ once in every 65536 cycles and the fourth output bit from this counter, that changes
+ state every 524288 cycles, is used to drive the LED output pin giving an overall ratio
+ of 1:1048576
+</BLOCKQUOTE>
+<B><U>Making it work.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ To make the EPM3064 do anything first you have to program it. To do that I use Altera's
+ Max+Plus II software that is available 'free' rrom the Altera website. 'Free' in this
+ case means no money, but you do have to fill in Altera's online registration. Eventually
+ these companies will learn that if you want to have the best selling product then you
+ don't just make the software for that product free, you actively give it away to anyone
+ - even if they may not be interested. Well it worked for
+ <FONT COLOR=red><B>[REMOVED]</B></FONT>.
+</BLOCKQUOTE>
+<B><U>Creating a design.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Assuming you managed to download Max+Plus II and get it installed what follows is a
+ fairly quick how to guide. Images with borders can be clicked to open the image, full
+ size, in a new window.<P>
+<CENTER><TABLE BORDER

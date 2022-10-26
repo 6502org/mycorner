@@ -1,0 +1,88 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=fadaef5&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>Enhanced BASIC internals</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="index.html#link_1">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Enhanced BASIC internals </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<P>
+<B><U>Floating point numbers.</U></B>
+<BLOCKQUOTE>
+ Floating point numbers are stored in memory in four bytes. The format of the
+ numbers is as follows.
+</BLOCKQUOTE>
+ <CENTER>
+  <TABLE BGCOLOR="white" CELLPADDING=5 CELLSPACING=0 BORDER=2>
+   <TR>
+    <TD>Exponent</TD><TD>S</TD><TD>Mantissa 1</TD><TD>Mantissa 2</TD><TD>Mantissa 3</TD> 
+   </TR>
+  </TABLE>
+ </CENTER>
+<BLOCKQUOTE>
+<B>Exponent</B>
+<BLOCKQUOTE>
+   This is the power of two to which the mantissa is to be raised. This number
+   is biased to +$80 i.e. 2^0 is represented by $80, 2^1 by $81 etc. Zero is a
+   special case and is used to represent the value zero for the whole of the number.
+</BLOCKQUOTE>
+<B>S</B>
+<BLOCKQUOTE>
+   Sign bit. This bit (b7 of mantissa 1) is one if the number is negative.
+</BLOCKQUOTE>
+<B>Mantissa 1/2/3</B>
+<BLOCKQUOTE>
+   This is the 24 bit mantissa of the number and is normalised to make the
+   highest bit (b7 of mantissa 1) always one. So the absolute value of the
+   mantissa varies between 0.5 and 0.9999999403954 . As we know that the highest
+   bit is always one it is replaced by the sign bit in memory.
+</BLOCKQUOTE>
+<B><I><U>Example.</U></I></B>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+$82,$49,$0F,$DB = +3.14159274	nearest floating equivalent to pi
+ |   ||  |   |  
+ |   |\--+---+- = 0.785398185	absolute value of mantissa  
+ |   |
+ |   \--------- = +		b7 of mantissa 1 is zero
+ |
+ \------------- = x 2^2 = 4	mantissa to be multiplied by 4
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+   Values represented in this way range between + and - 1.70141173x10^38
+</BLOCKQUOTE>
+<B><U>BASIC program memory use.</U></B>
+<BLOCKQUOTE>
+ A BASIC program is stored in memory from Ram_base upwards. It's format is ..
+<BLOCKQUOTE>
+	$00 Start of program marker byte
+</BLOCKQUOTE>
+ .. then each BASIC program line which is stored as ..
+<BLOCKQUOTE>
+	start of next line pointer low byte
+<BR>  start of next line pointer high byte
+<BR>  line number low byte
+<BR>  line number high byte
+<BR>  code byte(s)
+<BR>  $00 End of line marker byte
+</BLOCKQUOTE>
+ .. and finally ..
+<BLOCKQUOTE>
+	$00 End of program marker byte 1
+<BR>  $00 End 

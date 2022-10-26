@@ -1,0 +1,264 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish331f5316{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if IE]>
+<style>
+#catfish331f5316{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip331f5316{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad331f5316"></div>
+<HTML><HEAD><TITLE>6502 ROM file system</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>6502 ROM file system.</FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<IMG SRC="filesys.png" ALIGN=RIGHT BORDER=1 ALT="6502  ROM filesystem
+ test structure" HSPACE=8>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is a <B>simple</B> ROMable file system for 6502 based computers. It was designed
+ to hold all the web content for my <A HREF="../vic20/network/index.html">Vic 20 web
+ server</A> and so only has the features needed to support that.
+</BLOCKQUOTE>
+<B><U>Requirements.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ As it's intended for use in embedded type applications the filesystem needs to be small
+ and require few system resources. The system presented here uses only four bytes, apart
+ from the filename to describe each file and directory. The routine to find a file needs
+ only eleven bytes of RAM, apart from the filename to be searched for, only six of which
+ need to be in page zero and none of which need to be maintained between calls.
+</BLOCKQUOTE>
+<B><U>File system description.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Files and directories are basically the same with just one bit changed in the header to
+ tell them apart. There are no blocks or block mapping, no file dates or times, there
+ aren't even the pointers to reverse traverse the file tree, though they could fairly
+ easily be added.
+<P ALIGN=JUSTIFY>
+ Files consist of a header and the payload. The header is from four to 259 bytes long and
+ is made up from a flag byte, a length word and a null terminated filename. File names
+ are case sensetive, can be up to 255 characters long and can include most characters,
+ only "/" and $00 are expressly forbidden.
+<P ALIGN=JUSTIFY>
+ The payload is just binary data and can be any size, including zero bytes.
+<P ALIGN=JUSTIFY>
+ A directory is the same in form as a file except b6 in the flag byte is set. The payload
+ is a list of word size pointers to the headers for each of the files and directories
+ within the directory.
+<P ALIGN=JUSTIFY>
+ There are no end markers or guard bytes or any special way of marking the start and end
+ of each file. The only point that must be known is the start of the root directory from
+ which the pointers to all other files and directories can be found. Files do not need to
+ be in contiguous memory and can be placed as and where is convenient.
+</BLOCKQUOTE>
+<B><U>The header.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The header can be as short as four and as long as 259 bytes, this is because the
+ filename is variable in length and can be from zero to 255 bytes long (excluding
+ the null treminator byte)
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+f_start		.ds	1		; flags
+f_length	.ds	2		; file payload length
+f_name		.ds	n+1		; filename and null terminator		
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The first byte in the header, the flag byte, only has two bits defined and of those
+ only one is used at present. b7 is the deleted bit, if this bit is set then this file
+ or directory has been deleted. b6 is used to distinguish a directory file from a non
+ directory file, if this bit is set then this file is a directory entry and as such is
+ treated slightly differently by the filesystem.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=0 CELLSPACING=0><TR VALIGN=TOP><TD>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+ bit	function
+ ---	--------
+  7	deleted
+  6	directory	
+  5	unused
+  4	unused
+  3	unused
+  2	unused
+  1	unused
+  0	unused
+</PRE>
+</TD></TR></TABLE></TD>
+<TD VALIGN=TOP>
+<TABLE CELLPADDING=8 CELLSPACING=0><TR><TD><P ALIGN=JUSTIFY>
+ The header flag byte has only b7 and b6 defined, all other bits are available for any
+ use such as hidden, system, executable, read-only or archive bits.
+</TD></TR>
+<TR><TD><P ALIGN=JUSTIFY>
+ The deleted flag is not used as such and, with a small code change, could also be
+ assigned to other uses.
+</TD></TR></TABLE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The second and third bytes in the header make up the file payload length word, this is
+ length of the file's contents. The file payload length is limited only by the space
+ available but in practice will usually be small enough to fit in a single ethernet
+ packet.
+<P ALIGN=JUSTIFY>
+ The fourth byte onwards of the header is the null terminated filename. There are few
+ restrictions on the name aside from the maximum length which, excluding terminator,
+ is 255 bytes and the character "/" and the byte $00 are not allowed. No other characters
+ are expressly forbidden, but the use of non-printing characters is not recommended.
+</BLOCKQUOTE>
+<B><U>Directories.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Directories are distinguished from files only by the state of the directory bit in the
+ flag byte. This means no special code is needed to search for directories instead of
+ files as, during searching, both are treated the same. The down side to this is that
+ you can't have a file and a directory with the same name, only the first listed in the
+ directory would ever be found.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+;	the root file should always be a directory
+
+root
+	.byte	directory		; flags
+	.word	root_end-root_b		; file payload length
+	.byte	$00			; filename, null here
+root_b
+	.word	errors			; errors directory
+	.word	images			; images directory
+					; directories done, do files		
+	.word	b_html			; the button page
+	.word	index_html		; default web page
+	.word	o_html			; other web page
+root_end
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The payload in a directory is a list of absolute word pointers pointing to the start of
+ each of the files and directories to which the current directory is the parent. No end
+ marker is needed as the end can be derived from the length so there is no restriction
+ on the location of files. Though the entries in the example above have been arranged in
+ directory then file alphabetic order this is not a requirement and any order is as valid
+ as any other. No significance is placed on file ordering except where duplicate filenames
+ are concerned. In this case only the first occurance of the duplicate filename will ever
+ be found in a search.
+</BLOCKQUOTE>
+<B><U>The root directory.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The root directory is exactly the same in form as any other directory, what makes it
+ special is that it is not pointed to by any pointer in any other directory and so it's
+ location can only be refered to explicitly. For this reason a name is not needed, it
+ can never be searched for, but could be used as a volume name or distinguishing
+ information in a system where more than one volume may exist or the volume is held in
+ removable media - a flashcard for example.
+<P ALIGN=JUSTIFY>
+ If the root is always held in the same relative place it makes handling multiple or
+ removable volumes much easier.
+</BLOCKQUOTE>
+<B><U>Files.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The header of a file is the same as that of a directory except the directory bit in the
+ flag byte is clear. The payload is just binary data and there is no end-of-file marker
+ needed as the end of file can be derived from the length.
+<P ALIGN=JUSTIFY>
+ Because of this there is no restriction on what the payload may contain and there is no
+ significance in the filename or it's extension (if any). All file payloads are of equal
+ significance, i.e. none, as far as the filesystem is concerned.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+;	small image, served for "GET /email.gif"
+
+e_gif
+	.byte	none			; flags
+	.word	e_gif_end-e_gif_b	; file payload length
+	.byte	"e.gif",$00		; filename, null terminator
+					; rest is file payload
+e_gif_b
+	.byte	"HTTP/1.0 200 OK",$0D,$0A,"Content-Type: image/gif",$0D,$0A	
+	.byte	$0D,$0A,$47,$49,$46,$38,$39,$61,$10,$00,$10,$00,$C4,$00,$00   
+	.byte	$F7,$00,$5F,$33,$03,$9A,$33,$03,$CA,$03,$03,$83,$5F,$5F,$F7
+	.byte	$33,$63,$FA,$63,$9B,$FB,$63,$CB,$FB,$03,$9B,$CB,$63,$FA,$FA
+	.byte	$FA,$FA,$CB,$97,$00,$00,$CB,$03,$03,$FA,$FA,$FA,$63,$63,$63
+	.byte	$03,$03,$03,$FF,$FF,$FF,$00,$00,$00,$00,$00,$00,$00,$00,$00
+	.byte	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+	.byte	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+	.byte	$00,$00,$00,$00,$00,$00,$21,$F9,$04,$01,$00,$00,$10,$00,$2C
+	.byte	$00,$00,$00,$00,$10,$00,$10,$00,$00,$05,$69,$20,$24,$8E,$C6
+	.byte	$91,$24,$63,$9A,$96,$49,$11,$18,$AA,$28,$40,$85,$59,$40,$46
+	.byte	$A0,$3A,$8E,$20,$20,$07,$01,$6F,$38,$7C,$38,$1A,$3F,$84,$40
+	.byte	$C1,$6C,$36,$8D,$C8,$02,$62,$E0,$64,$02,$18,$0A,$E8,$60,$BB
+	.byte	$AD,$32,$16,$D9,$63,$A3,$51,$2D,$43,$C9,$E5,$EA,$B9,$2C,$28
+	.byte	$B8,$A9,$D0,$B4,$42,$70,$82,$3B,$E4,$F3,$7A,$F8,$C1,$EF,$F3
+	.byte	$05,$26,$5B,$7C,$2A,$2F,$10,$02,$25,$37,$03,$31,$10,$04,$01
+	.byte	$05,$06,$06,$37,$8B,$23,$01,$03,$6D,$31,$21,$00,$3B
+e_gif_end
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<B><U>Software.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The only software provided is a routine to search the file system tree for a particular
+ file. The filename to search for should be the complete path from the root, start with
+ a "/" character and be null terminated. Directories are separated with the "/" character.
+<P ALIGN=JUSTIFY>
+ As this code is intended for a small web server there is the feature that any search
+ terminating in a directory will automatically append "index.html" to the string and
+ search that filename.
+</BLOCKQUOTE>
+<B><U>Source.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The code presented only allows searching of the file tree and there is no code to
+ add or delete files or directories.
+<P ALIGN=JUSTIFY>
+ You can either download the source as zipped text or view it as html.
+<BLOCKQUOTE>
+ <LI> Source code - <A HREF="source.html" NAME=source>View</A> or <A
+ HREF="source.zip">download<IMG SRC="../../zip_sm.png" ALT="Download" border=0></A>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>Expansion.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ If 64 kilobytes, the limit for this system as it stands, is not enough the filesystem
+ can quite easily be expanded by extending the directory pointers and payload length
+ to values big enough to handle the required size. With 32 bit words up to 4GB of paged
+ or externally stored data could be handled with a minimal increase in code complexity,
+ more than enough for most 8 bit microprocessor systems.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 28th February, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish331f5316" style="display:none"></div>
+<script src="http://ads.mmania.com/displaycf.js.php?r=331f5316&cc=uk" type=text/javascript></script>
+<!-- begin ZEDO for channel: Mmania.com , publisher: Mmania.com , Ad Dimension: Slider - 1 x 1 -->
+<script language="JavaScript">
+var zflag_nid="1070"; var zflag_cid="147"; var zflag_sid="106"; var zflag_width="1"; var zflag_height="1"; var zflag_sz="94"; 
+</script>
+<script language="JavaScript" src="http://d2.zedo.com/jsc/d2/fo.js"></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

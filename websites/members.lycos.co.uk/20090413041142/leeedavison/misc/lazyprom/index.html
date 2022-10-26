@@ -1,0 +1,121 @@
+<style>
+#catfish0afbb00c{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if IE]>
+<style>
+#catfish0afbb00c{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip0afbb00c{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad0afbb00c"></div>
+<HTML><HEAD><TITLE>LazyPROM - The idle person's EPROM emulator.</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>LazyPROM. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<A HREF="lazyprom.html">
+ <IMG SRC="lazyprom_t.jpg" ALIGN=RIGHT ALT="LazyPROM in use." BORDER=1></A>
+<BLOCKQUOTE>
+ Even with a new EPROM eraser that can handle 14 EPROMs at once I got fed up going
+ through the program/test/erase cycle that is part of developing code.
+<P>
+ I did think, briefly, of building a full featured EPROM emulator, but that was far too
+ much like work. There had to be an easier way.
+<P>
+ As I have a few old Dallas smart sockets kicking about I decided that one of them, with
+ a 32k low power CMOS RAM, would be ideal.
+</BLOCKQUOTE>
+<BR clear=all>
+<B><U>The circuit.</U></B>
+<BLOCKQUOTE>
+ The circuit is very simple. The pinout for a standard 32k ROM and standard 32k EPROM
+ differ on only two pins. This means most of the circuit is just pin for pin connections
+ as can be seen in the diagram below.
+</BLOCKQUOTE>
+<CENTER>
+<B>LazyPROM diagram.</B>
+<P>
+ <IMG SRC="lazyprom.png" ALT="LazyPROM layout diagram" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE>
+ With the switch in the 'RAM' position all the pins are connected pin to pin and the RAM
+ can be programmed either in a programmer or as part of a microprocessors main memory.
+<P>
+ With the switch in the 'EPROM' position the RAM's R/W line is disconnected from the
+ header and pin 27 on the header is now connected to the RAM's A14 pin. This makes the
+ RAM chip look like a 32k EPROM to the target socket.
+</BLOCKQUOTE>
+<B><U>Construction.</U></B>
+<BLOCKQUOTE>
+ The whole thing was put together on a small piece of prototyping board in well under an
+ hour. The most difficult part was soldering the headers to the track side of the board.
+<P>
+ <B>Note</B> - Don't be tempted to use anything but hard, gold, turned pin header pins
+ for the header. The, easier to find, square pins will either not fit, or damage, most
+ IC sockets and the cheaper tinned header pins will be damaged more easily during use.
+</BLOCKQUOTE>
+<A NAME="finished"></A>
+<CENTER>
+<B> The finished board.</B><P>
+<A HREF="topside.html">
+ <IMG ALT="Top view without the Dallas smart socket." SRC="topside_t.jpg" BORDER=1></A>
+<A HREF="trackside.html">
+ <IMG ALT="Close up trackside view." SRC="trackside_t.jpg" BORDER=1></A>
+</CENTER>
+<P>
+<B><U>In use.</U></B>
+<BLOCKQUOTE>
+ As no special voltages or timings are needed to program the RAM in the smart socket it
+ would be fairly easy to make a programmer for this, if you don't already have something
+ suitable.
+<P>
+ The Dallas smart socket is supposed to retain RAM contents for up to 10 years but the
+ ones I have, being very second user, are an unknown quantity. They certainly work for
+ a week or so though one was originally completely dead and required some surgery to
+ replace both batteries. More on that elsewhere.
+<P>
+ The first one I built proved to be so usefull that I've since built another and both
+ have proved invaluable in hacking the Ferguson SRB1 DMAC receiver.
+<P>
+<A NAME="both"></A>
+<BLOCKQUOTE>
+<A HREF="both.html">
+ <IMG SRC="both_t.jpg" ALIGN=LEFT ALT="Two LazyPROMs in use." BORDER=1></A>
+<BR clear=all>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<BR clear=all>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 30th July, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML></pre></xmp></noscript>
+
+<DIV id="catfish0afbb00c" style="display:none">
+<script>
+google_ad_client = "pub-1277213816118277";
+google_ad_slot = "8338977607";
+google_ad_channel = "3873814576";
+google_ad_width = '728';
+google_ad_height = '90';
+</script>
+<script src='http://pagead2.googlesyndication.com/pagead/show_ads.js'></script>
+</DIV>
+<SCRIPT src="http://ads.tripod.lycos.de/ad/displaycf.js.php?r=0afbb00c&cc=uk" type=text/javascript></SCRIPT>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

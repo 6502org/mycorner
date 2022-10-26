@@ -1,0 +1,53 @@
+<script type="text/javascript" src="http://cfSERVERNAME/ad/tripodbar/framejs.php?cat=memberpages.other&CC=cfCTRY&ord=3ab258d&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>Enhanced BASIC, starting</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502
+ microprocessor."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_1"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Starting Enhanced BASIC </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<U><B>Starting EhBASIC</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Starting EhBASIC will mostly depend on how you set up your system to start it. The
+ following assumes you are trying to run EhBASIC using the example monitor and <A
+ HREF="http://home.pacbell.net/michal_k/">Michal Kowalski's 6502 simulator</A>, though
+ this should not differ too much from the startup of EhBASIC on a real system.
+<P ALIGN=JUSTIFY>
+<LI>Unpack the .zip source to a directory and run the 6502 simulator.
+<LI>Open min_mon.asm from the directory where you unzipped it.
+<LI>Select assemble <TT><B>[F7]</B></TT>.
+<LI>Run the debugger <TT><B>[F6]</B></TT>.
+<LI>Make sure the I/O window is open.
+<LI>Press <TT><B>[CTRL]</B></TT>, <TT><B>[SHIFT]</B></TT> and <TT><B>R</B></TT> to reset
+ the simulated processor.
+</BLOCKQUOTE>
+<IMG SRC="startup.png" ALIGN=RIGHT BORDER=1 HSPACE=8 ALT="EhBASIC startup">
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ You should then be presented with the <TT><B>[C]old/[W]arm</B></TT> prompt as seen here.
+ As the simulator has just been started you should now press <TT><B>C</B></TT> for a cold
+ start.
+<P ALIGN=JUSTIFY>
+ This should present you with the <TT><B>Memory size ?</B></TT> prompt. Now type either
+ carriage return, in which case EhBASIC calculates available memory space automatically,
+ or enter the total size of the memory in either decimal, hex or binary followed by a
+ carriage return.
+<P ALIGN=JUSTIFY>
+ E.g. to set the physical memory size to 8k bytes.
+<P ALIGN=JUSTIFY>
+ In decimal ..<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ Memory size ? <B>8192</B>
+</TT><BR>
+ .. or in hex ..<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ Memory size ? <B>$2000</B>
+</TT><BR>
+ .. or in binary.<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ Memory size ? <B>%10000000000000</B>
+</TT>
+<P ALIGN=JUSTIFY>
+ EhBASICs program memory is then allocated from Ram

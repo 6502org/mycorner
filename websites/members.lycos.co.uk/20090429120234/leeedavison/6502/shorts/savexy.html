@@ -1,0 +1,177 @@
+<style>
+#catfish23584ef5{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if IE]>
+<style>
+#catfish23584ef5{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip23584ef5{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad23584ef5"></div>
+<HTML>
+<HEAD>
+<TITLE>6502 Shorts - Save X and Y</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Save X and Y. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Not something that comes up very often. I needed some code that would run on an NMOS
+ 6502, not destroy X or Y, return a value in A and was re-entrant, i.e. it could call
+ itself without overwriting any values.
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ First we save all the registers. We're not really interested in the value of A but we
+ need a byte on the stack.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	PHA			; make space for A			
+	TYA			; copy Y
+	PHA			; save Y
+	TXA			; copy X
+	PHA			; save X
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Now we have to restore the registers. Because we don't have PHX/PLX or PHY/PLY we must
+ use A to restore X and Y but we also don't want to overwrite A, we can't just push A
+ onto the stack as that makes getting X and Y off something of a problem. What we do is
+ to overwrite the value for A that is already on the stack and then just pop the registers
+ as we normally would.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	TSX			; copy stack pointer
+	STA	$0103,X		; write result to stacked A		
+	PLA			; pull stacked X
+	TAX			; restore X
+	PLA			; pull stacked Y
+	TAY			; restore Y
+	PLA			; get result into A
+</PRE>
+</TD></TR></TABLE><P ALIGN=JUSTIFY>
+ This code is also usefull if you don't know which type of 6502 the code will be run on
+ and you need it to work on all of them.
+</BLOCKQUOTE>
+<B><U>Update.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<BLOCKQUOTE>
+ <B><I> .. need it to work on all of them. </I></B>
+</BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Or not as it turns out. There can be a case when the above code doesn't work and that is
+ if the stack is nearly full when the code is entered. While this won't happen very often
+ it <I>could</I> happen and code that works <I>nearly</I> all the time can be frustrating.
+<P ALIGN=JUSTIFY>
+ Let's look at what happens when it fails, first the code as it saves the registers ..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+			<B> S	Address</B>
+	PHA		$02	<FONT COLOR=blue><B>$0102</B></FONT>	; make space for A		
+	TYA		$01	.....	; copy Y
+	PHA		$01	$0101	; save Y
+	TXA		$00	.....	; copy X
+	PHA		$00	$0100	; save X
+	<I>&lt;more code&gt;</I>	$FF	$01FF	; subroutine code	
+</PRE>
+</TD></TR></TABLE><P ALIGN=JUSTIFY>
+ In this case A was pushed to address $0102 but after pushing X and Y the stack is full
+ and the stack pointer now points back to the top of the stack. Now when the code tries
+ to save A and exit the following happens ..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+			<B> X	Address</B>
+	TSX		$FF	.....	; copy stack pointer
+	STA	$0103,X	$FF	<FONT COLOR=red><B>$0202</B></FONT>	; write result to stacked A	
+			<B> S	Address</B>
+	PLA		$00	$0100	; pull stacked X
+	TAX		$01	.....	; restore X
+	PLA		$01	$0101	; pull stacked Y
+	TAY		$02	.....	; restore Y
+	PLA		$02	<FONT COLOR=blue><B>$0102</B></FONT>	; get result into A
+</PRE>
+</TD></TR></TABLE><P ALIGN=JUSTIFY>
+ Oops! We just failed to return the value in A and trashed $0202 as well. The solution is
+ to make X equal the stack pointer <I><B>when A was first pushed</B></I> and use this as
+ the offset from the base of the stack page.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	TSX			; copy stack pointer
+	INX			; increment X to ..
+	INX			; .. equal stack pointer ..
+	INX			; .. when A was pushed
+	STA	$0100,X		; write result to stacked A		
+	PLA			; pull stacked X
+	TAX			; restore X
+	PLA			; pull stacked Y
+	TAY			; restore Y
+	PLA			; get result into A
+</PRE>
+</TD></TR></TABLE><P ALIGN=JUSTIFY>
+ Now going through the code showing the register values ..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+			<B> X	Address</B>
+	TSX		$FF	.....	; copy stack pointer
+	INX		$00	.....	; increment X to ..
+	INX		$01	.....	; .. equal stack pointer ..
+	INX		$02	.....	; .. when A was pushed
+	STA	$0100,X	$02	<FONT COLOR=green><B>$0102</B></FONT>	; write result to stacked A	
+			<B> S	Address</B>
+	PLA		$00	$0100	; pull stacked X
+	TAX		$01	.....	; restore X
+	PLA		$01	$0101	; pull stacked Y
+	TAY		$02	.....	; restore Y
+	PLA		$02	<FONT COLOR=blue><B>$0102</B></FONT>	; get result into A
+</PRE>
+</TD></TR></TABLE><P ALIGN=JUSTIFY>
+ This costs a few bytes and some clock cycles but will work even if the stack pointer
+ should wrap as above.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 1st February, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML></pre></xmp></noscript>
+
+<DIV id="catfish23584ef5" style="display:none">
+<script>
+google_ad_client = "pub-1277213816118277";
+google_ad_slot = "8338977607";
+google_ad_channel = "3873814576";
+google_ad_width = '728';
+google_ad_height = '90';
+</script>
+<script src='http://pagead2.googlesyndication.com/pagead/show_ads.js'></script>
+</DIV>
+<SCRIPT src="http://ads.mmania.com/ad/displaycf.js.php?r=23584ef5&cc=uk" type=text/javascript></SCRIPT>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

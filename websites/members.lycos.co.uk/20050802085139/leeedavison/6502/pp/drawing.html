@@ -1,0 +1,411 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML><HEAD><TITLE>6502 Pen plotter - Drawing</TITLE>
+<META name="description" content="6502 Pen plotter."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#links"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>6502 Pen plotter - Drawing </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Drawing.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The actual drawing is performed by an interrupt service routine. This is called either
+ by a software interrupt (BRK) if no drawing is taking place or by the completion of the
+ previous draw command signalled by a timer countdown interrupt.
+<P ALIGN=JUSTIFY>
+ For this description it doesn't matter how the routine was called, that it was is all
+ that matters.
+</BLOCKQUOTE>
+<B><U>Actions.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The mechanism can only do one of ten things, it can move in one of eight directions
+ either along the step axes or at 45 degrees to them (step x and y together), lift the
+ pen or drop the pen. Each of these actions takes a finite time and the maximum time for
+ that action has to pass before a new action can be started. For movement this time is
+ 3mS which, with a step size of 0.1mm gives a draw rate of 3.33cm/S. For lifting or
+ dropping the pen the time needed is 8mS which means we can draw a maximum of 45 separate
+ lines per second.
+<P ALIGN=JUSTIFY>
+ This is by no means fast and the 6502 is quite adequate to fully control these actions.
+</BLOCKQUOTE>
+<B><U>Draw command format.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The draw commands are fetched from the buffer one at a time and have the format.
+<P>
+<CENTER>
+<TABLE WIDTH=80%>
+ <TR><TD WIDTH=20%><B>Count low</B></TD><TD>Low byte of step count word</TD></TR>
+ <TR><TD><B>Count high</B></TD><TD>High byte of step count word</TD></TR>
+ <TR><TD><B>Nbyte</B></TD><TD>Negative step byte for the mechanism</TD></TR>
+ <TR><TD><B>Pbyte</B></TD><TD>Positive step byte for the mechanism</TD></TR>
+</TABLE>
+</CENTER>
+<P>
+ Nbyte and Pbyte have the following bit functions
+<P>
+<TABLE BGCOLOR="white" BORDER=1 ALIGN=CENTER>
+ <TR><TD WIDTH=20% ALIGN=CENTER><B>Bit</B></TD><TD WIDTH=40% ALIGN=CENTER><B>1</B></TD>
+  <TD WIDTH=40% ALIGN=CENTER><B>0</B></TD></TR>
+ <TR><TD ALIGN=CENTER>7</TD><TD>Pen down</TD><TD>Pen up</TD></TR>
+ <TR><TD ALIGN=CENTER>6</TD><TD COLSPAN=2 ALIGN=CENTER>Unused</TD></TR>
+ <TR><TD ALIGN=CENTER>5</TD><TD>Half step</TD><TD>Step</TD></TR>
+ <TR><TD ALIGN=CENTER>4</TD><TD>Disable motors</TD><TD>Enable motors</TD></TR>
+ <TR><TD ALIGN=CENTER>3</TD><TD>Y direction positive</TD><TD>Y direction negative</TD>
+  </TR>
+ <TR><TD ALIGN=CENTER>2</TD><TD>Step Y motor</TD><TD>No Y step</TD></TR>
+ <TR><TD ALIGN=CENTER>1</TD><TD>X direction positive</TD><TD>X direction negative</TD>
+ </TR>
+ <TR><TD ALIGN=CENTER>0</TD><TD>Step X motor</TD><TD>No X step</TD></TR>
+</TABLE>
+<P ALIGN=JUSTIFY>
+ The only difference between them is that Nbyte always has the motor step bits, 0 and 2,
+ cleared whereas Pbyte will have the bits set for the motor(s) to be stepped. While this
+ may seem wastefull, Nbyte gan easily be generated from Pbyte by doing an AND #$FA, at
+ the time the hardware was not finalised and it was better to have the bits defined in the
+ higher level routines and leave this routine as dumb as possible.
+</BLOCKQUOTE>
+<B><U>Executing the command.</U></B>
+<BLOCKQUOTE>
+<B><U>Starting a new line.</U></B>
+<P ALIGN=JUSTIFY>
+ The first thing the draw routine does, after saving all the registers, is to check if it
+ was called by a timer event. If not it jumps to start a new line.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+DrawIRQ
+	PHA			; save A
+	TXA			; copy X
+	PHA			; save X
+	TYA			; copy Y
+	PHA			; save Y
+
+	LDA	Timer2r		; read and clear counter timer chip status	
+	BPL	Startnext	; branch if we were idle (i.e. not drawing)
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Next it checks the buffer and, if there is a draw command present, branches to execute
+ the command.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+Startnext
+	JSR	Increadb	; increment pointer and read byte from buffer	
+	BCC	Newline		; branch if line to do
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Now the draw command is copied to local variables and the motor and pen latch is set up.
+ Also the drawing flag is blindly set, it is quicker to do this than check the old state
+ first.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+Newline
+	STA	Cbytel		; save step count low byte
+	JSR	Increadb	; increment pointer and read byte from buffer
+	STA	Cbyteh		; save step count high byte
+
+	LDA	#$FF		; flag drawing in progress
+	STA	drawf		; set draw flag
+
+	JSR	Increadb	; increment pointer and read byte from buffer
+	STA	Nbyte		; save latch negative byte. this is needed here
+				; because the step input MUST be low when
+				; changing mode or direction to avoid erroneous	
+				; stepping.
+	STA	Mport		; byte out to port (set pen & directions)
+	JSR	Increadb	; increment pointer and read byte from buffer
+	STA	Pbyte		; save latch positive byte
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Next the pen state for this command is compared with the current pen state. If the pen
+ state has changed then the routine sets up the delay value for the pen to complete its
+ action.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	AND	#$80		; mask pen status bit
+	CMP	Lastp		; compare current pen mode with last pen mode	
+	STA	Lastp		; set pen byte to new state
+	BEQ	Decrstep	; branch if pen bits = (go do count-1)
+
+; pen state has changed so set the pen up/down delay & exit
+
+	LDY	#$01		; get count for 8mS pen delay low byte
+	LDX	#$F8		; get count for 8mS pen delay high byte
+	BNE	Exitdraw	; start count & exit, branch always
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ If the pen state hasn't changed then the step count is decremented, the motor(s) are
+ stepped and the delay value is set up for the motor(s) to complete the step.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+Decrstep
+	LDA	Cbytel		; get step count low byte
+	BNE	Lowonly		; skip high byte decrement if <>0
+
+	LDA	Cbyteh		; get step count low byte
+	BEQ	Startnext	; branch if done (low & high bytes = 0)		
+
+Highnlow
+	DEC	Cbyteh		; else decrement step count high byte
+Lowonly
+	DEC	Cbytel		; decrement step count low byte
+
+	LDA	Pbyte		; get latch positive byte
+	STA	Mport		; byte out to port
+	LDA	Nbyte		; get latch negative byte
+	STA	Mport		; byte out to port
+
+	LDY	#$01		; set count for 3mS step delay low byte
+	LDX	#$24		; set count for 3mS step delay high byte
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Finally, the timer delay value is set, ..<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+Exitdraw
+	STX	Timer2h		; save timer 2 count high byte
+	STY	Timer2l		; save timer 2 count low byte
+	LDA	#$E3		; set single shot count down
+	STA	Timer2r		; set timer
+	BNE	ResEXIT		; this was an interrupt service so exit properly
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ .. the registers are restored and the routine exits.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+ResEXIT
+	PLA			; pull Y
+	TAY			; restore it
+	PLA			; pull X
+	TAX			; restore it
+	PLA			; restore A
+ExitINT
+	RTI			; this was an interrupt service so exit properly
+</PRE>
+</TD></TR></TABLE>
+<P>
+<B><U>Continuing a line.</U></B>
+<P ALIGN=JUSTIFY>
+ The routine saves the registers, as before, but, as we are already drawing, this time it
+ drops through to the motor step code.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+DrawIRQ
+	PHA			; save A
+	TXA			; copy X
+	PHA			; save X
+	TYA			; copy Y
+	PHA			; save Y
+
+	LDA	Timer2r		; read and clear counter timer chip status
+	BPL	Startnext	; branch if we were idle (i.e. not drawing)
+
+	LDA	Timer2h		; clear counter timer chip timer 2 interrupt	
+
+				; we were drawing so decrement count
+Decrstep
+	<B>...</B>
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The step count is then decremented, the motor(s) are stepped, the delay value is set up
+ for the motor(s) to complete the step, and the routine exits as it did in the last
+ section.
+<P>
+<B><U>Ending a line.</U></B>
+<P ALIGN=JUSTIFY>
+ This time, after saving the registers and clearing the timer, the step count has reached
+ zero so the routine branches to check for a new line.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+Decrstep
+	LDA	Cbytel		; get step count low byte
+	BNE	Lowonly		; skip high byte decrement if <>0
+
+	LDA	Cbyteh		; get step count low byte
+	BEQ	Startnext	; branch if done (low & high bytes = 0)		
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ On attempting to read from the buffer there is no new data waiting so the newline branch
+ is not taken.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+Startnext
+	JSR	Increadb	; increment pointer and read byte from buffer	
+	BCC	Newline		; branch if line to do
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ So this time the drawing flag is cleared, the pen is released and the motors are disabled
+ to reduce dissipation in the driver stages.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	LDA	#$00		; clear byte
+	STA	drawf		; clear draw flag
+	STA	Lastp		; save as last pen byte
+	LDA	#$10		; turn off the motors and set pen up		
+	STA	Mport		; byte out to port
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Lastly the registers are restored and the routine exits a s before.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+ResEXIT
+	PLA			; pull Y
+	TAY			; restore it
+	PLA			; pull X
+	TAX			; restore it
+	PLA			; restore A
+ExitINT
+	RTI			; this was an interrupt service so exit properly
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 2nd May, 2002.</FONT>
+</BODY>
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?CC=uk"></script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&mkw=&CC=uk&ord=47d54b4b&adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="//secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

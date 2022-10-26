@@ -1,0 +1,95 @@
+<HTML>
+<HEAD>
+<TITLE>Vic 20 multi thread TCP</TITLE>
+<META name="description" content="Vic 20 multi thread TCP">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=25%><A HREF="../index.html#multitcp">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD ALIGN=CENTER>
+<B><FONT SIZE=+1>Vic 20 multi thread TCP </FONT></B><FONT SIZE=-1>by Lee Davison</FONT>
+</TD><TD WIDTH=25%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Introduction</U></B>
+<IMG SRC="multi.jpg" ALIGN=RIGHT BORDER=1 ALT="Eight thread TCP" HSPACE=8>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The Vic 20 <A HREF="../network/index.html">network</A> code allows a Vic 20 to be
+ connected to an ethernet network and, while it works, it suffers from one drawback,
+ it can only support one TCP connection at any time. This is most noticeable when
+ opening a web page with multiple images on it as once one connection is open all the
+ others wait at least one time out time before trying again. This meant that in spite
+ of the first HTTP GET request being serviced in less than 200ms, the pages on the Vic
+ 20 web server would still take ten seconds or so to complete.
+</BLOCKQUOTE>
+<B><U>Multi threads</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The solution to this is to replace the single thread TCP code with multi thread code
+ that can handle more than one connection at any time. This introduces a new level of
+ complexity into the code and increases RAM use but this is more than made up for by
+ the aparent improvement in performance. For example, a web page with three embedded
+ images is now served in less than 800ms.
+</BLOCKQUOTE>
+<B><U>The new software</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The biggest change is to the TCP code. This has been modified to send RST packets,
+ should they be needed, and now behaves more like the specification in RFC 793. It
+ has also been changed to support multiple simutaneous connections and in this case
+ up to eight simultaneous connections are supported, enough to serve two http clients
+ with no noticeable loss in performance. RAM permitting, sixty four connections should
+ be possible with only minimal code changes.
+<P ALIGN=JUSTIFY>
+ The software has changed in more than just it's ability to handle multiple TCP
+ connections. Changes have also been made in the way the different layers of code
+ interact, giving better definition to which layer each part of the code belongs to.
+ There is also greater division between different protocols at the same level and, while
+ this has increased code size a little, it should make it easier to add or remove code
+ should need arise.
+<P ALIGN=JUSTIFY>
+ The low level code that handles the network interface card has not changed, neither has
+ the ROM filesystem or the web pages held in it and there have only been cosmetic changes
+ to the display code to show the status of the extra TCP connections. In all there are
+ just over 530 bytes left in the 8KB ROM area that holds the data and code.
+<P ALIGN=JUSTIFY>
+<P ALIGN=JUSTIFY>
+<P ALIGN=JUSTIFY>
+</BLOCKQUOTE>
+<A NAME="source"></A>
+<B><U>Source and binary</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ You can download the latest <A HREF="source_multi.zip">source <IMG
+ SRC="../../../zip_sm.png" ALT="Download" border=0></A> as zipped .asm file and you can
+ download the binary <A HREF="vic_rom.zip">ROM image <IMG SRC="../../../zip_sm.png"
+ ALT="Download" border=0></A>. The version is 00.69 multi.
+</BLOCKQUOTE>
+<B><U>Further developement</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ There are still a few issues to address with the current TCP implementation. Firstly the
+ sent TCP window size is not calculated but is just blindly set, while this is not a
+ problem with a TCP message that fits in this set size it may cause problems later. Also
+ the incomming window size is ignored and the data just sent in one packet. This again has
+ not been a problem so far but it should be taken into account.
+<P ALIGN=JUSTIFY>
+ The timeout code could be much improved. At the moment when a TCB times out it is reset
+ to listen and the connection discarded, this could be improved by retransmitting the last
+ data sent by that TCB but it would mean having to hold more information in each TCB. This
+ would include such data as the number of retries and the last acknowledged data pointer
+ as well as information on the size and location of the data being sent. Adding features
+ such as these soon eats up the often scarce resources in an 8 bit system.
+<P ALIGN=JUSTIFY>
+ Another feature that is lacking is the ability to transmit and receive TCP data that
+ spans more than one packet. While this is a desirable feature it introduces another
+ degree of complexity to the code and the need to keep track of what has been sent or
+ received requires more of the limited system memory.
+<P ALIGN=JUSTIFY>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 20th June, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+</HTML>

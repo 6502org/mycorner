@@ -1,0 +1,49 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=80c903ae&adpref=&gg_bg=&gg_template="></script>
+<HTML><HEAD><TITLE>6502 Shorts - Hex to ASCII</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=20%><A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Hex to ASCII. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I know you've all done this before but here's a use for decimal mode. Read on....
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The classic way to convert a nibble in A into ASCII is to test if the nibble is greater
+ than nine and, if it is, to add seven before adding the 48 to make the ASCII character.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	CMP	#$0A		; set carry for +1 if >9	
+	BCC	NoAdjust	; branch if <=9
+
+	ADC	#6		; adjust if A to F
+				; (six plus carry = 7!)
+NoAdjust
+	ADC	#"0"		; add ASCII "0"
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ This is eight bytes long and takes seven or eight cycles depending on the nibble.
+<P ALIGN=JUSTIFY>
+ Well here's a way that uses decimal mode addition to do that for you.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	SED			; set decimal mode
+	CMP	#$0A		; set carry for +1 if >9	
+	ADC	#"0"		; add ASCII "0"
+	CLD			; clear decimal mode
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Six bytes and always nine cycles. Or, if you do a number of nibbles and leave decimal
+ mode set throughout, four bytes and five cycles per digit.
+</BLOCKQUOTE>
+<B><U>Another way.</U></B><A NAME=way></A>
+<BLOCKQUOTE

@@ -1,0 +1,244 @@
+<HTML>
+<HEAD>
+<TITLE>
+  6502 Pen plotter - Drawing lines
+</TITLE>
+<META name="description" content="6502 Pen plotter.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>6502 Pen plotter - Drawing lines </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="index.html#links">[Back]</A>
+<BR clear=all><P>
+<HR>
+<B><U>Reflection.</U></B>
+<BLOCKQUOTE>
+ Because of the nature of the plotter's motors the number of possible lines that can be
+ drawn can be halved by reversing the direction of the X axis motor in the case of lines
+ with a -ve end X co-ordinate.
+<P>
+ The same can be done again for lines with a -ve end Y co-ordinate. The result of this is
+ that all possible lines can be drawn using only unsigned integer maths.
+<P>
+<CENTER>
+ <IMG SRC="reflect.png" BORDER=1 ALT="[Reducing the possible types of line]">
+</CENTER>
+<P>
+</BLOCKQUOTE>
+<B><U>Interpolation.</U></B>
+<BLOCKQUOTE>
+ Drawing a line between any two arbitary points on a grid the exact line cannot be drawn
+ as we are limited to either horizontals, verticals or diagonals. So to draw a
+ representation of the line on the square lattice the program can only generate the best
+ approximation.
+<P>
+ The routine used by the plotter does just this. Given the distant endpoint of a line (the
+ near endpoint is always (0,0) as all lines are drawn relative to the current pen position)
+ the routine generates the intermediate points.
+<P>
+ The main feature of this routine is that the drawing of the line involves no multiplication
+ or division operations so even long lines are generated quicker that they are drawn.
+<P>
+ This graphic shows how three possible lines can be drawn using just one horizontal or
+ vertical and one diagonal.
+<P>
+<CENTER>
+ <IMG SRC="lines.png" BORDER=1 ALT="[How lines are drawn]">
+</CENTER>
+<P>
+</BLOCKQUOTE>
+<B><U>The routine.</U></B>
+<BLOCKQUOTE>
+ First the endpoint X co-ordinate is tested and if it is -ve the X motor direction is
+ set -ve and the sign of the X co-ordinate is changed.
+<PRE>
+WriteLine
+	LDA	#$02		; set X direction +ve
+	STA	Dirbyte		; and save it
+
+	LDA	Xwordh		; get X axis high byte
+	BPL	Xispos		; branch if not -ve
+
+	EOR	#$FF		; invert byte
+	STA	Xwordh		; save it
+	LDA	Xwordl		; get low byte
+	EOR	#$FF		; invert it
+	STA	Xwordl		; save it
+	INC	Xwordl		; +1
+	BNE	Nohighx		; branch if no carry
+
+	INC	Xwordh		; else increment high byte
+Nohighx
+	LDA	#$00		; clear A (direction -ve)
+	STA	Dirbyte		; clear direction byte
+Xispos
+</PRE>
+ Next exactly the same thing is done for the endpoint Y co-ordinate.
+<PRE>
+	LDA	Ywordh		; get Y axis high byte
+	BPL	Yispos		; branch if not -ve
+
+	EOR	#$FF		; invert byte
+	STA	Ywordh		; save it
+	LDA	Ywordl		; get low byte
+	EOR	#$FF		; invert it
+	STA	Ywordl		; save it
+	INC	Ywordl		; +1
+	BNE	Nohighy		; branch if no carry
+
+	INC	Ywordh		; else increment high byte
+Nohighy
+	LDA	#$08		; set Y direction +ve
+	ORA	Dirbyte		; OR in X direction
+	STA	Dirbyte		; and save it
+Yispos
+</PRE>
+ Now both X and Y are positive and the motor step directions are set according to the
+ original signs of the X and Y co-ordinates.
+<P>
+ Next we test to see if the line is vertical, i.e. X = 0. If it is then we have only a
+ simple line and no interpolation is needed as the line can be drawn with only steps
+ along the Y axis.
+<PRE>
+	LDA	Xwordh		; get X high byte
+	ORA	Xwordl		; OR with low byte
+	BNE	Testhoriz	; if not 0 go test horizontal line
+
+	LDX	Ywordl		; get Y low byte
+	LDY	Ywordh		; get Y high byte
+	LDA	#$04		; step Y motor
+	BNE	Savnwrite2	; go save & draw segment (branch always)
+
+	...
+
+Savnwrite2
+	STX	Lcntl		; save as count low byte
+	STY	Lcnth		; save as count high byte
+	STA	Stepbyte	; save step byte
+	JMP	WriteSeg	; go draw segment
+</PRE>
+ If it wasn't a vertical line we then test for a horizontal line as this can be simply
+ drawn with only X axis steps.
+<PRE>
+Testhoriz
+	LDA	Ywordh		; get Y high byte
+	ORA	Ywordl		; OR with low byte
+	BNE	Testdiag	; if not 0 go test diagonal line
+
+	LDA	#$01		; step X motor
+	BNE	Savnwrite	; go save & draw segment (branch always)
+
+	...
+
+Savnwrite
+	LDX	Xwordl		; get X low byte
+	LDY	Xwordh		; get X high byte
+Savnwrite2
+	STX	Lcntl		; save as count low byte
+	STY	Lcnth		; save as count high byte
+	STA	Stepbyte	; save step byte
+	JMP	WriteSeg	; go draw segment
+</PRE>
+ If it wasn't a horizontal line the final test compares the X and Y co-ordinates. If they
+ are equal our final simple case, where the line can be drawn by stepping simultaneously
+ along both the X and Y axes, has been found.
+<PRE>
+Testdiag
+	LDA	Xwordh		; get X high byte
+	CMP	Ywordh		; compare Y high byte
+	BNE	Diffbyte	; branch if not equal
+
+	LDA	Xwordl		; get X low byte
+	CMP	Ywordl		; compare Y low byte
+	BNE	Diffbyte	; branch if not equal
+
+	LDA	#$05		; step both motors
+Savnwrite
+	LDX	Xwordl		; get X low byte
+	LDY	Xwordh		; get X high byte
+Savnwrite2
+	STX	Lcntl		; save as count low byte
+	STY	Lcnth		; save as count high byte
+	STA	Stepbyte	; save step byte
+	JMP	WriteSeg	; go draw segment
+</PRE>
+ At this point the three simple cases have been disposed of and only lines requiring
+ interpolation remain. The first thing to do is determine which is the bigger of X and Y.
+ This is conviniently already available inthe carry flag as a result of the earlier X and
+ Y compare.
+<PRE>
+Diffbyte
+	BCC	Yisbigger	; branch if Y gt X
+</PRE>
+ Now we can set the total number of steps (always equal to the greater of X and Y) and we
+ also know if the non diagonal step is horizontal or vertical (along the X or Y axis) from
+ which was greater.
+<P>
+ We also know how many diagonal moves we need to make (the smaller of X and Y) and we save
+ this as Doublel/h. Now we can calculate the number of horizontal/vertical moves needed by
+ subtracting this from the total number of moves and saving it as Singlel/h.
+P>
+ Here is the code for the case of X gt Y.
+<PRE>
+				; carry is set for subtract
+	LDA	Xwordl		; get X low byte
+	STA	Totall		; save as total low byte
+	STA	Testl		; save as test low byte
+	SBC	Ywordl		; subtract Y low byte
+	STA	Singlel		; save single low byte
+	LDA	Xwordh		; get X high byte
+	STA	Totalh		; save as total high byte
+	STA	Testh		; save as test high byte
+	SBC	Ywordh		; subtract Y high byte
+	STA	Singleh		; save single high byte
+
+	LDX	Ywordl		; get Y low byte
+	LDY	Ywordh		; get Y high byte
+	LDA	#$01		; set X as step
+</PRE>
+ The last thing we need is a way to decide which of the steps we need to take next as we are
+ drawing the line. For this we use the test variable which is initialised to the smaller of
+ X and Y minus half the number of the larger of X and Y. (This gives the smallest errors at
+ the ends of the line, where they would be noticed most.)
+<PRE>
+Dotest
+	STX	Doublel		; save as double low byte
+	STY	Doubleh		; save as double high byte
+	STA	Stepsav		; save it
+
+	LSR	Testh		; shift test high byte
+	ROR	Testl		; shift test low byte
+	SEC			; set carry for subtract
+	LDA	Doublel		; get double low byte
+	SBC	Testl		; subtract test low byte
+	STA	Testl		; save as test low byte
+	LDA	Doubleh		; get double high byte
+	SBC	Testh		; subtract test high byte
+	STA	Testh		; save as test high byte (Test=Double-(Single/2))
+</PRE>
+</BLOCKQUOTE>
+
+
+<B><U>More to come.</U></B>
+<BLOCKQUOTE>
+</BLOCKQUOTE>
+<PRE>
+</PRE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 28th April, 2002.</FONT>
+</BODY>
+</HTML>

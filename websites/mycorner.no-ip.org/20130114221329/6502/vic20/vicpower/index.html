@@ -1,0 +1,100 @@
+<HTML><HEAD><TITLE>Powering a VIC 20</TITLE>
+<META name="description" content="Powering VIC 20"></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=25%>
+<A HREF="../index.html#power"><IMG SRC="../../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER><B><FONT SIZE=+1>Powering a VIC 20 </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT></TD><TD WIDTH=25%><A HREF="../../../index.html">
+<IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A></TD></TR></TABLE>
+<HR>
+<TABLE><TR><TD>
+<A NAME="pow01" HREF="pow01.html"><IMG SRC="pow01s.jpg" WIDTH=320 HEIGHT=240 ALIGN=RIGHT
+ BORDER=1 TITLE="New Vic 20 power" HSPACE=8></A>
+<B><U>Introduction</U></B>
+<BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ VIC external power supplies do fail and while they can be repaired, or replaced, owners
+ often worry about powering their VICs and will go out of their way and spend more than
+ thay need just to get the right replacement.
+<P ALIGN=JUSTIFY>
+ This is not necessary.
+<P ALIGN=JUSTIFY>
+ A DIN power plug VIC can be powered from any 12V and 5V DC supply port capable of
+ delivering enough current, such as the disk connector on a PC power supply.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="pow02" HREF="pow02.html"><IMG SRC="pow02s.jpg" WIDTH=320 HEIGHT=240 ALIGN=RIGHT
+ BORDER=1 TITLE="Vic 20 power circuit" HSPACE=8></A>
+<B><U>Vic 20 DIN power.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ You can see what happens to the power inside the Vic 20 in the schematic.
+<P ALIGN=JUSTIFY>
+ Pins four and five are connected together and supply the regulated +5V. This supply is
+ switched by SW1A.
+<P ALIGN=JUSTIFY>
+ Pins one, two and three are connected together and make the ground return for the +5V.
+ This connection is not switched.
+<P ALIGN=JUSTIFY>
+ Pins six and seven supply the 9V AC which is used inside the Vic to generate the cassette
+ motor supply and also feeds to the user port. The feed to pin six is switched by SW1B and
+ the return on pin seven is fused by F1. As this supply is isolated in the standard Vic 20
+ power unit disconnecting either lead, by the switch or by the fuse blowing, will remove
+ this supply.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<IMG SRC="pow03.png" WIDTH=320 HEIGHT=240 ALIGN=RIGHT BORDER=1 HSPACE=8
+ TITLE="Vic 20 power schematic">
+<B><U>What you need</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ <LI>A seven pin DIN plug.
+ <LI>A PC hard drive power socket.
+ <LI>An offcut of stripboard.
+ <LI>Some wires.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<A NAME="pow04" HREF="pow04.html"><IMG SRC="pow04s.jpg" WIDTH=320 HEIGHT=240 ALIGN=RIGHT
+ BORDER=1 TITLE="Disk power socket connections" HSPACE=8></A>
+<B><U>Construction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The offcut of stripboard is pushed into the disk power socket, as the PCB it was mounted
+ on was, and the pins soldered in place, each one straddling two tracks. This gives a
+ greater attachment area and allows more than one wire to be soldered to each pin as was
+ done with the first cable shown.
+<P ALIGN=JUSTIFY>
+ Alternately one wire can be soldered to each pin of the disk power socket and pins in
+ the DIN plug connected together as was done with this lead.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<B><U>Using DC instead of AC.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The 9V AC at the Vic user port can not be used to generate negative voltages because the
+ cassette power bridge rectifier inside the Vic effectively makes 0V the lowest potential.
+<P ALIGN=JUSTIFY>
+ The 12V DC is connected to the pin 6 9V AC input so that it is switched when the 5V DC
+ is switched. The pin 7 9V AC input that goes through the fuse is not used because is not
+ switched and that would leave the cassette power on at all times. If fuse protection is
+ needed a fuse can be fitted inline with the 12V DC.
+<P ALIGN=JUSTIFY>
+ The 9V AC when rectified becomes 9V * SQR(2) = 12.7V minus the two diode forward drops of
+ the bridge rectifier which is 12.7V - 0.7V - 0.7V and gives roughly 11.3V.
+<P ALIGN=JUSTIFY>
+ Using 12V DC instead bypasses one diode of the bridge as the return is through the 0V
+ line so there is only the one diode forward drop giving 12.0V - 0.7V which is also
+ roughly 11.3V.
+</BLOCKQUOTE>
+</TD></TR><TR><TD>
+<B><U>Not for the C64.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ In spite of its similar pinout this method can not be used to power a C64. The C64's
+ internal power circuit is very different and requires that the 9V AC is actually AC and
+ not DC.
+<P ALIGN=JUSTIFY>
+ So now you know.
+</BLOCKQUOTE>
+</TD></TR></TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 11th July, 2011.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

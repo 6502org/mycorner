@@ -1,0 +1,65 @@
+<HTML><HEAD><TITLE>SuprDupr driver for LCD port</TITLE>
+<META name="description" content="An LCD driver for the SuprDupr.">
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=25%>
+<A HREF="../index.html#lcd"><IMG SRC="../../../up.gif" BORDER=0 TITLE="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER><B><FONT SIZE=+1>LCD port driver </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT></TD><TD WIDTH=25%>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 TITLE="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<IMG SRC="sdpr_lcd.jpg" ALIGN=RIGHT BORDER=1 TITLE="SuprDupr with graphics LCD" HSPACE=8>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The SuprDupr has a port wired to enable use of many inteligent LC displays. The
+ display, pictured right, is an LC7980 type though most of the other graphics and
+ text types are similarly driven.
+<P ALIGN=JUSTIFY>
+ One change needed to be made to the SuprDupr to use this display and that was to
+ disconnect the earthy end of the contrast pot from 0v and connect it to the -ve
+ charge pump output on the MAX232 chip. This is because the greater multiplex on
+ these graphics displays requires a more -ve bias to maintain the viewing angle.
+<P ALIGN=JUSTIFY>
+ A down side to this is that display contrast is effected by the loading on the
+ RS232 port and use of such things as a RS232 line monitor can have an adverse
+ effect on the display. Also if the load from the display is to great then the
+ MAX232 charge pump will not start. However this <I>should</I> not be a problem in
+ normal use.
+<P ALIGN=JUSTIFY>
+ Another change made to the SuprDupr was to wire +12v to the spare pin on the LCD
+ port to provide power for the backlight. This could be connected through a PNP
+ transistor and controlled by software via one of the port pins.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<B><U>Software.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The software is unfinished and provided as a starting point for anyone who wishes
+ to make their own. It is usable and was used to produce the displays pictured above
+ and below.
+<P ALIGN=JUSTIFY>
+</BLOCKQUOTE>
+<A NAME="source"></A>
+<B><U>The source</U></B>
+<BLOCKQUOTE>
+ <A HREF="asm.html">View</A> or <A HREF="asm.zip">download <IMG
+ SRC="../../../zip_sm.png" BORDER=0 TITLE="Download"></A> driver .asm file<BR>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<CENTER>
+<TABLE ALIGN=CENTER>
+<TR><TD COLSPAN=2 ALIGN=CENTER><B><U>Example displays</U></B></TD></TR><TR><TD>
+<IMG SRC="demo_01.png" BORDER=1 TITLE="30 x 5 text" HSPACE=8 VSPACE=8></TD><TD>
+<IMG SRC="demo_02.png" BORDER=1 TITLE="34 x 5 text" HSPACE=8 VSPACE=8>
+</TD></TR><TR><TD>
+<IMG SRC="demo_03.png" BORDER=1 TITLE="40 x 5 text" HSPACE=8 VSPACE=8></TD><TD>
+<IMG SRC="demo_04.png" BORDER=1 TITLE="240 x 40 graphics" HSPACE=8 VSPACE=8>
+</TD></TR></TABLE>
+</CENTER>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 28th April, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 TITLE="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>

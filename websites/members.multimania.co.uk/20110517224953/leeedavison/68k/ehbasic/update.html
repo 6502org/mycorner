@@ -1,0 +1,319 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish563d5cda{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if IE]>
+<style>
+#catfish563d5cda{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip563d5cda{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad563d5cda"></div>
+<HTML><HEAD><TITLE>Enhanced 68k BASIC, update</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 68k microprocessor
+ family."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_1"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Update. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+ Download version 3.49 <A HREF="source.zip">source <IMG SRC="../../zip_sm.png"
+ ALT="Download" BORDER=0></A>.
+
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=5>
+<TR><TD WIDTH=150></TD><TD></TD></TR>
+
+<TR><TD VALIGN=TOP><B></B></TD>
+<TD><P ALIGN=JUSTIFY>
+<P ALIGN=JUSTIFY>
+</TD></TR>
+
+<TR><A NAME=101216></A><TD VALIGN=TOP><B>16th December 2010.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ <S>Four</S>Five small updates that in reverse order are ..
+<P ALIGN=JUSTIFY>
+ <B>3.49</B> Patches the tokeniser so that <B><TT>DEC</TT></B> and <B><TT>DEF</TT></B>
+ aren't tokenised when they appear within hex values.
+<P ALIGN=JUSTIFY>
+ <B>3.48</B> Underflow in the <A HREF="language.html#USING"><TT>USING$()</TT></A>
+ function now just pads with zeroes instead of causing a function call error.
+<P ALIGN=JUSTIFY>
+ <B>3.47</B> The use of array elements as the variable in a
+ <A HREF="language.html#FOR"><TT>FOR</TT></A> loop is now checked for and disallowed.
+ This is because creation of new variables within such a loop can cause corruption in
+ variable memory.
+<P ALIGN=JUSTIFY>
+ <B>3.46</B> Updates function and function variable handling.
+<P ALIGN=JUSTIFY>
+ <B>3.45</B> The handling of non existant variables is made consistent and the option of
+ not returning an error for a non existant variable is added. If this is the behaviour
+ you want changing novar in the source to some non zero value will achieve this.
+<P ALIGN=JUSTIFY>
+ The version number is now 3.49. Enjoy.
+</TD></TR>
+
+<TR><A NAME=101124></A><TD VALIGN=TOP><B>24th November 2010.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ Overflow indication has been added to the
+ <A HREF="language.html#USING"><TT>USING$()</TT></A> function.
+<P ALIGN=JUSTIFY>
+ The version number is now 3.44. Enjoy.
+</TD></TR>
+
+<TR><A NAME=101119></A><TD VALIGN=TOP><B>19th November 2010.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ An undocumented feature of concatenating strings has been removed.
+<P ALIGN=JUSTIFY>
+ The version number is now 3.43. Enjoy.
+</TD></TR>
+
+<TR><A NAME=100730></A><TD VALIGN=TOP><B>30th July 2010.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ A couple of undocumented features snuck into the last version. Those that have been
+ noticed are corrected in this one.
+<P ALIGN=JUSTIFY>
+ The version number is now 3.41. Enjoy.
+</TD></TR>
+
+
+<TR><A NAME=100620></A><TD VALIGN=TOP><B>20th June 2010.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ The number to string routine has been modified to output up to seven significant figures.
+ This means scientific notation now begins at ten million, not one million but it doesn't
+ change the way numeric values are handled internally.
+<P ALIGN=JUSTIFY>
+ <A HREF="language.html#IF"><TT>ELSE</TT></A> has been added to <B><TT>IF ..
+ THEN</TT></B>.
+<P ALIGN=JUSTIFY>
+ A <A HREF="language.html#USING"><TT>USING$()</TT></A> function has been added along with
+ a corresponding <A HREF="language.html#FORMAT"><TT>Format</TT></A> error.
+<P ALIGN=JUSTIFY>
+ <A HREF="language.html#LOAD"><TT>LOAD</TT></A> and <A
+ HREF="language.html#SAVE"><TT>SAVE</TT></A> have been updated to use the EASy68K code.
+ Binary loading and saving is no longer supported.
+<P ALIGN=JUSTIFY>
+ The version number is now 3.40. Enjoy.
+</TD></TR>
+
+<TR><A NAME=050217></A><TD VALIGN=TOP><B>17th February 2005.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ Just when I think it's safe to relax some undocumented features rear their ugly heads.
+<P ALIGN=JUSTIFY>
+ Firstly, if an attempt was made to access an array with an index value of n where 0 < n <
+ 0.5 then instead of getting element 0 you sometimes got an array bounds error, this has
+ been fixed.
+<P ALIGN=JUSTIFY>
+ Secondly, if you tried to dimension an array bigger than the available memory EhBASIC
+ would curl up it's toes and die, this was due to an incorrect branch type and has now
+ been fixed to give an out of memory error.
+<P ALIGN=JUSTIFY>
+ The version number is now 3.21. Enjoy.
+</TD></TR>
+
+<TR><A NAME=050215></A><TD VALIGN=TOP><B>15th February 2005.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ Lots has changed from the last version, this is reflected in the change in major version
+ number from 2.xx to 3.xx.
+<P ALIGN=JUSTIFY>
+ The biggest change is that the code is now pure, this means it is both relocatable and
+ re-entrant so in a multitasking system only one copy of the code needs to be in memory
+ even if multiple instances are run. The planned target to test this is the Amiga but I
+ have not written an Amiga version just yet.
+<P ALIGN=JUSTIFY>
+ Internally there are other big changes. The code is now able to handle programs larger
+ than 128K correctly, create and reference arrays bigger than 128K correctly and now
+ generates an error if you try to make an array dimension larger than 65535. This
+ <I>should</I> remove the last of the restrictions that made this an 8 bit interpreter
+ that just growed.
+<P ALIGN=JUSTIFY>
+ Other changes of note ar that the <B><TT>USR()</TT></B> function needs no extra code for
+ null functions, just an RTS will work, and, as EhBASIC's RAM can now be anywhere, the
+ function <B><TT>RAMBASE</TT></B> has been added so that EhBASIC can work out where it's
+ own memory is. This means the code to set the <B><TT>USR()</TT></B> function address is
+ now ..
+<PRE>
+	<B>LOKE RAMBASE+8,address</B>
+</PRE>
+ .. for any instance of EhBASIC68. Also the <B><TT>RND()</TT></B> function now uses a
+ full 32 bit Galois LFSR pseudo random number generator and the scatter array has been
+ removed, this is both faster and smaller. A lot of testing went into modifying this
+ function including running the full sequence to test correct operation and running a
+ number of 64K and 512K sequences to test the ramdomness or the values returned.
+<P ALIGN=JUSTIFY>
+ The version number is now 3.19. Enjoy.
+</TD></TR>
+
+<TR><A NAME=040526></A><TD VALIGN=TOP><B>26th May 2004.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ The length of the keyword <B><TT>SWAP</TT></B> was incorrect in the list table. This has
+ been fixed.
+<P ALIGN=JUSTIFY>
+ The version number is now 2.21. Enjoy.
+</TD></TR>
+
+<TR><A NAME=040504></A><TD VALIGN=TOP><B>4th May 2004.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ It's been quite a while since the last update and there are a few changes.
+<P ALIGN=JUSTIFY>
+ Internally there have been big changes in the way that functions are handled. This
+ gives better performance and makes the code easier to change.
+<P ALIGN=JUSTIFY>
+ <B><TT>RND(n)</TT></B> has been changed so that values now are scattered after being
+ generated. This scattering, though limited in range, is truly random. The array used
+ was generated using two hunderd and fifty six peices of numbered paper and a small
+ cyclone generator.
+<P ALIGN=JUSTIFY>
+ <B><TT>LIST [n][-m]</TT></B> now works correctly when the first line in a program is
+ line 0.
+<P ALIGN=JUSTIFY>
+ The version number is now 2.20. Enjoy.
+</TD></TR>
+
+<TR><A NAME=030425></A><TD VALIGN=TOP><B>25th April 2003.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ The <B><TT>LIST</TT></B> command has changed internally to use the same tables that are
+ used for tokenising by EhBASIC. This removes the need to keep two tables of keywords
+ maintained. The downside is that the size has increased but the speed of the
+ <B><TT>LIST</TT></B> command is better.
+<P ALIGN=JUSTIFY>
+ There have also been changes to the table orders, all byte sized data tables are now at
+ the end so I no longer have to worry about word and longword tables being correctly
+ aligned. Other small changes have been made to progress the code to becomming pure, i.e.
+ both relocatable and reentrant, for possible use in multitasking systems.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.10. Enjoy.
+</TD></TR>
+
+<TR><A NAME=030416></A><TD VALIGN=TOP><B>16th April 2003.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ A fix to the math routines reduces errors in some cases. This was due to a potential
+ carry being ignored and some results being truncated instead of rounded. The result of
+ this is that ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B><TT>PI * PI / PI / PI - 1</TT></B>
+</BLOCKQUOTE>
+ .. now returns <B><TT>0</TT></B> instead of <B><TT>-4.65661E-10</TT></B> and ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B><TT>COS( 3 * PI / 2 )</TT></B>
+</BLOCKQUOTE>
+ .. now returns <B><TT>0</TT></B> instead of <B><TT>-1.05849E-05</TT></B>
+<P ALIGN=JUSTIFY>
+ The version number is now 1.09. Enjoy.
+</TD></TR>
+
+<TR><A NAME=030414></A><TD VALIGN=TOP><B>14th April 2003.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ Small changes to the way strings are compared which prevents <B><TT>A$=""</TT></B> from
+ failing sometimes even when <B><TT>A$</TT></B> is null. Also a change to the
+ <B><TT>LOOP</TT></B> command which could sometimes terminate program execution if it was
+ conditional on a string compare.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.08. Enjoy.
+</TD></TR>
+
+<TR><A NAME=030411></A><TD VALIGN=TOP><B>11th April 2003.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ Some changes to the way <B><TT>INPUT</TT></B> and <B><TT>READ</TT></B> parse the data
+ stream. This also corrects some inconsistencies in the way different types of data,
+ string, hex integer or floating, were handled.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.07. Enjoy.
+</TD></TR>
+
+<TR><A NAME=030409></A><TD VALIGN=TOP><B>9th April 2003.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ Some small changes to the way long integers are handled.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.06. Enjoy.
+</TD></TR>
+
+<TR><A NAME=030328></A><TD VALIGN=TOP><B>28th March 2003.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ An <I>undocumented feature</I> of the <B><TT>SQR()</TT></B> function was that it
+ returned zero for roots in the 0.5 to 0.999999 range. This has been fixed.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.05. Enjoy.
+</TD></TR>
+
+<TR><A NAME=030313></A><TD VALIGN=TOP><B>13th March 2003.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ More internal changes and a fix to <B><TT>DEEK()</TT></B> and <B><TT>LEEK()</TT></B>
+ which I'd managed to break. There has also been an update to the language reference.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.04. Enjoy.
+</TD></TR>
+
+<TR><A NAME=030307></A><TD VALIGN=TOP><B>7th March 2003.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ Minor changes to speed critical code and some internal functions modified. Simulator
+ specific code changed to take advantage of updated features.
+<P ALIGN=JUSTIFY>
+ The behaviour of <B><TT>LEFT$()</TT></B>, <B><TT>RIGHT$()</TT></B> and
+ <B><TT>MID$()</TT></B> have been changed. Now if the length of the required string is
+ zero then a null string will be returned. <B><TT>MID$()</TT></B> has been changed so
+ that a starting point beyond the end of the referenced string will return a null string.
+ Also all string function values can now go up to 65535 which is the maximum string
+ length.
+<P ALIGN=JUSTIFY>
+ Weeded out two instances where the result of a calculation could be minus zero. While
+ there may not be much difference numerically, between plus and minus zero, when a
+ function is expecting a positive value it will often choke on minus zero.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.03. Enjoy.
+</TD></TR>
+
+<TR><A NAME=030305></A><TD VALIGN=TOP><B>5th March 2003.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ Some small patches to code and a change in the way the power function works. Now if you
+ raise a negative value to an integer power the sign is calculated correctly, also raising
+ a negative number to a fractional power will now give a 'Function call' error.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.02. Enjoy.
+</TD></TR>
+
+<TR><A NAME=030304></A><TD VALIGN=TOP><B>4th March 2003.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ Due to a connection problem I never did get the source, mentioned below, uploaded.
+ So to make up for it there are a few less undocumented features in this version.
+<P ALIGN=JUSTIFY>
+ As a result the version is now 1.01. Enjoy.
+</TD></TR>
+
+<TR><A NAME=030303></A><TD VALIGN=TOP><B>3rd March 2003.</B></TD>
+<TD><P ALIGN=JUSTIFY>
+ Just a small update and, as it was only yesterday I released the source there's no
+ version increment for this one.
+<P ALIGN=JUSTIFY>
+ Fixed a small <I>undocumented feature</I> with the <B><TT>LIST</TT></B> command and
+ added ASCII <B><TT>SAVE</TT></B> and <B><TT>LOAD</TT></B> capabilities. To
+ <B><TT>SAVE</TT></B> a program as ASCII just append the <B><TT>SAVE</TT></B> command
+ with <B><TT>,a</TT></B>. For more details see the <A HREF="language.html#SAVE">language
+ reference</A>.
+</TD></TR>
+</TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 16th December, 2010.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@googlemail.com">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish563d5cda" style="display:none"></div>
+<script src="http://ads.mmania.com/displaycf.js.php?r=563d5cda&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

@@ -1,0 +1,106 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>6502 Code - 256 Byte Data Buffer</TITLE>
+<META name="description" content="6502 assembly program for a 256-byte data buffer.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>256-Byte Data Buffer. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<U><B>Introduction.</B></U>
+<BLOCKQUOTE>
+ This routine is an interrupt serviced 256 byte data buffer for serial ports and the like.
+ Very similsr code was used to supply the stepper motor driver routine with line
+ co-ordinate pairs.
+<P>
+ This is not a finished solution, you will need to add your own code to drive the target
+ of the buffer.
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; code for an interrupt serviced data buffer. similar code is used to drive
+; the XY stepper motors on a plotter with new position information every 5mS
+; and also to allow pen up/down movement time of 70mS
+
+; buffer and variables must be in RAM
+
+Buffer				; 256 byte buffer (must start at page edge)
+	.ds	$100
+
+BRindx				; buffer read index
+	.byte	$00
+
+BWindx				; buffer write index
+	.byte	$00
+
+Sendf				; am sending flag
+	.byte	$00
+
+WByte				; temp store for the byte to be sent
+	.byte	$00
+
+; write the data to the buffer a byte at a time and increment the pointer.
+; the routine is called with the byte to write in A. If the interrupt
+; device is idle when this routine is called it will wake it up by doing
+; a BRK before it exits
+
+; destroys the Y register
+
+; can be ROM or RAM
+
+Incwritb
+	STA	WByte		; save byte to write
+	LDA	BRindx		; get read index
+	SEC			; set carry for subtract
+	SBC	BWindx		; subtract write index
+	BEQ	Dowrite		; if equal then buffer empty so do write
+	CMP	#$02		; need at least n+1 bytes to avoid rollover
+	BCC	Incwritb	; loop if no space
+
+
+				; construct and write data to buffer
+Dowrite
+	LDY	BWindx		; get write index
+	LDA	WByte		; get byte to write
+	STA	Buffer,Y	; save it
+	INY			; increment index to next byte
+	STY	BWindx		; save new write index byte
+
+; now see if the interrupt service routine is already running or if it's
+; idle
+
+	LDA	Sendf		; get the sending flag
+	BNE	Doingit		; skip call if running
+	BRK			; software call to interrupt routin

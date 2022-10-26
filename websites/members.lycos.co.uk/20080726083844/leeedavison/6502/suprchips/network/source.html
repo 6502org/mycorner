@@ -1,0 +1,358 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&CC=uk&ord=1107cd22&adpref=&gg_bg=&gg_template="></script>
+<HTML>
+<HEAD>
+<TITLE>Network interface - EhBASIC driver</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=25%><A HREF="index.html#source">
+ <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>NIC EhBASIC driver. </FONT></B><FONT SIZE=-1>by Lee Davison</FONT>
+</TD><TD WIDTH=25%><A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>EhBASIC source</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This code provides ARP, ICMP and TCP/IP function enough to be PINGed and to serve the
+ four embedded web pages. It's not fast, taking 2000+ mS for a PING reply and as little
+ as forty <I>seconds</I> to serve a web page, but it does work.
+<P ALIGN=JUSTIFY>
+ Another <A HREF="3c509b.html">version</A> for the 3Com 3C509B series of cards is
+ available.
+</BLOCKQUOTE>
+<B><U>Changes</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The code has been tidied to remove some un needed variables and to merge the payload
+ buffers into one. A timer has been implemented to allow the TCP state machine to
+ time out without having to wait for any number of TCP packets to arrive. Lastly the
+ last two IP address digits are now copied from the MAC address of the card, so you don't
+ have to clear the ARP tables every time you try a new card.
+<P ALIGN=JUSTIFY>
+ This is not a finished product by any means, it is just a proof of concept, and is
+ presented only as a starting point for anyone else.
+<P ALIGN=JUSTIFY>
+<B>Things to note.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Lines that start with a colon are completely ignored by the interpreter.<P>
+ Strings in DATA statements do not need quotes round them as long as they don't contain
+ colons or commas, and do not start with spaces. Strings without quotes start with the
+ first non space character after the DATA keyword or comma.
+</BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+: *********************************************************************
+: generic 8390/NEx000 driver in EhBASIC
+
+: supports ARP, ICMP echo, passive TCP/IP &amp; very basic HTTP
+
+: changes
+
+:03/09/02
+: now gets last two digits of the IP address from the card MAC
+
+:03/08/21
+: now includes TCP timeouts using an onboard timer
+
+:03/08/20
+: ethernet header and payload buffers mreged into ip(i)
+
+10 DIM ph(3) : REM packet header buffer
+11 DIM pr(31) : REM NIC card PROM contents
+12 DIM ip(1513) : REM packet buffer
+15 DIM mi(3) : REM my ip address
+16 mi(0)=169 : mi(1)=254 : REM get last digits from MAC address
+17 cr$ = CHR$($0D) : lf$ = CHR$($0A) : el$ = cr$+lf$
+
+: 38067 port equates
+
+20 p4 = $08 : REM port 4 data
+21 d4 = $09 : REM port 4 direction
+22 d6 = $0D : REM port 6 direction
+
+: assembly routines to read and write to NIC
+
+30 DOKE $44,$EF20 : REM USR(n) = read from NIC register n
+31 rr = $EF00 : REM write to NIC call address
+
+: initialise ports
+
+40 POKE p4,PEEK(p4) OR $83 : REM no read, nowrite and reset
+41 POKE d4,PEEK(d4) OR $83 : REM port bits to outputs
+42 POKE d6,PEEK(d6) OR $1F : REM address bits to outputs
+44 FOR w=1 TO 6 : NEXT : REM delay for at least 1.6mS
+46 POKE p4,PEEK(p4) AND $7F : REM no reset
+
+: vc flags that a potentially valid card is present
+: vp flags that a potentially valid packet is being processed
+
+50 vc = 0 : REM no valid card found
+51 vp = 0 : REM no valid packet received
+
+: frequently used values
+
+60 cr = $00 : REM NIC command register
+61 dr = $10 : REM NIC data register
+62 is = $07 : REM NIC interrupt status register
+
+63 ls = $08 : REM NIC start address low byte
+64 hs = $09 : REM NIC start address high byte
+65 lc = $0A : REM NIC byte count low byte
+66 hc = $0B : REM NIC byte count high byte
+67 rc = $0C : REM NIC config Rx
+68 tc = $0D : REM NIC config Tx
+
+: TCP arrays &amp; variables
+
+70 ts = 1 : REM TCP state = listen
+71 DIM rn(3) : REM received TCP sequence number
+72 DIM mq(3) : REM our TCP sequence number
+73 DIM si(3) : REM senders ip address
+
+
+: *********************************************************************
+: test for NIC and initialise if found
+
+100 GOSUB 10000 : REM look for NIC
+105 IF vc=0 THEN END : REM no card found
+110 GOSUB 10500 : REM initialise NIC
+
+115 INT0 + : REM interrupt on rising edge
+120 ON INT0 20000 : REM handle interrupt
+
+125 PRES12 249 : TIMER1 199 : REM set for approx 100mS
+130 ON TIMER1 12000 : REM go do countdown
+
+: *********************************************************************
+: main program loop
+
+200 DO
+205 ? : ? "Waiting..."
+
+210 DO : LOOP UNTIL vp : REM wait for valid packet
+
+: now decipher packet info
+
+255 IF ip($0C)&lt;&gt;8 THEN ? "Unrecognised packet type" : GOTO 275
+260 IF ip($0D)=6 THEN GOSUB 21000 : GOTO 275 : REM ARP packet
+265 IF ip($0D) THEN ? "Unknown IP packet type" : GOTO 275
+
+: only type left is known IP type
+
+270 GOSUB 21500 : REM handle known IP packet type
+
+: now see if any more packets are in the buffer
+
+275 CALL rr,cr,$22 : REM page 0, no DMA
+285 bd = USR($03)+1 : REM get buffer boundary value + 1
+290 IF bd=$61 THEN bd = $46 : REM wrap pointer
+295 CALL rr,cr,$62 : REM page 1, no DMA
+300 cp = USR($07) : REM get buffer current page
+305 IF cp=bd THEN vp = 0 : GOTO 995 : REM flag done with last packet
+
+: else possibly more data in buffer, so go get and validate packet
+
+310 GOSUB 11500 : REM get the packet from the NIC
+
+: if packet valid then don't wait, just do it
+
+315 IF vp THEN 255 : REM if valid then go process it
+
+: else just ignore it and check for next
+
+325 GOTO 275 : REM else go check for more packets
+
+995 LOOP
+
+999 END : REM should never get here
+
+
+: *********************************************************************
+: try and find an NEx000 type network interface card
+
+09999 REM probe NIC
+10000 CALL rr,cr,$20 : REM page 0, no DMA
+10005 by = USR($0D) : REM clear the counter
+10010 by = USR($0D) : REM get the counter
+
+: now if the counter &lt;&gt; 0, then we don't have a NEx000 card, so exit
+
+10015 IF by THEN ? "No card found!" : RETURN
+	
+: found a card so reset it
+
+10020 CALL rr,is,$80 : REM clear reset bit
+10025 IF (USR(is) AND $80) THEN ? "Can't clear reset ack!" : RETURN
+
+: it's reset now test the interrupt connection
+
+10030 CALL rr,is,$FF : REM clear all pending interrupts
+10035 IF (PEEK(p4) AND $04) THEN ? "Can't clear interrupt!" : RETURN
+
+: read the NIC PROM into array
+
+: we probably only need the first 6 bytes which
+: are this card's MAC address
+
+10040 CALL rr,cr,$21 : REM page 0, stop
+10045 CALL rr,$0E,$48 : REM 8 byte FIFO, normal operation
+10050 CALL rr,lc,$00 : REM set remote byte count low
+10055 CALL rr,hc,$00 : REM set remote byte count high
+10060 CALL rr,$0F,$00 : REM mask all interrupts off
+10065 CALL rr,is,$FF : REM ack all pending interrupts
+10070 CALL rr,rc,$20 : REM Rx config to no store &amp; reject (nearly) all
+10075 CALL rr,tc,$02 : REM Tx config to internal loopback
+10080 CALL rr,lc,$20 : REM set remote byte count low
+10085 CALL rr,hc,$00 : REM set remote byte count high
+10090 CALL rr,ls,$00 : REM set remote start address low
+10095 CALL rr,hs,$00 : REM set remote start address high
+10100 CALL rr,cr,$0A : REM remote read
+
+10105 FOR i=0 TO 31 : REM loop 31 times
+10110 by = USR(dr) : pr(i) = USR(dr) : REM dummy read then read byte
+10115 ? " ";HEX$(pr(i),2); : REM display value
+10120 IF (i AND $7)=$7 THEN ?
+10125 NEXT
+10127 mi(2)=pr(4) : mi(3)=pr(5) : REM IP address last two digits
+
+: lets try triggering an interrupt and see if all is well
+
+10130 CALL rr,$0F,$50 : REM allow DMA complete and overwrite warning
+10135 CALL rr,lc,$00 : REM set receive byte count low
+10140 CALL rr,hc,$00 : REM set receive byte count high
+10145 CALL rr,cr,$0A : REM trigger it with remote read
+
+: wait a small amount of time, if no interrupt then assumed broken card
+
+: note main interrupt handling is not started yet
+
+10150 to = 1000 : REM set timeout count
+10155 DO
+10160 by = PEEK(p4) AND $04
+10165 DEC to
+10170 LOOP UNTIL by OR (to=$00)
+
+10175 CALL rr,$0F,$00 : REM mask it off again
+10180 IF to=0 THEN ? "No interrupt!" : RETURN
+
+10185 ? "Card OK - IP address 169 . 254 .";mi(2);" .";mi(3)
+10190 vc = -1 : REM flag card found
+10195 RETURN
+
+
+: *********************************************************************
+: initialise the NIC
+: use National Semiconductors 8390 programming sequence
+
+10499 REM initialise NIC
+
+10500 CALL rr,cr,$21 : REM page 0, stop
+10510 CALL rr,$0E,$48 : REM 8 byte FIFO, normal operation
+10515 CALL rr,lc,$00 : REM clear remote byte count low
+10520 CALL rr,hc,$00 : REM clear remote byte count high
+
+: set monitor and loopback mode
+
+10525 CALL rr,rc,$20 : REM Rx config to no store &amp; reject (nearly) all
+10530 CALL rr,tc,$02 : REM Tx config to internal loopback
+
+: set transmit page and receive ring
+
+10535 CALL rr,$04,$40 : REM set Tx start page
+10540 CALL rr,$01,$46 : REM set Rx start page
+10545 CALL rr,$03,$60 : REM set boundry
+10550 CALL rr,$02,$60 : REM set Rx stop page
+
+: clear any pending interrupts
+
+10555 CALL rr,is,USR(is) : REM ack all pending
+10560 CALL rr,$0F,$00 : REM mask all interrupts
+
+: copy MAC address to the network card
+
+10565 CALL rr,cr,$61 : REM page 1, stop
+
+10570 FOR i=0 TO 5 : REM need to shift in 6 bytes
+10575 CALL rr,i+1,pr(i) : REM byte from prom to card
+10580 NEXT
+
+10585 FOR i=$08 TO $0F : REM need to shift in 8 bytes
+10590 CALL rr,i,$FF : REM set multicast mask byte
+10595 NEXT
+
+10600 CALL rr,$07,$46 : REM set current page
+10605 CALL rr,cr,$21 : REM page 0, stop
+10610 CALL rr,is,$FF : REM ack all interrupts
+10615 CALL rr,$0F,$3F : REM allow all interrupts
+10620 CALL rr,cr,$22 : REM page 0, no DMA
+
+: enable the transmitter
+
+10625 CALL rr,tc,$00 : REM Tx to normal
+
+: enable the receiver
+
+10630 CALL rr,rc,$04 : REM Rx to accept broadcast
+10635 np = $46 : REM init no packets received
+
+10640 RETURN
+
+
+: *********************************************************************
+: get the ethernet header from the NIC - puts it in ph(n)
+
+10999 REM GetHdr
+11000 CALL rr,cr,$22 : REM page 0, no DMA
+11010 CALL rr,lc,$04 : REM set header length low
+11015 CALL rr,hc,$00 : REM set header length high
+11020 CALL rr,ls,$00 : REM From this page low
+11025 CALL rr,hs,np  : REM From this page high
+11030 CALL rr,cr,$0A : REM remote read
+
+11035 FOR i=0 TO 3
+11040 ph(i) = USR(dr) : REM get byte
+11045 NEXT
+
+11050 CALL rr,cr,$22 : REM page 0, no DMA
+11060 RETURN
+
+
+: *********************************************************************
+: get the packet from the NIC
+: gets the header and the payload when a good packet is indicated
+: sets vp true if packet is really valid
+
+11499 REM get packet
+11500 vp = -1 : tp = vp : REM flag getting packet &amp; this packet good
+11505 CALL rr,cr,$60 : REM page 1, no DMA
+11510 cp = USR($07) : REM read current Rx page
+11515 IF cp=np THEN tp = 0 : GOTO 11570 : REM if curr = next then exit
+11520 GOSUB 11000 : REM else get the header
+11525 IF (ph(0) AND $01)=0 THEN : tp = 0 : GOTO 11550 : REM dump bad
+
+11530 GOSUB 11700 : REM else was an OK packet so get it
+11535 IF rl&gt;1500 THEN tp = 0 : REM dump packets that are too big
+11540 np = ph(1) : REM get next page value
+11545 cp = np : REM make current page = next page
+11547 IF np=$60 THEN np = $46
+
+11550 DEC cp : REM boundary is always 1 less than next page
+11555 IF cp=$45 THEN cp = $60 : REM roll ring back
+11560 CALL rr,cr,$22 : REM page 0, no DMA
+11565 CALL rr,$03,cp : REM set new boundary
+
+11570 vp = tp : REM set packet status to this packet status
+11575 RETURN
+
+
+: *********************************************************************
+: gets the payload from the NIC
+: the ethernet packet and payload is stored in ip(i)
+
+11699 REM BlockInput
+
+11700 rl = ph(2)+ph(3)*256 : REM get length
+11705 IF ph(2) AND 1 THEN INC rl : REM make even
+11

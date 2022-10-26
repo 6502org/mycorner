@@ -1,0 +1,140 @@
+<HTML>
+<HEAD>
+<TITLE>
+ IDE bus interface circuit
+</TITLE>
+<META name="description" content="Content.">
+</HEAD>
+<BODY
+  BACKGROUND="../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../index.html">
+ <IMG SRC="../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>IDE bus interface circuit </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="../6502.html">[Back]</A>
+<BR clear=all><P>
+<HR>
+<B><U>Hardware.</U></B><P>
+<CENTER>
+<B>IDE Bus interface circuit.</B>
+<P>
+ <IMG SRC="ide.png" TITLE="IDE bus interface circuit" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE>
+ The connector on the top left of the diagram is from my own 6502 boards (see <A
+ HREF="../sbc/index.html">sbc project</A>) and is as it is for two reasons. It's easy
+ to wire on a stripboard layout and I have a lot of 26 way ribbon, headers and plugs.
+ All the signals are directly from the 6502 except /SEL0 and /SEL1 which are used to
+ select the block $F1xx with /SEL0 = 1 and /SEL1 = 0.
+<P>
+ A 40 pin IDC header, re-cycled from a PC motherboard, is used to connect to the IDE bus.
+<P>
+ All the capacitors are low ESR electrolytics and are placed one near each chip. If you
+ don't have this type to hand you can use standard electrolytics with some low value
+ ceramic capacitor, say 0.1uF, in parallel.
+<P>
+ The GAL16V8A is used to generate the read and write strobes for the buffers and latches
+ and to generate the IOR and IOW strobes for the IDE bus. All are active low. The interface
+ uses 32 bytes in the address range as it is a 16 bit port with 16 addresses. For anyone
+ interested the equations for this chip are in <A HREF="ide_01pld.html">ide_01.pld</A>
+ and can be compiled with WinCUPL. The fuse file, <A HREF="ide_01jed.html">ide_01.jed</A>
+ and the compiler listing, <A HREF="ide_01txt.html">ide_01.txt</A> are also included.
+<P>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=3 WIDTH=85%>
+<CAPTION ALLIGN=TOP><B>IDE Interface address map. High byte at address+1</B></CAPTION>
+<TR>
+<TD><B>Address</B></TD><TD><B>Read</B></TD><TD><B>Write</B></TD><TD><B>Width</B></TD>
+</TR>
+<TR>
+<TD>$00</TD><TD COLSPAN=2 ALIGN=CENTER>Data</TD><TD>16 Bit</TD>
+</TR>
+<TR>
+<TD>$02</TD><TD ALIGN=CENTER>Error</TD><TD ALIGN=CENTER>Precomp</TD><TD>8 Bit</TD>
+</TR>
+<TR>
+<TD>$04</TD><TD COLSPAN=2 ALIGN=CENTER>Sector count</TD><TD>8 Bit</TD>
+</TR>
+<TR>
+<TD>$06</TD><TD COLSPAN=2 ALIGN=CENTER>LBA bits 0 to 8</TD><TD>8 Bit</TD>
+</TR>
+<TR>
+<TD>$08</TD><TD COLSPAN=2 ALIGN=CENTER>LBA bits 8 to 15</TD><TD>8 Bit</TD>
+</TR>
+<TR>
+<TD>$0A</TD><TD COLSPAN=2 ALIGN=CENTER>LBA bits 16 to 23</TD><TD>8 Bit</TD>
+</TR>
+<TR>
+<TD>$0C</TD><TD COLSPAN=2 ALIGN=CENTER>Drive select / LBA bits 24 to 27</TD><TD>8 Bit</TD>
+</TR>
+<TR>
+<TD>$0E</TD><TD ALIGN=CENTER>Status</TD><TD ALIGN=CENTER>Command</TD><TD>8 Bit</TD>
+</TR>
+<TR>
+<TD>$1C</TD><TD ALIGN=CENTER>Alternate status</TD><TD ALIGN=CENTER>Device control</TD><TD>8 Bit</TD>
+</TR>
+<TR>
+<TD>$1E</TD><TD ALIGN=CENTER>Drive address</TD><TD ALIGN=CENTER>Not used</TD><TD>8 Bit</TD>
+</TR>
+</TABLE>
+<P>
+ All reads and writes to the IDE bus are sixteen bits wide. On write, first the lower eight
+ bits are written to the even address (A0 = 0) and latched by one 74LS574, Then the upper
+ eight bits are written to the corresponding odd address (A0 = 1) and are presented to the
+ upper eight bits of the IDE bus by the 74LS245, a bi-directional buffer used here in the
+ one direction only. These eight bits, along with the previously latched lower eight bits,
+ make up the sixteen bits needed for a write operation.<BR>
+ On read the lower eight bits are read from the IDE bus even address (A0 = 0) via the
+ second 74LS245 and, as this read takes place the upper, eight bits from the IDE bus are
+ latched by the second 74LS574. The upper eight bits can then be read from the 74LS574
+ latch.<P>
+ The interface is arranged thus so that ..
+<BLOCKQUOTE>
+ <LI>All 16 bits are used, this allows us to utilise the full capacity of the drive.
+ <LI>Reads and writes are symmetrical, i.e. both are done low byte and then high byte.
+ <LI>The status registers on ATA devices are all on the low byte, fast polling is possible
+ because only the low byte needs to be read.
+</BLOCKQUOTE>
+ The disadvantage is that every write must be sixteen bits, even if the top eight bits
+ aren't used.
+<P>
+ Other features are ..
+<BLOCKQUOTE>
+ <LI>An activity LED. Illuminates during ATA device activity. If required this could be
+ wired off board.
+ <LI>A reset jumper. This ties the IDE bus reset to the CPU reset so both are reset
+ together.
+ <LI>An IRQ jumper. This is to allow an interrupt based driver to be developed.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<CENTER>
+<B> The finished board.</B><P>
+ <IMG TITLE="The finished board." SRC="board.jpg" BORDER=1>
+ <IMG TITLE="With two 1080AT disks." SRC="plusdisks.jpg" BORDER=1><P>
+</CENTER>
+<P>
+<B><U>Software.</U></B>
+<BLOCKQUOTE>
+ At present only a BASIC demonstration program is available. It can be seen <A
+ HREF="demo.html">here<A>.
+</BLOCKQUOTE>
+<CENTER>
+<B> Close-up views.</B><P>
+ <IMG TITLE="Close-up top." SRC="ide_top.jpg" BORDER=1>
+ <IMG TITLE="Close-up bottom." SRC="ide_bot.jpg" BORDER=1><P>
+</CENTER>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@yahoo.co.uk">
+ e-mail me 
+<IMG SRC="../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 2nd October, 2001.</FONT>
+</BODY>
+</HTML><!-- text below generated by server. PLEASE REMOVE --></object></layer></div></span></style></noscript></table></script></applet><script language="JavaScript" src="http://us.i1.yimg.com/us.yimg.com/i/mc/mc.js"></script><script language="JavaScript" src="http://us.geocities.com/js_source/geov2.js"></script><script language="javascript">geovisit();</script><noscript><img src="http://visit.geocities.com/visit.gif?1010745573" border=0 width=1 height=1></noscript>
+<IMG SRC="http://geo.yahoo.com/serv?s=76001084&t=1010745573" ALT=1 WIDTH=1 HEIGHT=1>
