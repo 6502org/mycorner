@@ -81,7 +81,7 @@ def find_archived_files():
             archived_files.append(af)
     return archived_files
 
-def remove_corrupt_archived_files(archived_files):
+def remove_corrupt_files(archived_files):
     uncorrupted_files = []
     for af in archived_files:
         corrupt = False
@@ -122,6 +122,21 @@ def remove_corrupt_archived_files(archived_files):
             uncorrupted_files.append(af)
     return uncorrupted_files
 
+def rename_moved_files(archived_files):
+    renames = {
+        "6502/project.jpg": "6502/projects.jpg"
+    }
+
+    for af in archived_files:
+        new_name = renames.get(af.remote_filename, None)
+        if new_name is not None:
+            print("Renamed: %s -> %s" % (af.remote_filename, new_name))
+            af.remote_filename = new_name
+
+    return archived_files
+
+
+
 def create_database(filename, archived_files):
     if os.path.exists(filename):
         os.remove(filename)
@@ -145,5 +160,6 @@ def create_database(filename, archived_files):
 
 
 archived_files = find_archived_files()
-archived_files = remove_corrupt_archived_files(archived_files)
+archived_files = remove_corrupt_files(archived_files)
+archived_files = rename_moved_files(archived_files)
 create_database("database.sqlite3", archived_files)
