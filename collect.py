@@ -32,6 +32,14 @@ def sha1_file(filename):
     out = subprocess.check_output("sha1sum %s" % shlex.quote(filename), shell=True)
     return re.findall('[a-f0-9]{40}', out.decode('utf-8','ignore'))[0]
 
+def analyze_file(filename):
+    out = subprocess.check_output("file %s" % shlex.quote(filename), shell=True)
+    return out.decode('utf-8', 'ignore')
+
+def zipfile_is_intact(filename):
+    out = subprocess.check_output("unzip -t %s" % shlex.quote(filename), shell=True)
+    return "No errors detected" in out.decode('utf-8', 'ignore')
+
 def find_archived_files():
     archived_files = []
     for root, dirs, basenames in os.walk(websites_dir):
@@ -85,12 +93,18 @@ def remove_corrupt_archived_files(archived_files):
             corrupt = True
 
         for ext in ('.png', '.jpg', '.jpeg', '.gif', '.bmp'):
-            if af.filename.endswith(ext):
-                out = subprocess.check_output("file %s" % shlex.quote(af.filename), shell=True)
-                out = out.decode('utf-8', 'ignore')
-                if "HTML" in out:
+            if af.filename.lower().endswith(ext):
+                if "HTML" in analyze_file(af.filename):
                     print("Corrupt image: %s" % af.filename)
                     corrupt = True
+
+        if af.filename.lower().endswith('.zip'):
+            if 'Zip archive data' not in analyze_file(af.filename):
+                print("Not a ZIP file: %s" % af.filename)
+                corrupt = True
+            elif not zipfile_is_intact(af.filename):
+                print("Corrupted ZIP file: %s" % af.filename)
+                corrupt = True
 
         with open(af.filename, 'rb') as f:
             data = f.read()
