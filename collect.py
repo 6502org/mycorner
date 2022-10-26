@@ -43,8 +43,14 @@ def find_archived_files():
             # ['members.lycos.co.uk', '20081010162854', 'leeedavison', '6502', 'eurobeeb', 'score', 'index.html']
             parts = filename.replace(websites_dir,'').strip(os.path.sep).split(os.path.sep)
 
+            # ignore hidden files like .DS_Store
+            if True in [ part.startswith(".") for part in parts ]:
+                continue
+
+            # 'members.lycos.co.uk'
             hostname = parts[0]
 
+            # date of archive.org capture
             datetime_str = parts[1]
             matches = re.findall('\d{14}', datetime_str) # "YYYYMMDDHHMMSS"
             if matches:
@@ -52,31 +58,32 @@ def find_archived_files():
             else:
                 raise Exception("Unable to parse date: %s" % filename)
 
-            if parts[2] == "leeedavison":
-                remote_filename = '/'.join(parts[3:])
-            else:
-                remote_filename = '/'.join(parts[2:])
+            # '6502/eurobeeb/score/index.html'
+            if parts[2] == "leeedavison": # all sites except mycorner
+                parts.pop(0)
+            remote_filename = '/'.join(parts[2:])
 
-            hidden_file = False
-            for part in parts:
-                if part.startswith("."):
-                    hidden_file = True
-
-            if not hidden_file:
-                af = ArchivedFile(filename=filename,
-                                  hostname=hostname,
-                                  remote_filename=remote_filename,
-                                  size=filesize,
-                                  sha1=sha1_file(filename),
-                                  archived_at=archived_at)
-                print(af)
-                archived_files.append(af)
+            af = ArchivedFile(filename=filename,
+                              hostname=hostname,
+                              remote_filename=remote_filename,
+                              size=filesize,
+                              sha1=sha1_file(filename),
+                              archived_at=archived_at)
+            print(af)
+            archived_files.append(af)
     return archived_files
 
 def remove_corrupt_archived_files(archived_files):
     uncorrupted_files = []
     for af in archived_files:
         corrupt = False
+
+        corrupt_sha1s = (
+            "6e6e84f5080ed877809debddfafb6367f6c5f399",
+        )
+        if af.sha1 in corrupt_sha1s:
+            corrupt = True
+
         for ext in ('.png', '.jpg', '.jpeg', '.gif', '.bmp'):
             if af.filename.endswith(ext):
                 out = subprocess.check_output("file %s" % shlex.quote(af.filename), shell=True)
