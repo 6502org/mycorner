@@ -63,3 +63,13 @@ for filename, remote_filename in cur:
     os.makedirs(dest_dir, exist_ok=True)
     print("%s -> %s" % (src_filename, dest_filename))
     shutil.copyfile(src_filename, dest_filename)
+
+    if dest_filename.endswith(".html"):
+        with open(dest_filename, "rb") as f:
+            data = f.read()
+        if b'<script' in data:
+            print("  Javascript in file: %s" % dest_filename)
+            data = data.replace(b'<script', b'<span style="display: none" ')
+            data = data.replace(b'</script', b'</span')
+            with open(dest_filename, "wb") as f:
+                f.write(data)
