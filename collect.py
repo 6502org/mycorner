@@ -86,13 +86,6 @@ def remove_corrupt_archived_files(archived_files):
     for af in archived_files:
         corrupt = False
 
-        corrupt_sha1s = (
-            "6e6e84f5080ed877809debddfafb6367f6c5f399",
-            "3751c64f38d46b73dde9c37989cf80e214768413",
-        )
-        if af.sha1 in corrupt_sha1s:
-            corrupt = True
-
         for ext in ('.png', '.jpg', '.jpeg', '.gif', '.bmp'):
             if af.filename.lower().endswith(ext):
                 analysis = analyze_file(af.filename)
@@ -112,6 +105,10 @@ def remove_corrupt_archived_files(archived_files):
             data = f.read()
             if b'HiringJobTweets' in data:
                 print("Corrupt file (HiringJobTweets): %s" % af.filename)
+                corrupt = True
+
+            if b'orthopedic DME products' in data:
+                print("Corrupt file (orthopedic DME products): %s" % af.filename)
                 corrupt = True
 
             if af.filename.endswith(".html"):
