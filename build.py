@@ -215,26 +215,55 @@ class Database(object):
                 archived_at=archived_at)
 
 
-def remove_junk_outside_of_html_tags(data):
+def remove_junk_outside_of_html_tags(pagedata):
     # see: members.lycos.co.uk/20090226165902/leeedavison/misc/vfd/proto.html
     start_tag = b'<HTML>'
-    idx = data.find(start_tag)
+    idx = pagedata.find(start_tag)
     if idx != -1:
-        leading_stuff = data[0:idx].decode('utf-8', 'ignore')
+        leading_stuff = pagedata[0:idx].decode('utf-8', 'ignore')
         if re.findall('[^\s]', leading_stuff):
             print("   Removed junk before <HTML> tag")
-            data = data[idx:] + b'\n'
+            pagedata = pagedata[idx:] + b'\n'
 
     end_tag = b'</HTML>'
-    idx = data.find(end_tag)
+    idx = pagedata.find(end_tag)
     if idx != -1:
         trailing_idx = idx + len(end_tag)
-        trailing_stuff = data[trailing_idx:].decode('utf-8', 'ignore')
+        trailing_stuff = pagedata[trailing_idx:].decode('utf-8', 'ignore')
         if re.findall('[^\s]', trailing_stuff):
             print("   Removed junk after </HTML> tag")
-            data = data[:trailing_idx] + b'\n'
+            pagedata = pagedata[:trailing_idx] + b'\n'
 
-    return data
+    return pagedata
+
+
+def rewrite_mailto_links(pagedata):
+    new_link = b"http://forum.6502.org/viewtopic.php?f=5&t=3024"
+    for email in (
+        b"leeedavison@googlemail.com",
+        b"leeedavison@lycos.co.uk",
+        b"leeedavison@yahoo.co.uk"
+    ):
+        old_link = b"mailto:" + email
+        pagedata = pagedata.replace(old_link, new_link)
+    return pagedata
+
+
+def rewrite_home_page(pagedata):
+    search = b'<IMG SRC="view.jpg"BORDER=1 TITLE="View from my Southampton flat">'
+    replace = b"""
+        <p style="background-color: #ffffe0; margin-bottom: 7px; padding: 5px 5px 5px 5px; text-align: center;">
+          Lee Davison <a target="_top" href="http://forum.6502.org/viewtopic.php?f=5&t=3024">passed away</a> on September 21, 2013.
+          <br clear="all">
+          6502.org hosts this <a target="_top" href="https://github.com/6502org/mycorner">reconstruction</a> of his website to preserve his memory and ensure the resources he created remain available.
+        </p>
+        <TR><TD COLSPAN=2 ALIGN=CENTER>
+        <IMG SRC="view.jpg" BORDER=1 TITLE="View from my Southampton flat">
+    """
+    if search not in pagedata:
+        raise Exception("Search text to replace on home page not found")
+    return pagedata.replace(search, replace)
+
 
 def sha1_file(filename):
     out = subprocess.check_output("sha1sum %s" % shlex.quote(filename), shell=True)
@@ -286,11 +315,16 @@ def main():
 
         if dest_filename.endswith(".html"):
             with open(dest_filename, "rb") as f:
-                data = f.read()
+                pagedata = f.read()
 
-            data = remove_junk_outside_of_html_tags(data)
+            if archived_file.remote_filename == "index.html":
+                pagedata = rewrite_home_page(pagedata)
+
+            pagedata = remove_junk_outside_of_html_tags(pagedata)
+            pagedata = rewrite_mailto_links(pagedata)
+
             with open(dest_filename, "wb") as f:
-                f.write(data)
+                f.write(pagedata)
 
 if __name__ == '__main__':
     main()
