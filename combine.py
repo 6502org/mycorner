@@ -1,3 +1,4 @@
+import re
 import shutil
 import sqlite3
 import os
@@ -54,6 +55,28 @@ here = os.path.abspath(os.path.dirname(__file__))
 combined_dir = os.path.join(here, "combined")
 
 
+def remove_junk_outside_of_html_tags(data):
+    # see: members.lycos.co.uk/20090226165902/leeedavison/misc/vfd/proto.html
+    start_tag = b'<HTML>'
+    idx = data.find(start_tag)
+    if idx != -1:
+        leading_stuff = data[0:idx].decode('utf-8', 'ignore')
+        if re.findall('[^\s]', leading_stuff):
+            print("   Removed junk before <HTML> tag")
+            data = data[idx:] + b'\n'
+
+    end_tag = b'</HTML>'
+    idx = data.find(end_tag)
+    if idx != -1:
+        trailing_idx = idx + len(end_tag)
+        trailing_stuff = data[trailing_idx:].decode('utf-8', 'ignore')
+        if re.findall('[^\s]', trailing_stuff):
+            print("   Removed junk after </HTML> tag")
+            data = data[:trailing_idx] + b'\n'
+
+    return data
+
+
 sql = "select filename, remote_filename from filtered_files"
 cur.execute(sql)
 for filename, remote_filename in cur:
@@ -67,9 +90,7 @@ for filename, remote_filename in cur:
     if dest_filename.endswith(".html"):
         with open(dest_filename, "rb") as f:
             data = f.read()
-        if b'<script' in data:
-            print("  Javascript in file: %s" % dest_filename)
-            data = data.replace(b'<script', b'<span style="display: none" ')
-            data = data.replace(b'</script', b'</span')
-            with open(dest_filename, "wb") as f:
-                f.write(data)
+
+        data = remove_junk_outside_of_html_tags(data)
+        with open(dest_filename, "wb") as f:
+            f.write(data)
