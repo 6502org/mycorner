@@ -1,0 +1,202 @@
+<script language="javascript">
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>
+  68008 Dartboard control pcb.
+</TITLE>
+<META name="description" content="Content.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<B>
+<FONT SIZE=+1>68008 Dartboard control pcb. </FONT></B><FONT SIZE=-1>By Lee
+ Davison.</FONT><BR clear=all>
+<A HREF="i2c.html">Back</A>
+<BR>
+<HR>
+<B><U>I2C EhBASIC source.</U></B>
+<BLOCKQUOTE>
+ When you start EhBASIC to run this program you should answer $47000 to the <B>Memory
+ size?</B> prompt to protect the code from being over written by EhBASIC or it's
+ variables.
+<P>
+ Having said that this program doesn't make haevy use of strings so does work fine with
+ the default memory settings.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 REM I2C bus scan
+20 REM (c) Lee Davison 2003
+30 REM leeedavison@lycos.co.uk
+40 REM
+50 REM For V1.10 of EhBASIC68
+
+100 ad&=$47000      : REM code address
+110 a=0             : REM clear offset
+120 DO
+130 READ word       : REM read word
+140 DOKE ad&+a,word : REM put word in memory
+150 INC a,a         : REM next word address
+160 LOOP WHILE word>=0
+
+170 LOKE $40408,ad& : REM set USR() vector
+
+175 REM Now use the function to scan
+180 REM each I2C write address. Write
+185 REM addresses are used as the I2C
+190 REM write cycle is easier to end
+195 REM reliably with an I2C stop.
+
+200 FOR a=0 TO $FE STEP 2
+210 IF (a AND 15)=0 THEN PRINT
+220 PRINT " $";HEX$(a,2);" ";USR(a);"  ";
+230 NEXT
+240 PRINT
+250 END
+
+1000 DATA $6122,$4EB8,$2536,$6174,$33C0,$0004,$0598,$6708&nbsp;
+1010 DATA $33FC,$A080,$0004,$0598,$23C0,$0004,$0594,$6114
+1020 DATA $4EF8,$2760,$6136,$6116,$611E,$6112,$6124,$610E
+1030 DATA $6134,$600A,$611C,$6106,$610E,$6102,$611E,$2F07
+1040 DATA $2E1F,$2F07,$2E1F,$4E75,$13FC,$0040,$0008,$001D
+1050 DATA $4E75,$13FC,$0080,$0008,$001F,$4E75,$13FC,$0080
+1060 DATA $0008,$001D,$4E75,$13FC,$0040,$0008,$001F,$4E75
+1070 DATA $0839,$0004,$0008,$001B,$67F6,$60C2,$2F01,$7207
+1080 DATA $0300,$6704,$61D6,$6002,$61C8,$61B2,$61BA,$61E0
+1090 DATA $61D4,$61AA,$51C9,$FFEA,$61C2,$61A2,$61AA,$61D0
+1100 DATA $7000,$610C,$61C0,$6196,$221F,$0840,$0000,$4E75
+1110 DATA $0839,$0005,$0008,$001B,$6702,$5200,$4E75,-1
+</PRE>
+</TD></TR></TABLE>
+<P>
+ The DATA statements at the end are the hex word version of the <A
+ HREF="i2casm.html">assembly</A> code that drives the port.
+<P>
+ When this code is run it gives an output like that shown below, any addresses that
+ respond with an ack bit return -1, any that don't ack return zero. In this case the only
+ active addresses are $A4 and $D4, both part of the RAMTROM FRAM & RTC chip.
+</BLOCKQUOTE>
+<P><CENTER>
+ <IMG SRC="i2c_scan.png" BORDER=1 ALT="Running the I2C bus scan.">
+</CENTER></P>
+<BLOCKQUOTE>
+ Once the code has been loaded into memory and the USR() vector set you can use the
+ routine to continuously test one address with a simple loop thus ..
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+DO:A=USR($C2):LOOP&nbsp;
+</PRE>
+</TD></TR></TABLE>
+<P>
+ .. which is how the stable 'scope displays were made for these pages.
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 25th April, 2003.</FONT>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.4 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location);
+        var ref=window.document.referrer;
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else {
+                setCookie("adFrameForcePHP",1,0,"/",location.hostname,0);
+        }
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3ee618b5&adpref="></script>

@@ -1,0 +1,310 @@
+<script language="javascript">
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>
+  Single board computer - GAL logic listing.
+</TITLE>
+<META name="description" content="Single board 6502 computer.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>Single board computer </FONT><FONT SIZE=-1>GAL logic listing</FONT>
+<BR clear=all><A HREF="index.html#links">[Back]</A>
+<BR clear=all><P>
+<HR>
+<A HREF="sbc_txt.zip">Download this file <IMG SRC="../../zip_sm.png" ALT="[Download]"
+ border=0>
+</A>
+<PRE>
+*******************************************************************************
+                                      sbc
+*******************************************************************************
+
+CUPL(WM)        4.7b Serial# XX-xxxxxxxx
+Device          g16v8as  Library DLIB-h-36-2
+Created         Wed Jan 03 06:19:06 2001
+Name            sbc 
+Partno          00 
+Revision        01 
+Date            01/08/00 
+Designer        Lee 
+Company 
+Assembly        None 
+Location        
+
+===============================================================================
+                            Expanded Product Terms
+===============================================================================
+
+Brom =>
+    A12 & !A13 & A14 & A15 & RW
+  # !A12 & A13 & A14 & A15 & RW
+
+Mrom =>
+    A11 & A12 & A13 & A14 & A15 & RW
+
+!RAM0 =>
+    !A15 & p02
+
+!RAM1 =>
+    !A14 & A15 & p02 & port0 & port1
+  # A15 & !RW & p02 & port0 & port1
+  # !A12 & !A13 & A15 & p02 & port0 & port1
+  # !A11 & A12 & A13 & A15 & p02 & port0 & port1
+
+!ROM =>
+    A11 & A12 & A13 & A14 & A15 & RW & p02
+  # !A12 & A13 & A14 & A15 & RW & p02
+  # A12 & !A13 & A14 & A15 & RW & p02
+
+!port0 =>
+    !A8 & !A9 & !A10 & !A11 & A12 & A13 & A14 & A15
+
+!port1 =>
+    A8 & !A9 & !A10 & !A11 & A12 & A13 & A14 & A15
+
+
+
+===============================================================================
+                                 Symbol Table
+===============================================================================
+
+Pin Variable                                    Pterms   Max     Min    
+Pol   Name              Ext     Pin     Type     Used   Pterms  Level   
+--- --------            ---     ---     ----    ------  ------  -----   
+
+    A8                          8        V        -       -       -     
+    A9                          7        V        -       -       -     
+    A10                         6        V        -       -       -     
+    A11                         5        V        -       -       -     
+    A12                         4        V        -       -       -     
+    A13                         3        V        -       -       -     
+    A14                         2        V        -       -       -     
+    A15                         1        V        -       -       -     
+    Brom                        0        I        2       -       -     
+    Mrom                        0        I        1       -       -     
+    RAM0                        16       V        1       8       1     
+    RAM1                        15       V        4       8       1     
+    ROM                         19       V        3       8       1     
+    RW                          9        V        -       -       -     
+    p02                         11       V        -       -       -     
+    port0                       18       V        1       8       1     
+    port1                       17       V        1       8       1     
+
+
+LEGEND    D : default variable         F : field      G : group
+          I : intermediate variable    N : node       M : extended node
+          U : undefined                V : variable   X : extended variable
+          T : function
+
+
+
+===============================================================================
+                                   Fuse Plot
+===============================================================================
+
+Syn   02192 - Ac0   02193 x 
+
+Pin #19  02048  Pol x  02120  Ac1 x 
+ 00000 x-x-x---x---x---------------x-x- 
+ 00032 x-x-x----x------------------x-x- 
+ 00064 x-x--x--x-------------------x-x- 
+ 00096 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00128 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00160 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00192 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00224 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #18  02049  Pol x  02121  Ac1 x 
+ 00256 x-x-x---x----x---x---x---x------ 
+ 00288 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00320 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00352 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00384 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00416 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00448 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00480 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #17  02050  Pol x  02122  Ac1 x 
+ 00512 x-x-x---x----x---x---x--x------- 
+ 00544 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00576 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00608 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00640 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00672 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00704 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00736 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #16  02051  Pol x  02123  Ac1 x 
+ 00768 ---x--------------------------x- 
+ 00800 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00832 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00864 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00896 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00928 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00960 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00992 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #15  02052  Pol x  02124  Ac1 x 
+ 01024 -xx-------x---x---------------x- 
+ 01056 --x-------x---x--------------xx- 
+ 01088 --x--x---xx---x---------------x- 
+ 01120 --x-x---x-x--xx---------------x- 
+ 01152 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01184 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01216 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01248 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #14  02053  Pol x  02125  Ac1 - 
+ 01280 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01312 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01344 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01376 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01408 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01440 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01472 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01504 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #13  02054  Pol x  02126  Ac1 - 
+ 01536 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01568 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01600 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01632 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01664 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01696 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01728 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01760 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #12  02055  Pol x  02127  Ac1 - 
+ 01792 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01824 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01856 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01888 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01920 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01952 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01984 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 02016 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+
+
+LEGEND    X : fuse not blown 
+          - : fuse blown 
+
+
+===============================================================================
+                                 Chip Diagram
+===============================================================================
+
+                               ______________
+                              |   car_CPU    |
+                      A15 x---|1           20|---x Vcc                      
+                      A14 x---|2           19|---x ROM                      
+                      A13 x---|3           18|---x port0                    
+                      A12 x---|4           17|---x port1                    
+                      A11 x---|5           16|---x RAM0                     
+                      A10 x---|6           15|---x RAM1                     
+                       A9 x---|7           14|---x                          
+                       A8 x---|8           13|---x                          
+                       RW x---|9           12|---x                          
+                      GND x---|10          11|---x p02                      
+                              |______________|
+</PRE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 28th April, 2002.</FONT>
+</BODY>
+</HTML>
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.4 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location);
+        var ref=window.document.referrer;
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else {
+                setCookie("adFrameForcePHP",1,0,"/",location.hostname,0);
+        }
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3ee618ff&adpref="></script>

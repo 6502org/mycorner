@@ -1,0 +1,217 @@
+<script language="javascript">
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>
+  6502 Shorts - Range test
+</TITLE>
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>6502 Shorts - Range test. </FONT><FONT SIZE=-1>By Lee Davison</FONT>
+<BR clear=all><A HREF="index.html">[Back]</A>
+<BR clear=all><P>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE>
+ Sometimes you need to check if a byte is in a certain range that does not start,
+ or end, on the byte limits. For example, if a byte is numeric (n = '0', m = '9')
+ or lower case ASCII (n = 'a', m = 'z').
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE>
+ For all of these we assume that the byte to be tested is in A and that the start
+ and end values, n and m, are already defined. Also that 0 < n < m < $FF.
+<P>
+ If you don't need to preserve the byte in A then testing the byte can be done in
+ five bytes and only six cycles. This sets the carry if A is in the range n to m.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	CLC		; clear carry for add
+	ADC	#$FF-m	; make m = $FF
+	ADC	#m-n+1	; carry set if in range n to m		
+</PRE>
+</TD></TR></TABLE>
+<P>
+ If you want the carry clear instead of set you use subtract instead of add.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	SEC		; set carry for subtract
+	SBC	#n	; make n = $00
+	SBC	#m-n+1	; carry clear if in range n to m	
+</PRE>
+</TD></TR></TABLE>
+<P>
+ If you need to preserve A and have either the X or Y register free you can do it
+ like this.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	TAX		; copy A (or TAY)
+	CLC		; clear carry for add
+	ADC	#$FF-m	; make m = $FF
+	ADC	#m-n+1	; carry set if in range n to m		
+	TXA		; restore A (or TYA)
+</PRE>
+</TD></TR></TABLE>
+<P>
+ If you can spare the cycles but not the registers then this is the slowest of the
+ range tests comming in at thirteen cycles.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	PHA		; save A
+	CLC		; clear carry for add
+	ADC	#$FF-m	; make m = $FF
+	ADC	#m-n+1	; carry set if in range n to m		
+	PLA		; restore A
+</PRE>
+</TD></TR></TABLE>
+<P>
+ Finally a method that preserves A without using any other registers, or memory.
+ This has the disadvantage that it can take either five or ten cycles (so timing
+ would be unsure) and takes the most bytes. This one sets the carry if A is in the
+ range n to m.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	CMP	#n	; is it less than required?
+	BCC	ERnge	; branch if it is
+
+	ADC	#$FE-m	; add $FF-m (carry is set)
+	CLC		; clear carry for add
+	ADC	#m+1	; A is now back to original value	
+ERnge
+</PRE>
+</TD></TR></TABLE>
+<P>
+ And this one clears the carry if A is in the range n to m.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	CMP	#m+1	; is it greater than required?
+	BCS	ERnge	; branch if it is
+
+	SBC	#n-1	; subtract n (carry is clear)
+	SEC		; set carry for subtract
+	SBC	#-n	; A is now back to original value	
+ERnge
+</PRE>
+</TD></TR></TABLE>
+<P>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 20th November, 2002.</FONT>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.4 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location);
+        var ref=window.document.referrer;
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else {
+                setCookie("adFrameForcePHP",1,0,"/",location.hostname,0);
+        }
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3ee618ce&adpref="></script>

@@ -1,0 +1,554 @@
+<script language="javascript">
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>
+   LCD port - Driver assembly source file.
+</TITLE>
+<META name="description" content="An LCD driver for the SuprDupr.">
+</HEAD>
+<BODY
+  BACKGROUND="../../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../../index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>LCD port driver </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="index.html#source">[Back]</A>
+<BR clear=all><P>
+<HR>
+<A HREF="asm.zip">Download this file <IMG SRC="../../../zip_sm.png" ALT="[Download]"
+ border=0></A>
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; suprdupr LCD driver ver$ 0.1
+
+; Some basic routines to drive an LCD graphic module in both graphic and
+; alpha modes. This code is mostly a translation of my Z80 LCD drivers
+; for the MPF
+
+; The display plugs into the LCD port on the SuprDupr board.
+
+Port6		= $0C		; LCD control port data register
+PDir6		= $0D		; LCD control port direction register
+Port8		= $10		; LCD port data register
+PDir8		= $11		; LCD port direction register
+
+LCD_c		= Port6		; LCD control port data register
+LCD_d		= PDir6		; LCD control port direction register
+LCD_E		= 2		; LCD E pin
+LCD_WR		= 6		; LCD /WR line
+LCD_RS		= 7		; LCD register select line
+LCD_DA		= Port8		; LCD port data register
+LCD_DIR		= PDir8		; LCD port direction register
+
+DispMode	= $52		; display mode byte off/master/noblink/nocsr/cgr/intcg)
+ChrHigh		= $53		; current character height (8 default)
+ChrWidt		= $54		; current character width (8 default)
+LineLen		= $55		; current visible line length (32 default)
+CursorAt	= $56		; cursor address in display
+StrtOff		= $58		; default display start offset
+DispOff		= $5A		; offset for display
+
+; Display attribute equates
+
+DispOn		= $20		; display on bit
+DispBlnk	= $08		; cursor blink bit
+DispCrsr	= $04		; cursor on bit
+DispGrap	= $02		; display graph mode bit
+DispExCg	= $01		; external GC bit
+
+	*=	$8000		; code origin
+
+; set default LCD parameters
+
+LCD_default:
+	LDM	#$20,DispMode	; display mode byte (on/master/noblink/nocsr/cgr/intcg)
+	LDM	#$70,ChrHigh	; current character height (8 default)
+	LDM	#$07,ChrWidt	; current character width (8 default)
+	LDM	#$20,LineLen	; current visible line length (32 default)
+	LDM	#$00,CursorAt	; cursor address in display
+	LDM	#$00,CursorAt+1	; cursor address in display
+	LDM	#$E0,StrtOff	; default display start offset
+	LDM	#$FF,StrtOff+1	; default display start offset
+	LDM	#$00,DispOff	; offset for display
+	LDM	#$00,DispOff+1	; offset for display
+	RTS
+
+; initialise 240x40 LCD display. Sets line length to 64 and time divisions
+; to 40
+
+LCD_init:
+	CLB	LCD_E,LCD_c	; disable LCD's port
+	SEB	LCD_E,LCD_d	; set control bit to output
+	SEB	LCD_WR,LCD_d	; set control bit to output
+	SEB	LCD_RS,LCD_d	; set control bit to output
+
+	LDA	#$03		; set time divisions instruction
+	JSR	LCD_instr	; send display control instruction
+	LDA	#$28		; set refresh to 40 lines
+	JMP	LCD_data	; go write data byte & return
+
+; output instruction. We need to wait until the busy flag is clear before
+; attempting to write a new instruction.
+
+LCD_instr:
+	JSR	LCD_busy	; wait until ready
+	SEB	LCD_RS,LCD_c	; register select line high
+	BRA	LCD_inst	; go write data byte
+
+; output data. We don't need to wait until the busy flag is clear before
+; attempting to write data.
+
+LCD_data:
+	CLB	LCD_RS,LCD_c	; register select line low
+LCD_inst:
+	STA	LCD_DA		; byte out to port
+	CLB	LCD_WR,LCD_c	; control line to write
+	LDM	#$FF,LCD_DIR	; data port to output
+
+	SEB	LCD_E,LCD_c	; LCD E high
+	CLB	LCD_E,LCD_c	; LCD E low
+
+	RTS
+
+; wait until the display is not busy.
+
+LCD_busy:
+	PHA			; save data or instruction
+	LDM	#$00,LCD_DIR	; data port to input
+	SEB	LCD_WR,LCD_c	; control line to read
+	SEB	LCD_RS,LCD_c	; register select line high
+LCD_busy1:
+	SEB	LCD_E,LCD_c	; enable LCD
+	LDA	LCD_DA		; in from display port
+	CLB	LCD_E,LCD_c	; disable LCD
+	BBS	7,A,LCD_busy1	; loop while LCD busy
+
+	PLA			; restore data or instruction
+	RTS
+
+; Clear LCD display. Turns off display, checks mode and then fills 2048 display bytes
+; with either $00 (graph mode) or $20 (chr mode). It also homes the cursor.
+
+; If the commented out instructions are restored then the display will blank during
+; clearing.
+
+LCD_clr:
+;	LDA	DispMode	; get mode
+;	AND	#$1F		; display off
+;	JSR	LCD_mode	; set display mode
+
+	LDA	#$00		; space chr to clear graph mode display
+	STA	CursorAt	; clear byte
+	STA	CursorAt+1	; clear word
+
+	BBS	1,DispMode,ClGraph	; if graph go clear graph mode
+
+	LDA	#$20		; space chr to clear character mode display
+ClGraph:
+	PHA			; save blank character
+	LDX	$00		; reset cursor low address
+	LDY	$00		; reset cursor high address
+	JSR	Set_cursor	; Set cursor address. 16 bit value in XY (low/high)
+	LDA	#$0C		; write display data
+	JSR	LCD_instr	; set instruction
+	LDY	#$08		; 8 x 256 = 2048 bytes
+	PLA			; get blank character back
+Clear_l:
+	JSR	LCD_busy	; wait until ready
+	JSR	LCD_data	; go write data byte
+	DEX			; decrement byte count
+	BNE	Clear_l		; loop until all chrs done
+
+	DEY			; inner loop
+	BNE	Clear_l		; loop until all blocks done
+
+	JSR	Set_cursor	; set cursor position (XY will be $0000)
+	LDX	DispMode	; get mode
+	JSR	LCD_Xmode	; set display mode from X
+	RTS
+
+; Set cursor address. 16 bit value in XY (low/high)
+
+Set_cursor:
+	STX	CursorAt	; save cursor position low byte
+	STY	CursorAt+1	; save cursor position low byte
+
+	LDA	#$0A		; Set cursor low addr instruction
+	JSR	LCD_instr	; send display control instruction
+
+	TXA			; set low address
+	JSR	LCD_data	; go write data byte
+
+	LDA	#$0B		; Set cursor high addr instruction
+	JSR	LCD_instr	; send display control instruction
+
+	TYA			; set high address
+	JSR	LCD_data	; go write data byte
+
+	RTS
+
+; set display start address to XY (low/high)
+
+Set_start:
+	STX	StrtOff		; save start offset low byte
+	STY	StrtOff+1	; save start offset high byte
+
+	LDA	#$08		; Set display start low addr instruction
+	JSR	LCD_instr	; send display control instruction
+
+	TXA			; set low byte
+	JSR	LCD_data	; go write data byte
+
+	LDA	#$09		; Set display start high addr instruction
+	JSR	LCD_instr	; send display control instruction
+
+	TYA			; set high byte
+	JSR	LCD_data	; go write data byte
+
+	RTS
+
+; Turn on the LCD. without changing the mode parameters.
+
+LCD_on:
+	LDA	DispMode	; get the display mode
+	ORA	#DispOn		; turn on bit
+	STA	DispMode	; save mode
+	JMP	LCD_mode	; set display mode & return
+
+; Turn off the LCD. without changing the mode parameters.
+
+LCD_off:
+	LDA	DispMode	; get the display mode
+	AND	#$FF-DispOn	; turn off bit
+	STA	DispMode	; save mode
+
+; Set the LCD mode. mode byte should be in A
+
+LCD_mode:
+	TAX			; save mode byte
+LCD_Xmode:
+	LDA	#$00		; clear A
+	JSR	LCD_instr	; set display control instruction
+
+	TXA			; get mode byte back
+	JMP	LCD_data	; go write data byte & return
+
+; Set graph mode. This will set the width to eight and the display to 32
+; chrs/line. If you want the display on when graph mode is set call this
+; routine with A<>0
+
+LCD_setgramode:
+	LDX	#$02		; display off/graph mode
+	ORA	#$00		; set the flags
+	BEQ	GsetOff		; jump if display is to be off
+
+	LDX	#$22		; display on/graph mode
+GsetOff:
+	STX	DispMode	; save mode
+	JSR	LCD_Xmode	; set display mode from X
+
+	LDA	#$01		; set chr pitch instruction
+	JSR	LCD_instr	; send display control instruction
+
+	LDA	#$07		; chr width 8 bits/chr
+	JSR	LCD_data	; go write data byte
+
+	LDA	#$02		; set no. of chrs instruction
+	JSR	LCD_instr	; send display control instruction
+
+	LDA	#$1E		; 32 chr mode
+	JSR	LCD_data	; go write data byte
+
+	LDX	#$00		; set start of display low byte
+	LDY	#$00		; set start of display high byte
+	BRA	Set_start	; set start address & return
+;	RTS
+
+; Set character mode. This will read the default values and use those for
+; the chr width and height, it will also set the display to 64 chrs/line.
+; If you want the display on when chr mode is set call this routine with
+; A<>0 .
+
+LCD_setchrmode:
+;	LDX	#$00		; display off/chr mode
+;	ORA	#$00		; set the flags
+;	BEQ	CsetOff		; jump if display is to be off
+
+	LDX	#$20		; display on/chr mode
+CsetOff:
+	STX	DispMode	; save mode
+	JSR	LCD_Xmode	; set display mode from X
+
+	LDA	#$02		; Set no. of chrs instruction
+	JSR	LCD_instr	; send display control instruction
+
+	LDA	#$3E		; 64 chr mode
+	JSR	LCD_data	; go write data byte
+
+	LDA	ChrWidt		; get chr width
+	CLC			; clear carry for add
+	ADC	#$01		; +1 for routine
+;	JSR	LCD_chrw	; go set it & return
+;	RTS
+
+; Set the character width for the chr mode display. Width is in A, valid
+; widths are 6,7 and 8 bits. After the width is set the new visible length
+; and the new start offset are set.
+
+LCD_chrw:
+	SEC			; set carry for subtract
+	SBC	#$06		; convert to 0,1,2
+	BCC	LCD_make	; if < 6 force to 8 bits wide
+
+	CMP	#$03		; compare with 9
+	BCC	LCD_wsok	; branch if was ok (range 6 to 8)
+
+LCD_make:
+	LDA	#$02		; default is 8 bits wide
+LCD_wsok:
+	ASL	A		; *2
+	ASL	A		; *4
+	TAX			; copy offset
+	LDA	DispTbl,X	; get width byte
+	STA	ChrWidt		; save new width
+	ORA	ChrHigh		; or in chr height
+	TAY			; save size byte
+
+	LDA	#$01		; Set chr pitch instruction
+	JSR	LCD_instr	; send display control instruction
+
+	TYA			; get size byte back
+	JSR	LCD_data	; go write data byte
+
+				; now set the other values
+	INX			; point to visible line length
+	LDA	DispTbl,X	; get visible line length
+	STA	LineLen		; save it
+	INX			; point to offset low byte
+	LDA	DispTbl,X	; get low byte
+	INX			; point to offset high byte
+	LDY	DispTbl,X	; get high byte
+	TAX			; copy low byte
+	JMP	Set_start	; set start address & return
+;	RTS
+
+; Write chr to display. This routine will emulate a TTY display with auto
+; scroll H (ON/OFF) and auto scroll V (ON/OFF) and a virtual display size
+; of 64H x 32V characters.
+
+; Control codes include....
+
+;	$0A	Line Feed
+;	$0D	Carrage Return
+;	$08	Backspace
+;	$09	Tab
+
+LCD_print:
+	BBS	1,DispMode,CtrlDone	; exit if graph mode
+
+	AND	#$7F		; clear bit 7
+	CMP	#$20		; compare with ' '
+	BCC	ctrl_chr	; jump if control character
+	
+				; normal chr so out to display
+	TAX			; copy character
+	LDA	#$0C		; write display data
+	JSR	LCD_instr	; set instruction
+	TXA			; get chr back
+
+	JSR	LCD_data	; go write data byte
+
+				; now increment the cursor position
+	LDX	CursorAt	; get cursor position low byte
+	LDY	CursorAt+1	; get cursor position high byte
+	INX			; increment low byte
+	BNE	SetExit		; skip high byte increment
+
+	INY			; increment high byte
+	BRA	SetExit		; set cursor and exit
+
+;WasBELL:
+; put your code to go 'BEEP' here
+;	RTS
+
+ctrl_chr:			; control characters get here....
+;	CMP	#$07		; was it BELL
+;	BEQ	WasBELL		; jump if so
+
+	LDX	CursorAt	; get cursor position low byte
+	LDY	CursorAt+1	; get cursor position high byte
+
+	CMP	#$0D		; was it CR
+	BEQ	WasCR		; jump if so
+
+	CMP	#$0A		; was it LF
+	BEQ	WasLF		; jump if so
+
+	CMP	#$09		; was it TAB
+	BEQ	WasTA		; jump if so
+
+	CMP	#$08		; was it Backspace
+	BEQ	WasBA		; jump if so
+
+	BRA	CtrlDone	; else exit
+
+SetExit:
+	JSR	Set_cursor	; Set cursor address. 16 bit value in XY (low/high)
+CtrlDone:			; gets here if not valid ctrl chr
+	RTS
+
+; all these routines are entered with the current cursor position in XY
+
+; was CARRIAGE RETURN
+
+WasCR:
+	TXA			; copy cursor low byte
+	AND	#$C0		; clear cursor x bits
+	TAX			; save new low byte
+	BRA	SetExit		; set cursor and exit
+
+; was LINE FEED
+
+WasLF:
+	TXA			; copy cursor low byte
+	ADC	#$3F		; add linefeed offset+carry (carry set by CMP #$0A)
+	TAX			; save new low byte
+	BCC	SetExit		; branch if no overflow
+
+	INY			; increment high byte
+	BRA	SetExit		; set cursor and exit
+
+; was TAB - need to do something cleverer here!
+
+WasTA:
+	CLC			; clear carry for add
+	TXA			; copy cursor low byte
+	AND	#$F8		; mask out TAB bits
+	ADC	#$08		; add TAB step
+	TAX			; save new low byte
+	BCC	SetExit		; branch if no overflow
+
+	INY			; increment high byte
+	BRA	SetExit		; set cursor and exit
+
+; was BACKSPACE
+
+WasBA:
+	TXA			; copy cursor low byte
+	BNE	WasBB		; branch if not zero
+
+	DEY			; decrement high byte
+WasBB:
+	DEX			; step back one
+	BRA	SetExit		; set cursor and exit
+
+	.END
+</PRE>
+</TD></TR></TABLE>
+<P>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 4th June, 2003.</FONT>
+</BODY>
+</HTML>
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.4 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location);
+        var ref=window.document.referrer;
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else {
+                setCookie("adFrameForcePHP",1,0,"/",location.hostname,0);
+        }
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3ee61aaa&adpref="></script>

@@ -1,0 +1,216 @@
+<script language="javascript">
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+<HEAD>
+<TITLE>
+  Z80 intel hex loader
+</TITLE>
+<META name="description" content="Content.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="../../index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<B>
+<FONT SIZE=+1>Z80 intel hex loader. </FONT></B><FONT SIZE=-1>By Lee Davison.</FONT>
+<BR clear=all>
+<A HREF="../index.html">Back</A>
+<P>
+<HR>
+ This short peice of code is an intel hex loader. Before the loader is called for the
+ first time the serial port must be set up, in this case by calling SETBD. The main
+ routine is INTLIN and never quits, you'll need to reset the Z80 to exit.
+<P>
+ It was originally written to allow me to download code to my MPF 1P.
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; This is a very short Intel hex loader. It assumes the record starts
+; with ':' , that hex chars are 0-9 and A-F (not a-f) and does NO
+; error checking whatsoever. It was shoehorned into the uProfessor ROM
+; in the 86 free bytes between $06E1 and $0737 and is 86 bytes long.
+
+; IO/M Addresses
+
+; Assumes the uPF IO/M card is fitted. The UART is an 8251AF and the CTC
+; is the standard Z80 type.
+
+URTDA	EQU	60h		;8251 UART Data Port
+URTCNT	EQU	61h		;8251 UART Control Port
+
+CTC2	EQU	66h		;CTC Channel 2, Baud rate generator for UART
+
+; Setup 8251 9600 baud 8N1
+
+SETBD:
+	LD	A,#47h		;Counter mode, TC follows, Reset channel
+	OUT	(CTC2),A	;CTC2 is baud rate gen for 8251
+	LD	A,#03h		;Time const for 9600 baud
+	OUT	(CTC2),A	;
+	LD	HL,RESTAB	;Reset sequence for 8251
+	LD	B,#TABEND-RESTAB;Table length
+	LD	C,#URTCNT	;Point to control port
+	OTIR			;OUT and loop until done
+
+; Get Intel hex record
+; Short version - no checksum calculation.
+
+INTLIN:
+	CALL	CHRRD		;Get chr
+	CP	#':'		;Is it ':'?
+	JR	NZ,INTLIN	;If not then next
+	CALL	BYTERD		;Get record length
+	LD	B,A		;Put in B
+	CALL	BYTERD		;Get record address hi byte
+	LD	H,A		;Put in H
+	CALL	BYTERD		;Get record address lo byte
+	LD	L,A		;Put in L
+	CALL	BYTERD		;Ignore record type
+DATAIN:
+	CALL	BYTERD		;Get record data byte
+	LD	(HL),A		;Save byte to memory
+	INC	HL		;Next address
+	DJNZ	DATAIN		;Decrement count and jump if not finished
+	JR	INTLIN		;Ignore checksum byte and [CR][LF]
+
+; 8251 Character in
+
+CHRRD:
+	IN	A,(URTCNT)	;Get status byte
+	BIT	1,A		;Check buffer full bti
+	JR	Z,CHRRD		;Not full so wait
+	IN	A,(URTDA)	;Get byte from buffer
+	RET			;
+
+; Get 2 ASCII characters as hex byte
+
+BYTERD:
+	LD	D,#00h		;Set up
+	CALL	HEXCON		;Get byte and convert to hex
+	ADD	A,A		;First nibble so
+	ADD	A,A		;multiply by 16
+	ADD	A,A		;
+	ADD	A,A		;
+	LD	D,A		;Save hi nibble in D
+HEXCON:
+	CALL	CHRRD		;Get next chr
+	SUB	#30h		;Makes '0'-'9' equal 0-9
+	CP	#0Ah		;Is it 0-9 ?
+	JR	C,NALPHA	;If so miss next bit
+	SUB	#07h		;Else convert alpha
+NALPHA:
+	OR	D		;Add hi nibble back
+	RET			;
+
+;Byte sequence to set up 8251
+
+RESTAB:	DB	00h,00h,00h,40h,4Eh,37h
+TABEND:
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 9th July, 2002.</FONT>
+</BODY>
+</HTML>
+
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.4 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="http://lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location);
+        var ref=window.document.referrer;
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "/")) ) {
+                        parent.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else {
+                setCookie("adFrameForcePHP",1,0,"/",location.hostname,0);
+        }
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3ee6185d&adpref="></script>
