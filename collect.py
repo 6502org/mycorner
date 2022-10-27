@@ -19,14 +19,7 @@ class ArchivedFile(object):
         self.archived_at = archived_at
 
     def __str__(self):
-        fmt = ("ArchivedFile\n"
-               "  Local Filename: %s\n"
-               "  Remote Filename: %s\n"
-               "  Size: %d\n"
-               "  SHA1: %s\n"
-               "  Host: %s\n"
-               "  Archived At: %s\n")
-        return fmt % (self.filename, self.remote_filename, self.size, self.sha1, self.hostname, self.archived_at)
+        return "ArchivedFile: %s" % self.filename
 
 def sha1_file(filename):
     out = subprocess.check_output("sha1sum %s" % shlex.quote(filename), shell=True)
@@ -130,7 +123,7 @@ def rename_moved_files(archived_files):
     for af in archived_files:
         new_name = renames.get(af.remote_filename, None)
         if new_name is not None:
-            print("Renamed: %s -> %s" % (af.remote_filename, new_name))
+            print("Renamed: %s: %s -> %s" % (af.filename, af.remote_filename, new_name))
             af.remote_filename = new_name
 
     return archived_files
