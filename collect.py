@@ -96,13 +96,16 @@ def remove_corrupt_files(archived_files):
 
         with open(af.filename, 'rb') as f:
             data = f.read()
-            if b'HiringJobTweets' in data:
-                print("Corrupt file (HiringJobTweets): %s" % af.filename)
-                corrupt = True
 
-            if b'orthopedic DME products' in data:
-                print("Corrupt file (orthopedic DME products): %s" % af.filename)
-                corrupt = True
+            for fragment in (
+                b'HiringJobTweets',
+                b'orthopedic DME products',
+                b'jobtweets',
+                b'extremetracking',
+            ):
+                if fragment in data:
+                    print("Corrupt file: (fragment %r): %s" % (fragment, af.filename))
+                    corrupt = True
 
             if af.filename.endswith(".html"):
                 if (b'<body' in data) or (b'<BODY' in data):
