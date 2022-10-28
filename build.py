@@ -240,6 +240,7 @@ def remove_junk_outside_of_html_tags(pagedata):
 
 
 def rewrite_mailto_links(pagedata):
+    # see "e-mail me" at the bottom of almost all html pages
     new_link = b"http://forum.6502.org/viewtopic.php?f=5&t=3024"
     for email in (
         b"leeedavison@googlemail.com",
@@ -249,6 +250,17 @@ def rewrite_mailto_links(pagedata):
         old_link = b"mailto:" + email
         pagedata = pagedata.replace(old_link, new_link)
     return pagedata
+
+
+def rewrite_page_links(pagedata):
+    # see: mycorner.no-ip.org/20130214063757/news2001.html
+    replaced = b''
+    for linedata in pagedata.splitlines(keepends=True):
+        lowered = linedata.lower()
+        if (b'href' in lowered) or (b'refresh' in lowered):
+            linedata = re.sub(b'(http://[^/]+/leeedavison/)', b'./', linedata, re.IGNORECASE)
+        replaced += linedata
+    return replaced
 
 
 def rewrite_home_page(pagedata):
@@ -324,6 +336,7 @@ def main():
 
             pagedata = remove_junk_outside_of_html_tags(pagedata)
             pagedata = rewrite_mailto_links(pagedata)
+            pagedata = rewrite_page_links(pagedata)
 
             with open(dest_filename, "wb") as f:
                 f.write(pagedata)
