@@ -301,14 +301,12 @@ def main():
     # find all non-corrupted archived files on the filesystem
     all_archived_files = ArchivedFile.find_all_under_directory(websites_dir, progressfunc=print)
     noncorrupted_archived_files = []
-    for af in all_archived_files:
-        msg = af.detect_corruption()
+    for archived_file in all_archived_files:
+        msg = archived_file.detect_corruption()
         if msg is not None:
             print(msg)  # corrupt
         else:
-            noncorrupted_archived_files.append(af)
-            if af.remote_filename == '6502/project.jpg':
-                af.remote_filename = '6502/projects.jpg'
+            noncorrupted_archived_files.append(archived_file)
 
     # build a database of all non-corrupted archived files
     db = Database(dbfile)
@@ -319,8 +317,13 @@ def main():
     shutil.rmtree(combined_dir, ignore_errors=True)
     for archived_file in db.find_latest_version_of_each_file():
         src_filename = archived_file.filename
-        dest_filename = os.path.join(combined_dir, archived_file.remote_filename)
 
+        # missing file exists in older archives under a different name
+        rf = archived_file.remote_filename
+        if rf == '6502/project.jpg':
+            rf = '6502/projects.jpg'
+
+        dest_filename = os.path.join(combined_dir, rf)
         dest_dir = os.path.dirname(dest_filename)
         os.makedirs(dest_dir, exist_ok=True)
 
@@ -331,7 +334,7 @@ def main():
             with open(dest_filename, "rb") as f:
                 pagedata = f.read()
 
-            if archived_file.remote_filename == "index.html":
+            if rf == "index.html":
                 pagedata = rewrite_home_page(pagedata)
 
             pagedata = remove_junk_outside_of_html_tags(pagedata)
