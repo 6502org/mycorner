@@ -154,7 +154,7 @@ class ArchivedFile(object):
             if idx != -1:
                 leading_stuff = pagedata[0:idx].decode('utf-8', 'ignore')
                 if re.findall('[^\s]', leading_stuff):
-                    pagedata = pagedata[idx:] + b'\n'
+                    pagedata = pagedata[idx:]
 
             end_tag = b'</HTML>'
             idx = pagedata.find(end_tag)
@@ -162,7 +162,7 @@ class ArchivedFile(object):
                 trailing_idx = idx + len(end_tag)
                 trailing_stuff = pagedata[trailing_idx:].decode('utf-8', 'ignore')
                 if re.findall('[^\s]', trailing_stuff):
-                    pagedata = pagedata[:trailing_idx] + b'\n'
+                    pagedata = pagedata[:trailing_idx]
 
         return pagedata
 
@@ -174,6 +174,7 @@ class Database(object):
     """
     def __init__(self, dbfile):
         self.con = sqlite3.connect(dbfile)
+        self.con.row_factory = sqlite3.Row
         self.cur = self.con.cursor()
 
     def build_table_of_all_archived_files(self, archived_files):
@@ -216,13 +217,13 @@ class Database(object):
         on the capture date.  Priority is given to pages from mycorner.no-ip.org,
         since that was Lee's last host.
         """
-        self.cur.execute("DROP TABLE IF EXISTS filtered_files")
-        self.cur.execute("CREATE TABLE filtered_files AS SELECT * FROM archived_files WHERE 0")
+        self.cur.execute("DROP TABLE IF EXISTS latest_files")
+        self.cur.execute("CREATE TABLE latest_files AS SELECT * FROM archived_files WHERE 0")
         self.con.commit()
 
         # First we insert the latest files from Lee's last host: mycorner.no-ip.org
         self.cur.execute("""
-            INSERT INTO filtered_files
+            INSERT INTO latest_files
                 SELECT
                     archived_files.*
                 FROM (
@@ -240,7 +241,7 @@ class Database(object):
 
         # Now we merge in the latest files from any of his previous hosts
         self.cur.execute("""
-            INSERT INTO filtered_files
+            INSERT INTO latest_files
             SELECT
                 archived_files.*
             FROM (
@@ -252,8 +253,8 @@ class Database(object):
                       SELECT DISTINCT(archived_files.remote_filename)
                       FROM archived_files
                       WHERE archived_files.remote_filename NOT IN (
-                          SELECT DISTINCT(filtered_files.remote_filename)
-                          FROM filtered_files
+                          SELECT DISTINCT(latest_files.remote_filename)
+                          FROM latest_files
                       )
                   )
                   GROUP BY remote_filename
@@ -264,22 +265,39 @@ class Database(object):
         """)
         self.con.commit()
 
+    def _make_archived_file(self, sqlite3_row):
+        attrs = dict(sqlite3_row)
+        for k in [ k for k in attrs.keys() if k.endswith("_at") ]:
+            attrs[k] = datetime.datetime.strptime(attrs[k], "%Y-%m-%d %H:%M:%S")
+        return ArchivedFile(**attrs)
+
     def find_latest_version_of_each_file(self):
-        sql = ""
         self.cur.execute("""
-            SELECT filename, hostname, remote_filename, size, sha1_raw, sha1_sanitized, archived_at, corruption
-            FROM filtered_files
+            SELECT * FROM latest_files
         """)
-        for filename, hostname, remote_filename, size, sha1_raw, sha1_sanitized, archived_at, corruption in self.cur:
-            yield ArchivedFile(
-                filename=filename,
-                hostname=hostname,
-                remote_filename=remote_filename,
-                size=size,
-                sha1_raw=sha1_raw,
-                sha1_sanitized=sha1_sanitized,
-                archived_at=archived_at,
-                corruption=corruption)
+        for row in self.cur:
+            yield self._make_archived_file(row)
+
+    def find_all_versions_of_each_file(self):
+        self.cur.execute("""
+            SELECT DISTINCT remote_filename
+            FROM archived_files
+            WHERE corruption IS NULL
+            ORDER BY remote_filename ASC
+        """)
+        distinct_remote_filenames = [ row[0] for row in self.cur ]
+
+        for remote_filename in distinct_remote_filenames:
+            self.cur.execute("""
+                SELECT *
+                FROM archived_files
+                WHERE remote_filename = ?
+                  AND corruption IS NULL
+                GROUP BY sha1_sanitized
+                ORDER BY size DESC
+            """, (remote_filename,))
+            archived_files = [ self._make_archived_file(row) for row in self.cur ]
+            yield (remote_filename, archived_files)
 
 
 def rewrite_mailto_links(pagedata):
@@ -342,7 +360,6 @@ def main():
 
     # build a database of all archived files
     db = Database(dbfile)
-
     db.build_table_of_all_archived_files(archived_files)
     db.build_table_with_latest_version_of_each_file()
 
