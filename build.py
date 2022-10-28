@@ -81,14 +81,24 @@ class ArchivedFile(object):
         return "ArchivedFile: %s" % self.filename
 
     def analyze(self):
-        self.detect_corruption()
         self.compute_sha1_raw()
         self.compute_sha1_sanitized()
+        self.detect_corruption()
 
     def detect_corruption(self):
         """Analyzes file on disk for corruption, sets self.corruption to a
         string if the file is corrupt."""
         self.corruption = None
+
+        bad_sha1_raws = (
+            # members.lycos.co.uk/20080725160852/leeedavison/6502/vic20/prgread/example.txt
+            # basic is program truncated in the middle of line 10
+            "98227581f6201bf8250df2d7964672deb7ea8ce9",
+        )
+        assert self.sha1_raw is not None, "SHA-1 must be computed before calling"
+        if self.sha1_raw in bad_sha1_raws:
+            self.corruption = "Corrupt file: SHA-1 in list of known bad"
+            return
 
         for ext in ('.png', '.jpg', '.jpeg', '.gif', '.bmp'):
             if self.filename.lower().endswith(ext):
