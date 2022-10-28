@@ -96,6 +96,8 @@ class ArchivedFile(object):
                 b'orthopedic DME products',
                 b'jobtweets',
                 b'extremetracking',
+                b'lightspeedwebstore',
+                b'nginx',
             ):
                 if fragment in data:
                     return "Corrupt file: (has fragment %r): %s" % (fragment, self.filename)
