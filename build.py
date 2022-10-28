@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import datetime
+import hashlib
 import os
 import re
 import shlex
@@ -14,9 +15,10 @@ class ArchivedFile(object):
     A single file from one of the captures, such as:
     mycorner.no-ip.org/20130212062031/6502/memoryplus/index.html
     """
-    def __init__(self, filename, sha1, size, hostname, remote_filename, archived_at, corruption=None):
+    def __init__(self, filename, hostname, size, remote_filename, archived_at, corruption=None, sha1_raw=None, sha1_sanitized=None,):
         self.filename = filename
-        self.sha1 = sha1
+        self.sha1_raw = sha1_raw
+        self.sha1_sanitized = sha1_sanitized
         self.size = size
         self.hostname = hostname
         self.remote_filename = remote_filename
@@ -63,20 +65,25 @@ class ArchivedFile(object):
                                   hostname=hostname,
                                   remote_filename=remote_filename,
                                   size=filesize,
-                                  sha1=sha1_file(filename),
                                   archived_at=archived_at)
-
-                af.detect_corruption()
+                af.analyze()
                 if progressfunc is not None:
                     progressfunc(af)
                     if af.corruption is not None:
                         progressfunc("%s: %s" % (af.corruption, af.filename))
+                    if af.sha1_raw != af.sha1_sanitized:
+                        progressfunc("Sanitization required: %s" % af.filename)
 
                 archived_files.append(af)
         return archived_files
 
     def __str__(self):
         return "ArchivedFile: %s" % self.filename
+
+    def analyze(self):
+        self.detect_corruption()
+        self.compute_sha1_raw()
+        self.compute_sha1_sanitized()
 
     def detect_corruption(self):
         """Analyzes file on disk for corruption, sets self.corruption to a
@@ -120,8 +127,45 @@ class ArchivedFile(object):
                         self.corruption = "Corrupt HTML file (truncated)"
                         return
 
-        def is_corrupt(self):
-            return self.corruption is not None
+    def compute_sha1_raw(self):
+        h = hashlib.sha1()
+        h.update(self.read_raw())
+        self.sha1_raw = h.hexdigest()
+
+    def read_raw(self):
+        with open(self.filename, "rb") as f:
+            return f.read()
+
+    def compute_sha1_sanitized(self):
+        h = hashlib.sha1()
+        h.update(self.read_sanitized())
+        self.sha1_sanitized = h.hexdigest()
+
+    def read_sanitized(self):
+        '''
+        Remove advertising and tracking scripts outside of <html>.  See:
+        members.lycos.co.uk/20090226165902/leeedavison/misc/vfd/proto.html
+        '''
+        pagedata = self.read_raw()
+
+        if self.filename.endswith('html'):
+            start_tag = b'<HTML>'
+            idx = pagedata.find(start_tag)
+            if idx != -1:
+                leading_stuff = pagedata[0:idx].decode('utf-8', 'ignore')
+                if re.findall('[^\s]', leading_stuff):
+                    pagedata = pagedata[idx:] + b'\n'
+
+            end_tag = b'</HTML>'
+            idx = pagedata.find(end_tag)
+            if idx != -1:
+                trailing_idx = idx + len(end_tag)
+                trailing_stuff = pagedata[trailing_idx:].decode('utf-8', 'ignore')
+                if re.findall('[^\s]', trailing_stuff):
+                    pagedata = pagedata[:trailing_idx] + b'\n'
+
+        return pagedata
+
 
 
 class Database(object):
@@ -144,7 +188,8 @@ class Database(object):
                 hostname TEXT NOT NULL,
                 remote_filename TEXT NOT NULL,
                 size INTEGER NOT NULL,
-                sha1 CHAR(20) NOT NULL,
+                sha1_raw CHAR(20) NOT NULL,
+                sha1_sanitized CHAR(20) NOT NULL,
                 archived_at DATETIME NOT NULL,
                 corruption TEXT -- null if not corrupt
             )
@@ -154,13 +199,13 @@ class Database(object):
         sql = """
             INSERT INTO archived_files (
                 filename, hostname, remote_filename,
-                size, sha1, archived_at, corruption
+                size, sha1_raw, sha1_sanitized, archived_at, corruption
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """
         for af in archived_files:
             values = (af.filename, af.hostname, af.remote_filename,
-                      af.size, af.sha1, af.archived_at, af.corruption)
+                      af.size, af.sha1_raw, af.sha1_sanitized, af.archived_at, af.corruption)
             self.cur.execute(sql, values)
         self.con.commit()
 
@@ -222,39 +267,19 @@ class Database(object):
     def find_latest_version_of_each_file(self):
         sql = ""
         self.cur.execute("""
-            SELECT filename, hostname, remote_filename, size, sha1, archived_at
+            SELECT filename, hostname, remote_filename, size, sha1_raw, sha1_sanitized, archived_at, corruption
             FROM filtered_files
         """)
-        for filename, hostname, remote_filename, size, sha1, archived_at in self.cur:
+        for filename, hostname, remote_filename, size, sha1_raw, sha1_sanitized, archived_at, corruption in self.cur:
             yield ArchivedFile(
                 filename=filename,
                 hostname=hostname,
                 remote_filename=remote_filename,
                 size=size,
-                sha1=sha1,
-                archived_at=archived_at)
-
-
-def remove_junk_outside_of_html_tags(pagedata):
-    # see: members.lycos.co.uk/20090226165902/leeedavison/misc/vfd/proto.html
-    start_tag = b'<HTML>'
-    idx = pagedata.find(start_tag)
-    if idx != -1:
-        leading_stuff = pagedata[0:idx].decode('utf-8', 'ignore')
-        if re.findall('[^\s]', leading_stuff):
-            print("   Removed junk before <HTML> tag")
-            pagedata = pagedata[idx:] + b'\n'
-
-    end_tag = b'</HTML>'
-    idx = pagedata.find(end_tag)
-    if idx != -1:
-        trailing_idx = idx + len(end_tag)
-        trailing_stuff = pagedata[trailing_idx:].decode('utf-8', 'ignore')
-        if re.findall('[^\s]', trailing_stuff):
-            print("   Removed junk after </HTML> tag")
-            pagedata = pagedata[:trailing_idx] + b'\n'
-
-    return pagedata
+                sha1_raw=sha1_raw,
+                sha1_sanitized=sha1_sanitized,
+                archived_at=archived_at,
+                corruption=corruption)
 
 
 def rewrite_mailto_links(pagedata):
@@ -297,10 +322,6 @@ def rewrite_home_page(pagedata):
     return pagedata.replace(search, replace)
 
 
-def sha1_file(filename):
-    out = subprocess.check_output("sha1sum %s" % shlex.quote(filename), shell=True)
-    return re.findall('[a-f0-9]{40}', out.decode('utf-8','ignore'))[0]
-
 def file_file(filename):
     out = subprocess.check_output("file %s" % shlex.quote(filename), shell=True)
     return out.decode('utf-8', 'ignore')
@@ -321,6 +342,7 @@ def main():
 
     # build a database of all archived files
     db = Database(dbfile)
+
     db.build_table_of_all_archived_files(archived_files)
     db.build_table_with_latest_version_of_each_file()
 
@@ -342,13 +364,11 @@ def main():
         shutil.copyfile(src_filename, dest_filename)
 
         if dest_filename.endswith(".html"):
-            with open(dest_filename, "rb") as f:
-                pagedata = f.read()
+            pagedata = archived_file.read_sanitized()
 
             if rf == "index.html":
                 pagedata = rewrite_home_page(pagedata)
 
-            pagedata = remove_junk_outside_of_html_tags(pagedata)
             pagedata = rewrite_mailto_links(pagedata)
             pagedata = rewrite_page_links(pagedata)
 
