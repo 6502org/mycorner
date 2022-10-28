@@ -14,13 +14,14 @@ class ArchivedFile(object):
     A single file from one of the captures, such as:
     mycorner.no-ip.org/20130212062031/6502/memoryplus/index.html
     """
-    def __init__(self, filename, sha1, size, hostname, remote_filename, archived_at):
+    def __init__(self, filename, sha1, size, hostname, remote_filename, archived_at, corruption=None):
         self.filename = filename
         self.sha1 = sha1
         self.size = size
         self.hostname = hostname
         self.remote_filename = remote_filename
         self.archived_at = archived_at
+        self.corruption = corruption
 
     @staticmethod
     def find_all_under_directory(websites_dir, progressfunc=None):
@@ -64,8 +65,13 @@ class ArchivedFile(object):
                                   size=filesize,
                                   sha1=sha1_file(filename),
                                   archived_at=archived_at)
+
+                af.detect_corruption()
                 if progressfunc is not None:
                     progressfunc(af)
+                    if af.corruption is not None:
+                        progressfunc("%s: %s" % (af.corruption, af.filename))
+
                 archived_files.append(af)
         return archived_files
 
@@ -73,20 +79,25 @@ class ArchivedFile(object):
         return "ArchivedFile: %s" % self.filename
 
     def detect_corruption(self):
-        """Returns None if OK or an error message string if corrupt."""
+        """Analyzes file on disk for corruption, sets self.corruption to a
+        string if the file is corrupt."""
+        self.corruption = None
 
         for ext in ('.png', '.jpg', '.jpeg', '.gif', '.bmp'):
             if self.filename.lower().endswith(ext):
-                analysis = analyze_file(self.filename)
-                if ("image data" not in analysis) and ("PC bitmap" not in analysis):
-                    return "Corrupt image: %s" % self.filename
+                filetype = file_file(self.filename)
+                if ("image data" not in filetype) and ("PC bitmap" not in filetype):
+                    self.corruption = "Corrupt image"
+                    return
 
         if self.filename.lower().endswith('.zip'):
-            if 'Zip archive data' not in analyze_file(self.filename):
-                return "Corrupt ZIP file (not a ZIP): %s" % self.filename
+            if 'Zip archive data' not in file_file(self.filename):
+                self.corruption = "Corrupt ZIP file (not a ZIP)"
+                return
 
             if not zipfile_is_intact(self.filename):
-                return "Corrupt ZIP file (not intact): %s" % self.filename
+                self.corruption = "Corrupt ZIP file (not intact)"
+                return
 
         with open(self.filename, 'rb') as f:
             data = f.read()
@@ -100,14 +111,17 @@ class ArchivedFile(object):
                 b'nginx',
             ):
                 if fragment in data:
-                    return "Corrupt file: (has fragment %r): %s" % (fragment, self.filename)
+                    self.corruption = "Corrupt file: (has fragment %r)" % fragment
+                    return
 
             if self.filename.endswith(".html"):
                 if (b'<body' in data) or (b'<BODY' in data):
                     if (b'</body' not in data) and (b'</BODY' not in data):
-                        return "Corrupt HTML file (truncated): %s" % self.filename
+                        self.corruption = "Corrupt HTML file (truncated)"
+                        return
 
-        return None  # no corruption
+        def is_corrupt(self):
+            return self.corruption is not None
 
 
 class Database(object):
@@ -126,12 +140,13 @@ class Database(object):
         self.cur.execute("DROP TABLE IF EXISTS archived_files")
         self.cur.execute("""
             CREATE TABLE archived_files (
-                filename TEXT,
-                hostname TEXT,
-                remote_filename TEXT,
-                size INTEGER,
-                sha1 CHAR(20),
-                archived_at DATETIME
+                filename TEXT NOT NULL,
+                hostname TEXT NOT NULL,
+                remote_filename TEXT NOT NULL,
+                size INTEGER NOT NULL,
+                sha1 CHAR(20) NOT NULL,
+                archived_at DATETIME NOT NULL,
+                corruption TEXT -- null if not corrupt
             )
         """)
         self.con.commit()
@@ -139,21 +154,22 @@ class Database(object):
         sql = """
             INSERT INTO archived_files (
                 filename, hostname, remote_filename,
-                size, sha1, archived_at
+                size, sha1, archived_at, corruption
             )
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         """
         for af in archived_files:
             values = (af.filename, af.hostname, af.remote_filename,
-                      af.size, af.sha1, af.archived_at)
+                      af.size, af.sha1, af.archived_at, af.corruption)
             self.cur.execute(sql, values)
         self.con.commit()
 
     def build_table_with_latest_version_of_each_file(self):
         """
         Create the 'filterd_files' table from the 'archived_files' table.  This table
-        will contain only the most recent version of each file based on the capture date.
-        Priority is given to pages from mycorner.no-ip.org, since that was Lee's last host.
+        will contain only the most recent, non-corrupted version of each file based
+        on the capture date.  Priority is given to pages from mycorner.no-ip.org,
+        since that was Lee's last host.
         """
         self.cur.execute("DROP TABLE IF EXISTS filtered_files")
         self.cur.execute("CREATE TABLE filtered_files AS SELECT * FROM archived_files WHERE 0")
@@ -168,6 +184,7 @@ class Database(object):
                       SELECT filename, remote_filename, max(archived_at) AS latest
                       FROM archived_files
                       WHERE hostname = 'mycorner.no-ip.org'
+                        AND corruption is NULL
                       GROUP BY remote_filename
                     ) subq
                 INNER JOIN archived_files
@@ -185,6 +202,7 @@ class Database(object):
                   SELECT filename, remote_filename, max(archived_at) AS latest
                   FROM archived_files
                   WHERE hostname <> 'mycorner.no-ip.org'
+                    AND corruption is NULL
                   AND remote_filename IN (
                       SELECT DISTINCT(archived_files.remote_filename)
                       FROM archived_files
@@ -283,7 +301,7 @@ def sha1_file(filename):
     out = subprocess.check_output("sha1sum %s" % shlex.quote(filename), shell=True)
     return re.findall('[a-f0-9]{40}', out.decode('utf-8','ignore'))[0]
 
-def analyze_file(filename):
+def file_file(filename):
     out = subprocess.check_output("file %s" % shlex.quote(filename), shell=True)
     return out.decode('utf-8', 'ignore')
 
@@ -298,22 +316,15 @@ def main():
     combined_dir = os.path.join(here, "combined")
     dbfile = os.path.join(here, "database.sqlite3")
 
-    # find all non-corrupted archived files on the filesystem
-    all_archived_files = ArchivedFile.find_all_under_directory(websites_dir, progressfunc=print)
-    noncorrupted_archived_files = []
-    for archived_file in all_archived_files:
-        msg = archived_file.detect_corruption()
-        if msg is not None:
-            print(msg)  # corrupt
-        else:
-            noncorrupted_archived_files.append(archived_file)
+    # find all archived files on the filesystem
+    archived_files = ArchivedFile.find_all_under_directory(websites_dir, progressfunc=print)
 
-    # build a database of all non-corrupted archived files
+    # build a database of all archived files
     db = Database(dbfile)
-    db.build_table_of_all_archived_files(noncorrupted_archived_files)
+    db.build_table_of_all_archived_files(archived_files)
     db.build_table_with_latest_version_of_each_file()
 
-    # reconstruct the website by taking the latest version of each file
+    # reconstruct the website by taking the latest non-corrupted version of each file
     shutil.rmtree(combined_dir, ignore_errors=True)
     for archived_file in db.find_latest_version_of_each_file():
         src_filename = archived_file.filename
