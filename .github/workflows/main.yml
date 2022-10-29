@@ -25,11 +25,13 @@ jobs:
       run: python -V
 
     - name: Build the website
-      run: python build.py
+      run: python build.py 2>&1 | tee build.log
 
     - name: 'Upload build artifacts'
       uses: actions/upload-artifact@v3
       with:
         name: build-artifacts
         path: |
+            *.log
+            *.sqlite3
             combined/
