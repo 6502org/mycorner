@@ -45,6 +45,12 @@ class ArchivedFile(object):
                 if True in [ part.startswith(".") for part in parts ]:
                     continue
 
+                # validate filename parts.  this directory from archive.org had trailing garbage:
+                # "themotionstore.com/20081120030152/leeedavison/6502/eurobeeb/>"
+                for part in parts:
+                    if not re.match('^[a-zA-Z0-9\.,_-]+$', part):
+                        raise Exception("Filename contains disallowed chars: %r" % filename)
+
                 # 'members.lycos.co.uk'
                 hostname = parts[0]
 
