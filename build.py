@@ -15,11 +15,13 @@ class ArchivedFile(object):
     A single file from one of the captures, such as:
     mycorner.no-ip.org/20130212062031/6502/memoryplus/index.html
     """
-    def __init__(self, filename, hostname, size, remote_filename, archived_at, corruption=None, sha1_raw=None, sha1_sanitized=None,):
+    def __init__(self, filename, hostname, remote_filename, archived_at,
+                 corruption=None, size_raw=None, sha1_raw=None, size_sanitized=None, sha1_sanitized=None,):
         self.filename = filename
+        self.size_raw = size_raw
         self.sha1_raw = sha1_raw
+        self.size_sanitized = size_sanitized
         self.sha1_sanitized = sha1_sanitized
-        self.size = size
         self.hostname = hostname
         self.remote_filename = remote_filename
         self.archived_at = archived_at
@@ -70,7 +72,6 @@ class ArchivedFile(object):
                 af = ArchivedFile(filename=filename,
                                   hostname=hostname,
                                   remote_filename=remote_filename,
-                                  size=filesize,
                                   archived_at=archived_at)
                 af.analyze()
                 if progressfunc is not None:
@@ -87,7 +88,9 @@ class ArchivedFile(object):
         return "ArchivedFile: %s" % self.filename
 
     def analyze(self):
+        self.size_raw = len(self.read_raw())
         self.compute_sha1_raw()
+        self.size_sanitized = len(self.read_sanitized())
         self.compute_sha1_sanitized()
         self.detect_corruption()
 
@@ -204,8 +207,9 @@ class Database(object):
                 filename TEXT NOT NULL,
                 hostname TEXT NOT NULL,
                 remote_filename TEXT NOT NULL,
-                size INTEGER NOT NULL,
+                size_raw INTEGER NOT NULL,
                 sha1_raw CHAR(20) NOT NULL,
+                size_sanitized INTEGER NOT NULL,
                 sha1_sanitized CHAR(20) NOT NULL,
                 archived_at DATETIME NOT NULL,
                 corruption TEXT -- null if not corrupt
@@ -216,13 +220,14 @@ class Database(object):
         sql = """
             INSERT INTO archived_files (
                 filename, hostname, remote_filename,
-                size, sha1_raw, sha1_sanitized, archived_at, corruption
+                size_raw, sha1_raw, size_sanitized, sha1_sanitized, archived_at, corruption
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         for af in archived_files:
             values = (af.filename, af.hostname, af.remote_filename,
-                      af.size, af.sha1_raw, af.sha1_sanitized, af.archived_at, af.corruption)
+                      af.size_raw, af.sha1_raw, af.size_sanitized, af.sha1_sanitized,
+                      af.archived_at, af.corruption)
             self.cur.execute(sql, values)
         self.con.commit()
 
@@ -310,7 +315,7 @@ class Database(object):
                 WHERE remote_filename = ?
                   AND corruption IS NULL
                 GROUP BY sha1_sanitized
-                ORDER BY size DESC
+                ORDER BY size_sanitized DESC
             """, (remote_filename,))
             archived_files = [ self._make_archived_file(row) for row in self.cur ]
             yield (remote_filename, archived_files)
