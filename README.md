@@ -11,7 +11,7 @@ Lee's website was online for over a decade.  Over the years, it had these hosts:
 
  - `http://mycorner.no-ip.org/` (most recent)
  - `http://themotionstore.com/leeedavison/`
- - `http://members.lycos.co.uk/leedavison/`
+ - `http://members.lycos.co.uk/leeedavison/`
  - `http://members.multimania.co.uk/leeedavison/`
  - `http://www.geocities.com/leeedavison/`
 
