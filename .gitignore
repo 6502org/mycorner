@@ -1,2 +1,5 @@
-database.sqlite3
+__pycache__/
 combined/
+.DS_Store
+*.pyc
+database.sqlite3
