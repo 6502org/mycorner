@@ -25,7 +25,7 @@ jobs:
       run: python -V
 
     - name: Build the website
-      run: python build.py 2>&1 | tee build.log
+      run: make 2>&1 | tee build.log
 
     - name: 'Upload build artifacts'
       uses: actions/upload-artifact@v3

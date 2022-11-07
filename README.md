@@ -22,17 +22,25 @@ The result is imperfect and many files are still missing.  However, it is the mo
 
 ## Build
 
-Requires a Unix-like system with Python 3.8 or later:
+Building the reconstructed website requires a Unix-like system with GNU Make and Python 3.8 or later.  On Ubuntu 20.04 LTS, this command will install the requirements:
 
 ```text
-$ python3 build.py
+sudo apt install build-essential python3
+```
 
+Run `make` from the root of this repository to build:
+
+```text
+$ make
+```
+
+The files will be written to `build/`.  The website should work if the local file `build/index.html` is opened in a browser.  Alternatively, Python's built-in webserver can be used:
+
+```text 
 $ python3 -m http.server --bind 127.0.0.1 --directory build/ 8000
 ```
 
-The combined files will be written to `build/`.  Open a browser to http://127.0.0.1:8000/ to view.
-
-It may not be necessary to run build the files locally or run a webserver to view them.  The most recent [GitHub Actions](https://github.com/6502org/mycorner/actions) run may have the combined files (see "Artifacts").  The website should work if the local file `build/index.html` is opened in a browser.
+Open a browser to `http://127.0.0.1:8000`.
 
 ## Credits
 
