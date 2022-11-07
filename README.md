@@ -27,12 +27,12 @@ Requires a Unix-like system with Python 3.8 or later:
 ```text
 $ python3 build.py
 
-$ python3 -m http.server --bind 127.0.0.1 --directory combined/ 8000
+$ python3 -m http.server --bind 127.0.0.1 --directory build/ 8000
 ```
 
-The combined files will be written to `combined/`.  Open a browser to http://127.0.0.1:8000/ to view.
+The combined files will be written to `build/`.  Open a browser to http://127.0.0.1:8000/ to view.
 
-It may not be necessary to run build the files locally or run a webserver to view them.  The most recent [GitHub Actions](https://github.com/6502org/mycorner/actions) run may have the combined files (see "Artifacts").  The website should work if the local file `combined/index.html` is opened in a browser.
+It may not be necessary to run build the files locally or run a webserver to view them.  The most recent [GitHub Actions](https://github.com/6502org/mycorner/actions) run may have the combined files (see "Artifacts").  The website should work if the local file `build/index.html` is opened in a browser.
 
 ## Credits
 

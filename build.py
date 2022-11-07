@@ -373,7 +373,7 @@ def zipfile_is_intact(filename):
 def main():
     here = os.path.abspath(os.path.dirname(__file__))
     websites_dir = os.path.join(here, "websites")
-    combined_dir = os.path.join(here, "combined")
+    build_dir = os.path.join(here, "build")
     dbfile = os.path.join(here, "database.sqlite3")
 
     # find all archived files on the filesystem
@@ -385,7 +385,7 @@ def main():
     db.build_table_with_latest_version_of_each_file()
 
     # reconstruct the website by taking the latest non-corrupted version of each file
-    shutil.rmtree(combined_dir, ignore_errors=True)
+    shutil.rmtree(build_dir, ignore_errors=True)
     for archived_file in db.find_latest_version_of_each_file():
         src_filename = archived_file.filename
 
@@ -394,7 +394,7 @@ def main():
         if rf == '6502/project.jpg':
             rf = '6502/projects.jpg'
 
-        dest_filename = os.path.join(combined_dir, rf)
+        dest_filename = os.path.join(build_dir, rf)
         dest_dir = os.path.dirname(dest_filename)
         os.makedirs(dest_dir, exist_ok=True)
 

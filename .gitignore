@@ -1,5 +1,5 @@
 __pycache__/
-combined/
+build/
 .DS_Store
 *.pyc
 database.sqlite3

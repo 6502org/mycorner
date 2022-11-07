@@ -34,4 +34,4 @@ jobs:
         path: |
             *.log
             *.sqlite3
-            combined/
+            build/
