@@ -28,20 +28,20 @@ class ArchivedFile(object):
         self.corruption = corruption
 
     @staticmethod
-    def find_all_under_directory(websites_dir, progressfunc=None):
+    def find_all_under_directory(archives_dir, progressfunc=None):
         """
         Walk a directory tree and collect any archived files it contains.  The
-        tree must have the structure: hostname/YYYYMMDDHHMMSS/.../filename
+        tree must have the structure: archive/hostname/YYYYMMDDHHMMSS/.../filename
         """
         archived_files = []
-        for root, dirs, basenames in os.walk(websites_dir):
+        for root, dirs, basenames in os.walk(archives_dir):
             for basename in basenames:
                 filename = os.path.join(root, basename)
                 filesize = os.path.getsize(filename)
                 parts = os.path.split(filename)
 
-                # ['members.lycos.co.uk', '20081010162854', 'leeedavison', '6502', 'eurobeeb', 'score', 'index.html']
-                parts = filename.replace(websites_dir, '').strip(os.path.sep).split(os.path.sep)
+                # ['archive.org', 'members.lycos.co.uk', '20081010162854', 'leeedavison', '6502', 'eurobeeb', 'score', 'index.html']
+                parts = filename.replace(archives_dir, '').strip(os.path.sep).split(os.path.sep)
 
                 # ignore hidden files like .DS_Store
                 if True in [ part.startswith(".") for part in parts ]:
@@ -54,20 +54,20 @@ class ArchivedFile(object):
                         raise Exception("Filename contains disallowed chars: %r" % filename)
 
                 # 'members.lycos.co.uk'
-                hostname = parts[0]
+                hostname = parts[1]
 
-                # date of archive.org capture
-                datetime_str = parts[1]
-                matches = re.findall('\d{14}', datetime_str) # "YYYYMMDDHHMMSS"
+                # date of capture
+                datetime_str = parts[2]
+                matches = re.findall(r'\d{14}', datetime_str) # "YYYYMMDDHHMMSS"
                 if matches:
                     archived_at = datetime.datetime.strptime(datetime_str, "%Y%m%d%H%M%S")
                 else:
                     raise Exception("Unable to parse date: %s" % filename)
 
                 # '6502/eurobeeb/score/index.html'
-                if parts[2] == "leeedavison": # all sites except mycorner
+                if parts[3] == "leeedavison": # all sites except mycorner
                     parts.pop(0)
-                remote_filename = '/'.join(parts[2:])
+                remote_filename = '/'.join(parts[3:])
 
                 af = ArchivedFile(filename=filename,
                                   hostname=hostname,
@@ -372,12 +372,12 @@ def zipfile_is_intact(filename):
 
 def main():
     here = os.path.abspath(os.path.dirname(__file__))
-    websites_dir = os.path.join(here, "websites")
+    archives_dir = os.path.join(here, "archives")
     build_dir = os.path.join(here, "build")
     dbfile = os.path.join(here, "database.sqlite3")
 
     # find all archived files on the filesystem
-    archived_files = ArchivedFile.find_all_under_directory(websites_dir, progressfunc=print)
+    archived_files = ArchivedFile.find_all_under_directory(archives_dir, progressfunc=print)
 
     # build a database of all archived files
     db = Database(dbfile)
