@@ -46,6 +46,8 @@ Open a browser to `http://127.0.0.1:8000`.
 
 The following captures were used in this project:
 
- - [Wayback Machine](https://archive.org/web/) - Provided the majority of the captures.  Although no captures were complete and many files had silent corruption, this project would not have otherwise been possible.
+ - [Hans Otten](http://retro.hansotten.nl) - Published a [reformatted version](http://retro.hansotten.nl/6502-sbc/lee-davison-web-site/) of Lee's 6502 pages and provided with us multiple captures of the website that he made over the years.  Exact dates and times are known because of comments embedded by the "HTTrack" scraper, e.g. `20090117205334`.
 
- - [Phil Pemberton](https://www.philpem.me.uk/) - Published his own [capture](https://www.philpem.me.uk/leeedavison/) of Lee's website.  The exact date of capture is unknown.  These files have been given a capture date of 2003-06-04, since that is the most recent date found in the "Last updated" footer of the pages.
+ - [Phil Pemberton](https://www.philpem.me.uk/) - Published his [capture](https://www.philpem.me.uk/leeedavison/) of Lee's website.  The exact time of capture is unknown.  These files have been given a capture date/time of `20030604000000`, since 2003-06-04 is the most recent date found in the "Last updated" footer of the pages.
+
+ - [Wayback Machine](https://archive.org/web/) - Provided many other captures.  Although no captures were complete and many files had silent corruption, it contained some files there were not found anywhere else.
