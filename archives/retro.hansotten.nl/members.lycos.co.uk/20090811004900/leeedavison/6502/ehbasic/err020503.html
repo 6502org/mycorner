@@ -1,0 +1,261 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish79141a00{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish79141a00{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip79141a00{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad79141a00"></div>
+<html><head><title>Enhanced BASIC, errata for 3rd May 2002</TITLE>
+<meta name="description" content="An advanced BASIC interpreter for the 6502 microprocessor."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="errata.html" webstripperlinkwas="errata.html"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER>
+<b><font size=+1>Enhanced BASIC, errata. 3rd May 2002 </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+<img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<u><b>Symptoms</B></U>
+<blockquote>
+ STR$() always returns a null string.
+</BLOCKQUOTE>
+<u><b>Cause</B></U>
+<blockquote>
+ While juggling the page zero variables this reference got forgotten. The result is
+ it tries to read the returned string from the wrong location and always gets a null byte.
+</BLOCKQUOTE>
+<u><b>The fix</B></U>
+<blockquote>
+ The fix for this is easy, it just entails changing the reference.
+<p>
+ Just after LAB_STRS was ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LAB_STRS
+	JSR	LAB_CTNM		; check if source is numeric
+	LDY	#$00			; set string index
+	JSR	LAB_2970		; convert FAC1 to string
+	PLA				; dump return address
+	PLA				; dump return address
+	LDA	#$FF			; set string start low byte
+	LDY	#$00			; set string start high byte
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. change the LDA and LDY and this now becomes ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LAB_STRS
+	JSR	LAB_CTNM		; check if source is numeric
+	LDY	#$00			; set string index
+	JSR	LAB_2970		; convert FAC1 to string
+	PLA				; dump return address
+	PLA				; dump return address
+	LDA	#&#60;(Decss+1)		; set result string low pointer
+	LDY	#&#62;(Decss+1)		; set result string high pointer
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. This is done in version 1.02.<p>
+ If you change Decss be carefull that it remains in page zero or the branch after the
+ LDY will fail.
+</BLOCKQUOTE>
+<b>Symptoms</B>
+<blockquote>
+ NEXT followed by a colon gives a Syntax ERROR. E.g.
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+DO:FORA=0TOTWOPISTEPPI/10:?SPC(SIN(A)*18.5+20);"Hello world":NEXT:LOOP
+</PRE>
+</TD></TR></TABLE>
+<p>
+ should work (oh yes it should!) but prints one line and stops with the error.
+</BLOCKQUOTE>
+<b>Cause</B>
+<blockquote>
+ At one time the get BASIC byte routine returned Zb = 1 and A = $00 for both [EOL] and
+ : (statement separator). This later got changed to return A = $3A for : but NEXT still
+ assumed Zb = 1 meant A = $00, hence the Syntax ERROR.
+</BLOCKQUOTE>
+<b>The fix</B>
+<blockquote>
+ The fix for this is easy, it just entails changing the way Y is cleared.
+<p>
+ Just after LAB_NEXT was ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LAB_NEXT
+	BNE	LAB_1A46		; branch if NEXT var
+
+	TAY				; else clear Y (A=$00 here)
+	BEQ	LAB_1A49		; branch always (no variable to search for)
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. and this now becomes ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LAB_NEXT
+	BNE	LAB_1A46		; branch if NEXT var
+
+	LDY	#$00			; else clear Y
+	BEQ	LAB_1A49		; branch always (no variable to search for)
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. This is done in version 1.02.
+</BLOCKQUOTE>
+<b>Symptoms</B>
+<blockquote>
+ None.
+</BLOCKQUOTE>
+<b>The fix</B>
+<blockquote>
+ Part of a comment has an error code incorrectly labeled but the code is correct. This
+ is just to clear up any confusion.
+<p>
+ A few lines after LAB_CONT was ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LDX	#$1E			; error code $1C ("Can't continue" error)
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. and this now becomes ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+LAB_NEXT
+	LDX	#$1E			; error code $1E ("Can't continue" error)
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. This is done in version 1.02.
+</BLOCKQUOTE>
+<b>Symptoms</B>
+<blockquote>
+ None.
+</BLOCKQUOTE>
+<b>The fix</B>
+<blockquote>
+ Move a small section of code. This saves three cycles and two bytes. (Woo hoo!)
+<p>
+ The code at LAB_244E was ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; add 0.5 to FAC1
+
+LAB_244E
+	LDA	#&#60;LAB_2A96		; set 0.5 pointer low byte
+	LDY	#&#62;LAB_2A96		; set 0.5 pointer high byte
+	BNE	LAB_246C		; add (AY) to FAC1 & RET (Y is always &#60;&#62;$00)
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. and this now moves to immediately before LAB_246C and becomes ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; add 0.5 to FAC1
+
+LAB_244E
+	LDA	#&#60;LAB_2A96		; set 0.5 pointer low byte
+	LDY	#&#62;LAB_2A96		; set 0.5 pointer high byte
+
+; add (AY) to FAC1
+
+LAB_246C
+	JSR	LAB_264D		; unpack memory (AY) into FAC2
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. This is done in version 1.02.
+</BLOCKQUOTE>
+<b>Others</B>
+<blockquote>
+ The code at LAB_2970 gains the following comment ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LAB_2970				; STR$() function enters here
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. This is done in version 1.02.
+</BLOCKQUOTE>
+<blockquote>
+ Spurious code at LAB_2E05 is removed ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LAB_2E05
+	LDA	Smeml			; get start of mem low byte
+	LDY	Smemh			; get start of mem high byte
+
+; no longer need this
+
+;	JSR	LAB_121F		; check memory, do "Out of memory" if no room
+					; addr to check is in AY (low/high)
+	JSR	LAB_CRLF		; print CR/LF
+	JSR	LAB_1463		; do "NEW" and "CLEAR"
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. becomes ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LAB_2E05
+	JSR	LAB_CRLF		; print CR/LF
+	JSR	LAB_1463		; do "NEW" and "CLEAR"
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. This is done in version 1.02.
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 14th July, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish79141a00" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=79141a00&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

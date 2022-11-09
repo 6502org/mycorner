@@ -1,0 +1,98 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish29a7cfc0{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish29a7cfc0{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip29a7cfc0{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad29a7cfc0"></div>
+<html><head><title>6541 mystery board</TITLE>
+<meta name="description" content="Content."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/6502/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/6502/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/6502/index.html"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER><b><font size=+1>6541 Mystery board. </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+<img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<img src="board_t.jpg" webstripperlinkwas="board_t.jpg" align=RIGHT width=320 height=240 border=1 hspace=8 alt="6541 mystery board">
+<b><u>Not such a mystery</U></B>
+<blockquote><p align=JUSTIFY>
+ The only identification on this board is the board <a href="ident.html#logo" webstripperlinkwas="ident.html#logo">logo</A>
+ and the <a href="ident.html#label" webstripperlinkwas="ident.html#label">labels</A> on the EPROM and the PAL.
+<p align=JUSTIFY>
+ I still don't know exactly what this is but I can now make a few guesses. I believe the
+ board was made by Sigma Designs who have made a few disk controllers with the SDC prefix.
+ I can identify all the chips except the missing <a href="ident.html" webstripperlinkwas="ident.html">40 pin DIL</A> and
+ that I suspect is a Western Digital WDxxxx floppy disk controller.
+<p align=JUSTIFY>
+ The 34 way header on the right hand edge of the board would seem to be the port for the
+ disk drives though it's not the standard PC type drive as there is a power connection
+ to some of the pins that would usually be grounded. Going by the code two, double sided,
+ drives are supported.
+<p align=JUSTIFY>
+ Thanks to Roberto for reverse engineering the equations to the PAL, this has let me work
+ out how the devices are addressed. The EPROM goes from $F800 to $FFFF even though it's a
+ 4k device, the RAM appears from $F200 to $F7FF which is only three quaters of it's 2k
+ size. Some of the unused area, $F080 to $F0FF is taken by the WDxxxx chip.
+<p align=JUSTIFY>
+ The smaller 26 way header seen on the bottom right of the board is the host interface,
+ this is a byte wide port and looks like a 65xx peripheral to the host device.
+<p align=JUSTIFY>
+ Larger pictures of the board are here..
+<p align=JUSTIFY>
+<table align=CENTER><tr><td width=33%>
+<li>A <a href="board_s.jpg" webstripperlinkwas="board_s.jpg">640 x 480</A> jpeg image.</TD><td width=33%>
+<li>A <a href="board_m.jpg" webstripperlinkwas="board_m.jpg">1024 x 768</A> jpeg image.</TD><td width=33%>
+<li>A <a href="board_l.jpg" webstripperlinkwas="board_l.jpg">1200 x 900</A> jpeg image.</TR></TABLE>
+</BLOCKQUOTE>
+<b><u>Firmware</U></B>
+<blockquote><p align=JUSTIFY>
+ I've done a dump of the 2732A 4k EPROM and it appears to contain 6501 code. Though it's
+ a 4k device it's only addressed from $F800 to $FFFF and it seems to have two identical
+ 2k copies of the code. You can download it as either a binary dump or Motorola S record.
+<blockquote>
+<li>Download the EPROM as a <a href="6541rom.txt" webstripperlinkwas="6541rom.hex">Motorola S record</A> file.
+<li>Download the EPROM as a <a href="6541rom.hxw" webstripperlinkwas="6541rom.bin">binary dump</A>.
+</BLOCKQUOTE><p align=JUSTIFY>
+ With the guess at a WDxxxx disk controller and Roberto's PAL equations it only took a
+ few hours to disassemble and comment the code in the EPROM. As I don't have an R6541AQ
+ assembler to hand I can't check that this is bit correct, but it does make some sort of
+ sense. It can be downloaded <a href="source." webstripperlinkwas="source.zip">here <img src="../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../zip_sm.png" alt="Download" border=0></A>.
+<p align=JUSTIFY>
+ I've also read the AMPAL16L8APC that does the address decoding. It's here as a jdec file.
+<blockquote>
+<a name=ampal></A>
+<li>AMPAL16L8APC as a <a href="ampal16l8apc.txt" webstripperlinkwas="ampal16l8apc.jed">jdec</A> file.
+</BLOCKQUOTE><p align=JUSTIFY>
+ If you recognise this board or what it is from please
+ <a href="mailto:leeedavison@lycos.co.uk">e-mail me <img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A>. Thank you to everyone who has sent suggestions
+ and data so far.
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 21st February, 2005.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish29a7cfc0" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=29a7cfc0&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

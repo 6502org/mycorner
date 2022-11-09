@@ -1,0 +1,142 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish57c86403{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish57c86403{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip57c86403{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad57c86403"></div>
+<html><head><title>6502 Shorts - Range test</TITLE></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=20%><a href="index.html" webstripperlinkwas="index.html">
+  <img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER>
+<b><font size=+1>Range test. </FONT></B>
+<font size=-1>By Lee Davison.</FONT>
+</TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<b><u>Introduction.</U></B>
+<blockquote>
+ Sometimes you need to check if a byte is in a certain range that does not start,
+ or end, on the byte limits. For example, if a byte is numeric (n = '0', m = '9')
+ or lower case ASCII (n = 'a', m = 'z').
+</BLOCKQUOTE>
+<b><u>The code.</U></B>
+<blockquote>
+ For all of these we assume that the byte to be tested is in A and that the start
+ and end values, n and m, are already defined. Also that 0 <n < m < $ff. <p>
+ If you don't need to preserve the byte in A then testing the byte can be done in
+ five bytes and only six cycles. This sets the carry if A is in the range n to m.
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	CLC		; clear carry for add
+	ADC	#$FF-m	; make m = $FF
+	ADC	#m-n+1	; carry set if in range n to m		
+</PRE>
+</TD></TR></TABLE>
+<p>
+ If you want the carry clear instead of set you use subtract instead of add.
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	SEC		; set carry for subtract
+	SBC	#n	; make n = $00
+	SBC	#m-n+1	; carry clear if in range n to m	
+</PRE>
+</TD></TR></TABLE>
+<p>
+ If you need to preserve A and have either the X or Y register free you can do it
+ like this.
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	TAX		; copy A (or TAY)
+	CLC		; clear carry for add
+	ADC	#$FF-m	; make m = $FF
+	ADC	#m-n+1	; carry set if in range n to m		
+	TXA		; restore A (or TYA)
+</PRE>
+</TD></TR></TABLE>
+<p>
+ If you can spare the cycles but not the registers then this is the slowest of the
+ range tests comming in at thirteen cycles.
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	PHA		; save A
+	CLC		; clear carry for add
+	ADC	#$FF-m	; make m = $FF
+	ADC	#m-n+1	; carry set if in range n to m		
+	PLA		; restore A
+</PRE>
+</TD></TR></TABLE>
+<p>
+ Finally a method that preserves A without using any other registers, or memory.
+ This has the disadvantage that it can take either five or ten cycles (so timing
+ would be unsure) and takes the most bytes. This one sets the carry if A is in the
+ range n to m.
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	CMP	#n	; is it less than required?
+	BCC	ERnge	; branch if it is
+
+	ADC	#$FE-m	; add $FF-m (carry is set)
+	CLC		; clear carry for add
+	ADC	#m+1	; A is now back to original value	
+ERnge
+</PRE>
+</TD></TR></TABLE>
+<p>
+ And this one clears the carry if A is in the range n to m.
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	CMP	#m+1	; is it greater than required?
+	BCS	ERnge	; branch if it is
+
+	SBC	#n-1	; subtract n (carry is clear)
+	SEC		; set carry for subtract
+	SBC	#-n	; A is now back to original value	
+ERnge
+</PRE>
+</TD></TR></TABLE>
+<p>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 28th August, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish57c86403" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=57c86403&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

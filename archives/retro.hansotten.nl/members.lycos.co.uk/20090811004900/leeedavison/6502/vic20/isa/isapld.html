@@ -1,0 +1,120 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish66cb1b70{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish66cb1b70{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip66cb1b70{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad66cb1b70"></div>
+<html><head><title>Vic 20 ISA slot - GAL logic equations file.</TITLE></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=20%><a href="index.html#pld" webstripperlinkwas="index.html#pld">
+  <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER>
+<b><font size=+1>GAL logic equations file </FONT></B><font size=-1>by Lee Davison.</FONT>
+</TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<a href="../vic20_pld." webstripperlinkwas="../vic20_pld.zip">Download this file <img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" alt="Download" border=0>
+</A>
+<blockquote><p align=JUSTIFY>
+ This file includes the equations for the RAM/ROM expansion logic as well as the ISA slot
+ logic. Only those lines that are needed for the ISA slot have been rendered in
+ <b>bold</B>.
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+<b>Name     vic_ISA ;
+PartNo   00 ;
+Date     01/10/03 ;
+Revision 01 ;
+Designer Lee ;
+Company  ;
+Assembly None ;
+Location  ;
+Device   g16v8as ;</B>
+
+/* This is the glue for the vic 20 ISA card & RAM/ROM expansion	*/	
+
+/* Logic minimisations			None			*/
+/* Optimizations			None			*/
+/* Download				JEDEC/POF/PRG		*/
+/* Doc File Options			fuse plot, equations	*/
+/* Output				None			*/
+
+/* INPUT PINS 							*/
+
+<b>PIN	1 = dlp2	;		/* delayed phase 2	*/</B>
+PIN	2 = VRW		;		/* VIC read write	*/
+PIN	3 = !BLK1	;		/* block select		*/
+PIN	4 = !BLK2	;		/* block select		*/
+PIN	5 = !BLK3	;		/* block select		*/
+PIN	6 = !BLK5	;		/* block select		*/
+<b>PIN	7 = CRW		;		/* CPU read write	*/
+PIN	8 = p2		;		/* phase 2		*/
+PIN	9 = !IO3	;		/* I/O access		*/
+PIN	11 = !RES	;		/* reset		*/</B>
+
+/* OUTPUT PINS							*/
+
+PIN  19 = ROM		;		/* 8/16/24/32K ROM	*/ 
+PIN  18 = RAM		;		/* 8/16/24/32K RAM	*/ 
+PIN  17 = ROM_A14	;		/* ROM address line	*/ 
+PIN  16 = A13		;		/* ROM/RAM address line	*/ 
+PIN  15 = RAM_A14	;		/* RAM address line	*/ 
+<b>PIN  14 = ISA_RES	;		/* ISA card reset line	*/ 
+PIN  13 = ISA_IOW	;		/* ISA card I/O write	*/ 
+PIN  12 = ISA_IOR	;		/* ISA card I/O read	*/</B>
+
+/* Output terms							*/
+
+/* comment out the RAM/ROM configuration lines you don't want	*/
+
+/* 24K expansion RAM with 8K ROM in the autostart block		*/
+/* $2000 = RAM	$4000 = RAM	$6000 = RAM	$A000 = ROM	*/
+/*!ROM	= BLK5 ;			/* 8/16/24/32K ROM	*/ 
+/*!RAM	= BLK1 # BLK2 # BLK3 ;		/* 8/16/24/32K RAM	*/ 
+
+/* 16K expansion RAM with 16K autostart game ROM		*/
+/* $2000 = RAM	$4000 = RAM	$6000 = ROM	$A000 = ROM	*/
+!ROM	= BLK3 # BLK5 ;			/* 8/16/24/32K ROM	*/ 
+!RAM	= BLK1 # BLK2 ;			/* 8/16/24/32K RAM	*/ 
+
+!ROM_A14 = BLK1 # BLK5 ;		/* ROM address line	*/ 
+!A13	= BLK2 # BLK5 ;			/* ROM/RAM address line	*/ 
+!RAM_A14 = BLK1 # BLK5 ;		/* RAM address line	*/ 
+<b>ISA_RES	= RES ;				/* ISA card reset line	*/ 
+!ISA_IOW = !CRW & IO3 & p2 & dlp2 ;	/* ISA card I/O write	*/ 
+!ISA_IOR = CRW & IO3 & p2 & dlp2 ;	/* ISA card I/O read	*/</B>
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 26th February, 2004.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish66cb1b70" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=66cb1b70&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

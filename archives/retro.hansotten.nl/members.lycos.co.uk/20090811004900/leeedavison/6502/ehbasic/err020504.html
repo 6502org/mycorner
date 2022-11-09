@@ -1,0 +1,118 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish4bcf1ce3{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish4bcf1ce3{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip4bcf1ce3{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad4bcf1ce3"></div>
+<html><head><title>Enhanced BASIC, errata for 4th May 2002</TITLE>
+<meta name="description" content="An advanced BASIC interpreter for the 6502 microprocessor."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="errata.html" webstripperlinkwas="errata.html"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER>
+<b><font size=+1>Enhanced BASIC, errata. 4th May 2002 </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+<img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<u><b>Symptoms</B></U>
+<blockquote>
+ Assigning a string in immediate mode doesn't work properly, i.e. doing ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+<b>A$="TESTING"
+?A$</B>
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. gives either ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+<b>TSTING</B>
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. or ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+<b>T STING</B>
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. depending on how your console handles null characters (ASCII 0)
+</BLOCKQUOTE>
+<u><b>Cause</B></U>
+<blockquote>
+ When BASIC assigns a value to a string it tests to see if the string is in the program
+ code. If it isn't then the string is copied to string memory (if the string is in program
+ memory no copy is made and the string pointer points to the string embedded in the
+ program code). In this case moving the input buffer out of page zero meant that this test
+ fails to copy a string from the input buffer to string memory. The string can then be
+ overwritten by any following commands.
+</BLOCKQUOTE>
+<u><b>The fix</B></U>
+<blockquote>
+ One small change is needed to fix this, just after LAB_20DC was ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LAB_20DC
+	STX	Sendh			; save string end high byte
+	LDA	ssptr_h			; get string start high byte
+	BNE	LAB_RTST		; branch if not in utility area
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. this needs to test if the string start is &#60;Ram_base so it becomes ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LAB_20DC
+	STX	Sendh			; save string end high byte
+	LDA	ssptr_h			; get string start high byte
+	CMP	#>Ram_base		; compare with start of program memory
+	BCS	LAB_RTST		; branch if not in utility area
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. This is done in version 1.03.<p>
+ If you move the input buffer from before the start of program memory be carefull that
+ this test is changed to suit or the problem will recurr.
+</BLOCKQUOTE>
+ Thanks to <a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://sbc.rictor.org/?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://sbc.rictor.org/'}else{href='javascript:void(0)'}" webstripperwas="http://sbc.rictor.org/">Daryl</A> for finding that "feature".
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 1st August, 2008.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish4bcf1ce3" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=4bcf1ce3&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

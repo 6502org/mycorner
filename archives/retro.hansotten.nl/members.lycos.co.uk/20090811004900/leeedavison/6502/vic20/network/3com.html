@@ -1,0 +1,501 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish78b93989{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish78b93989{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip78b93989{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad78b93989"></div>
+<html><head><title>Vic 20 network interface - software</TITLE></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=25%><a href="source.html#3com" webstripperlinkwas="source.html#3com">
+ <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER>
+<b><font size=+1>Vic 20 network - software </FONT></B>
+<font size=-1>by Lee Davison</FONT>
+</TD><td width=25%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<b><u>Talking to the 3Com card.</U></B>
+<blockquote><p align=JUSTIFY>
+ If you're going to write code for any network card you need to get the technical
+ reference documents for that card, don't rely on other people's code, even mine,
+ as you will end up repeating any mistakes they made and avoid the discovery of your
+ own spectacular errors. For the 3Com 3C509B-TPO you need 3c5x9b.pdf from the 3Com site.
+<p align=JUSTIFY>
+<b><u>Initialisation.</U></B>
+<p align=JUSTIFY>
+ To initialise the card after a reset you need to do quite a bit of work. This is
+ reflected in the aparent complexity of the startup code, fortunately this only has
+ to be called once.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; *********************************************************************		
+; initialize the 3C509B
+
+; jump through 3Com hoops - don't ask, just jump.
+
+LAB_10500
+	LDY	#$00			; clear Y
+	STY	id_port			; initialise the id sequence state ..
+	STY	id_port			; .. machine by writing $00,$00
+
+					; send id sequence to NIC id port
+	DEY				; set for 255 bytes
+	TYA				; set initial byte
+LAB_10520
+	STA	id_port			; send id sequence state machine byte
+	ASL				; shift byte
+	BCC	LAB_10535		; branch if no carry
+
+	EOR	#$CF			; else EOR with $CF
+LAB_10535
+	DEY				; increment count
+	BNE	LAB_10520		; loop if not all done
+	
+					; no contention check, only 1 card!
+	LDA	#$D1			; set tag to 1
+	STA	id_port			; send id port byte
+	LDA	#$F0			; set I/O base to $0300
+	STA	id_port			; send id port byte
+
+	LDA	#$08			;
+	STY	com_reg_l		; $00 page 0
+	STA	com_reg_h		; $08 set window command
+
+					; read our MAC address from the card
+	LDX	#$00			; clear index
+LAB_10560
+	TXA				; copy index
+	LSR				; /2 (EEPROM reads as word wide)
+	ORA	#$80			; OR with EEPROM read command
+	STA	epr_ctr_l		; set EEPROM read address low byte
+	STY	epr_ctr_h		; set EEPROM read address high byte
+
+					; wait for at least 162 uS
+<b>	LDY	#$24			; [2] cycles plus .. [PAL]
+<font color=#AAAAAA>	LDY	#$21			; [2] cycles plus .. [NTSC]</FONT></B>
+LAB_10565
+	DEY				; [2] cycles plus ..
+	BNE	LAB_10565		; [3/2] cycles = 5 * Y plus 1 cycles
+<b>					; = 181 cycles = 163uS [PAL]
+<font color=#AAAAAA>					; = 166 cycles = 162uS [NTSC]</FONT></B>
+
+	LDY	epr_dat_l		; get MAC address low byte
+	LDA	epr_dat_h		; get MAC address high byte
+	STA	mac_ours,X		; save MAC address high byte
+	INX				; increment index
+	TYA				; copy MAC address low byte
+	STA	mac_ours,X		; save MAC address low byte
+	LDY	#$00			; clear Y
+	INX				; increment index
+	CPX	#$06			; are we done yet
+	BNE	LAB_10560		; loop if not
+
+					; enable the adaptor
+	LDA	#$01			;
+ 	STA	config_c_l		; $01
+ 	STY	config_c_h		; $00 set configuration control
+
+					; reset the Tx ..
+	LDA	#$58			;
+	STY	com_reg_l		; $00
+	STA	com_reg_h		; $58 Tx reset
+	JSR	wait_cmd		; wait for Tx reset to complete
+
+					; .. and reset the Rx ..
+	LDA	#$28			;
+	STY	com_reg_l		; $00
+	STA	com_reg_h		; $28 Rx reset 
+	JSR	wait_cmd		; wait for Rx reset to complete
+
+					; .. and suspend the status
+	LDA	#$78			;
+	STY	com_reg_l		; $00
+	STA	com_reg_h		; $78 mask all status bits
+
+					; set IRQ3
+	LDA	#$3F			;
+ 	STY	r_config_l		; $00
+ 	STA	r_config_h		; $3F resource configuration
+	
+					; set our MAC address &amp; copy MAC low
+					; word as our IP address low word
+	LDA	#$02			;
+	STA	com_reg_l		;
+	LDA	#$08			;
+	STA	com_reg_h		; set page 2
+
+	LDA	mac_ours_00		; get MAC address byte 0
+	STA	MAC_adr_00		; save to card
+	LDA	mac_ours_01		; get MAC address byte 1
+	STA	MAC_adr_01		; save to card
+	LDA	mac_ours_02		; get MAC address byte 2
+	STA	MAC_adr_02		; save to card
+	LDA	mac_ours_03		; get MAC address byte 3
+	STA	MAC_adr_03		; save to card
+	LDA	mac_ours_04		; get MAC address byte 4
+	STA	MAC_adr_04		; save to card
+	STA	ip_ours+$02		; save IP byte
+	LDA	mac_ours_05		; get MAC address byte 5
+	STA	MAC_adr_05		; save to card
+	STA	ip_ours+$03		; save IP byte
+
+					; enable link beat &amp; jabber for TP
+	LDA	#$04			;
+	STA	com_reg_l		;
+	LDA	#$08			;
+	STA	com_reg_h		; set page 4
+
+	LDA	#$C0			;
+	STA	media_t_l		; set media type &amp; status
+					; only the low byte needed
+
+	LDA	#$B0			;
+	STY	com_reg_l		; $00
+	STA	com_reg_h		; $B0 stats disable
+
+	LDA	#$06			;
+	STA	com_reg_l		;
+	LDA	#$08			;
+	STA	com_reg_h		; set page 6
+
+					; clear stats by reading them
+	LDX	#$00			; clear index
+LAB_10655
+	LDA	data_reg,X		; read stat byte
+	INX				; increment index
+	CPX	#$0E			; are we done yet
+	BNE	LAB_10655		; loop if not
+
+	LDA	#$A8			;
+	STY	com_reg_l		; $00
+	STA	com_reg_h		; $A8 stats enable
+
+					; receive host address and broadcasts
+	LDA	#$01			;
+	STA	com_reg_l		;
+	LDA	#$08			;
+	STA	com_reg_h		; set page 1
+
+	LDA	#$05			;
+	STA	com_reg_l		;
+	LDA	#$80			;
+	STA	com_reg_h		; set Rx filter
+
+					; enable Rx and Tx
+	LDA	#$20			;
+	STY	com_reg_l		; $00
+	STA	com_reg_h		; $20 Rx enable
+
+	LDA	#$48			;
+	STY	com_reg_l		; $00
+	STA	com_reg_h		; $48 Tx enable
+
+					; enable those status bits we want
+	LDA	#$16			; bit 4 Rx complete
+					; bit 2 Tx complete
+					; bit 1 adapter failure
+					; bit 0 interrupt latch
+	STA	com_reg_l		;
+	LDA	#$78			;
+	STA	com_reg_h		; set read zero mask
+
+					; ack any pending interrupts
+	LDA	#$69			; bit 6 interrupt requested
+					; bit 5 rx early
+					; bit 3 tx available
+					; bit 0 interrupt latch
+	STA	com_reg_l		;
+	LDA	#$68			;
+	STA	com_reg_h		; ack interrupts
+
+					; enable those interrupts we want
+	LDA	#$16			; bit 4 Rx complete
+					; bit 2 Tx complete
+					; bit 1 adapter failure
+					; bit 0 interrupt latch
+	STA	com_reg_l		;
+	LDA	#$70			;
+	STA	com_reg_h		; set interrupt mask
+
+	RTS
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+<b><u>Command waiting.</U></B>
+<p align=JUSTIFY>
+ When this was all done in EhBASIC it was easy to blindly issue commands to the network
+ card and assume they would be finished before the next command was issued. However, when
+ running assembled code it is easy to issue a new command before some commands have
+ completed causing things to go horribly wrong. To fix this the status register can be
+ polled repeatedly until the command in progress bit clears.
+<p align=JUSTIFY>
+ This sounds like a good plan but to do this you must disable interrupts while polling
+ the status bit, if an interrupt condition is met while interrupts are disabled it won't
+ cause an interrupt and will be missed, unless you poll the interrupt bits as well. This
+ adds some complexity to the code so for now the code just waits longer than the longest
+ command takes, about half a milisecond.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; *********************************************************************		
+; wait for an NIC command to complete
+
+wait_cmd
+	CLC				; clear carry for add
+	LDA	#$80			; count $80
+wait_loop
+	ADC	#$01			; waste cycles
+	BCC	wait_loop		; loop for more
+
+	RTS
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+<b><u>Receiver interrupt handling.</U></B>
+<p align=JUSTIFY>
+ When a receive interrupt is flagged this code gets called to handle it.  The receive
+ status is read and if there is a valid packet of the correct size waiting it is copied
+ from the network card and into the packet buffer. The valid packet flag is then set.
+<p align=JUSTIFY>
+ Packets that are too large or that are flagged as having errors (though this should
+ never happen, the card should discard these itself) are not copied. All packets are
+ discarded once dealt with to clear the space in the network card buffer. Once this
+ is done the card is also free to generate an interrupt for any other packets received.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; *********************************************************************		
+; handle Rx interrupt flagged, get the ethernet packet from the NIC
+; exit with length in rx_len, payload in pk_buff(). valid_pkt flags the
+; packet status
+
+LAB_20100
+	LDX	#$00			;
+	STX	valid_pkt		; clear packet valid flag
+
+	LDA	#$EF			; xxx0 xxxx, Rx interrupt bit
+	AND	IB			; clear IB bit(s)
+	STA	IB			; save IB
+
+	LDX	#$01			;
+	LDA	#$08			;
+	STX	com_reg_l		; $01
+	STA	com_reg_h		; $08 set page 1
+
+	LDA	rx_stat_l		; get Rx status low byte
+	STA	tc_l			; save length to temp count low byte
+
+	LDA	rx_stat_h		; get Rx status high byte
+	CMP	#$40			; test error bit
+	BCS	LAB_20145		; discard packet &amp; exit if Rx error
+
+	AND	#$07			; else mask length bits
+	STA	tc_h			; save length to temp count high byte
+	CMP	#$05			; compare with max length high byte
+	BCC	LAB_20135		; branch if ok (less)
+
+	BNE	LAB_20145		; discard packet &amp; exit if too big
+
+	LDA	tc_l			; else get length low byte
+	CMP	#$DD			; compare with max+1
+	BCS	LAB_20145		; discard packet &amp; exit if too big
+
+; get packet from NIC
+
+LAB_20135
+	LDA	#&gt;pk_buff		; get IP buffer pointer high byte
+	STA	tp_h			; save to temp pointer high byte
+	LDA	#&lt;pk_buff		; get IP buffer pointer low byte
+	STA	tp_l			; save to temp pointer low byte
+	LDY	#$00			; clear index
+LAB_20136
+	LDA	data_reg		; get byte from NIC
+	STA	(tp_l),Y		; save to IP buffer
+	INY				; increment index (pointer low byte)
+	BNE	LAB_20137		; branch if no overflow
+
+	INC	tp_h			; else increment pointer high byte
+LAB_20137
+	DEC	tc_l			; decrement count low byte
+	BNE	LAB_20136		; loop if not all done
+
+	DEC	tc_h			; else decrement count high byte
+	BPL	LAB_20136		; loop if not all done
+
+	DEC	valid_pkt		; flag this packet good
+LAB_20145
+	LDX	#$00			;
+	LDA	#$40			;
+	STX	com_reg_l		; $00
+	STA	com_reg_h		; $40 discard top packet
+	JSR	wait_cmd		; wait for discard to complete
+	RTS
+
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+<b><u>Transmitter interrupt handling.</U></B>
+<p align=JUSTIFY>
+ This is really not necessary and, if the card is set up not to generate transmit
+ interrupts, could be dispensed with. Under normal conditions the interrupt only
+ flags that a packet has been successfully sent and the only action that needs to
+ be taken is to acknowledge it by writing to the Tx status register. However this
+ code was used for status tracking and so has been left in as example code.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; *********************************************************************		
+; handle Tx interrupt flagged
+
+LAB_20200
+	LDA	#$FB			; xxxx x0xx, Tx interrupt bit
+	AND	IB			; clear IB bit
+	STA	IB			; save IB
+
+	LDX	#$01			;
+	LDA	#$08			;
+	STX	com_reg_l		; $01
+	STA	com_reg_h		; $08 set page 1
+
+	LDA	tx_stat_h		; read Tx status (high byte only)
+	AND	#$3C			; mask all Tx errors
+	BEQ	LAB_20220		; branch if no errors
+
+	DEX				; clear X
+	AND	#$30			; mask jabber or underrun
+	BEQ	LAB_20215		; branch if no jabber or underrun
+
+					; else reset Tx
+	LDA	#$58			;
+ 	STX	com_reg_l		; $00
+	STA	com_reg_h		; $58 Tx reset
+	JSR	wait_cmd		; wait for Tx reset to complete
+
+LAB_20215				; enable Tx if any errors indicated
+	LDA	#$48			;
+ 	STX	com_reg_l		; $00
+	STA	com_reg_h		; $48 Tx enable
+
+LAB_20220
+ 	STX	tx_stat_h		; ack Tx interrupts by writing any
+					; value to the Tx status word
+	RTS
+
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+<b><u>Adapter fail interrupt handling.</U></B>
+<p align=JUSTIFY>
+ Again some code that is not essential to normal operation. The usual reason for an
+ adapter fail to be flagged is that too many bytes have been written to or read from
+ the card's FIFO buffer. This code was essential during developement and is retained
+ as an example.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; *********************************************************************		
+; handle adapter fail interrupt flagged
+
+LAB_20300
+	LDA	#$FD			; xxxx xx0x, adapter fail interrupt bit
+	AND	IB			; clear IB bit(s)
+	STA	IB			; save IB
+
+	LDX	#$04			;
+	LDA	#$08			;
+	STX	com_reg_l		; $04
+	STA	com_reg_h		; $08 page 4
+
+	LDX	FIFO_dag_h		; get fail reason
+
+	LDY	#$01			;
+	STY	com_reg_l		; $01
+	STA	com_reg_h		; $08 page 1
+
+	TXA				; get fail reason back
+	AND	#$20			; test Rx underflow
+	BEQ	LAB_20330		; branch if no Rx underflow
+
+					; else clear flags ..
+	LDA	#$EF			; xxx0 xxxx, Rx interrupt bit
+	AND	IB			; clear IB bit(s)
+	STA	IB			; save IB
+
+					; .. reset the Rx ..
+	DEY				; Y is now $00
+	LDA	#$28			;
+	STY	com_reg_l		; $00
+	STA	com_reg_h		; $28 Rx reset
+	JSR	wait_cmd		; wait for Rx reset to complete
+
+					; .. and restart the receiver
+	LDA	#$20			;
+	STY	com_reg_l		; $00
+	STA	com_reg_h		; $20 Rx enable
+
+LAB_20330
+	TXA				; get fail reason back
+	AND	#$04			; test Tx overflow
+	BEQ	LAB_20350		; branch if no Tx overflow
+
+					; else reset the Tx ..
+	LDA	#$58			;
+	STY	com_reg_l		; $00
+	STA	com_reg_h		; $58 Tx reset
+	JSR	wait_cmd		; wait for Tx reset to complete
+
+					; .. and restart it
+	LDA	#$48
+	STY	com_reg_l		; $00
+	STA	com_reg_h		; $48 Tx enable
+LAB_20350
+	RTS
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 29th February, 2004.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish78b93989" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=78b93989&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

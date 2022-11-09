@@ -1,0 +1,127 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish03c52bed{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish03c52bed{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip03c52bed{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad03c52bed"></div>
+<html><head><title>Vic 20 .prg file reader</TITLE>
+<meta name="description" content="Vic 20 lister"></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=25%>
+<a href="../index.html" webstripperlinkwas="../index.html"><img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER><b><font size=+1>Vic 20 .prg file reader </FONT></B>
+<font size=-1>by Lee Davison</FONT></TD><td width=25%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<img src="prgread.png" webstripperlinkwas="prgread.png" align=RIGHT border=1 alt="Vic 20 listing" hspace=8>
+<b><u>Introduction</U></B>
+<blockquote>
+<p align=JUSTIFY>
+ Want an easy way to convert a Vic 20 <tt><b>.prg</B></TT> file into something a little
+ more platform independant? I did, so I cobbled this together and added bits until I got
+ bored.
+</BLOCKQUOTE>
+<b><u>Use</U></B>
+<blockquote><p align=JUSTIFY>
+ The program takes a standard Vic 20 <tt><b>.prg</B></TT> file and reads it. Optionally
+ it will produce a text and/or html version of that file. An example html output is <a href="example1.html" webstripperlinkwas="example1.html">here</A>.
+<p align=JUSTIFY>
+ On running <tt><b>prgread.exe</B></TT> you will be prompted for a filename, as this is
+ a QuickBASIC program you need to enter the DOS filename, without the <tt><b>.prg</B></TT>
+ extension. If the filename contains spaces you'll have to enclose it in quotes, e.g.
+ <tt><b>"demo 1"</B></TT>. If you enter a null filename the program will just exit at
+ this point.
+<p align=JUSTIFY>
+ Any time while the files are being written output can be aborted by pressing the [ESC]
+ key.
+<p align=JUSTIFY>
+ After the filename you will be asked if you want a text output file. If you answer yes,
+ or just press return, an ASCII file with the same name as the input file but with a
+ <tt><b>.txt</B></TT> extension will be output. In this file special Commodore characters
+ will be rendered as ASCII surrounded by curly braces, e.g. [CTRL] 1, which is the colour
+ control for black, will be replaced by {BLK}. An example of this type of output is
+ <a href="example.txt" webstripperlinkwas="example.txt">here</A>.
+<p align=JUSTIFY>
+ After the text output prompt you will be asked if you want an html output file. If you
+ answer yes, or just press return, an html file with the same name as the input file but
+ with an <tt><b>.htm</B></TT> extension will be output. As well as this you will be asked
+ if you want html graphics, if you answer yes to this then the special Commodore
+ characters will be rendered as 8 by 8 graphics instead of as ASCII names, e.g.[CTRL] 1,
+ which is the colour control for black, will be replaced by "<img src="d0.dib" webstripperlinkwas="d0.bmp" alt={BLK}>".
+ An example of this type of output is <a href="example2.html" webstripperlinkwas="example2.html">here</A> where the {CLR} on
+ line 11 has been replaced by it's graphic equivalent. The default response is <i>not</I>
+ to use graphics.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0><tr><td>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+<font color=blue> 3 </FONT><font color=red>PRINT</FONT> <font color=green>"<img src="92.dib" webstripperlinkwas="92.bmp" alt={RVSON}><img src="91.dib" webstripperlinkwas="91.bmp" alt={DOWN}><img src="d0.dib" webstripperlinkwas="d0.bmp" alt={BLK}>VIC 20: GREAT GRAPHIC ABILITY"</FONT>;   
+<font color=blue> 10 </FONT>V<font color=red>=INT</FONT>(7<font color=red>*RND</FONT>(0))
+<font color=blue> 11 </FONT><font color=red>PRINT</FONT><font color=green>"<img src="d3.dib" webstripperlinkwas="d3.bmp" alt={CLR}>"</FONT>:<font color=red>POKE</FONT>7680<font color=red>+</FONT>K,102
+<font color=blue> 12 </FONT><font color=red>POKE</FONT>38400<font color=red>+</FONT>K,V
+<font color=blue> 13 </FONT><font color=red>IF</FONT>K<font color=red>&lt;</FONT>24<font color=red>THEN</FONT>K<font color=red>=</FONT>253
+<font color=blue> 14 </FONT><font color=red>IF</FONT>K<font color=red>&gt;</FONT>483<font color=red>THEN</FONT>K<font color=red>=</FONT>253
+<font color=blue> 15 </FONT><font color=red>POKE</FONT>A,E:<font color=red>POKE</FONT>B,D:<font color=red>GOTO</FONT> 3
+</PRE></TD></TR></TABLE>
+<td><p align=JUSTIFY>
+ The HTML produced by prgread can easily be edited and then included in other HTML
+ pages, or just used as is.
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ If you do opt to use the html grapgics you will be prompted for an image path. If the
+ images will be in the same directory as the html file then just hit [ENTER] to not add
+ a path. If the images will be in another directory you can enter the relative path and
+ this will be added to each image entry.
+<p align=JUSTIFY>
+<img src="popup.png" webstripperlinkwas="popup.png" align=RIGHT border=1 alt="Popup text on graphics" hspace=8>
+ Another feature of the html output is that the text is coloured to make different parts
+ distinct. Line numbers are rendered in blue, BASIC keywords are rendered in red and
+ quoted strings are rendered in green. All other parts are rendered in black. This can
+ aid reading the source when it's been written without spaces and can make large areas of
+ data stand out clearly. When the graphics option is chosen another aid is the addition
+ of popup text on the graphic characters.
+<p align=JUSTIFY>
+</BLOCKQUOTE>
+<b><u>The program</U></B>
+<blockquote><p align=JUSTIFY>
+ You can see the source code <a href="source.html" webstripperlinkwas="source.html">here</A> or you can <a href="source." webstripperlinkwas="source.zip">download <img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" alt="Download" border=0></A> it
+ as a .zip file.
+<p align=JUSTIFY>
+ If you don't have QuickBASIC or just want to convert some files you can get the binary
+ executable is <a href="exe." webstripperlinkwas="exe.zip">here <img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" alt="Download" border=0></A>
+<p align=JUSTIFY>
+ If you want to generate html files with the grapic characters you'll need them as well. They
+ are <a href="images." webstripperlinkwas="images.zip">here <img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" alt="Download" border=0></A>
+<p align=JUSTIFY>
+ The current version is now V1.45, this adds an optional image path to be added to the
+ graphics in the html output file.
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 10th December, 2008.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish03c52bed" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=03c52bed&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

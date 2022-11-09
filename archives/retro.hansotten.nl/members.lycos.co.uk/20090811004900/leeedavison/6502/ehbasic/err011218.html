@@ -1,0 +1,114 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish46344233{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish46344233{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip46344233{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad46344233"></div>
+<html><head><title>Enhanced BASIC, errata for 18th December 2001</TITLE>
+<meta name="description" content="An advanced BASIC interpreter for the 6502 microprocessor."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="errata.html" webstripperlinkwas="errata.html"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER>
+<b><font size=+1>Enhanced BASIC, errata. 18th Dec. 2001 </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+<img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<u><b>Symptoms</B></U>
+<blockquote>
+ Sometimes, when cold starting, the interpreter would either crash totally or give
+ spurious error messages such as "Out of memory error." or "Syntax error." instead of
+ reporting the ammount of free memory. This was more likely the less memory BASIC had
+ available.
+</BLOCKQUOTE>
+<u><b>Cause</B></U>
+<blockquote>
+ The end of array memory pointer hadn't been set at this point and could cause the print
+ string subroutine, which prints the string created from the bytes free value, to think
+ that no memory was available. Also, as the pointers weren't all set yet, the garbage
+ collection routine could then either fail, causing the "Out of memory" error, or crash
+ causing other errors or even a hung machine.
+</BLOCKQUOTE>
+<u><b>The fix</B></U>
+<blockquote>
+ The fix for this is easy, it just entails moving the "NEW" and "CLEAR" call to before
+ you try to print anything.
+<p>
+ Just after LAB_2E05 was ..
+<blockquote>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+JSR	LAB_CRLF		; print CR/LF
+LDA	Ememl			; get end of mem low byte
+SEC				; set carry for subtract
+SBC	Smeml			; subtract start of mem low byte
+TAX				; copy to X
+LDA	Ememh			; get end of mem high byte
+SBC	Smemh			; subtract start of mem high byte
+JSR	LAB_295E		; print XA as unsigned integer (bytes free)
+LDA	#<lab_smsg ; point to sign-on message (low addr) ldy #>LAB_SMSG		; point to sign-on message (high addr)
+JSR	LAB_18C3		; print null terminated string from memory
+<b>JSR	LAB_1463		; do "NEW" and "CLEAR"</B>
+LDA	#<lab_1274 ; warm start vector low byte ldy #>LAB_1274		; warm start vector high byte
+STA	Wrmjpl			; save warm start vector low byte
+STY	Wrmjph			; save warm start vector high byte
+JMP	(Wrmjpl)		; go do warm start
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+.. and this now becomes ..
+<blockquote>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+JSR	LAB_CRLF		; print CR/LF
+<b>JSR	LAB_1463		; do "NEW" and "CLEAR"</B>
+LDA	Ememl			; get end of mem low byte
+SEC				; set carry for subtract
+SBC	Smeml			; subtract start of mem low byte
+TAX				; copy to X
+LDA	Ememh			; get end of mem high byte
+SBC	Smemh			; subtract start of mem high byte
+JSR	LAB_295E		; print XA as unsigned integer (bytes free)
+LDA	#<lab_smsg ; point to sign-on message (low addr) ldy #>LAB_SMSG		; point to sign-on message (high addr)
+JSR	LAB_18C3		; print null terminated string from memory
+LDA	#<lab_1274 ; warm start vector low byte ldy #>LAB_1274		; warm start vector high byte
+STA	Wrmjpl			; save warm start vector low byte
+STY	Wrmjph			; save warm start vector high byte
+JMP	(Wrmjpl)		; go do warm start
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+.. This ensures that the "bytes free." message always prints correctly and is done in
+ version 1.01.
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 14th July, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish46344233" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=46344233&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

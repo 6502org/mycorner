@@ -1,0 +1,114 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish315f93a8{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish315f93a8{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip315f93a8{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad315f93a8"></div>
+<html><head><title> Memory Plus manual </TITLE></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<a href="01.html" webstripperlinkwas="01.html"><img src="index.png" webstripperlinkwas="index.png" align=RIGHT border=0 alt="Index"></A>
+<b><font size=+2>MEMORY PLUS Manual </FONT></B><font size=-2>By Lee Davison</FONT>
+<br clear=all>
+<br>
+<a href="13.html" webstripperlinkwas="13.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="15.html" webstripperlinkwas="15.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 14
+</CENTER>
+<br clear=all>
+<hr>
+ <pre>
+			PROM PROGRAMMER  10 FEBRUARY 1979
+			PROM ORG $0000
+         
+			ACCESS		*	$8B86  SYM-1 ACCESS ENTRY
+
+			VIA RECISTER OFFSETS
+
+			ORB		*	$0000	OUTPUT RECISTER B
+			ORA		*	$0001	OUTPUT RECISTER A
+			DDRB		*	$0002	DATA DIRECTION RECISTER B
+			DDRA		*	$0003	DATA DIRECTION RECISTER A
+			ITW0L		*	$0008	TIMER TWO LOW
+			TTW0H		*	$0009	TIMER TWO HICH
+			PCR		*	$000C	PERIPHERAL CONTROL REGISTER
+			IFR		*	$000D	INTERRUPT FLAG RECISTER
+			IER		*	$000E	INTERRUPT ENABLE RECISTER
+
+  0000	00		SAL		=	$00	STARTING ADDRESC LOW
+  0001	00		SAH		=	$00	STARUING ADDRESS HICH
+  0002	00		PRMLOW		=	$00	EPROM LOW ADDRESS
+  0003	00		PRMHGH		=	$00	EPROM HICH ADDRESS
+  0004	00		EAL		=	$00	END ADDRESS LOW
+  0005	00		EAH		=	$00	END ADDRESS HICH
+  0006	00		VIA		=	$00	POINTER TO VIA
+  0007	62				=	$62	NORMALLY AT 6200
+  0008	40		JMPM0N		=	$40	3UMP TO MONITOR
+  0009	00		MONTOR		=	$00	POINTER [0 SYSTEM MONITOR
+  000A	00				=	$00	FOR RETURN FROM PROORAMMER
+  0008	00		INTVEC		=	$00	POINTER [0 INTERRUPT VECTOR
+  0000	00				=	$00
+  0000	00		PBDD		=	$00	PORT B DATA DIRECTION
+  000E	00				=	$00
+  000F	00		PBD		=	$00	PORT B DATA
+  0010	00				=	$00
+
+  0011	A9 D0		BEGIN		LDAIM	$00	CLEAR ALL STATUS FLACS
+  0013	48				PHA
+  0014	28				PLP
+  0015	A2 E0				LDXIM	STABLE	ASSUME SYM
+  0017	AD FD FF			LDA	$FFFD	TEST HIGH BYTE OF INTERRUPT VECTOR
+  00lA	C9 8B				CMPIM	$8B	= 8B FOR SYM-1
+  0010	F0 0A				BEQ	SYM
+  001E	A2 D0				LDXIM	ATABLE	ASSUME AIM 65
+  0020	C9 E0				CMPIM	$E0	E0 FOR AIM 65
+  0022	F0 07				BEQ	MOVE	IT IS THE AIM
+  0024	A2 D8		KIM		LDXIM	KTABLE	ASSUME KIM
+  0026	D0 03				BNE	MOVE
+  0028	20 86 8B	SYM		JSR	ACCESS	SYM REQUIRES ACCESS
+
+  002B	86 30		MOVE		STXZ	TABLE	+01 SETUP POINTER
+  0020	A2 07				LDXIM	$07	MOVE 8 BYTES
+  002F	B5 00		TABLE		LDAX	$00	REPLACED BY TABLE
+  0031	95 09				STAX	MONTOR	MOVE TO MONTOR TABLE
+  0033	CA				DEX
+  0034	10 F9				BPL	TABLE	MOVE UNTIL X = FF
+
+
+ </PRE>
+<br clear=all>
+<hr>
+<a href="13.html" webstripperlinkwas="13.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="15.html" webstripperlinkwas="15.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 14
+</CENTER>
+<br clear=all>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 8th December, 2002.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish315f93a8" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=315f93a8&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

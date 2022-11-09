@@ -1,0 +1,126 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish4526249a{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish4526249a{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip4526249a{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad4526249a"></div>
+<html><head><title>Enhanced BASIC, errata for 25th July 2002</TITLE>
+<meta name="description" content="An advanced BASIC interpreter for the 6502 microprocessor."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr>
+<td width=20%>
+<a href="errata.html" webstripperlinkwas="errata.html">
+  <img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER>
+<b><font size=+1>Enhanced BASIC, errata. 25th July 2002 </FONT></B>
+<font size=-1>By Lee Davison.</FONT>
+</TD>
+<td width=20%>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<u><b>Symptoms</B></U>
+<blockquote>
+ Any command that has an integer first parameter can fail, e.g. try this ..
+<blockquote>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+ POKE 760,0 : POKE761,255
+ PRINT PEEK(760);PEEK(761)
+  0 255
+
+ Ready
+ _
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ .. so far so good, but now do ..
+<blockquote>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+ POKE 761,PEEK(760)
+ PRINT PEEK(760);PEEK(761)
+  0 255
+
+ Ready
+ _
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+ .. which is obviously wrong as both bytes should now be zero.
+</BLOCKQUOTE>
+<u><b>Cause</B></U>
+<blockquote>
+ When BASIC commands have an integer parameter, such as an address, it is stored in the
+ temporary integer word. If, during the evaluation of following parameters, a function
+ that has an integer parameter is called then the temporary integer is overwritten.
+ This can happen with commands such as PEEK, WAIT, BITSET etc.
+</BLOCKQUOTE>
+<u><b>The fix</B></U>
+<blockquote>
+ One routine is changed to fix this, just after LAB_SCGB was ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LAB_SCGB
+	JSR	LAB_1C01	; scan for "," else do syntax error/warm start
+	JMP	LAB_GTBY	; get byte parameter & RET
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. this needs to stack the temporary integer, so it becomes ..
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LAB_SCGB
+	JSR	LAB_1C01	; scan for "," else do syntax error/warm start
+	LDA	Itemph		; save temporary integer high byte
+	PHA			; on stack
+	LDA	Itempl		; save temporary integer low byte
+	PHA			; on stack
+	JSR	LAB_GTBY	; get byte parameter
+	PLA			; pull low byte
+	STA	Itempl		; restore temporary integer low byte
+	PLA			; pull high byte
+	STA	Itemph		; restore temporary integer high byte
+	RTS			;
+</PRE>
+</TD></TR></TABLE>
+<p>
+ .. This is done in version 1.05.<p>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 14th July, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish4526249a" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=4526249a&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

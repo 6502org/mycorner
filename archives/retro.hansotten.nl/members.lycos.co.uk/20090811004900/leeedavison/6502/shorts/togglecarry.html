@@ -1,0 +1,91 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish10c9d5ba{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish10c9d5ba{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip10c9d5ba{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad10c9d5ba"></div>
+<html><head><title>6502 Shorts - Toggle carry</TITLE></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="index.html" webstripperlinkwas="index.html"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER><b><font size=+1>Toggle carry. </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<b><u>Introduction.</U></B>
+<blockquote>
+ Carry bit the wronge sense? Want a 0 when it's 1? Read on....
+</BLOCKQUOTE>
+<b><u>The code.</U></B>
+<blockquote><p align=JUSTIFY>
+ Recently in some otherwise elegant code the result of a compare left the carry bit in
+ exactly the wrong sense for the following add. The usual way to fix that is to do
+ something like ..<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	BCC	WasClear	; if clear go set it	
+
+	CLC			; was set so clear it
+	BCC	AllDone		; continue
+
+WasClear
+	SEC			; was clear so set it
+AllDone
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ While this works there had to be a more elegant way of doing this. It turns out there
+ is, you do this ..<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	ROL	A		; Cb into b0		
+	EOR	#$01		; toggle bit
+	ROR	A		; b0 into Cb
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ The ROL puts the carry into bit 0 in the accumulator.<br>
+ The EOR toggles the state of that bit without affecting any other bits.<br>
+ The ROR puts the bit back into the carry, restores the accumulator and sets the N
+ and Z flags.<p>
+ There are a couple of advantages of doing things this way instead of the branch and set
+ (or clear) given earlier ..
+<blockquote>
+<li>It only takes four bytes instead of six.
+<li>It always takes six cycles, not five or seven depending on the state of the carry.
+</BLOCKQUOTE><p align=JUSTIFY>
+ There is one possible disadvantage in that it sets the N and Z flags from what is in A
+ at the time. But, most of the time, if you're interested in the carry state the N and Z
+ states are unimportant.
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 28th August, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish10c9d5ba" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=10c9d5ba&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

@@ -1,0 +1,114 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish4fdf19a4{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish4fdf19a4{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip4fdf19a4{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad4fdf19a4"></div>
+<html><head><title>Enhanced BASIC74 examples</TITLE><meta name="description" content="An advanced BASIC interpreter for the 740 microprocessor family"></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr>
+<td width=25%>
+<a href="examples.html" webstripperlinkwas="examples.html">
+  <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER>
+<b><font size=+1>Timers example. </FONT></B><font size=-1>by Lee Davison</FONT>
+</TD>
+<td width=25%>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<p>
+<u><b>Introduction.</B></U>
+<blockquote>
+ In this example the SuprDupr is used to read a joystick on an analog input and generate
+ a servo PWM signal using two of the timers.
+<p>
+ The joystick input gave a value of 90 to 165, the servo needs a pulse width of 0.5mS
+ to 2.5mS which, with the prescale value used, means TIMERX values will range from 50
+ to 250
+<p>
+ The values for <b>S</B> and <b>M</B>, the scaling and minimum offset values used in
+ the code, were calculated as follows..
+<blockquote>
+<pre><b>S = timer range / input range
+  = (250-50) / (165-90)
+  = 2.67</B></PRE>
+</BLOCKQUOTE>
+ .. and ..
+<blockquote>
+<pre><b>M = minimum timer - minimum scaled value
+  = 50 - (90*S)
+  = -190</B></PRE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<u><b>The code.</B></U>
+<blockquote>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+10 REM generates timing pulses for a servo
+20 REM control is via analog input 0
+30 REM output is via timer X
+40 REM timer 1 is used to generate the 20mS frame
+50 REM
+100 TIMERX STOP : REM stop output
+110 PRES12 49 : TIMER1 199 :  REM set TIMER 1 for 20mS timebase
+120 M = -190 : REM set minimum pulse width offset
+130 PS = 4 : REM set timer X prescale value
+140 S = 2.67 : REM set scale value
+150 PRESX PS : REM set timer X prescaler
+160 X = 0 : REM set input for timer X
+180 TIMERX PULSE : REM timer X to output pulse
+190 GOSUB 1010 : REM calculate initial X value
+200 ON TIMERX 1000 : REM stop timer and calculate next
+210 ON TIMER1 2000 : REM set and start TIMERX
+220 DO : LOOP : REM just loop forever
+997 REM
+998 REM TIMER X routine
+999 REM
+1000 TIMERX STOP
+1010 LX = A2D(X) : REM read port
+1020 LX = LX*S : REM scale value
+1030 LX = LX+M : REM add minimum width offset
+1040 RETURN
+1997 REM
+1998 REM TIMER 1 routine
+1999 REM
+2000 TIMERX LX : REM set timer X
+2010 TIMERX START : REM start timer
+2020 RETURN
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 9th July, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish4fdf19a4" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=4fdf19a4&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

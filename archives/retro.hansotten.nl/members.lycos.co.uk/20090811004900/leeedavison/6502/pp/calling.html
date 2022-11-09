@@ -1,0 +1,155 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish5ce4fa13{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish5ce4fa13{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip5ce4fa13{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad5ce4fa13"></div>
+<html><head><title>6502 Pen plotter - Calling draw</TITLE>
+<meta name="description" content="6502 Pen plotter."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="index.html#links" webstripperlinkwas="index.html#links"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER><b><font size=+1>6502 Pen plotter - Calling draw </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<b><u>Calling draw.</U></B>
+<blockquote><p align=JUSTIFY>
+ The most basic command that the plotter has is the drawm (WriteSeg) command. This command
+ allows the movement of the mechanism in one of eight directions, with the pen up or down,
+ for up to 65535 steps. It is from these straight lines that all other lines and curves
+ are constructed.
+<p align=JUSTIFY>
+ Before draw is called there are four variables that need to be set up ..<p>
+<table bgcolor="white" border=1 align=CENTER>
+<tr><td><b>Variable</B></TD><td><b>Size</B></TD><td><b>Use</B></TD></TR>
+<tr><td>Lcntl</TD><td>Word</TD><td>Number of steps for this line</TD></TR>
+<tr><td>Dirbyte</TD><td>Byte</TD><td>Bits 1 and 3 control X and Y direction</TD></TR>
+<tr><td>Stepbyte</TD><td>Byte</TD><td>Bits 0 and 2 control X and Y stepping</TD></TR>
+<tr><td>Penflag</TD><td>Byte</TD><td>Bit 7 controls the pen state</TD></TR>
+</TABLE>
+<p align=JUSTIFY>
+ The combination of direction bits and step bits gives the eight directions that the
+ plotter can move when combined.<p>
+<center>
+<table bgcolor="white" border=1 width=60%>
+<tr><td width=25% colspan=4 align=CENTER><b>Bits</B></TD>
+<td rowspan=2 align=CENTER><b>Direction</B></TD></TR>
+<tr><td align=CENTER><b>3</B></TD><td align=CENTER><b>2</B></TD>
+<td align=CENTER><b>1</B></TD><td align=CENTER><b>0</B></TD></TR>
+<tr><td align=CENTER>x</TD><td align=CENTER>0</TD><td align=CENTER>x</TD>
+<td align=CENTER>0</TD><td>No movement, no use, not used.</TD></TR>
+<tr><td align=CENTER>x</TD><td align=CENTER>0</TD><td align=CENTER>0</TD>
+<td align=CENTER>1</TD><td>Along the X axis, left.</TD></TR>
+<tr><td align=CENTER>x</TD><td align=CENTER>0</TD><td align=CENTER>1</TD>
+<td align=CENTER>1</TD><td>Along the X axis, right.</TD></TR>
+<tr><td align=CENTER>0</TD><td align=CENTER>1</TD><td align=CENTER>x</TD>
+<td align=CENTER>0</TD><td>Along the Y axis, down.</TD></TR>
+<tr><td align=CENTER>0</TD><td align=CENTER>1</TD><td align=CENTER>0</TD>
+<td align=CENTER>1</TD><td>Along the XY diagonal, down and left.</TD></TR>
+<tr><td align=CENTER>0</TD><td align=CENTER>1</TD><td align=CENTER>1</TD>
+<td align=CENTER>1</TD><td>Along the XY diagonal, down and right.</TD></TR>
+<tr><td align=CENTER>1</TD><td align=CENTER>1</TD><td align=CENTER>x</TD>
+<td align=CENTER>0</TD><td>Along the Y axis, up.</TD></TR>
+<tr><td align=CENTER>1</TD><td align=CENTER>1</TD><td align=CENTER>0</TD>
+<td align=CENTER>1</TD><td>Along the XY diagonal, up and left.</TD></TR>
+<tr><td align=CENTER>1</TD><td align=CENTER>1</TD><td align=CENTER>1</TD>
+<td align=CENTER>1</TD><td>Along the XY diagonal, up and right.</TD></TR>
+<tr><td colspan=5 align=CENTER><b>x = don't care.</B></TD>
+</TR>
+</TABLE>
+</CENTER>
+<p align=JUSTIFY>
+ Once these variables are set-up a call to the draw routine does the following.
+<p align=JUSTIFY>
+ First the buffer is checked to see if there is room for the command plus 1 byte. The
+ additional byte is to ensure that the buffer doesn't overflow without the need for an
+ extra flag byte and more code. If there is no room then the routine loops until room is
+ available.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+WriteSeg
+	LDA	BRindx		; get read index
+	SEC			; set carry for subtract
+	SBC	BWindx		; subtract write index
+	BEQ	Dowrite		; if equal then buffer empty so do write
+
+	CMP	#$05		; need at least 5 bytes
+	BCC	WriteSeg	; loop if no space
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ Once there is room the draw command bytes are constructed from the step, direction and
+ pen bytes and saved to the buffer.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+				; construct and write data to buffer
+Dowrite
+	LDY	BWindx		; get write index
+
+	LDA	Lcntl		; get count low byte
+	STA	LBuffer,Y	; save it
+	INY			; increment index to count high byte
+
+	LDA	Lcnth		; get count high byte
+	STA	LBuffer,Y	; save it
+	INY			; increment index to negative latch byte
+
+	LDA	#$20		; set mode byte (half step)
+	ORA	Penflag		; OR pen down flag
+	ORA	Dirbyte		; OR direction byte
+	STA	LBuffer,Y	; save it
+	INY			; increment index to positive latch byte
+
+	ORA	Stepbyte	; OR step byte
+	STA	LBuffer,Y	; save it
+	INY			; increment index to next entry
+
+	STY	BWindx		; save new write index byte
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ Finally all that remains is to check if drawing is already in progress. If the routine is
+ called by a software interrupt (BRK).<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+	LDA	Drawf		; get draw flag
+	BNE	Doingit		; skip call if running
+
+	BRK			; software call to interrupt routine
+	NOP			; need this as return is +1 byte!
+	CLI			; enable the interrupts
+Doingit
+	RTS			;
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 2nd May, 2002.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish5ce4fa13" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=5ce4fa13&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

@@ -1,0 +1,56 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish2bbb5113{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish2bbb5113{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip2bbb5113{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad2bbb5113"></div>
+<html><head><title>bounce.prg for the Vic 20</TITLE></HEAD>
+<body>
+Program listing of <tt><b>bounce.prg</B></TT> for the Vic 20
+<hr>
+<pre>
+&nbsp;LOAD address $1001
+
+<font color=blue> 0 </FONT>A<font color=red>=</FONT>36865:B<font color=red>=</FONT>36864:D<font color=red>=</FONT>12:E<font color=red>=</FONT>32:K<font color=red>=</FONT>253
+<font color=blue> 1 </FONT>C<font color=red>=INT</FONT>(5<font color=red>*RND</FONT>(0))
+<font color=blue> 2 </FONT><font color=red>IF</FONT>C<font color=red>=</FONT>1<font color=red>THEN</FONT>D<font color=red>=</FONT>D<font color=red>+</FONT>1:K<font color=red>=</FONT>K<font color=red>+</FONT>1
+<font color=blue> 3 </FONT><font color=red>IF</FONT>C<font color=red>=</FONT>2<font color=red>THEN</FONT>D<font color=red>=</FONT>D<font color=red>-</FONT>1:K<font color=red>=</FONT>K<font color=red>-</FONT>1
+<font color=blue> 4 </FONT><font color=red>IF</FONT>C<font color=red>=</FONT>3<font color=red>THEN</FONT>E<font color=red>=</FONT>E<font color=red>-</FONT>1:K<font color=red>=</FONT>K<font color=red>-</FONT>22
+<font color=blue> 5 </FONT><font color=red>IF</FONT>C<font color=red>=</FONT>4<font color=red>THEN</FONT>E<font color=red>=</FONT>E<font color=red>+</FONT>1:K<font color=red>=</FONT>K<font color=red>+</FONT>22
+<font color=blue> 6 </FONT><font color=red>IF</FONT>E<font color=red>=</FONT>60<font color=red>THEN</FONT>E<font color=red>=</FONT>59
+<font color=blue> 7 </FONT><font color=red>IF</FONT>D<font color=red>&gt;</FONT>15<font color=red>THEN</FONT>D<font color=red>=</FONT>15
+<font color=blue> 8 </FONT><font color=red>IF</FONT>D<font color=red>&lt;</FONT>9<font color=red>THEN</FONT>D<font color=red>=</FONT>9
+<font color=blue> 9 </FONT><font color=red>IF</FONT>E<font color=red>=</FONT>0<font color=red>THEN</FONT>E<font color=red>=</FONT>1
+<font color=blue> 10 </FONT>V<font color=red>=INT</FONT>(7<font color=red>*RND</FONT>(0))
+<font color=blue> 11 </FONT><font color=red>PRINT</FONT><font color=green>"<img src="d3.dib" webstripperlinkwas="d3.bmp" alt={CLR}>"</FONT>:<font color=red>POKE</FONT>7680<font color=red>+</FONT>K,102
+<font color=blue> 12 </FONT><font color=red>POKE</FONT>38400<font color=red>+</FONT>K,V
+<font color=blue> 13 </FONT><font color=red>IF</FONT>K<font color=red>&lt;</FONT>24<font color=red>THEN</FONT>K<font color=red>=</FONT>253
+<font color=blue> 14 </FONT><font color=red>IF</FONT>K<font color=red>&gt;</FONT>483<font color=red>THEN</FONT>K<font color=red>=</FONT>253
+<font color=blue> 15 </FONT><font color=red>POKE</FONT>A,E:<font color=red>POKE</FONT>B,D:<font color=red>GOTO</FONT>1
+</PRE>
+<hr>
+Converted to HTML using <tt><b>prgread.exe v1.42</TT></B> by <a href="mailto:leeedavison@googlemail.com">Lee Davison</A>
+</BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish2bbb5113" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=2bbb5113&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

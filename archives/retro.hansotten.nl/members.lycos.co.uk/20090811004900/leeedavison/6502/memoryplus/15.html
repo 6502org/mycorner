@@ -1,0 +1,116 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish30b215b7{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish30b215b7{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip30b215b7{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad30b215b7"></div>
+<html><head><title> Memory Plus manual </TITLE></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<a href="01.html" webstripperlinkwas="01.html"><img src="index.png" webstripperlinkwas="index.png" align=RIGHT border=0 alt="Index"></A>
+<b><font size=+2>MEMORY PLUS Manual </FONT></B><font size=-2>By Lee Davison</FONT>
+<br clear=all>
+<br>
+<a href="14.html" webstripperlinkwas="14.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="16.html" webstripperlinkwas="16.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 15
+</CENTER>
+<br clear=all>
+<hr>
+ <pre>
+
+
+  0036	A9 00		ENTER		LDAIM	$00	CLEAR ALL STATUS FLACS
+  0038	48				PHA
+  0039	28				PLP
+  003A	A0 00				LDYIM	$00	ENTRY IF TABLE PRESET
+  003C	A9 C5				LDAIM	INTRPT	GET INTERRUPT POINTER
+  003E	91 0B				STAIY	INTVEC	SETUP IN TABLE
+  0040	A9 00				LDAIM	INTRPT	/
+  0042	C8				INY		BUMP POINTER
+  0043	91 0B				STAIY	INTVEC
+  0045	A9 EC				LDAIM	$EC	SETUP VIA VALUES
+  0047	A0 0C				LDYIM	PCR
+  0049	91 06				STAIY	VIA
+  004B	A0 0E				LDYIM	IER	DISABLE ALL INTERRUPTS
+  004D	A9 7F				LDAIM	$7F
+  004F	91 06				STAIY	VIA
+  0051	A0 0D				LDYIM	IFR
+  0053	A9 FF				LDAIM	$FF	CLEAR INTERRUPT PENDINC
+  0055	91 06				STAIY	VIA
+  0057	A0 0E				LDYIM	IER
+  0059	A9 A0				LDAIM	$A0	ENABLE TIMER TWC
+  005B	91 06				STAIY	VIA
+
+  005D	A2 00		NEXT		LDXIM	$00	INIT X REGISTER
+  005F	A9 FF				LDAIM	$FF	SET DATA DIRECTICN
+  0061	A0 02				LDYIM	DDRB
+  0063	91 06				STAIY	VIA
+  0065	A0 03				LDYIM	DDRA
+  0067	91 06				STAIY	VIA
+  0069	81 0D				STAIX	PBDD
+  006B	A5 02				LDA	PRML0W	OUTPUT NEXT ADDRESS
+  006D	81 06				STAIX	VIA	LOW 8 BITS
+  006F	A5 03				LDA	PRMHGH
+  0071	81 0F				STAIX	PBD	BITS 8, 9, 10
+  0073	A1 00				LDAIX	SAL	SET DATA BYTE
+  0075	A0 01				LDYIM	0RA
+  0077	91 06				STATY	VIA	CUTPUT VIA 0RA
+
+  0079	A9 50		TIMER		LDAIM	$50	SETUP 50 MILLISEC0ND TIMER
+  007B	A0 08				LDYIM	TTW0L
+  007D	91 06				STAIY	VIA	OUTPUT TO TIMER TWO LOW
+  007F	A9 C3				LDAIM	$C3	HIGH BYTE OF TIMER
+  0081	A0 09				LDYIM	TTW0H
+  0083	91 06				STATY	VIA	OUTPUT TO TIMER TWO HIGH
+  0085	A9 CE				LDAIM	$CE	PR0GRAM HIGH, PROGRAM MODE
+  0087	AC 0C				LDYIM	PCR
+  0089	91 06				STAIY	VIA
+
+  008B	C0 0C		WAIT		CPYIM	PCR	TEST FOR INTERRUPT SERVICED
+  008D	F0 FC				BEQ	WAIT	ELSE, WAIT FOR IT
+
+  008F	A9 00		VERIFY		LDAIM	$00	VERIFY PR0GRAMMING
+  0091	A0 03				LDYIM	DDRA	SET ORA FOR INPUT
+  0093	91 06				STATY	VIA
+  0095	A0 01				LDYIM	ORA	SETUP POINTER
+  0097	B1 06				LDAIY	VIA
+
+
+ </PRE>
+<br clear=all>
+<hr>
+<a href="14.html" webstripperlinkwas="14.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="16.html" webstripperlinkwas="16.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 15
+</CENTER>
+<br clear=all>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 8th December, 2002.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish30b215b7" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=30b215b7&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

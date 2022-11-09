@@ -1,0 +1,75 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish6aea9141{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish6aea9141{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip6aea9141{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad6aea9141"></div>
+<html><head><title>SuprDupr AT keyboard driver</TITLE>
+<meta name="description" content="An AT keyboard driver for the SuprDupr."></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=25%>
+<a href="../index.html#atkey" webstripperlinkwas="../index.html#atkey"><img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER><b><font size=+1>AT keyboard interface driver </FONT></B>
+<font size=-1>by Lee Davison</FONT></TD><td width=25%>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<p>
+<img src="atkey.jpg" webstripperlinkwas="atkey.jpg" align=RIGHT border=1 alt="SuprDupr with AT keyboard" hspace=8>
+<b><u>Introduction.</U></B>
+<blockquote><p align=JUSTIFY>
+ The SuprDupr has a PS2 style socket for an AT keyboard. However, as it arrived, the
+ data and clock go to the GAL and so were jumped directly to port 7, bits 7 and 6, on the
+ micro. There are also positions for pullup resistors on both the keyboard data and clock
+ lines, these are not needed and were omitted. These details may have changed as this was
+ an early production board.
+</BLOCKQUOTE>
+<b><u>Software.</U></B>
+<blockquote><p align=JUSTIFY>
+ The software is unfinished and provided as a starting point for anyone who wishes
+ to make their own. As provided the driver provides very reliable basic keyboard handling.
+<p align=JUSTIFY>
+ During developement it was noticed that the keyboard driver would sometimes hang so some
+ test code was added to monitor the reliability (included in the source but commented out)
+ and it was found that the routine wouldn't return about once in every 750,000 calls.
+<p align=JUSTIFY>
+ This was eventually traced to a faulty keyboard but highlighted the vunerability of the
+ code to spurious responses from the keyboard. As a result the robustness of the code was
+ improved by adding timeouts and the resulting code proved reliable over hundreds of
+ millions of calls.
+</BLOCKQUOTE>
+<a name="source"></A>
+<b><u>The source</U></B>
+<blockquote>
+ <a href="asm.html" webstripperlinkwas="asm.html">View</A> or <a href="asm." webstripperlinkwas="asm.zip">download <img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" border=0 alt="Download"></A> driver .asm file<br>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 28th April, 2004.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish6aea9141" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=6aea9141&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

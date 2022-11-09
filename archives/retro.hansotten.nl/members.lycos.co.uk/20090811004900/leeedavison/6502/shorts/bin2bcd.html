@@ -1,0 +1,120 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish7537f157{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish7537f157{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip7537f157{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad7537f157"></div>
+<html><head><title>6502 Shorts - Binary to BCD</TITLE></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=20%><a href="index.html" webstripperlinkwas="index.html">
+  <img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER>
+<b><font size=+1>Binary to BCD. </FONT></B>
+<font size=-1>By Lee Davison.</FONT>
+</TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<b><u>Introduction.</U></B>
+<blockquote>
+ Another one I'd not thought about until recently when I was asked if I had it. Here's
+ what I eventually came up with....
+<p>
+ I know it's almost a bit long for this section but it is the complement to the <a href="bcd2bin.html" webstripperlinkwas="bcd2bin.html">BCD to binary</A> routine.
+</BLOCKQUOTE>
+<b><u>The code.</U></B>
+<blockquote>
+ The byte to be converted is in A and the result is returned in low(/high) and A(/X).
+ The bytes low and high can be anywhere but are probably best in page zero.
+<p>
+ If you know that the value to be converted lies in the range $00 to $63 (0 to 99 decimal)
+ then all the code between the ***** lines can be omitted.
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; table of BCD values for each binary bit, put this somewhere.
+; note! values are -1 as the ADC is always done with the carry set
+
+b2b_table
+	.byte	$63,$31,$15,$07,$03,$01,$00
+
+bin_2_bcd
+	SED			; all adds in decimal mode
+	STA	low		; save A
+	LDA	#$00		; clear A
+	LDX	#$07		; set bit count
+bit_loop
+	LSR	low		; bit to carry
+	BCC	skip_add	; branch if no add
+
+	ADC	b2b_table-1,X	; else add BCD value
+skip_add
+	DEX			; decrement bit count
+	BNE	bit_loop	; loop if more to do
+
+;***********************************************************************	
+; if you only require conversion of numbers between $00 and $63 (0 to 99
+; decimal) then omit all code between the "*"s
+
+	BCC	skip_100	; branch if no 100's carry
+				; if Cb set here (and can only be set by the
+				; last loop add) then there was a carry into
+	INX			; the 100's so add 100's carry to the high byte
+skip_100
+				; now check the 2^7 (128) bit
+	LSR	low		; bit 7 to carry
+	BCC	skip_fin	; branch if no add
+
+	INX			; else effectively add 100 part of 128
+	ADC	#$27		; and then add 128 (-1) part of 128
+	BCC	skip_fin	; branch if no further carry
+
+	INX			; else add 200's carry
+skip_fin
+	STX	high		; save result high byte
+
+; end of 100's code
+;***********************************************************************
+
+	STA	low		; save result low byte
+	CLD			; clear decimal mode
+</PRE>
+</TD></TR></TABLE>
+<p>
+ The two BCD digit version is $1C bytes long (assuming temp is in page zero) including
+ the table which means it just about makes it small enough for this section.
+<p>
+ There is no error checking and it is up to the calling routine to ensure that the source
+ byte will become a valid BCD byte or word.
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 28th August, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish7537f157" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=7537f157&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

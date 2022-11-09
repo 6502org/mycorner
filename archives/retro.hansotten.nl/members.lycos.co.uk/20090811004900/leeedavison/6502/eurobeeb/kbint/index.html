@@ -1,0 +1,90 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish4f8b381e{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish4f8b381e{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip4f8b381e{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad4f8b381e"></div>
+<html><head><title>Euro Beeb - Keypad interface</TITLE></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="../index.html" webstripperlinkwas="../index.html"><img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER><b><font size=+1>CUBE - Keypad interface. </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+<img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<a href="kbint_l.jpg" webstripperlinkwas="kbint_l.jpg"><img src="kbintp_t.jpg" webstripperlinkwas="kbintp_t.jpg" alt="Eurobeeb keypad interface" align=RIGHT></A>
+<u><b>Introduction</B></U>
+<blockquote>
+ This is the CUBE keypad interface. This is a single board computer in it's own right. It
+ uses the Rockwell R6501AQ 'One-Chip Microprocessor' which, while very similar to the
+ 6502, boasts four 8 bit I/O ports, one of which can be latched, two 16 bit
+ counter/timers, 192 bytes of RAM, 32 of which can be battery backed, a UART and four edge
+ triggered interrupt inputs.<p>
+ It also has two extra instructions for setting and resetting individual memory or
+ register bits, and two extra branch instructions for testing the state of individual
+ bits in registers or memory.<p>
+ Another difference from the 6502 is the stack which is in page zero. This allows the
+ R6501 to run with no external RAM at all.<p>
+ The A version of the chip, which this is, runs at 2MHz (4MHz XTAL) and is in the
+ unusual Quad in line package.
+ The board contains the following...
+<blockquote>
+<li> R6501AQ CPU
+<li> 16k EPROM
+<li> 2 x relays
+<li> 2 x RS422/485 drivers
+<li> AMPAL16L8
+<li> Misc 74 and 4000 series logic
+<li> 7 x 2N7000 MOSFETs
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<u><b>EPROM and PROMs</B></U>
+<blockquote>
+ I've done a dump of the 27128 16k EPROM that contains the interface code. You can
+ download it as either a binary dump or Motorola S record.
+<blockquote>
+<li>Download the interface EPROM as a zipped <a href="keypad_r3_hex." webstripperlinkwas="keypad_r3_hex.zip">Motorola
+ S record</A> file.
+<li>Download the interface EPROM as a zipped <a href="keypad_r3_bin." webstripperlinkwas="keypad_r3_bin.zip">binary dump</A>.
+</BLOCKQUOTE>
+ There is also an AMPAL16L8. You can download the jdec fuse file for it here.
+<blockquote>
+<li>Download IC7 as a <a href="ms10_1100_ic7.txt" webstripperlinkwas="ms10_1100_ic7.jed">jdec</A> fuse file.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<u><b>Assembly code.</B></U>
+<blockquote>
+ I've completed a commented assembly listing for the EPROM contents above. The 16k byte
+ EPROM is almost empty, only 534 bytes being used.<p>
+ Read it as html <a href="keypad_r3.html" webstripperlinkwas="keypad_r3.html">here</A>, or download it as a zipped file
+ <a href="keypad_r3_asm." webstripperlinkwas="keypad_r3_asm.zip">here<img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" alt="[Download]" border=0></A>.
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 9th July, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish4f8b381e" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=4f8b381e&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

@@ -1,0 +1,214 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish0f4c1eea{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish0f4c1eea{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip0f4c1eea{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad0f4c1eea"></div>
+<html><head><title>AT style keyboard interface - GAL logic listing.</TITLE>
+<meta name="description" content="An AT style keyboard interface for the 6502."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="index.html#link_1" webstripperlinkwas="index.html#link_1"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER><b><font size=+1>GAL logic listing. </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+<img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<a href="atkey_01_txt." webstripperlinkwas="atkey_01_txt.zip">Download this file <img src="../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../zip_sm.png" alt="Download" border=0></A>
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=WHITE><tr><td>
+<pre>
+
+*******************************************************************************
+                                   ATkey_01
+*******************************************************************************
+
+CUPL(WM)        4.7b Serial# XX-xxxxxxxx
+Device          g16v8as  Library DLIB-h-36-2
+Created         Wed Mar 14 21:00:56 2001
+Name            ATkey_01 
+Partno          00 
+Revision        01 
+Date            01/08/00 
+Designer        Lee 
+Company
+Assembly        None 
+Location        
+
+===============================================================================
+                            Expanded Product Terms
+===============================================================================
+
+ADDR =>
+    !A0 & !A1 & !A2 & !A3 & !A4 & A5 & !A6 & !A7 & !SEL0 & SEL1
+
+KBR =>
+    !A0 & !A1 & !A2 & !A3 & !A4 & A5 & !A6 & !A7 & RW & !SEL0 & SEL1 & p02
+
+KBW =>
+    !A0 & !A1 & !A2 & !A3 & !A4 & A5 & !A6 & !A7 & !RW & !SEL0 & SEL1 & p02
+
+
+
+===============================================================================
+                                 Symbol Table
+===============================================================================
+
+Pin Variable                                    Pterms   Max     Min    
+Pol   Name              Ext     Pin     Type     Used   Pterms  Level   
+--- --------            ---     ---     ----    ------  ------  -----   
+
+    A0                          4        V        -       -       -     
+    A1                          5        V        -       -       -     
+    A2                          3        V        -       -       -     
+    A3                          2        V        -       -       -     
+    A4                          1        V        -       -       -     
+    A5                          12       V        -       -       -     
+    A6                          11       V        -       -       -     
+    A7                          13       V        -       -       -     
+    ADDR                        0        I        1       -       -     
+ !  KBR                         19       V        1       8       1     
+ !  KBW                         18       V        1       8       1     
+    RW                          7        V        -       -       -     
+ !  SEL0                        9        V        -       -       -     
+ !  SEL1                        8        V        -       -       -     
+    p02                         6        V        -       -       -     
+
+
+LEGEND    D : default variable         F : field      G : group
+          I : intermediate variable    N : node       M : extended node
+          U : undefined                V : variable   X : extended variable
+          T : function
+
+
+
+===============================================================================
+                                   Fuse Plot
+===============================================================================
+
+Syn   02192 - Ac0   02193 x 
+
+Pin #19  02048  Pol x  02120  Ac1 x 
+ 00000 -x-x-x---x---x--x---x--x-xx-x--x 
+ 00032 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00064 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00096 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00128 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00160 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00192 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00224 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #18  02049  Pol x  02121  Ac1 x 
+ 00256 -x-x-x---x---x--x----x-x-xx-x--x 
+ 00288 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00320 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00352 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00384 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00416 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00448 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00480 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #17  02050  Pol x  02122  Ac1 - 
+ 00512 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00544 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00576 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00608 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00640 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00672 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00704 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00736 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #16  02051  Pol x  02123  Ac1 - 
+ 00768 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00800 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00832 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00864 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00896 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00928 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00960 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00992 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #15  02052  Pol x  02124  Ac1 - 
+ 01024 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01056 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01088 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01120 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01152 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01184 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01216 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01248 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #14  02053  Pol x  02125  Ac1 - 
+ 01280 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01312 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01344 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01376 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01408 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01440 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01472 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01504 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #13  02054  Pol x  02126  Ac1 - 
+ 01536 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01568 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01600 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01632 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01664 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01696 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01728 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01760 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #12  02055  Pol x  02127  Ac1 - 
+ 01792 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01824 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01856 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01888 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01920 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01952 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01984 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 02016 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+
+
+LEGEND    X : fuse not blown 
+          - : fuse blown 
+
+
+===============================================================================
+                                 Chip Diagram
+===============================================================================
+
+                               ______________
+                              |   ATkey_01   |
+                       A4 x---|1           20|---x Vcc                      
+                       A3 x---|2           19|---x !KBR                     
+                       A2 x---|3           18|---x !KBW                     
+                       A0 x---|4           17|---x                          
+                       A1 x---|5           16|---x                          
+                      p02 x---|6           15|---x                          
+                       RW x---|7           14|---x                          
+                    !SEL1 x---|8           13|---x A7                       
+                    !SEL0 x---|9           12|---x A5                       
+                      GND x---|10          11|---x A6                       
+                              |______________|
+</PRE>
+</TD></TR></TABLE><p>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 13th August, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish0f4c1eea" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=0f4c1eea&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

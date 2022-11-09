@@ -1,0 +1,133 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish572e6364{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish572e6364{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip572e6364{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad572e6364"></div>
+<html><head><title>Vic 20 network interface - software</TITLE></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=25%><a href="index.html#source" webstripperlinkwas="index.html#source">
+ <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER>
+<b><font size=+1>Vic 20 network - software </FONT></B>
+<font size=-1>by Lee Davison</FONT>
+</TD><td width=25%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<b><u>Introduction</U></B>
+<img src="home.jpg" webstripperlinkwas="home.jpg" align=RIGHT border=1 alt="Vic 20 web server
+ home page" hspace=8>
+<blockquote><p align=JUSTIFY>
+ It would have easily been possible to expand the Vic 20 well beyond it's original
+ specification for this project, but that would have just made it a less able Commodore
+ 64. So, the code as is fits in the 8KB cartridge space from $A000 to $BFFF and only the
+ Vic's internal RAM is used. BASIC is completely ignored, and could be removed, and only
+ the cartridge startup and interrupt vectors are used in the kernal ROM.
+<p align=JUSTIFY>
+ At the time of writing the .asm file is over 100KB long so only sections will be
+ presented here, if you want to see all the code you can <a href="source." webstripperlinkwas="source.zip">download <img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" alt="Download" border=0></A>
+ it as a .zip file.
+<p align=JUSTIFY>
+ As there are differences between PAL and NTSC Vic 20s where this makes a difference
+ the PAL code is shown in <b>bold</B> and the NTSC code is shown in <font color=#AAAAAA><b>grey</B></FONT>. The PAL code is tested but as I don't have an NTSC
+ machine I'm unable to test those bits. They <i><b>should</B></I> work.
+</BLOCKQUOTE>
+<b><u>Features</U></B>
+<blockquote><p align=JUSTIFY>
+ This code provides ARP, TCP/IP and ICMP function enough to be PINGed and enough HTTP
+ ability to serve the web content held in the ROM file system. The TCP implementation
+ is as server only, there is no active open or close wait ability and supports only a
+ single connection at a time, this may change.
+<p align=JUSTIFY>
+ One of the Vic's VIA timers is used to provide a millisecond clock, this allows the TCP
+ state machine to time out gracefully, and is used to time the animation of the crawling
+ dot in the bottom right of the Vic screen.
+<p align=JUSTIFY>
+ The first two IP address digits are fixed at 169.254 in the ROM but the last two digits
+ are copied from the MAC address of the card. This means the same ROM code can be used in
+ multiple Vics without changes, each machine getting it's IP address from the hardware
+ without the worry of IP address conflicts.
+<p align=JUSTIFY>
+ This is not a finished product, it is presented as a starting point and as such is
+ written with that in mind. This means the code could be shortened and sped up in many
+ places but is left as is because the intention is clearer. E.g. adding the final carry
+ back into the 16 bit checksum could be done thus ..
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LAB_21980
+	BCC	LAB_21990		; exit if carry clear
+
+	INC	chksum_l		; increment checksum low byte
+	BNE	LAB_21990		; exit if no overflow
+
+	INC	chksum_h		; increment checksum high byte		
+LAB_21990
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ But the intention is much clearer if it's done like this ..
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+LAB_21980
+	LDA	chksum_l		; get checksum low byte
+	ADC	#$00			; add any carry
+	STA	chksum_l		; save checksum low byte
+	LDA	chksum_h		; get checksum high byte
+	ADC	#$00			; add any carry
+	STA	chksum_h		; save checksum high byte		
+LAB_21990
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+</BLOCKQUOTE>
+<b><u>Listings.</U></B>
+<blockquote><p align=JUSTIFY>
+ The source is so long that it has been split into different sections. Some of these are
+ more or less complete and unlikely to change, others are still under developement, yet
+ more is not started yet. These sections will be added to and changed as the code
+ progresses.
+<p align=JUSTIFY>
+<li><a href="startup.html" webstripperlinkwas="startup.html" name=startup>Vic startup</A>
+<li><a href="3com.html" webstripperlinkwas="3com.html" name=3com>The 3Com card</A>
+<li><a href="interrupt.html" webstripperlinkwas="interrupt.html" name=interrupt>Interrupts</A>
+<li><a href="mainloop.html" webstripperlinkwas="mainloop.html" name=mainloop>Main program loop</A>
+<li><a href="arp.html" webstripperlinkwas="arp.html" name=arp>ARP and packet transmit</A>
+<li><a href="filesys.html" webstripperlinkwas="filesys.html" name=filesys>Web server files</A>
+<p align=JUSTIFY>
+ Whatever the state of the listings, you can always <a href="vic_rom." webstripperlinkwas="vic_rom.zip">download <img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" alt="Download" border=0></A> the most recent binary image.
+<p align=JUSTIFY>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 29th February, 2004.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish572e6364" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=572e6364&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

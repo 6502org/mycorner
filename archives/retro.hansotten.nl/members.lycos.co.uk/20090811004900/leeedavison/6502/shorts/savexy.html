@@ -1,0 +1,171 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish3f5755b2{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish3f5755b2{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip3f5755b2{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad3f5755b2"></div>
+<html>
+<head>
+<title>6502 Shorts - Save X and Y</TITLE>
+</HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=20%><a href="index.html" webstripperlinkwas="index.html">
+ <img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER>
+<b><font size=+1>Save X and Y. </FONT></B>
+<font size=-1>By Lee Davison.</FONT>
+</TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<b><u>Introduction.</U></B>
+<blockquote><p align=JUSTIFY>
+ Not something that comes up very often. I needed some code that would run on an NMOS
+ 6502, not destroy X or Y, return a value in A and was re-entrant, i.e. it could call
+ itself without overwriting any values.
+</BLOCKQUOTE>
+<b><u>The code.</U></B>
+<blockquote><p align=JUSTIFY>
+ First we save all the registers. We're not really interested in the value of A but we
+ need a byte on the stack.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	PHA			; make space for A			
+	TYA			; copy Y
+	PHA			; save Y
+	TXA			; copy X
+	PHA			; save X
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ Now we have to restore the registers. Because we don't have PHX/PLX or PHY/PLY we must
+ use A to restore X and Y but we also don't want to overwrite A, we can't just push A
+ onto the stack as that makes getting X and Y off something of a problem. What we do is
+ to overwrite the value for A that is already on the stack and then just pop the registers
+ as we normally would.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	TSX			; copy stack pointer
+	STA	$0103,X		; write result to stacked A		
+	PLA			; pull stacked X
+	TAX			; restore X
+	PLA			; pull stacked Y
+	TAY			; restore Y
+	PLA			; get result into A
+</PRE>
+</TD></TR></TABLE><p align=JUSTIFY>
+ This code is also usefull if you don't know which type of 6502 the code will be run on
+ and you need it to work on all of them.
+</BLOCKQUOTE>
+<b><u>Update.</U></B>
+<blockquote><p align=JUSTIFY>
+<blockquote>
+ <b><i> .. need it to work on all of them. </I></B>
+</BLOCKQUOTE><p align=JUSTIFY>
+ Or not as it turns out. There can be a case when the above code doesn't work and that is
+ if the stack is nearly full when the code is entered. While this won't happen very often
+ it <i>could</I> happen and code that works <i>nearly</I> all the time can be frustrating.
+<p align=JUSTIFY>
+ Let's look at what happens when it fails, first the code as it saves the registers ..
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+			<b> S	Address</B>
+	PHA		$02	<font color=blue><b>$0102</B></FONT>	; make space for A		
+	TYA		$01	.....	; copy Y
+	PHA		$01	$0101	; save Y
+	TXA		$00	.....	; copy X
+	PHA		$00	$0100	; save X
+	<i>&lt;more code&gt;</I>	$FF	$01FF	; subroutine code	
+</PRE>
+</TD></TR></TABLE><p align=JUSTIFY>
+ In this case A was pushed to address $0102 but after pushing X and Y the stack is full
+ and the stack pointer now points back to the top of the stack. Now when the code tries
+ to save A and exit the following happens ..
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+			<b> X	Address</B>
+	TSX		$FF	.....	; copy stack pointer
+	STA	$0103,X	$FF	<font color=red><b>$0202</B></FONT>	; write result to stacked A	
+			<b> S	Address</B>
+	PLA		$00	$0100	; pull stacked X
+	TAX		$01	.....	; restore X
+	PLA		$01	$0101	; pull stacked Y
+	TAY		$02	.....	; restore Y
+	PLA		$02	<font color=blue><b>$0102</B></FONT>	; get result into A
+</PRE>
+</TD></TR></TABLE><p align=JUSTIFY>
+ Oops! We just failed to return the value in A and trashed $0202 as well. The solution is
+ to make X equal the stack pointer <i><b>when A was first pushed</B></I> and use this as
+ the offset from the base of the stack page.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	TSX			; copy stack pointer
+	INX			; increment X to ..
+	INX			; .. equal stack pointer ..
+	INX			; .. when A was pushed
+	STA	$0100,X		; write result to stacked A		
+	PLA			; pull stacked X
+	TAX			; restore X
+	PLA			; pull stacked Y
+	TAY			; restore Y
+	PLA			; get result into A
+</PRE>
+</TD></TR></TABLE><p align=JUSTIFY>
+ Now going through the code showing the register values ..
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+			<b> X	Address</B>
+	TSX		$FF	.....	; copy stack pointer
+	INX		$00	.....	; increment X to ..
+	INX		$01	.....	; .. equal stack pointer ..
+	INX		$02	.....	; .. when A was pushed
+	STA	$0100,X	$02	<font color=green><b>$0102</B></FONT>	; write result to stacked A	
+			<b> S	Address</B>
+	PLA		$00	$0100	; pull stacked X
+	TAX		$01	.....	; restore X
+	PLA		$01	$0101	; pull stacked Y
+	TAY		$02	.....	; restore Y
+	PLA		$02	<font color=blue><b>$0102</B></FONT>	; get result into A
+</PRE>
+</TD></TR></TABLE><p align=JUSTIFY>
+ This costs a few bytes and some clock cycles but will work even if the stack pointer
+ should wrap as above.
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 1st February, 2005.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish3f5755b2" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=3f5755b2&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

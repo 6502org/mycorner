@@ -1,0 +1,252 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish6fc4a7d0{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish6fc4a7d0{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip6fc4a7d0{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad6fc4a7d0"></div>
+<html><head><title>Enhanced BASIC internals</TITLE><meta name="description" content="An advanced BASIC interpreter for the 6502 microprocessor."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="index.html#link_1" webstripperlinkwas="index.html#link_1"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER><b><font size=+1>Enhanced BASIC internals </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+<img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<p>
+<b><u>Floating point numbers.</U></B>
+<blockquote>
+ Floating point numbers are stored in memory in four bytes. The format of the
+ numbers is as follows.
+</BLOCKQUOTE>
+ <center>
+  <table bgcolor="white" cellpadding=5 cellspacing=0 border=2>
+   <tr>
+    <td>Exponent</TD><td>S</TD><td>Mantissa 1</TD><td>Mantissa 2</TD><td>Mantissa 3</TD> 
+   </TR>
+  </TABLE>
+ </CENTER>
+<blockquote>
+<b>Exponent</B>
+<blockquote>
+   This is the power of two to which the mantissa is to be raised. This number
+   is biased to +$80 i.e. 2^0 is represented by $80, 2^1 by $81 etc. Zero is a
+   special case and is used to represent the value zero for the whole of the number.
+</BLOCKQUOTE>
+<b>S</B>
+<blockquote>
+   Sign bit. This bit (b7 of mantissa 1) is one if the number is negative.
+</BLOCKQUOTE>
+<b>Mantissa 1/2/3</B>
+<blockquote>
+   This is the 24 bit mantissa of the number and is normalised to make the
+   highest bit (b7 of mantissa 1) always one. So the absolute value of the
+   mantissa varies between 0.5 and 0.9999999403954 . As we know that the highest
+   bit is always one it is replaced by the sign bit in memory.
+</BLOCKQUOTE>
+<b><i><u>Example.</U></I></B>
+<blockquote>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+$82,$49,$0F,$DB = +3.14159274	nearest floating equivalent to pi
+ |   ||  |   |  
+ |   |\--+---+- = 0.785398185	absolute value of mantissa  
+ |   |
+ |   \--------- = +		b7 of mantissa 1 is zero
+ |
+ \------------- = x 2^2 = 4	mantissa to be multiplied by 4
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+   Values represented in this way range between + and - 1.70141173x10^38
+</BLOCKQUOTE>
+<b><u>BASIC program memory use.</U></B>
+<blockquote>
+ A BASIC program is stored in memory from Ram_base upwards. It's format is ..
+<blockquote>
+	$00 Start of program marker byte
+</BLOCKQUOTE>
+ .. then each BASIC program line which is stored as ..
+<blockquote>
+	start of next line pointer low byte
+<br>  start of next line pointer high byte
+<br>  line number low byte
+<br>  line number high byte
+<br>  code byte(s)
+<br>  $00 End of line marker byte
+</BLOCKQUOTE>
+ .. and finally ..
+<blockquote>
+	$00 End of program marker byte 1
+<br>  $00 End of program marker byte 2
+</BLOCKQUOTE>
+ If there is no program in memory only the start and end marker bytes are present.
+</BLOCKQUOTE>
+<b><u>BASIC variables memory use.</U></B>
+<blockquote>
+   After the program come the variables and function references, all six bytes
+   long, which are stored as ..
+<blockquote>
+      1st character of variable or function name (+$80 if FN name)
+<br>  2nd character of variable or function name (+$80 if string)
+</BLOCKQUOTE>
+ .. then for each type ..
+  <p>
+    <table width=85% cellpadding=2 cellspacing=0 border=0>
+      <tr>
+        <td><b><u><center>Numeric</CENTER></U></B></TD>
+        <td><b><u><center>String</CENTER></U></B></TD>
+        <td><b><u><center>Function</CENTER></U></B></TD> 
+      </TR>
+      <tr>
+        <td>Exponent</TD>
+        <td>String length</TD>
+        <td>BASIC execute pointer low byte</TD> 
+      </TR>
+      <tr>
+        <td>Sign (bit 7) + mantissa 1</TD>
+        <td>String pointer low byte</TD>
+        <td>BASIC execute pointer high byte</TD> 
+      </TR>
+      <tr>
+        <td>Mantissa 2</TD>
+        <td>String pointer high byte</TD>
+        <td>Function variable name 1st character</TD> 
+      </TR>
+      <tr>
+        <td>Mantissa 3</TD>
+        <td>$00</TD>
+        <td>Function variable name 2nd character</TD> 
+      </TR>
+    </TABLE>
+  <p>
+ After the variables come the arrays, which are stored as ..
+<blockquote>
+      1st character of variable name
+<br>  2nd character of variable name (+$80 if string)
+<br>  array size in bytes low byte (size includes this header)
+<br>  array size in bytes high byte
+<br>  number of dimensions
+<br>  [dimension 3 size high byte] (lowest element is zero)
+<br>  [dimension 3 size low byte]
+<br>  [dimension 2 size high byte] (lowest element is zero)
+<br>  [dimension 2 size low byte]
+<br>  dimension 1 size high byte (lowest element is zero)
+<br>  dimension 1 size low byte
+</BLOCKQUOTE>
+ .. and then each element ..
+
+  <p>
+    <table width=48% cellpadding=2 cellspacing=0 border=0>
+      <tr>
+        <td><b><u><center>Numeric</CENTER></U></B></TD>
+        <td><b><u><center>String</CENTER></U></B></TD>
+      </TR>
+      <tr>
+        <td>Exponent</TD>
+        <td>String length</TD>
+      </TR>
+      <tr>
+        <td>Sign (bit 7) + mantissa 1</TD>
+        <td>String pointer low byte</TD>
+      </TR>
+      <tr>
+        <td>Mantissa 2</TD>
+        <td>String pointer high byte</TD>
+      </TR>
+      <tr>
+        <td>Mantissa 3</TD>
+        <td>$00</TD>
+      </TR>
+    </TABLE>
+  <p>
+ The elements of every array are stored in the order ..
+<blockquote>
+      index1 [0-n], index2 [0-n], index3 [0-n]
+</BLOCKQUOTE>
+   i.e. element (1,2,3) in an array of (3,4,5) would be the ..
+<blockquote>
+   1 + 1 + 2*(3+1) + 3*(3+1)*(4+1) = 70th element
+</BLOCKQUOTE>
+<i>(As array dimensions range from 0 to n element n will always be the (n+1)th
+   element in memory.)</I>
+<p>
+</BLOCKQUOTE>
+<b><u>String placement in memory.</U></B>
+<blockquote>
+  Strings are generally stored from the top of available RAM, Ram_top, working
+  down, however if the interpreter encounters a line such as ..
+<pre>
+	100 A$ = "This is a string"
+</PRE>
+  .. then the high/low pointer in the A$ descriptor will point to the string in
+  program memory and will not make a copy of the string in the string memory.
+</BLOCKQUOTE>
+<b><u>String descriptors in BASIC.</U></B>
+<blockquote>
+ A string descriptor is a three byte table that describes a string, it is of the format ..
+<blockquote>
+      base		= string length
+<br>  base+1	= string pointer low byte
+<br>  base+2	= string pointer high byte
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<b><u>Stack use in BASIC.</U></B>
+<blockquote>
+ GOSUB and DO both push on the stack ..
+<blockquote>
+      BASIC execute pointer high byte
+<br>  BASIC execute pointer low byte
+<br>  current line high byte
+<br>  current line low byte
+<br>  command token (TK_GOSUB or TK_DO)
+</BLOCKQUOTE>
+ FOR pushes on the stack ..
+<blockquote>
+      BASIC execute pointer low byte
+<br>  BASIC execute pointer high byte
+<br>  FOR line high byte
+<br>  FOR line low byte
+<br>  TO value mantissa3
+<br>  TO value mantissa2
+<br>  TO value mantissa1
+<br>  TO value exponent
+<br>  STEP sign
+<br>  STEP value mantissa3
+<br>  STEP value mantissa2
+<br>  STEP value mantissa1
+<br>  STEP value exponent
+<br>  var pointer for FOR/NEXT high byte
+<br>  var pointer for FOR/NEXT low byte
+<br>  token for FOR (TK_FOR)
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 14th July, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish6fc4a7d0" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=6fc4a7d0&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

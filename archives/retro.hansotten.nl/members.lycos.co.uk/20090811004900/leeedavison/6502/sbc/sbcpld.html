@@ -1,0 +1,106 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish54219cd9{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish54219cd9{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip54219cd9{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad54219cd9"></div>
+<html><head><title>Single board computer - GAL logic equations file.</TITLE>
+<meta name="description" content=" Single board 6502 computer."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=20%><a href="index.html#links" webstripperlinkwas="index.html#links">
+  <img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER>
+<b><font size=+1>GAL logic equations file. </FONT></B>
+<font size=-1>By Lee Davison.</FONT>
+</TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<a href="sbc_pld." webstripperlinkwas="sbc_pld.zip">Download this file <img src="../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../zip_sm.png" alt="[Download]" border=0>
+</A>
+<pre>
+Name     sbc ;
+PartNo   00 ;
+Date     01/08/00 ;
+Revision 01 ;
+Designer Lee ;
+Company  ;
+Assembly None ;
+Location  ;
+Device   g16v8as ;
+
+/* This GAL is the random glue for the sbc board	*/
+
+/* Logic minimisations			None				*/
+/* Optimizations			None				*/
+/* Download				JEDEC/POF/PRG			*/
+/* Doc File Options			fuse plot, equations		*/
+/* Output				None				*/
+
+/* *************** INPUT PINS *********************/
+
+PIN	1 = A15		;			/* address bus		*/ 
+PIN	2 = A14		;			/* address bus		*/ 
+PIN	3 = A13		;			/* address bus		*/ 
+PIN	4 = A12		;			/* address bus		*/ 
+PIN	5 = A11		;			/* address bus		*/ 
+PIN	6 = A10		;			/* address bus		*/ 
+PIN	7 = A9		;			/* address bus		*/ 
+PIN	8 = A8		;			/* address bus		*/ 
+PIN	9 = RW		;			/* read write		*/ 
+PIN	11 = p02	;			/* phase 2 clock	*/ 
+
+/* *************** OUTPUT PINS *********************/
+
+PIN  19 = ROM		;			/* 32K ROM		*/ 
+PIN  18 = port0		;			/* port 0 strobe	*/ 
+PIN  17 = port1		;			/* port 1 strobe	*/ 
+PIN  16 = RAM0		;			/* lower 32K RAM	*/ 
+PIN  15 = RAM1		;			/* upper 32K RAM	*/ 
+/*PIN  14 = 		;			/*			*/ 
+/*PIN  13 = 		;			/*			*/ 
+/*PIN  12 = 		;			/*			*/ 
+
+/* intermediate terms */
+
+Mrom = A15 & A14 & A13 & A12 & A11 & RW ;		/* Monitor ROM adress range	*/
+Brom = A15 & A14 & (!A12 # !A13) & RW ;			/* BASIC ROM C000 - EFFF	*/
+
+/* Output terms */
+
+!port0	= A15 & A14 & A13 & A12 & !A11 & !A10 & !A9 & !A8 ;	/* 256 byte block	*/
+!port1	= A15 & A14 & A13 & A12 & !A11 & !A10 & !A9 & A8 ;	/* 256 byte block	*/
+!RAM0	= !A15 & p02 ;						/* lower 32K RAM	*/ 
+!RAM1	= !(Mrom # Brom # !port0 # !port1) & A15 & p02 ;	/* upper 32K RAM	*/ 
+!ROM	= (Mrom # Brom) & p02 ;					/* 32K ROM		*/ 
+
+</PRE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 29th August, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish54219cd9" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=54219cd9&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

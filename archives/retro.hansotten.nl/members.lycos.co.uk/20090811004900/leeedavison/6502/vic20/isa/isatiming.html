@@ -1,0 +1,118 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish01a063e7{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish01a063e7{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip01a063e7{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad01a063e7"></div>
+<html><head><title>Vic 20 ISA slot timing.</TITLE></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=20%><a href="index.html#timing" webstripperlinkwas="index.html#timing">
+  <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER>
+<b><font size=+1>Vic 20 ISA slot timing </FONT></B><font size=-1>by Lee Davison.</FONT>
+</TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<b><u>Timing problems</U></B>
+<blockquote><p align=JUSTIFY>
+ With all the wires going to the right places the 3Com card wasn't talking. After a go
+ with the logic analyser revealed that the correct bytes in the correct order were being
+ sent to the card a closer look at the access timings seemed to be called for. A short
+ bit of test code that writes repeatedly, and regularly, to the I/O block used produced
+ the following display.
+</BLOCKQUOTE>
+<center>
+<img src="ohbother.jpg" webstripperlinkwas="ohbother.jpg" border=1 alt="Timing looks like this" hspace=8>
+<img src="isatiming.png" webstripperlinkwas="isatiming.png" border=1 alt="But should look like this" hspace=8>
+</CENTER>
+<blockquote><p align=JUSTIFY>
+ Looking at the spec for ISA 8 bit I/O cycles gives a minumum figure for 11 (write data
+ setup) of 7 to -45ns, that is 7ns before to 45ns after IOW goes low. A quick check on
+ the scope reveals that on the interface the data is not stable for <b>at least</B> 110ns
+ after IOW has gone low. Faliure because of his also shows that the I/O data is latched
+ by the leading edge of the IOW signal and not by the trailing edge as I would have
+ expected.
+</BLOCKQUOTE>
+<b><u>The fix</U></B>
+<blockquote><p align=JUSTIFY>
+ The easy way to fix the write problem would be to just delay the 6502 phase 2 signal,
+ this is done using a 150ns hybrid delay line removed from an old DRAM memory card.
+ Unfortunately this effects both the read and write timing and it would also mean the
+ delayed phase 2 is active after the processor has finished it's cycle.
+</BLOCKQUOTE>
+<center>
+<img src="delay.jpg" webstripperlinkwas="delay.jpg" border=1 alt="The 'dead bug' is a 150ns delay" hspace=8>
+<img src="150delay.jpg" webstripperlinkwas="150delay.jpg" border=1 alt="Delayed phase 2 top" hspace=8>
+</CENTER>
+<blockquote><p align=JUSTIFY>
+ The solution is to only delay the leading edge of phase two, by combining the delayed
+ phase 2 with the original phase 2, and to only do this on the write cycle. This almost
+ worked but it turns out that the address lines also need to be stable before IOW or IOR
+ go active so both read and write cycles were altered.
+<p align=JUSTIFY>
+ Fortunately there was one unused pin on the GAL so it was just a case of feeding the
+ delayed phase 2 to this pin and adding the delayed phase 2 to the equations.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+/* Input pins 								*/
+
+PIN 1		= <b>dlp2</B> ;			/* delayed phase 2	*/
+PIN 7		= CRW ;				/* CPU read write	*/	
+PIN 8		= p2 ;				/* phase 2		*/
+PIN 9		= !IO3 ;			/* I/O block access	*/
+
+
+/* Output terms								*/
+
+!ISA_IOW	= !CRW & IO3 & p2 <b>& dlp2</B> ;	/* ISA card I/O write	*/
+!ISA_IOR	= CRW & IO3 & p2 <b>& dlp2</B> ;	/* ISA card I/O read	*/
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ This done the test code was run again giving the trace shown below. The data is now
+ stable before IOW or IOR goes low. The side effect of this is to reduce the active width
+ of all I/O cycles. The timing spec says that this should be 541ns for an 8 bit I/O cycle
+ but, as the card being used can also do 16 bit I/O transfers and the timing for them only
+ requires a 165ns cycle, the 340ns as shown proved to be adequate.
+</BLOCKQUOTE>
+<center>
+<img src="fixedit.jpg" webstripperlinkwas="fixedit.jpg" border=1 alt="Now the data is stable
+before IOW goes low" hspace=8>
+<img src="active.jpg" webstripperlinkwas="active.jpg" border=1 alt="Reduced I/O cycle width
+ is not a problem" hspace=8>
+</CENTER>
+<blockquote><p align=JUSTIFY>
+ With all that sorted perhaps now I can get my Vic 20 to work on my home <a href="../network/index.html" webstripperlinkwas="../network/index.html">network</A>.
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 1st March, 2004.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish01a063e7" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=01a063e7&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

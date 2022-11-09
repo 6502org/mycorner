@@ -1,0 +1,117 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish1f35b071{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish1f35b071{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip1f35b071{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad1f35b071"></div>
+<html><head><title> Memory Plus manual </TITLE></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<a href="01.html" webstripperlinkwas="01.html"><img src="index.png" webstripperlinkwas="index.png" align=RIGHT border=0 alt="Index"></A>
+<b><font size=+2>MEMORY PLUS Manual </FONT></B><font size=-2>By Lee Davison</FONT>
+<br clear=all>
+<br>
+<a href="20.html" webstripperlinkwas="20.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="22.html" webstripperlinkwas="22.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 21
+</CENTER>
+<br clear=all>
+<hr>
+ <pre>
+
+
+			MEMORY TEST		9 FEBRUARY 1979
+
+			MEMORY	ORG	$0000
+
+			ACCESS		*	$8B86	SYM-1 ACCESS ENTRY
+			OUTBYT		*	$82FA	SYM-1 OUTPUT BYTE
+			SCANDS		*	$8906	SYM-1 SCAN DISPLAY
+
+			GOKIM		*	$1C4F	KIM-1 ENTRY POINT
+			LPOINT		*	$00FA	KIM DISPLAY POINTERS
+			HPOINT		*	$00FB
+
+
+			ASCOUT		*	$EF7B	AIM 65 OUTPUT ASCII
+
+  0000	20		BEGIN		=	$20	STARTING TEST PACE
+  0001	3F		END		=	$3F	ENDING TEST PACE
+
+  0002	A9 00		START		LDAIM	$00	ZERO POINTERS
+  0004	A8				TAY		FOR LOW ORDER ADDRESSES
+  0005	48				PHA		SET ALL STATUS BITS TO ZERO
+  0006	28				PLP
+  0007	85 D1				STAZ	POINTL
+
+  0009	85 D3		BIGLP		STAZ	FLAG	= 00 FIRST PASS, = FF SECOND PASS
+  000B	A2 02				LDXIM	$02
+  000D	86 D5				STXZ	PASS	SET 3 TESTS EACH PASS
+
+  000F	A5 00		NPASS		LDAZ	BEGIN	SET POINTER TO
+  0011	85 D2				STAZ	POINTH	START OF TES~ AREA
+  0013	A6 01				LDXZ	END
+  0015	A5 D3				LDAZ	FLAC
+  0017	49 FF				EORIM	$FF	REVERSE FLAG
+  0019	85 D4				STAZ	FLIP	FF FIRST PASS,    00 SECOND PASS
+
+  001B	91 D1		CLEAR		STAIY	POINTL	WRITE FLIP VALUE
+  001D	C8				INY		INTO ALL LOCATIONS
+  001E	D0 FB				BNE	CLEAR
+  0020	E6 D2				INCZ	POINTH
+  0022	E4 D2				CPXZ	POINTH
+  0024	B0 F5				BCS	CLEAR
+
+                  FLIP VALUE IN ALL LOCATIONS.   NOW CHANCE 1 IN 3
+
+  0026	A6 D5				LDXZ	PASS
+  0028	A5 00				LDAZ	BECIN	SET POINTER
+  002A	85 D2				STAZ	POINTH	BACK TO START
+
+  002D	A5 D3		FILL		LDAZ	FLAG	CHANGE VALUE
+  002E	CA		TOP		DEX
+  002F	10 04				BPL	SKIP	SKIP 2 OUT OF 3
+  0031	A2 02				LDXIM	$02	RESTORE 3 COUNTER
+  0033	91 D1				STAIY	POINTL	CHANCE 1 OUT CF 3
+  0035	C8		SKIP		INY
+  0036	D0 F6				BNE	TOP
+  0038	E6 D2				INCZ	POINTH	NEW PAGE
+
+
+ </PRE>
+<br clear=all>
+<hr>
+<a href="20.html" webstripperlinkwas="20.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="22.html" webstripperlinkwas="22.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 21
+</CENTER>
+<br clear=all>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 8th December, 2002.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish1f35b071" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=1f35b071&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

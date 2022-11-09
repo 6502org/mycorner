@@ -1,0 +1,113 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish2e5383c0{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish2e5383c0{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip2e5383c0{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad2e5383c0"></div>
+<html><head><title> Memory Plus manual </TITLE></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<a href="01.html" webstripperlinkwas="01.html"><img src="index.png" webstripperlinkwas="index.png" align=RIGHT border=0 alt="Index"></A>
+<b><font size=+2>MEMORY PLUS Manual </FONT></B><font size=-2>By Lee Davison</FONT>
+<br clear=all>
+<br>
+<a href="17.html" webstripperlinkwas="17.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="19.html" webstripperlinkwas="19.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 18
+</CENTER>
+<br clear=all>
+<hr>
+ <pre>
+
+		Remember that you are exercising your MICRO in ways you may have
+		never tried before.  This will, in some cases, uncover faults that
+		have existed undetected in a MICRO.  For example, my own "reliable"
+		KIM-1 which I had been using extensively for well over a year,
+		turned out to have a defective Port B.  Bits 0 and 1 which I had been
+		using for cassette control worked fine, but bit 2 did not.  I zapped
+		a few EPROMs, not fatally thank goodness, before discovering this.
+		Another KIM-1 I used had flakey memory in Page Zero such that the
+		RAM Memory Test would not work.  So, it really can happen.
+
+	  7.	Check all MEMORY PLUS switches and jumpers.  In addition to the Header
+		which was discussed in 1. and 3. above, there are two switches and a
+		jumper to be concerned with:
+
+		The RAM Address Select Switch (see page 8) must be set to "2K" for the
+		Memory Test to work as documented.  Actually, the memory test will work
+		with any addresses, as long as the correct parameters are set in page zero
+		location 0000 - start page number = first page to test and location 0001 -
+		end page number = last page to test.  The RAM switch must be selecting the
+		bank of memory you are attempting to test, and it may not be selecting the
+		same chunk of memory as the ROM select switch.
+
+		The ROM Address Select Switch (see page 8) must not be set to the same
+		starting address as the RAM switch.  If the ROM switch is set to "EK",
+		then there will be conflict with the MICRO Monitor interrupt vectors
+		unless the jumper changes discussed on page 9 have been made, since the
+		board comes with the jumper set so that interrupts will be decoded by
+		the MICRO Monitor locations 1FFA through 1FFF.  If you put ROM in E000
+		to FFFF, then this jumper must be changed.  Otherwise any address in
+		this range will be decoded twice: as E000 to FFFF and 0000 to 1FFF.
+
+	  8.	Check that all EPROMs are inserted in the proper direction.  Pin 1 in
+		the EPROM Programming Socket is in the upper left corner.  Pin 1 in the
+		EPROM normal sockets is in the upper right corner.
+
+	MEMORY PLUS was designed for easy field repair.  It is, of course, hoped that no
+	repair will ever be required on your unit.  If some repair is required, then it
+	is hoped that it can be done by the user or some local source.  The unit should
+	only have to be sent back for factory servicing in rare circumstances.  This
+	means that your MEMORY PLUS board should never be down very long.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ </PRE>
+<br clear=all>
+<hr>
+<a href="17.html" webstripperlinkwas="17.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="19.html" webstripperlinkwas="19.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 18
+</CENTER>
+<br clear=all>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 8th December, 2002.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish2e5383c0" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=2e5383c0&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

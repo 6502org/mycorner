@@ -1,0 +1,185 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish5c3a0e52{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish5c3a0e52{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip5c3a0e52{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad5c3a0e52"></div>
+<html><head><title>VIC 20 FM radio</TITLE>
+<meta name="description" content="VIC 20 FM radio"></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=25%>
+<a href="../index.html#radio" webstripperlinkwas="../index.html#radio"><img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td align=CENTER><b><font size=+1>VIC 20 FM radio </FONT></B>
+<font size=-1>by Lee Davison</FONT></TD><td width=25%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+<img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<b><u>Introduction</U></B>
+<a href="closeup.html" webstripperlinkwas="closeup.html"><img src="radio_t.jpg" webstripperlinkwas="radio_t.jpg" align=RIGHT border=1 alt="VIC 20 with FM
+ radio card" hspace=8></A>
+<blockquote><p align=JUSTIFY>
+ Sorting through the various ISA cards I've collected over the years I found three Aztech
+ ISA FM radio cards. As I have an eight bit <a href="../isa/index.html" webstripperlinkwas="../isa/index.html">ISA slot</A> on
+ my VIC 20 and these cards are eight bit (actually five writeable bits and only two
+ readable bits) I thought I'd make an application to use them.
+<p align=JUSTIFY>
+ Apart from the VIC with the <a href="../isa/index.html" webstripperlinkwas="../isa/index.html">ISA slot</A> and the Aztech card
+ you will need either speakers or some way to mix the audio out from the radio with the
+ VIC audio. You will also need a VHF FM antenna or VHF FM signal source.
+<br clear=ALL>
+</BLOCKQUOTE>
+<b><u>ISA slot modification.</U></B>
+<blockquote><p align=JUSTIFY>
+ The pins used by the radio card are shown in the diagram. All are present except for the
+ +12V supply pin as, up until now, only 5V only cards have been used.
+</BLOCKQUOTE>
+<img src="isa12v.png" webstripperlinkwas="isa12v.png" align=RIGHT border=1 alt="+/-12V supply" hspace=8>
+<blockquote><p align=JUSTIFY>
+ To provide the +12V for the radio card and -12V for future use a monolithic DC-DC
+ convertor, with two isolated 12 volt outputs arranged as a +/-12V supply, is connected
+ to the ISA bus, as shown in red in the diagram. This is not connected directly to the
+ VIC ISA interface but on a backplane extender, this is to make the +/-12V modification
+ easily removeable and give another ISA slot.
+</BLOCKQUOTE>
+<b><u>The hardware.</U></B>
+<blockquote><p align=JUSTIFY>
+ The radio card is addressed over two I/O ranges depending on whether <tt><b>J3</B></TT>
+ is fitted or not. If <tt><b>J3</B></TT> is present then the card responds at addresses
+ <tt><b>$350</B></TT> to <tt><b>$357</B></TT>, if <tt><b>J3</B></TT> is removed then the
+ card responds at addresses <tt><b>$358</B></TT> to <tt><b>$35F</B></TT>.
+<p align=JUSTIFY>
+ There is what looks to be another jumper labeled <tt><b>VT</B></TT> near the top of the
+ board. This is not a jumper, both pins are connected together, but is a test point for
+ the VCO and TRF tuning voltage. If needed this could be connected to an analogue meter
+ to provide a visual tuning indicator.
+<p align=JUSTIFY>
+ The main components on the card are a TEA5712T AM/FM radio circuit and an LM7001 direct
+ PLL frequency synthesizer. The TEA5712T is controlled by the LM7001 which in turn is
+ controlled by the host machine via it's three wire serial bus. The AM part of the
+ TEA5712T is not used, the card is FM only.
+<p align=JUSTIFY>
+ Also on the card is a TL072C dual low noise J-FET op amp and an MC14052 dual channel
+ analogue multiplexer. These make up a line level audio output driver and a four level
+ volume control. The volume level is controlled by two of the data bits from the data
+ write latch.
+<p align=JUSTIFY>
+ Lastly there is a PALCE16V8 that does the address decoding and a 74LS174 that forms the
+ data write latch.
+<br clear=ALL>
+</BLOCKQUOTE>
+<b><u>Software.</U></B>
+<blockquote><p align=JUSTIFY>
+ The software provides an automatic station search, manual tuning, eight user defineable
+ presets, stereo/mono selection and a four step volume control. This is contained in an
+ autostart ROM that begins running the moment the VIC is powered.<br><br>
+<table><tr align=CENTER><td><img src="rx_stereo.png" webstripperlinkwas="rx_stereo.png" border=1 alt="Stereo receive,
+low volume" hspace=8></TD>
+<td><img src="rx_mono.png" webstripperlinkwas="rx_mono.png" border=1 alt="Mono receive" hspace=8></TD></TR>
+<tr><td>&nbsp;</TD></TR><tr><td colspan=2><p align=JUSTIFY>
+ <i>The default setting is to allow stereo reception but mono only reception can be
+ toggled on and off using the <b>m</B> key. When mono only mode is selected the
+ mono/stereo status indicator changes colour. <i></I></TD></TR></TABLE>
+<p align=JUSTIFY>
+ The radio functions are controlled with the folowing keys.
+<p align=JUSTIFY>
+<table cellspacing=4>
+<tr><td valign=TOP width=120><tt><b>[F1]</B></TT> to <tt><b>[F8]</B></TT></TD>
+<td><p align=JUSTIFY>
+ Sets the current frequency to that of the corresponding preset and sets the mode to
+ receive.</TD></TR>
+<tr><td valign=TOP><tt><b>[SPACE]</B></TT></TD>
+<td><p align=JUSTIFY>
+ Toggles between receive and scan modes. In scan mode the frequency is automatically
+ incremented in steps of 25KHz until a carrier is detected.</TD></TR>
+<tr><td valign=TOP><tt><b>[CSR RT]</B></TT> and<br> <tt><b>[CSR LT]</B></TT></TD>
+<td><p align=JUSTIFY>
+ Manually increments or decrements the frequency in steps of 25KHz. If either of the band
+ limits are reached then the frequency wraps round to the other end of the band. This
+ function only works in receive mode.</TD></TR>
+<tr><td valign=TOP><tt><b>[CTRL]</B>+<b>[S]</B></TT></TD>
+<td><p align=JUSTIFY>
+ Save the current frequency to a preset. Once the save dialogue is entered
+ <tt><b>[F1]</B></TT> to <tt><b>[F8]</B></TT> select the preset to overwrite, the
+ currently selected preset being shown in red. To confirm the save <tt><b>y</B></TT> must
+ be pressed once a preset has been selected, any other key will abandon the save. This
+ function only works in receive mode.</TD></TR>
+<tr><td valign=TOP><tt><b>[CSR UP]</B></TT> and<br> <tt><b>[CSR DN]</B></TT></TD>
+<td><p align=JUSTIFY>
+ Increments and decrements the volume. There are only four levels, off, low, mid and
+ high. The current volume level is displayed as a two colour bar near the top left of
+ the screen</TD></TR>
+<tr><td valign=TOP><tt><b>[m]</B></TT></TD>
+<td><p align=JUSTIFY>
+ Toggles between stereo/mono reception and mono only reception. In mono only mode the
+ stereo/mono status indicator changes colour from blue/cyan to red/yellow.</TD></TR>
+</TABLE><br>
+<table>
+<tr align=CENTER><td><img src="rx_save.png" webstripperlinkwas="rx_save.png" border=1 alt="Saving a preset" hspace=8></TD>
+<td><img src="rx_saved.png" webstripperlinkwas="rx_saved.png" border=1 alt="New preset saved" hspace=8></TD></TR>
+<tr><td>&nbsp;</TD></TR>
+<tr><td colspan=2><p align=JUSTIFY>
+ <i>To save a frequency to a preset press <tt><b>[CTRL+S]</B></TT> to enter the save
+ dialogue, select the required preset using the corresponding <tt><b>F</B></TT> key,
+ then confirm the save by pressing <tt><b>y</B></TT> or abandon the save by pressing any
+ other key.</I></TD></TR>
+</TABLE>
+<p align=JUSTIFY>
+ Reception of a signal is shown by the stereo/mono status indicator. If a signal is
+ detected the stereo/mono status will be blue, or red if in mono only mode. If no signal
+ is detected then the stereo/mono status will be cyan, or yellow if in mono only mode.
+<p align=JUSTIFY>
+ The eight presets are displayed in the middle of the screen. The number on the left
+ corresponds to the <tt><b>F</B></TT> key that selects that preset. The number on the
+ right is the preset frequency in MHz. Presets that have not yet been set are displayed
+ as <tt><b>xxx.xxx</B></TT> and cannot be selected.
+<p align=JUSTIFY>
+ The version number of the software is displayed in the bottom left corner of the screen,
+ in the bottom right corner is a scrolling character. This is there just to show that the
+ software is actaully running.
+<p align=JUSTIFY>
+ You can download the latest <a href="radio." webstripperlinkwas="radio.zip">software <img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" alt="Download" border=0></A> with both the source and a binary
+ ROM image in the .zip. The current version is 0.42
+</BLOCKQUOTE>
+<a name="aztech"></A>
+<b><u>Conclusion</U></B>
+<a href="aztech.html" webstripperlinkwas="aztech.html"><img src="aztech_t.jpg" webstripperlinkwas="aztech_t.jpg" align=RIGHT border=1 alt="Aztech radio card" hspace=8></A>
+<blockquote><p align=JUSTIFY>
+ As radio receivers these PC radio cards are rubbish. The last place you want to put a
+ radio receiver is in a big metal box, or even near a small plastic box, with lots of
+ digital signals flying about inside.
+<p align=JUSTIFY>
+ The two cards I have that work are deaf. Without at least a dipole antenna they couldn't
+ even hear the local FM radio relay and that is less than two miles away. Even with a
+ dipole the stereo reception is still noisy, though in mono only it is listenable.
+<p align=JUSTIFY>
+ Perhaps these cards would be better suited with a nice, quiet low power CMOS
+ microcontroller, an LCD and a few control buttons rather than a power hungry, noisy,
+ quater century old NMOS home computer and monitor. 
+</BLOCKQUOTE><br clear=ALL>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 22nd May, 2006.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish5c3a0e52" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=5c3a0e52&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

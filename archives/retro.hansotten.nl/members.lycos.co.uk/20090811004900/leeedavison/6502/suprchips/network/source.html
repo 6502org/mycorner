@@ -1,0 +1,1107 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish421d2b2f{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish421d2b2f{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip421d2b2f{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad421d2b2f"></div>
+<html><head><title>Network interface - EhBASIC driver</TITLE></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=25%><a href="index.html#source" webstripperlinkwas="index.html#source">
+ <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER>
+<b><font size=+1>NIC EhBASIC driver. </FONT></B><font size=-1>by Lee Davison</FONT>
+</TD><td width=25%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<b><u>EhBASIC source</U></B>
+<blockquote><p align=JUSTIFY>
+ This code provides ARP, ICMP and TCP/IP function enough to be PINGed and to serve the
+ four embedded web pages. It's not fast, taking 2000+ mS for a PING reply and as little
+ as forty <i>seconds</I> to serve a web page, but it does work.
+<p align=JUSTIFY>
+ Another <a href="3c509b.html" webstripperlinkwas="3c509b.html">version</A> for the 3Com 3C509B series of cards is
+ available.
+</BLOCKQUOTE>
+<b><u>Changes</U></B>
+<blockquote><p align=JUSTIFY>
+ The code has been tidied to remove some un needed variables and to merge the payload
+ buffers into one. A timer has been implemented to allow the TCP state machine to
+ time out without having to wait for any number of TCP packets to arrive. Lastly the
+ last two IP address digits are now copied from the MAC address of the card, so you don't
+ have to clear the ARP tables every time you try a new card.
+<p align=JUSTIFY>
+ This is not a finished product by any means, it is just a proof of concept, and is
+ presented only as a starting point for anyone else.
+<p align=JUSTIFY>
+<b>Things to note.</B>
+<blockquote><p align=JUSTIFY>
+ Lines that start with a colon are completely ignored by the interpreter.<p>
+ Strings in DATA statements do not need quotes round them as long as they don't contain
+ colons or commas, and do not start with spaces. Strings without quotes start with the
+ first non space character after the DATA keyword or comma.
+</BLOCKQUOTE>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+: *********************************************************************
+: generic 8390/NEx000 driver in EhBASIC
+
+: supports ARP, ICMP echo, passive TCP/IP &amp; very basic HTTP
+
+: changes
+
+:03/09/02
+: now gets last two digits of the IP address from the card MAC
+
+:03/08/21
+: now includes TCP timeouts using an onboard timer
+
+:03/08/20
+: ethernet header and payload buffers merged into ip(i)
+
+10 DIM ph(3) : REM packet header buffer
+11 DIM pr(31) : REM NIC card PROM contents
+12 DIM ip(1513) : REM packet buffer
+15 DIM mi(3) : REM my ip address
+16 mi(0)=169 : mi(1)=254 : REM get last digits from MAC address
+17 cr$ = CHR$($0D) : lf$ = CHR$($0A) : el$ = cr$+lf$
+
+: 38067 port equates
+
+20 p4 = $08 : REM port 4 data
+21 d4 = $09 : REM port 4 direction
+22 d6 = $0D : REM port 6 direction
+
+: assembly routines to read and write to NIC
+
+30 DOKE $44,$EF20 : REM USR(n) = read from NIC register n
+31 rr = $EF00 : REM write to NIC call address
+
+: initialise ports
+
+40 POKE p4,PEEK(p4) OR $83 : REM no read, nowrite and reset
+41 POKE d4,PEEK(d4) OR $83 : REM port bits to outputs
+42 POKE d6,PEEK(d6) OR $1F : REM address bits to outputs
+44 FOR w=1 TO 6 : NEXT : REM delay for at least 1.6mS
+46 POKE p4,PEEK(p4) AND $7F : REM no reset
+
+: vc flags that a potentially valid card is present
+: vp flags that a potentially valid packet is being processed
+
+50 vc = 0 : REM no valid card found
+51 vp = 0 : REM no valid packet received
+
+: frequently used values
+
+60 cr = $00 : REM NIC command register
+61 dr = $10 : REM NIC data register
+62 is = $07 : REM NIC interrupt status register
+
+63 ls = $08 : REM NIC start address low byte
+64 hs = $09 : REM NIC start address high byte
+65 lc = $0A : REM NIC byte count low byte
+66 hc = $0B : REM NIC byte count high byte
+67 rc = $0C : REM NIC config Rx
+68 tc = $0D : REM NIC config Tx
+
+: TCP arrays &amp; variables
+
+70 ts = 1 : REM TCP state = listen
+71 DIM rn(3) : REM received TCP sequence number
+72 DIM mq(3) : REM our TCP sequence number
+73 DIM si(3) : REM senders ip address
+
+
+: *********************************************************************
+: test for NIC and initialise if found
+
+100 GOSUB 10000 : REM look for NIC
+105 IF vc=0 THEN END : REM no card found
+110 GOSUB 10500 : REM initialise NIC
+
+115 INT0 + : REM interrupt on rising edge
+120 ON INT0 20000 : REM handle interrupt
+
+125 PRES12 249 : TIMER1 199 : REM set for approx 100mS
+130 ON TIMER1 12000 : REM go do countdown
+
+: *********************************************************************
+: main program loop
+
+200 DO
+205 ? : ? "Waiting..."
+
+210 DO : LOOP UNTIL vp : REM wait for valid packet
+
+: now decipher packet info
+
+255 IF ip($0C)&lt;&gt;8 THEN ? "Unrecognised packet type" : GOTO 275
+260 IF ip($0D)=6 THEN GOSUB 21000 : GOTO 275 : REM ARP packet
+265 IF ip($0D) THEN ? "Unknown IP packet type" : GOTO 275
+
+: only type left is known IP type
+
+270 GOSUB 21500 : REM handle known IP packet type
+
+: now see if any more packets are in the buffer
+
+275 CALL rr,cr,$22 : REM page 0, no DMA
+285 bd = USR($03)+1 : REM get buffer boundary value + 1
+290 IF bd=$61 THEN bd = $46 : REM wrap pointer
+295 CALL rr,cr,$62 : REM page 1, no DMA
+300 cp = USR($07) : REM get buffer current page
+305 IF cp=bd THEN vp = 0 : GOTO 995 : REM flag done with last packet
+
+: else possibly more data in buffer, so go get and validate packet
+
+310 GOSUB 11500 : REM get the packet from the NIC
+
+: if packet valid then don't wait, just do it
+
+315 IF vp THEN 255 : REM if valid then go process it
+
+: else just ignore it and check for next
+
+325 GOTO 275 : REM else go check for more packets
+
+995 LOOP
+
+999 END : REM should never get here
+
+
+: *********************************************************************
+: try and find an NEx000 type network interface card
+
+09999 REM probe NIC
+10000 CALL rr,cr,$20 : REM page 0, no DMA
+10005 by = USR($0D) : REM clear the counter
+10010 by = USR($0D) : REM get the counter
+
+: now if the counter &lt;&gt; 0, then we don't have a NEx000 card, so exit
+
+10015 IF by THEN ? "No card found!" : RETURN
+	
+: found a card so reset it
+
+10020 CALL rr,is,$80 : REM clear reset bit
+10025 IF (USR(is) AND $80) THEN ? "Can't clear reset ack!" : RETURN
+
+: it's reset now test the interrupt connection
+
+10030 CALL rr,is,$FF : REM clear all pending interrupts
+10035 IF (PEEK(p4) AND $04) THEN ? "Can't clear interrupt!" : RETURN
+
+: read the NIC PROM into array
+
+: we probably only need the first 6 bytes which
+: are this card's MAC address
+
+10040 CALL rr,cr,$21 : REM page 0, stop
+10045 CALL rr,$0E,$48 : REM 8 byte FIFO, normal operation
+10050 CALL rr,lc,$00 : REM set remote byte count low
+10055 CALL rr,hc,$00 : REM set remote byte count high
+10060 CALL rr,$0F,$00 : REM mask all interrupts off
+10065 CALL rr,is,$FF : REM ack all pending interrupts
+10070 CALL rr,rc,$20 : REM Rx config to no store &amp; reject (nearly) all
+10075 CALL rr,tc,$02 : REM Tx config to internal loopback
+10080 CALL rr,lc,$20 : REM set remote byte count low
+10085 CALL rr,hc,$00 : REM set remote byte count high
+10090 CALL rr,ls,$00 : REM set remote start address low
+10095 CALL rr,hs,$00 : REM set remote start address high
+10100 CALL rr,cr,$0A : REM remote read
+
+10105 FOR i=0 TO 31 : REM loop 31 times
+10110 by = USR(dr) : pr(i) = USR(dr) : REM dummy read then read byte
+10115 ? " ";HEX$(pr(i),2); : REM display value
+10120 IF (i AND $7)=$7 THEN ?
+10125 NEXT
+10127 mi(2)=pr(4) : mi(3)=pr(5) : REM IP address last two digits
+
+: lets try triggering an interrupt and see if all is well
+
+10130 CALL rr,$0F,$50 : REM allow DMA complete and overwrite warning
+10135 CALL rr,lc,$00 : REM set receive byte count low
+10140 CALL rr,hc,$00 : REM set receive byte count high
+10145 CALL rr,cr,$0A : REM trigger it with remote read
+
+: wait a small amount of time, if no interrupt then assumed broken card
+
+: note main interrupt handling is not started yet
+
+10150 to = 1000 : REM set timeout count
+10155 DO
+10160 by = PEEK(p4) AND $04
+10165 DEC to
+10170 LOOP UNTIL by OR (to=$00)
+
+10175 CALL rr,$0F,$00 : REM mask it off again
+10180 IF to=0 THEN ? "No interrupt!" : RETURN
+
+10185 ? "Card OK - IP address 169 . 254 .";mi(2);" .";mi(3)
+10190 vc = -1 : REM flag card found
+10195 RETURN
+
+
+: *********************************************************************
+: initialise the NIC
+: use National Semiconductors 8390 programming sequence
+
+10499 REM initialise NIC
+
+10500 CALL rr,cr,$21 : REM page 0, stop
+10510 CALL rr,$0E,$48 : REM 8 byte FIFO, normal operation
+10515 CALL rr,lc,$00 : REM clear remote byte count low
+10520 CALL rr,hc,$00 : REM clear remote byte count high
+
+: set monitor and loopback mode
+
+10525 CALL rr,rc,$20 : REM Rx config to no store &amp; reject (nearly) all
+10530 CALL rr,tc,$02 : REM Tx config to internal loopback
+
+: set transmit page and receive ring
+
+10535 CALL rr,$04,$40 : REM set Tx start page
+10540 CALL rr,$01,$46 : REM set Rx start page
+10545 CALL rr,$03,$60 : REM set boundry
+10550 CALL rr,$02,$60 : REM set Rx stop page
+
+: clear any pending interrupts
+
+10555 CALL rr,is,USR(is) : REM ack all pending
+10560 CALL rr,$0F,$00 : REM mask all interrupts
+
+: copy MAC address to the network card
+
+10565 CALL rr,cr,$61 : REM page 1, stop
+
+10570 FOR i=0 TO 5 : REM need to shift in 6 bytes
+10575 CALL rr,i+1,pr(i) : REM byte from prom to card
+10580 NEXT
+
+10585 FOR i=$08 TO $0F : REM need to shift in 8 bytes
+10590 CALL rr,i,$FF : REM set multicast mask byte
+10595 NEXT
+
+10600 CALL rr,$07,$46 : REM set current page
+10605 CALL rr,cr,$21 : REM page 0, stop
+10610 CALL rr,is,$FF : REM ack all interrupts
+10615 CALL rr,$0F,$3F : REM allow all interrupts
+10620 CALL rr,cr,$22 : REM page 0, no DMA
+
+: enable the transmitter
+
+10625 CALL rr,tc,$00 : REM Tx to normal
+
+: enable the receiver
+
+10630 CALL rr,rc,$04 : REM Rx to accept broadcast
+10635 np = $46 : REM init no packets received
+
+10640 RETURN
+
+
+: *********************************************************************
+: get the ethernet header from the NIC - puts it in ph(n)
+
+10999 REM GetHdr
+11000 CALL rr,cr,$22 : REM page 0, no DMA
+11010 CALL rr,lc,$04 : REM set header length low
+11015 CALL rr,hc,$00 : REM set header length high
+11020 CALL rr,ls,$00 : REM From this page low
+11025 CALL rr,hs,np  : REM From this page high
+11030 CALL rr,cr,$0A : REM remote read
+
+11035 FOR i=0 TO 3
+11040 ph(i) = USR(dr) : REM get byte
+11045 NEXT
+
+11050 CALL rr,cr,$22 : REM page 0, no DMA
+11060 RETURN
+
+
+: *********************************************************************
+: get the packet from the NIC
+: gets the header and the payload when a good packet is indicated
+: sets vp true if packet is really valid
+
+11499 REM get packet
+11500 vp = -1 : tp = vp : REM flag getting packet &amp; this packet good
+11505 CALL rr,cr,$60 : REM page 1, no DMA
+11510 cp = USR($07) : REM read current Rx page
+11515 IF cp=np THEN tp = 0 : GOTO 11570 : REM if curr = next then exit
+11520 GOSUB 11000 : REM else get the header
+11525 IF (ph(0) AND $01)=0 THEN : tp = 0 : GOTO 11550 : REM dump bad
+
+11530 GOSUB 11700 : REM else was an OK packet so get it
+11535 IF rl&gt;1500 THEN tp = 0 : REM dump packets that are too big
+11540 np = ph(1) : REM get next page value
+11545 cp = np : REM make current page = next page
+11547 IF np=$60 THEN np = $46
+
+11550 DEC cp : REM boundary is always 1 less than next page
+11555 IF cp=$45 THEN cp = $60 : REM roll ring back
+11560 CALL rr,cr,$22 : REM page 0, no DMA
+11565 CALL rr,$03,cp : REM set new boundary
+
+11570 vp = tp : REM set packet status to this packet status
+11575 RETURN
+
+
+: *********************************************************************
+: gets the payload from the NIC
+: the ethernet packet and payload is stored in ip(i)
+
+11699 REM BlockInput
+
+11700 rl = ph(2)+ph(3)*256 : REM get length
+11705 IF ph(2) AND 1 THEN INC rl : REM make even
+11710 IF rl&gt;1500 THEN 11775 : REM dump too big packets
+
+11715 CALL rr,cr,$22 : REM page 0, no DMA
+11720 CALL rr,lc,ph(2) : REM size of payload low byte
+11725 CALL rr,hc,ph(3) : REM size of payload high byte
+
+11730 CALL rr,ls,$04 : REM + 4 to remove the header from the frame
+11735 CALL rr,hs,np : REM set page pointer
+
+11740 CALL rr,cr,$0A : REM page 0, remote read
+
+11745 FOR i=0 TO rl-1 : ip(i) = USR(dr) : NEXT : REM read bytes
+
+11770 CALL rr,cr,$22 : REM page 0, no DMA
+11775 RETURN
+
+
+: *********************************************************************
+: does the timeout counting down, called on TIMER 1 timeout (100mS)
+
+11999 REM decrement the TCP rimeout counter if &lt;&gt; 0
+
+12000 IF sc THEN DEC sc
+12005 RETURN
+
+
+: *********************************************************************
+: on NIC interrupt do this. this does most of the work deciding what to
+: do and acknowledging interrupts
+
+19999 REM NIC interrupt
+
+20000 CR = USR(cr) : REM get current command value
+20005 CALL rr,cr,$20 : REM page 0, no DMA
+20010 ib = USR(is) AND $7F : REM get interrupt status value
+
+20015 DO
+
+20020 IF (ib AND $10) THEN GOSUB 20500 : REM do overwrite interrupt
+20025 IF (ib AND $0A) THEN GOSUB 20200 : REM do tx interrupt
+20030 IF (ib AND $40) THEN GOSUB 20300 : REM do DMA interrupt
+20035 IF (ib AND $20) THEN GOSUB 20400 : REM do tally counter interrupt
+20040 IF (ib AND $05) THEN GOSUB 20100 : REM do rx interrupt
+
+20045 CALL rr,cr,$20 : REM page 0, no DMA
+20050 ib = USR(is) AND $7F : REM get interrupt status value
+
+20055 LOOP WHILE ib
+20060 CALL rr,cr,CR : REM return command status
+20065 RETURN
+
+
+: *********************************************************************
+: handle Rx interrupts
+
+: if good Rx and no current packet then get new
+
+20100 IF (ib AND $01) AND (vp=0) THEN GOSUB 11500
+20105 CALL rr,cr,$20 : REM page 0, no DMA
+20110 CALL rr,is,(ib AND $05) : REM ack Rx interrupts
+20120 RETURN
+
+
+: *********************************************************************
+: handle Tx interrupt
+
+20200 CALL rr,is,(ib AND $0A) : REM ack Tx interrupts
+:20205 ? "Packet sent"
+20210 RETURN
+
+
+: *********************************************************************
+: handle DMA interrupt
+
+20300 CALL rr,is,(ib AND $40) : REM ack DMA interrupt
+:20305 ? "DMA"
+20310 RETURN
+
+
+: *********************************************************************
+: handle tally counter interrupt
+
+20400 CALL rr,is,(ib AND $20) : REM ack tally counter interrupt
+:20405 ? "Tally count"
+20410 RETURN
+
+
+: *********************************************************************
+: handle overwrite interrupt
+: use National Semiconductors 8390 programming sequence
+
+20500 CALL rr,cr,$21 : REM page 0, stop
+20505 FOR w=0 TO 5 : REM wait a bit
+20510 NEXT
+20515 CALL rr,lc,$00 : REM clear remote byte count low
+20520 CALL rr,hc,$00 : REM clear remote byte count high
+
+20525 rs = $26 : REM default to resend
+20530 IF (ib AND $04) THEN rs = $22 : REM not Txing so no resend
+20535 IF (USR(is) AND $0A) THEN rs = $22 : REM Tx done or error
+
+20540 CALL rr,tc,$02 : REM Tx config to internal loopback
+20545 CALL rr,$03,$60 : REM set boundry
+
+20550 CALL rr,cr,$61 : REM page 1, stop
+20555 CALL rr,$07,$46 : REM set current page
+
+20560 CALL rr,cr,$22 : REM page 0, no DMA
+20565 CALL rr,is,(ib AND $10) : REM ack overwrite interrupt
+
+20570 CALL rr,tc,$00 : REM Tx config to normal
+20575 CALL rr,cr,rs : REM resend or start
+
+: warn the user that an overwrite occured
+
+20578 ?"!! WARNING !! OVERWRITE INTERRUPT !! WARNING !!"
+20580 np = $46 : cp = np : REM set no packets waiting
+20590 RETURN
+
+
+: *********************************************************************
+: construct a reply to an ARP request aimed at us
+
+20999 REM handle ARP packet
+
+: see RFC826 for a description of the ARP packet
+
+21000 IF ip($0F)&lt;&gt;$01 THEN 21265 : REM hardware type - always $01
+21005 IF ip($10)&lt;&gt;$08 THEN 21265 : REM hardware protocol high byte
+21010 IF ip($11)&lt;&gt;$00 THEN 21265 : REM hardware protocol low byte
+21015 IF ip($12)&lt;&gt;$06 THEN 21265 : REM hardware (MAC) address length
+21020 IF ip($13)&lt;&gt;$04 THEN 21265 : REM protocol (IP) address length
+21025 IF ip($15)&lt;&gt;$01 THEN 21265 : REM type of packet
+21030 IF ip($26)&lt;&gt;mi(0) THEN 21265 : REM protocol address
+21035 IF ip($27)&lt;&gt;mi(1) THEN 21265 : REM protocol address+1
+21040 IF ip($28)&lt;&gt;mi(2) THEN 21265 : REM protocol address+2
+21045 IF ip($29)&lt;&gt;mi(3) THEN 21265 : REM protocol address+3
+
+: we have recognised the packet as correct and the target as us
+: set up the buffer for transmit
+
+21050 CALL rr,cr,$22 : REM page 0, no DMA
+21055 CALL rr,$04,$40 : REM load beginning page for transmit buffer
+21060 CALL rr,ls,$00 : REM set start address low byte
+21065 CALL rr,hs,$40 : REM set start address high byte
+
+21070 xl = $2A : REM ARP reply length
+
+21075 CALL rr,lc,(xl AND $FF) : REM load data byte count low byte
+21080 CALL rr,hc,(xl &gt;&gt; 8) : REM load data byte count high byte 
+21085 CALL rr,cr,$12 : REM do remote write operation
+
+21090 FOR i=6 TO 11 : CALL rr,dr,ip(i) : NEXT : REM dest MAC address
+21095 FOR i=0 TO 5 : CALL rr,dr,ip(i) :  NEXT : REM source MAC address
+
+21100 CALL rr,dr,$08 : REM ethernet packet type
+21105 CALL rr,dr,$06 : REM ethernet packet type
+
+21110 FOR i=$0E TO $14 : CALL rr,dr,ip(i) : NEXT : REM copy from rx pkt
+
+21115 CALL rr,dr,$02 : REM op type is reply
+
+21120 FOR i=0 TO 5 : CALL rr,dr,pr(i) : NEXT : REM our MAC address
+21125 FOR i=0 TO 3 : CALL rr,dr,mi(i) : NEXT : REM our IP address
+
+21130 FOR i=$6 TO $B : CALL rr,dr,ip(i) : NEXT : REM dest MAC address
+21135 FOR i=$1C TO $1F : CALL rr,dr,ip(i) : NEXT : REM dest IP address
+
+: packet set up, now Tx it
+
+: *********************************************************************
+: Tx ethernet packet, xl is length
+
+21200 CALL rr,cr,$22 : REM page 0, no DMA
+
+21205 IF xl&gt;$3B THEN 21250
+
+: if the packet is runt then fill it out to minimum length
+
+21210 xd = $3C-xl
+
+21215 CALL rr,ls,(xl AND $FF) : REM set start address low byte
+21220 CALL rr,hs,$40 : REM set start address high byte
+21225 CALL rr,lc,(xd AND $FF) : REM load data byte count low byte
+21230 CALL rr,hc,$00 : REM load data byte count high byte 
+21235 CALL rr,cr,$12 : REM do remote write operation
+
+21240 FOR i=1 TO xd : CALL rr,dr,$00 : NEXT : xl=$3C
+21245 CALL rr,cr,$22 : REM page 0, no DMA
+
+: now set up Tx count and send the packet
+
+21250 CALL rr,$05,(xl AND $FF) : REM set Tx length low byte
+21255 CALL rr,$06,(xl &gt;&gt; 8) : REM set Tx length high byte
+21260 CALL rr,cr,$26 : REM Tx packet
+21265 RETURN
+
+
+: *********************************************************************
+: handle IP ICMP packets
+
+21499 REM handle ICMP packet
+
+21500 IF ip($0E)&lt;&gt;$45 THEN 21565 : REM don't recognise anything else
+
+21505 IF ip($1E)&lt;&gt;mi(0) THEN 21565 : REM is it our ip address
+21510 IF ip($1F)&lt;&gt;mi(1) THEN 21565 : REM is it our ip address+1
+21515 IF ip($20)&lt;&gt;mi(2) THEN 21565 : REM is it our ip address+2
+21520 IF ip($21)&lt;&gt;mi(3) THEN 21565 : REM is it our ip address+3
+
+21525 IF (ip($14) AND $3F) THEN 21565 : REM we don't handle fragments
+21530 IF ip($15) THEN 21565 : REM we don't handle fragments
+
+21535 ck = $0 : cl = $14 : ca = $0E : REM for header checksum
+21540 GOSUB 21950 : REM do header checksum
+
+21545 IF ck THEN 21565 : REM ignore broken checksum
+
+21550 IF ip($17)=$01 THEN GOSUB 21600 : REM ip_proto is icmp
+21555 IF ip($17)=$11 THEN ? "UDP" : REM ip_proto is udp
+21560 IF ip($17)=$06 THEN GOSUB 22000 : REM ip_proto is tcp
+
+21565 RETURN
+
+
+: *********************************************************************
+: handle ICMP IP echo request packet - this is the bit that goes PING!
+
+21599 REM icmp starts at $22 in the buffer
+
+21600 ip($22) = $00 : REM icmp type (reply)
+21605 ip($23) = $00 : REM icmp code
+
+21610 ip($24) = $00 : REM clear checksum high byte
+21615 ip($25) = $00 : REM clear checksum low byte
+
+21620 GOSUB 21800 : REM setup the IP header
+
+21625 ck = 0 : REM clear checksum
+21630 ca = $22 : REM icmp starts after the IP header
+21635 cl = (ip($10)*256+ip($11)) - $14 : REM data length
+21640 GOSUB 21950 : REM do checksum
+21645 ck = NOT ck : REM ones complement checksum
+
+21650 ip($24) = ck &gt;&gt; 8 : REM save checksum high byte
+21655 ip($25) = ck AND $FF : REM save checksum low byte
+
+: now transmit the packet
+
+
+: *********************************************************************
+: transmit IP packet
+
+21699 REM transmit IP packet
+
+21700 CALL rr,cr,$22 : REM page 0, no DMA
+21705 CALL rr,$04,$40 : REM set Tx start page
+21710 CALL rr,ls,$00 : REM set start address low
+21715 CALL rr,hs,$40 : REM set start address high
+21725 xl = ip($10)*256+ip($11) + $0E : REM length is ip length + $0E
+
+21730 CALL rr,lc,(xl AND $FF) : REM set remote byte count low
+21735 CALL rr,hc,(xl &gt;&gt; 8) : REM set remote byte coung high
+21740 CALL rr,cr,$12 : REM remote write
+
+: write data to buffer
+
+21745 FOR i=0 TO xl-1 : CALL rr,dr,ip(i) : NEXT
+21765 GOTO 21200 : REM transmit packet &amp; return
+
+
+: *********************************************************************
+: swap the sources and destinations (MAC and IP) and compute the
+: new IP checksum
+
+21799 REM set IP addresses
+
+21800 FOR i=$1A TO $1D : SWAP ip(i),ip(i+$04) : NEXT : swap IP addresses
+21810 ip($16) = $80 : REM set time to live
+21820 FOR i=0 TO 5 : SWAP ip(i),ip(i+6) : NEXT : swap MAC addresses
+
+21830 ip($18) = $00 : REM clear checksum high byte
+21835 ip($19) = $00 : REM clear checksum low byte
+
+: calculate the IP header checksum
+
+21840 ck = 0 : REM clear checksum
+21845 cl = $14 : REM header length
+21850 ca = $0E : REM IP start
+21855 GOSUB 21950 : REM do checksum
+21860 ck = NOT ck : REM ones complement
+
+21865 ip($18) = ck &gt;&gt; 8 : REM save checksum high byte
+21870 ip($19) = ck AND $FF : REM save checksum low byte
+
+21875 RETURN
+
+
+: *********************************************************************
+: compute or check the 16 bit checksum on the TCP part of the packet
+: also gets the total length of the IP packet tl
+
+21900 tl = (ip($10)*256+ip($11)) : REM IP total length
+21905 ck = tl - ti + $0E : REM checksum is TCP length
+21910 ck = ck + ip($17) : REM add protocol to checksum
+21915 cl = 8 : ca = $1A : REM do source and dest IP address
+21920 GOSUB 21950 : REM do IP address checksum
+21925 cl = tl - ti + $0E : ca = ti : REM TCP length and start
+21930 IF ck&lt;0 THEN ck = ck+$10000 : REM correct for -ve result
+
+
+: *********************************************************************
+: compute the 16 bit checksum on part of the ip(n) packet
+: entry is with cl = bytes to checksum and ca = index to the first byte
+
+21949 REM checksum
+
+21950 IF cl=0 THEN 21990 : REM exit if no length to checksum
+
+21955 DO
+21960 ck = ck+ip(ca)*256 : INC ca : DEC cl : REM add high byte to sum
+21965 IF cl THEN ck = ck+ip(ca) : INC ca : DEC cl : REM add low byte
+21975 IF ck&gt;$7FFF THEN ck=ck-$FFFF
+21980 LOOP WHILE cl
+
+21985 IF ck&lt;0 THEN DEC ck
+21990 RETURN
+
+
+: *********************************************************************
+: handle IP TCP packet
+
+: tl = total length of IP packet
+: td = TCP data offset
+: tf = TCP flags for this packet
+: ti = TCP start index
+: ts = TCP state
+:		1 = listen
+:		2 = SYN received
+:		3 = established
+:		4 = FIN wait 1
+:		5 = FIN wait 1
+: sp = source port
+: ep = expected port
+: destination port MUST be $0080 (http:// only)
+
+21999 REM handle TCP packet
+
+22000 ti = $22 : REM start of TCP packet
+22005 GOSUB 21900 : REM get length and do TCP checksum
+22010 IF ck THEN 22098 : REM ignore bad packets
+
+22015 sp = ip(ti)*256+ip(ti+1) : REM source port address
+22020 IF ip(ti+3)&lt;&gt;$50 THEN 22098 : REM ignore ports &lt;&gt; $50
+22025 IF ip(ti+2) THEN 22098 : REM ignore ports &gt; $FF
+
+22060 td = ti+((ip(ti+$0C) AND $F0)&gt;&gt;2) : REM TCP data offset
+22065 tf = ip(ti+$0D) AND $3F : REM TCP flags
+
+22070 ON ts GOSUB 22100, 22200, 22300, 22400, 22500
+:                 listn, synrx, estab, wait1, wait2
+
+22098 RETURN
+
+
+: *********************************************************************
+: TCP listen state
+
+22099 REM TCP listen
+
+22100 IF (tf AND $04) THEN 22198 : REM ignore RST (correct)
+22105 IF (tf AND $10) THEN 22198 : REM ignore ACK (should send RST)
+22110 IF (tf AND $02)=0 THEN 22198 : REM ignore not SYN
+
+22115 FOR i=$0 TO $3 : rn(i) = ip(ti+i+$4) : NEXT : REM get sequence no
+22120 FOR i=$0 TO $3 : si(i) = ip(i+$1A) : NEXT : REM sender's ip addr
+22125 mq(0) = INT(RND(0)*$80) : mq(1) = INT(RND(0)*$80)
+22130 mq(2) = $FF : mq(3) = $FF : REM our sequence number
+
+: got details, now make SYN ACK
+
+22135 GOSUB 22815 : REM prepare TCP reply
+22140 GOSUB 22920 : REM generate ACK for SYN received
+22145 GOSUB 22895 : REM generate our own SYN
+22150 GOSUB 22845 : REM finalise TCP reply
+22155 GOSUB 21800 : REM generate IP header
+22160 GOSUB 21700 : REM send the TCP packet along on its way
+
+22165 ts = 2 : sc = 200 : REM change state to SYN received, count 200
+22170 ep = sp : REM connected port = source port
+
+:*22196 FOR i=0 TO (ph(3)*256+ph(2))-$F : ? " ";HEX$(ip(i),2); : NEXT : ?
+
+22198 RETURN
+
+
+: *********************************************************************
+: TCP syn received state
+
+22199 REM TCP syn received, ack sent
+
+: we're expecting an ACK of our SYN
+
+22200 IF sc=0 THEN ts = 1 : GOTO 22298 : REM count expired
+22205 FOR i=0 TO 3 : IF si(i)&lt;&gt;ip($1A+i) THEN i = 4
+22210 NEXT : IF i=5 THEN 22298 : REM check sender's ip addr
+
+22215 IF sp&lt;&gt;ep THEN 22298 : REM ignore packets from wrong port
+
+22220 FOR i=0 TO 3 : IF mq(i)&lt;&gt;ip(ti+$08+i) THEN i = 4
+22225 NEXT : IF i=5 THEN 22298 : REM check sender's ack number
+22230 IF (tf AND $02) THEN 22298 : REM ignore SYN (should RST &amp; close)
+
+22235 IF (tf AND $10)=0 THEN 22298 : REM not ACK
+
+22240 ts = 3 : sc = 200 : REM change state to established, count 200
+
+22298 RETURN
+
+
+: *********************************************************************
+: TCP established state
+
+22299 REM TCP established
+
+22300 IF sc=0 THEN ts = 1 : GOTO 22398 : REM count expired
+
+22305 IF sp&lt;&gt;ep THEN 22398 : REM ignore packets from wrong port
+22310 FOR i=0 TO 3 : IF si(i)&lt;&gt;ip($1A+i) THEN i = 4
+22315 NEXT : IF i=5 THEN 22398 : REM check sender's ip addr
+
+22320 GOSUB 22800 : IF fg THEN 22398 : REM ck rx seq#
+
+22325 IF (tf AND $04) THEN ts = 1 : sc = 0 : GOTO 22398 : REM reset
+22330 IF (tf AND $02) THEN 22398 : REM ignore SYN (should send reset)
+22335 IF (tf AND $10)=0 THEN 22398 : REM ignore no ACK
+
+22340 pp = td : GOSUB 22815 : REM set data pointer &amp; prepare TCP reply
+
+: now process the data from the block, data starts at pp
+
+22345 DO : td$ = "" : dl = 0 : REM clear data and data length
+22350 DO : b$ = CHR$(ip(pp)) : INC dl,pp : REM get byte inc ptr &amp; len
+22355 IF (b$&lt;&gt;cr$) AND (b$&lt;&gt;lf$) THEN td$ = td$+b$
+22360 LOOP UNTIL (pp&gt;(tl+$0E)) OR (dl=$FF) OR (b$=cr$)
+22365 IF LEFT$(td$,3)="GET" THEN GOSUB 22700 : REM do 'GET' response
+22370 LOOP UNTIL (pp&gt;(tl+$0E)) OR (td$="")
+
+22375 GOSUB 22925 : REM generate ACK for data
+22380 ip(ti+$0D) = ip(ti+$0D) OR $01 : DEC xd : REM flg FIN &amp; inc space
+
+22385 GOSUB 22845 : GOSUB 21800 : REM finalise TCP &amp; generate IP header
+22390 GOSUB 21700 : REM send the TCP packet along on its way
+
+22395 ts = 4 : sc = 200 : REM change state to fin_wait_1, count 200
+
+22398 RETURN
+
+
+: *********************************************************************
+: TCP FIN wait 1 state
+
+22399 REM TCP FIN wait 1
+
+22400 IF sc=0 THEN ts = 1 : GOTO 22498 : REM count expired
+
+22405 IF sp&lt;&gt;ep THEN 22498 : REM ignore packets from wrong port
+22410 FOR i=0 TO 3 : IF si(i)&lt;&gt;ip($1A+i) THEN i = 4
+22415 NEXT : IF i=5 THEN 22498 : REM check sender's ip addr
+
+22420 GOSUB 22800 : IF fg THEN 22498 : REM ck rx seq#
+
+22425 IF (tf AND $04) THEN ts = 1 : sc = 0 : GOTO 22498 : REM reset
+22430 IF (tf AND $02) THEN 22498 : REM ignore SYN (should send reset)
+22435 IF (tf AND $10)=0 THEN 22498 : REM ignore no ACK
+
+22440 IF (tf AND $01) THEN 22545 : REM ACK and close if FIN
+22445 ts = 5 : sc = 200 : REM change state to fin_wait_2, count 200
+
+22498 RETURN
+
+
+: *********************************************************************
+: TCP FIN wait 2 state
+
+22499 REM TCP FIN wait 2
+
+22500 IF sc=0 THEN ts = 1 : GOTO 22598 : REM count expired
+
+22505 IF sp&lt;&gt;ep THEN 22598 : REM ignore packets from wrong port
+22510 FOR i=0 TO 3 : IF si(i)&lt;&gt;ip($1A+i) THEN i = 4
+22515 NEXT : IF i=5 THEN 22598 : REM check sender's ip addr
+
+22520 GOSUB 22800 : IF fg THEN 22598 : REM ck rx seq#
+
+22525 IF (tf AND $04) THEN ts = 1 : sc = 0 : GOTO 22598 : REM reset
+22530 IF (tf AND $02) THEN 22598 : REM ignore SYN (should send reset)
+22535 IF (tf AND $10)=0 THEN 22598 : REM ignore no ACK
+
+22540 IF (tf AND $01)=0 THEN 22598 : REM exit if no FIN
+
+: now ACK the FIN and close
+
+22545 GOSUB 22815 : REM set data pointer &amp; prepare TCP reply
+22550 GOSUB 22920 : REM generate ACK for FIN
+22555 GOSUB 22845 : REM finalise TCP
+22560 GOSUB 21800 : REM generate IP header
+22565 GOSUB 21700 : REM send the TCP packet along on its way
+
+22570 ts = 1 : sc = 0 : REM change the state to listen, count 0
+
+22598 RETURN
+
+
+: *********************************************************************
+: generate HTTP response
+
+22700 RESTORE 32000 : REM set default page
+22705 IF MID$(td$,5,1)&lt;&gt;"/" THEN RESTORE 34040 : GOTO 22720
+22710 IF MID$(td$,6,6)="o.html" THEN RESTORE 32010 : GOTO 22720
+22712 IF MID$(td$,6,5)="e.gif" THEN RESTORE 35000 : GOTO 22780
+22714 IF MID$(td$,6,6)="b.html" THEN RESTORE 32020 : GOTO 22717
+22715 IF MID$(td$,6,1)&lt;&gt;" " THEN RESTORE 34040 : GOTO 22720
+
+: if it's b.html then check for user submission
+
+22717 IF MID$(td$,12,1)="?" THEN ? "User submitted "; MID$(td$,13,3)
+
+: now push the RESTOREd page into the buffer
+
+22720 DO
+22725 READ pg$
+22735 IF pg$="$" THEN pg$ = el$
+
+22740 pg = SADD(pg$) : REM get string address
+22745 FOR i=0 TO LEN(pg$)-1
+22750 ip(xl) = PEEK(pg+i)
+22755 INC xl : NEXT : REM put characters in the buffer
+
+22760 LOOP UNTIL pg$="&lt;/HTML&gt;"
+
+22765 td$ = "" : REM dump any further received data
+22770 RETURN
+
+22780 READ pg
+22785 DO : ip(xl) = pg : INC xl : READ pg : LOOP UNTIL pg=-1
+22790 GOTO 22765
+
+
+: *********************************************************************
+: check TCP sequence
+
+22800 fg = 0 : REM flag not false then check sequence
+22805 FOR i=0 TO 3 : fg = fg OR (rn(i) &lt;&gt; ip(ti+$04+i)) : NEXT
+22810 RETURN
+
+
+: *********************************************************************
+: prepare TCP reply
+
+22815 FOR i=$0 TO $3 : ip(ti+i+$4) = mq(i) : NEXT : REM save seq no.
+22820 ip(ti+$0C) = $50 : xd = ti+$14 : REM set length &amp; data start
+22825 xl = xd : REM set tx TCP total length
+22830 ip(ti+$0D) = $00 : REM clear flags
+22835 ip(ti+$12) = $00 : ip(ti+$13) = $00 : REM clear urgent pointer
+22840 RETURN
+
+
+: *********************************************************************
+: finalise TCP reply
+
+22845 SWAP ip(ti),ip(ti+2) : SWAP ip(ti+1),ip(ti+3) : REM swap ports
+22850 ip($10) = (xl-$0E)&gt;&gt;8 : ip($11) = (xl-$0E) AND $FF : REM IP len
+22855 ip(ti+$10) = $00 : ip(ti+$11) = $00 : REM clear checksum
+22860 GOSUB 21900 : REM do TCP checksum
+22865 ck = NOT ck : REM ones complement
+22870 ip(ti+$10) = ck&gt;&gt;8 : ip(ti+$11) = ck AND $FF
+22875 ip($16) = $3C : REM set time to live
+22880 GOTO 22975 : REM generate our next sequence number &amp; return
+
+
+: *********************************************************************
+: generate SYN
+
+22895 ip(ti+$0D) = ip(ti+$0D) OR $02 : REM flag SYN
+22900 ip(ti+$0C) = ip(ti+$0C)+$10 : REM inc header length for option
+22905 ip(xl) = $02 : INC xl : ip(xl) = $04 : INC xl : REM opt 2 len 4
+22910 ip(xl) = $02 : INC xl : ip(xl) = $00 : INC xl
+22912 xd = xl-1 : REM sequence space for our SYN
+22915 RETURN
+
+
+: *********************************************************************
+: generate ACK for SYN or FIN received
+
+22920 DEC td : REM increment data space for SYN or FIN
+
+: generate ACK for TCP data
+
+22925 GOSUB 22950 : REM add to received sequence number
+22927 FOR i=$0 TO $3 : ip(ti+$08+i) = rn(i) : NEXT : REM save ack no.
+22930 ip(ti+$0D) = ip(ti+$0D) OR $10 : REM flag ACK
+22935 ip(ti+$0E) = $05 : REM set window high byte
+22940 ip(ti+$0F) = $00 : REM set window low byte
+22945 RETURN
+
+
+: *********************************************************************
+: generate next received sequence number
+
+22950 aa = tl-td+$0E : REM calculate TCP data size
+22952 rn(3) = rn(3)+(aa AND $FF) : REM add size low byte
+22955 IF (rn(3) AND $100) THEN rn(3) = rn(3) AND $FF : INC rn(2)
+22957 rn(2) = rn(2)+(aa &gt;&gt; 8) : REM add size high byte
+22960 IF (rn(2) AND $100) THEN rn(2) = rn(2) AND $FF : INC rn(1)
+22962 IF (rn(1) AND $100) THEN rn(1) = rn(1) AND $FF : INC rn(0)
+22965 rn(0) = (rn(0) AND $FF)
+22970 RETURN
+
+
+: *********************************************************************
+: generate our next sequence number
+
+22975 aa = xl-xd : REM calculate TCP data size
+22977 mq(3) = mq(3)+(aa AND $FF) : REM add size low byte
+22980 IF (mq(3) AND $100) THEN mq(3) = mq(3) AND $FF : INC mq(2)
+22982 mq(2) = mq(2)+(aa &gt;&gt; 8) : REM add size high byte
+22985 IF (mq(2) AND $100) THEN mq(2) = mq(2) AND $FF : INC mq(1)
+22987 IF (mq(1) AND $100) THEN mq(1) = mq(1) AND $FF : INC mq(0)
+22990 mq(0) = (mq(0) AND $FF)
+22995 RETURN
+
+
+: *********************************************************************
+: default web page, served for "GET / "
+
+32000 DATA "HTTP/1.0 200 OK",$,"Content-Type: text/html",$,$
+32001 DATA "&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Mini WEB Server&lt;/TITLE&gt;&lt;/HEAD&gt;&lt;BODY BGC"
+32002 DATA "OLOR=#CC6502 TEXT=WHITE&gt;&lt;TABLE ALIGN=CENTER WIDTH=80% HEIG"
+32003 DATA "HT=90%&gt;&lt;TR&gt;&lt;TD VALIGN=CENTER&gt;&lt;FONT SIZE=+1&gt;Mini WEB Server"
+32004 DATA " &lt;/FONT&gt;- &lt;A HREF=b.html&gt;The button page&lt;/A&gt; - &lt;A HREF=o.h"
+32005 DATA "tml&gt;The other page&lt;/A&gt;&lt;P&gt;&lt;FONT SIZE=+4&gt;&lt;B&gt;Welcome&lt;/B&gt;&lt;/FON"
+32006 DATA "T&gt;&lt;FONT FACE=Courier&gt; - to the default page&lt;/FONT&gt;&lt;P&gt;&lt;A HR"
+32007 DATA "EF=mailto:leeedavison@lycos.co.uk&gt;&amp;nbsp;e-mail me &lt;IMG SRC"
+32008 DATA "=e.gif BORDER=0 ALT=e-mail&gt;&lt;/A&gt;&lt;/TABLE&gt;&lt;/BODY&gt;",&lt;/HTML&gt;
+
+ 
+: *********************************************************************
+: other web page, served for "GET /o.html" - note! case sensetive
+
+32010 DATA "HTTP/1.0 200 OK",$,"Content-Type: text/html",$,$
+32011 DATA "&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Mini WEB Server&lt;/TITLE&gt;&lt;/HEAD&gt;&lt;BODY BGC"
+32012 DATA "OLOR=#65CC02 TEXT=WHITE&gt;&lt;TABLE ALIGN=CENTER WIDTH=80% HEIG"
+32013 DATA "HT=90%&gt;&lt;TR&gt;&lt;TD VALIGN=CENTER&gt;&lt;FONT SIZE=+1&gt;Mini WEB Server"
+32014 DATA " &lt;/FONT&gt;- &lt;A HREF=&gt;The home page&lt;/A&gt; - &lt;A HREF=b.html&gt;The "
+32015 DATA "button page&lt;/A&gt;&lt;P&gt;&lt;FONT SIZE=+4&gt;&lt;B&gt;Welcome&lt;/B&gt;&lt;/FONT&gt;&lt;FONT"
+32016 DATA " FACE=Courier&gt; - to the other page&lt;/FONT&gt;&lt;P&gt;&lt;A HREF=mailto"
+32017 DATA ":leeedavison@lycos.co.uk&gt;&amp;nbsp;e-mail me &lt;IMG SRC=e.gif BO"
+32018 DATA "RDER=0 ALT=e-mail&gt;&lt;/A&gt;&lt;/TABLE&gt;&lt;/BODY&gt;",&lt;/HTML&gt;
+
+
+: *********************************************************************
+: the button page, served for "GET /b.html" - note! case sensetive
+
+32020 DATA "HTTP/1.0 200 OK",$,"Content-Type: text/html",$,$
+32021 DATA "&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Mini WEB Server&lt;/TITLE&gt;&lt;/HEAD&gt;&lt;BODY BGC"
+32022 DATA "OLOR=#065C02 TEXT=WHITE&gt;&lt;TABLE ALIGN=CENTER WIDTH=90% HEIG"
+32023 DATA "HT=90%&gt;&lt;TR&gt;&lt;TD VALIGN=CENTER&gt;&lt;FONT SIZE=+1&gt;Mini WEB Server"
+32024 DATA " &lt;/FONT&gt;- &lt;A HREF=&gt;The home page&lt;/A&gt; - &lt;A HREF=o.html&gt;The "
+32025 DATA "other page&lt;/A&gt;&lt;P&gt;&lt;FONT SIZE=+4&gt;&lt;B&gt;Welcome&lt;/B&gt;&lt;/FONT&gt;&lt;FONT "
+32026 DATA "FACE=Courier&gt; - to the button page&lt;/FONT&gt;&lt;P&gt;&lt;A HREF=mailto"
+32027 DATA ":leeedavison@lycos.co.uk&gt;&amp;nbsp;e-mail me &lt;IMG SRC=e.gif BO"
+32028 DATA "RDER=0 ALT=e-mail&gt;&lt;/A&gt;&lt;TD WIDTH=20% ALIGN=CENTER&gt;Are you e"
+32029 DATA "asily confused?&lt;FORM METHOD=GET ACTION=b.html&gt;&lt;PRE&gt;yes &lt;IN"
+32030 DATA "PUT TYPE=RADIO NAME=4 VALUE=0&gt;",$,"no  &lt;INPUT TYPE=RADIO N"
+32031 DATA "AME=4 VALUE=1&gt;",$,"fish&lt;INPUT TYPE=RADIO NAME=4 VALUE=2 CH"
+32032 DATA "ECKED&gt;&lt;/PRE&gt;&lt;INPUT TYPE=SUBMIT VALUE=Submit&gt;&lt;/FORM&gt;&lt;/TABLE"
+32033 DATA "&gt;&lt;/BODY&gt;",&lt;/HTML&gt;
+
+
+: *********************************************************************
+: error 404, served for everything else
+
+34040 DATA "HTTP/1.0 200 OK",$,"Content-Type: text/html",$,$
+34041 DATA "&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Error 404&lt;/TITLE&gt;&lt;/HEAD&gt;&lt;BODY BGCOLOR=#"
+34042 DATA "CC0265 TEXT=WHITE&gt;&lt;TABLE ALIGN=CENTER WIDTH=80% HEIGHT=90%"
+34043 DATA "&gt;&lt;TR&gt;&lt;TD VALIGN=CENTER&gt;&lt;FONT SIZE=+1&gt;Mini WEB Server &lt;/FON"
+34044 DATA "T&gt;- &lt;A HREF=&gt;The home page&lt;/A&gt;&lt;P&gt;&lt;FONT SIZE=+4&gt;&lt;B&gt;Error 40"
+34045 DATA "4&lt;/B&gt;&lt;/FONT&gt;&lt;FONT FACE=Courier&gt; - File not found&lt;/FONT&gt;&lt;P&gt;"
+34046 DATA "&lt;A HREF=mailto:leeedavison@lycos.co.uk&gt;&amp;nbsp;e-mail me &lt;IM"
+34047 DATA "G SRC=e.gif BORDER=0 ALT=e-mail&gt;&lt;/A&gt;&lt;/TABLE&gt;&lt;/BODY&gt;"
+34048 DATA &lt;/HTML&gt;
+
+
+: *********************************************************************
+: small image, served for "GET /email.gif" - note! case sensetive
+
+35000 DATA $48,$54,$54,$50,$2F,$31,$2E,$30,$20,$32,$30,$30,$20,$4F,$4B
+35001 DATA $0D,$0A,$43,$6F,$6E,$74,$65,$6E,$74,$2D,$54,$79,$70,$65,$3A
+35002 DATA $20,$69,$6D,$61,$67,$65,$2F,$67,$69,$66,$0D,$0A,$0D,$0A
+35003 DATA $47,$49,$46,$38,$39,$61,$10,$00,$10,$00,$C4,$00,$00,$F7,$00
+35004 DATA $5F,$33,$03,$9A,$33,$03,$CA,$03,$03,$83,$5F,$5F,$F7,$33,$63
+35005 DATA $FA,$63,$9B,$FB,$63,$CB,$FB,$03,$9B,$CB,$63,$FA,$FA,$FA,$FA
+35006 DATA $CB,$97,$00,$00,$CB,$03,$03,$FA,$FA,$FA,$63,$63,$63,$03,$03
+35007 DATA $03,$FF,$FF,$FF,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+35008 DATA $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+35009 DATA $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+35010 DATA $00,$00,$00,$00,$21,$F9,$04,$01,$00,$00,$10,$00,$2C,$00,$00
+35011 DATA $00,$00,$10,$00,$10,$00,$00,$05,$69,$20,$24,$8E,$C6,$91,$24
+35012 DATA $63,$9A,$96,$49,$11,$18,$AA,$28,$40,$85,$59,$40,$46,$A0,$3A
+35013 DATA $8E,$20,$20,$07,$01,$6F,$38,$7C,$38,$1A,$3F,$84,$40,$C1,$6C
+35014 DATA $36,$8D,$C8,$02,$62,$E0,$64,$02,$18,$0A,$E8,$60,$BB,$AD,$32
+35015 DATA $16,$D9,$63,$A3,$51,$2D,$43,$C9,$E5,$EA,$B9,$2C,$28,$B8,$A9
+35016 DATA $D0,$B4,$42,$70,$82,$3B,$E4,$F3,$7A,$F8,$C1,$EF,$F3,$05,$26
+35017 DATA $5B,$7C,$2A,$2F,$10,$02,$25,$37,$03,$31,$10,$04,$01,$05,$06
+35018 DATA $06,$37,$8B,$23,$01,$03,$6D,$31,$21,$00,$3B,-1
+
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 7th September, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish421d2b2f" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=421d2b2f&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

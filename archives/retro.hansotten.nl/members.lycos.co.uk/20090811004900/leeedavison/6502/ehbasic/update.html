@@ -1,0 +1,182 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish675a3dc7{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish675a3dc7{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip675a3dc7{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad675a3dc7"></div>
+<html><head><title>Enhanced BASIC, update</TITLE>
+<meta name="description" content="An advanced BASIC interpreter for the 6502
+ microprocessor."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="index.html#link_1" webstripperlinkwas="index.html#link_1"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER><b><font size=+1>Enhanced BASIC, update </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+<img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+ <b>New Version 2.xx is here!...</B><p align=JUSTIFY>
+ Download version 2.10
+ <a href="source." webstripperlinkwas="source.zip">source <img src="../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../zip_sm.png" alt="Download" border=0></A>
+<p align=JUSTIFY>
+<a name=090301></A>
+<b>1st March 2009.</B>
+<a name=050407></A>
+<blockquote><p align=JUSTIFY>
+ Somewhere back in version 1.xx some changes were made that never got integrated into
+ the main source. Those changes are now done.
+<p align=JUSTIFY>
+ Version number is now 2.10
+</BLOCKQUOTE>
+<b>7th April 2005.</B>
+<blockquote><p align=JUSTIFY>
+ With no job taking up 40 hours a week you'd think I'd have more time, strange how it
+ seems I have less but I guess that's the way it goes.
+<p align=JUSTIFY>
+ Lots of changes, some small, some large. How BASIC handles functions internally has
+ changed significantly with some major advantages for me, the code is far more easy to
+ manage, and speed advantages for the user, about seventy cycles per value fetched. This
+ doesn't sound a lot but means about 140 cycles saved for any function that requires a
+ value, and that's most of them.
+<p align=JUSTIFY>
+ The RND() function has been changed and now uses the Galois method to generate the
+ sequence and, as a consequence, this series has now been extended to a maximal length 32
+ bit series. This is about as good as any 32 bit pseudo ramdom generator can get without
+ using more bits, or more time, and quite a lot of work went into addressing the
+ shortcommings of other generators. It is no co-incidence that this generator now
+ generates exactly the same sequence of numbers as that used in the
+ <a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/68k/ehbasic/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/68k/ehbasic/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/68k/ehbasic/index.html">680x0</A> version of EhBASIC.
+<p align=JUSTIFY>
+ Some <i>undocumented features</I> were removed and the USR() function has been changed
+ slightly. I really must document that.
+<p align=JUSTIFY>
+ Included with the source for EhBASIC is a minimal monitor to allow you to run EhBASIC
+ on <a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://home.pacbell.net/michal_k/?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://home.pacbell.net/michal_k/'}else{href='javascript:void(0)'}" webstripperwas="http://home.pacbell.net/michal_k/">Michal Kowalski's 6502 simulator</A>.
+ This also serves as an example of the minimal support code needed to run EhBASIC on
+ other systems.
+<p align=JUSTIFY>
+ Lastly, the pre assembled versions have been dropped.
+<p align=JUSTIFY>
+ Version number is now 2.09
+</BLOCKQUOTE>
+<p align=JUSTIFY>
+<a name=030714></A>
+<b>14th July 2003.</B>
+<blockquote>
+ Has it really been nearly a year since the last update? Doesn't seem like it. Most of
+ this time has been taken with developing EhBASIC for the <a href="../suprchips/index.html" webstripperlinkwas="../suprchips/index.html">Mitsubishi 740 family</A>, a 65C02 compatable cored
+ microcontroller, and a port for the <a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/68k/ehbasic/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/68k/ehbasic/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/68k/ehbasic/index.html">680x0
+ processor</A>. As it's been so long a couple of version numbers have been skipped,
+ these were never released.
+<p align=JUSTIFY>
+ The biggest change is that all keyword handling is now done with a dictionary instead
+ of a simple list. The advantage to this is that line parsing and listing are much faster,
+ in some cases nearly 100 times faster, and changes to keywords are now easier to do.
+<p align=JUSTIFY>
+ Another change is the way the FOR ... NEXT loop operates internally. It no longer looks
+ for current loops with the same loop variable when a FOR is executed. The advantage is
+ faster code in a lot of places, the disadvantage is that if you jump out of a loop the
+ stack space is never recovered. Since that's a no-no anyway I've chosen to leave it like
+ that.
+<p align=JUSTIFY>
+ Finally EhBASIC now announces the version number at startup. Any other changes are minor
+ and are to improve speed, function or size.
+<p align=JUSTIFY>
+ Version number is now 1.10
+</BLOCKQUOTE>
+<a name=020725></A>
+<b>25th July 2002.</B>
+<blockquote>
+ Just a small update. The addresses where values for HEX$() or BIN$() have been changed.
+ This frees up two bytes in page zero and is this ...
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+nums_1		= $E0		; number to bin/hex string convert MSB
+nums_2		= nums_1+1	; number to bin/hex string convert
+nums_3		= nums_1+2	; number to bin/hex string convert LSB
+</PRE>
+</TD></TR></TABLE>
+</P>
+ ... becomes ...
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+nums_1		= Itempl	; number to bin/hex string convert MSB
+nums_2		= nums_1+1	; number to bin/hex string convert
+nums_3		= nums_1+2	; number to bin/hex string convert LSB
+</PRE>
+</TD></TR></TABLE>
+</P>
+ This is done in version 1.05
+</BLOCKQUOTE>
+<a name=020708></A>
+<b>8th July 2002.</B>
+<blockquote>
+ This is a re-write of the <a href="language.html#BIN" webstripperlinkwas="language.html#BIN">BIN$()</A> and
+ <a href="language.html#HEX" webstripperlinkwas="language.html#HEX">HEX$()</A> functions. This frees up 8 bytes from page zero as
+ well as being a little quicker. The downside is code length which is up slightly to
+ 9600 bytes ($2580 bytes).
+<p align=JUSTIFY>
+ Examples of the speed increase are ..<p align=JUSTIFY>
+<table cellspacing=0 border=1 bgcolor=white>
+<tr><td>
+<table cellspacing=5 border=0 bgcolor=white>
+<tr>
+<td colspan=4 align=CENTER> Cycle times for <b>HEX$(57005)</B> and <b>BIN$(57005)</B></TD>
+</TR>
+<tr>
+<td>Function</TD>
+<td align=CENTER>Before</TD>
+<td align=CENTER>After</TD>
+<td align=CENTER>Saving</TD>
+</TR>
+<tr>
+<td>HEX$()</TD>
+<td>686 cycles</TD>
+<td>465 cycles</TD>
+<td>221 cycles (110uS @ 2MHz - 32%)</TD>
+</TR>
+<tr>
+<td>BIN$()</TD>
+<td>1700 cycles</TD>
+<td>1079 cycles</TD>
+<td>621 cycles (310uS @ 2MHz - 37%)</TD>
+</TR>
+</TABLE>
+</TR></TD>
+</TABLE>
+<p align=JUSTIFY>
+ The other change is that both binary and Motorola hex versions are also available for
+ download.
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 1st March, 2009.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish675a3dc7" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=675a3dc7&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

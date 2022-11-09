@@ -1,0 +1,94 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish256c9923{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish256c9923{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip256c9923{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad256c9923"></div>
+<html><head><title>6502 Shorts - 8 bit rotates</TITLE></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=20%><a href="index.html" webstripperlinkwas="index.html">
+  <img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER>
+<b><font size=+1>8 bit rotates. </FONT></B>
+<font size=-1>By Lee Davison.</FONT>
+</TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<b><u>Introduction.</U></B>
+<blockquote>
+ ROR and ROL both rotate a byte through the carry giving, in effect, a nine bit rotate.
+ Sometimes an eight bit rotate is needed, as shown in the diagram below.
+<br><br><center>
+<img src="rot8.png" webstripperlinkwas="rot8.png" border=1 alt="ROL and ROR are really nine bit operations">
+</CENTER><p align=JUSTIFY>
+ Here is a way to make those rotates effectively eight bit.
+</BLOCKQUOTE>
+<b><u>The code.</U></B>
+<blockquote><p align=JUSTIFY>
+ To make ROR an eight bit shift b0 must be duplicated in the carry bit, the easiest way
+ to do this is to shift the byte but that alters it so first make a copy, rotate the
+ byte, restore the copy and do the eight bit rotate thus ..<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	TAX			; save byte
+	ROR	A		; b0 into Cb		
+	TXA			; restore byte
+	ROR	A		; eight bit rotate	
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ Not particularly elegant but does have the advantage that it takes the same number of
+ cycles whatever the state of b0 before the rotate. If no register is available the stack
+ can be used instead like this ..<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	PHA			; save byte
+	ROR	A		; b0 into Cb		
+	PLA			; restore byte
+	ROR	A		; eight bit rotate	
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ To make ROL behave like an 8 bit shift the sense of the sign bit must be reflected in
+ the carry bit before the shift is done. this is much easier and can be done thus ..<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	CMP	#$80		; copy b7 into Cb	
+	ROL	A		; eight bit rotate
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 21st January, 2005.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish256c9923" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=256c9923&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

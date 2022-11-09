@@ -1,0 +1,141 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish454cfa52{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish454cfa52{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip454cfa52{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad454cfa52"></div>
+<html><head><title>6502 NOP generator</TITLE>
+<meta name="description" content="6502 NOP generator."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/6502/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/6502/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/6502/index.html"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER><b><font size=+1>6502 NOP generator. </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR>
+<tr><td colspan=2 align=LEFT><b>First posted on</B> <a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://www.6502.org/?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://www.6502.org/'}else{href='javascript:void(0)'}" webstripperwas="http://www.6502.org/">
+ <img src="../6502org.png" webstripperlinkwas="../6502org.png" border=0 alt="www.6502.org"></A></TD></TR></TABLE>
+<hr>
+<b><u>Hardware.</U></B>
+<center>
+<b>6502 NOP generator circuit.</B><br><br>
+ <img src="nopgen.png" webstripperlinkwas="nopgen.png" title="6502 NOP generator" border=1>
+</CENTER>
+<blockquote><p align=JUSTIFY>
+ Here's a simple circuit, built from bits in the junk box, that has saved many hours of
+ head scratching when that just finished new 6502 circuit failed to work first time. 
+<p align=JUSTIFY>
+ What does it do? Well nothing much, in fact a lot of nothing much's as it pulls the data
+ lines on a 6502 to the NOP ($EA) opcode.
+<p align=JUSTIFY>
+ The circuit is built on a small piece of stripboard that has been soldered onto a 28 pin
+ turned pin I.C. socket. This is the only important part of the project, use decent (i.e.
+ stiff and thin) pins. Don't be tempted to use IDC header type pins, as they are too thick
+ and will ruin the socket you push them into. If you have them use I.C. header pins, I
+ didn't but a turned pin socket, used as a header, is just as good.
+<p align=JUSTIFY>
+ The two diodes, I used 1N4148s but any small signal or shottky diode will do, are to
+ allow the use of this generator in either 24 or 28 pin sockets. If you are only ever
+ going to use one type then the diodes can be omitted and the 1k resistor tied directly
+ to the +5v pin. 
+<p align=JUSTIFY>
+ The 1k resistor is used to pull up the five data lines that need to be at logic 1, I
+ could have used five 4k7 resistors but I'm lazy. This works just as well. 
+<p align=JUSTIFY>
+ The 47R resistor in the pull down path is just there to limit any possible ground path
+ fault current to around 100mA, while still providing a firm logic 0 to the data bus.
+ Any value from 33 to 100 ohms should do just as well. 
+</BLOCKQUOTE>
+<center>
+<b>The finished board.</B><br><br>
+ <img title="The finished board." src="nopgen.jpg" webstripperlinkwas="nopgen.jpg" border=1>
+</CENTER>
+<br>
+<p align=JUSTIFY>
+<b><u>Using it.</U></B>
+<center>
+<b>In use.</B><br><br>
+ <img title="In use." src="inuse.jpg" webstripperlinkwas="inuse.jpg" border=1>
+</CENTER>
+<blockquote><p align=JUSTIFY>
+ So your latest 6502 whizzymajig is DOA. Even a short test program doesn't seem to work.
+ So how will this help? 
+<p align=JUSTIFY>
+ Replacing the system ROM with the NOP board, and with the help of a logic probe, allows
+ you to verify that you at least got all the data lines connected and in the right order.
+ While you're there you can also check the data lines to the RAM, I/O and any other chips
+ that connect to the data bus. 
+<p align=JUSTIFY>
+ So the data lines are all connected ok, now on to dynamic testing. With just the CPU and
+ the NOP gen the CPU should do a read cycle at all 65536 addresses in sequence. If you
+ have a scope with at least an external trigger, or better yet with two channels, you can
+ trigger from some known signal and see if other signals are behaving as expected. 
+</BLOCKQUOTE>
+<center>
+<b>Example signals.</B><br><br>
+ <img title="32K RAM select." src="32kram.jpg" webstripperlinkwas="32kram.jpg" border=1>
+ <img title="32K ROM select." src="32krom.jpg" webstripperlinkwas="32krom.jpg" border=1>
+</CENTER>
+<blockquote><p align=JUSTIFY>
+ For example, if you trigger off the falling edge of A15 and set your scope to display the
+ whole A15 low/high cycle in eight divisions of your scope screen then each division
+ becomes 8k wide. From this you can easily see if chip select and other decode signals are
+ at least in the right part of the address range. 
+<p align=JUSTIFY> 
+ If you trigger of an edge of A15 and set your scope to display the low, or high, half of
+ the cycle in eight divisions then each division becomes 4k. With this you can easily see
+ the 2k block of memory that is NOT decoded for the ROM because that is where the I/O
+ lives.
+</BLOCKQUOTE>
+<center>
+ <img title="Phase 2 access." src="phase2.jpg" webstripperlinkwas="phase2.jpg" border=1>
+</CENTER>
+<blockquote><p align=JUSTIFY>
+ You can also trigger off faster signals, such as phase 02, and check individual access
+ cycles to particular devices.
+<p align=JUSTIFY>
+ Even if you don't have a scope you can still do some basic dynamic tests. Using a piezzo
+ sounder connect between A15 and ground, you should (just) hear a low pitch buzz. This
+ will be about 15Hz on a 1MHz 6502 and 30Hz on a 2MHz 6502. You can then step through each
+ line in turn and the pitch should double each time. Once the pitch gets too high to hear
+ you can use a lower clock to check the lower address lines. You can also check the 
+ connection of other devices to the address bus by connecting one wire from the sounder
+ to an address line on the CPU and the other wire to the corresponding address on the ROM,
+ RAM or I/O chip. If all is well you should hear nothing, if there is a wrong connection
+ you should hear a tone. 
+<p align=JUSTIFY>
+ If you need to test write cycle decoding then lift the R/W pin on the CPU and tie the R/W
+ line to 0v. The processor will still do read cycles but the decode logic will see them as
+ write cycles. 
+<p align=JUSTIFY>
+ There are probably many ways to improve this circuit but it was built from scrap, to do
+ one thing, in about twenty minutes. I've found it very useful, I hope you do too. 
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 29th August, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish454cfa52" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=454cfa52&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

@@ -1,0 +1,130 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish409ed90e{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish409ed90e{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip409ed90e{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad409ed90e"></div>
+<html><head><title>Network interface</TITLE>
+<meta name="description" content="6502 network driver."></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=25%><a href="../index.html#network" webstripperlinkwas="../index.html#network">
+  <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td align=CENTER>
+<b><font size=+1>Network interface. </FONT></B><font size=-1>by Lee Davison</FONT>
+</TD><td width=25%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<img src="rtcard.jpg" webstripperlinkwas="rtcard.jpg" align=RIGHT border=1 usemap="#Map" alt="Live Realtek 8019 network card." hspace=8>
+<table border=0 cellspacing=0 cellpadding=0 align=CENTER>
+<tr valign=MIDDLE><td align=RIGHT><b>As <a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://slashdot.org/article.pl?sid=03/08/16/1226253&mode=thread&tid=126&tid=156&tid=95&tid=96&tid=99?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://slashdot.org/article.pl?sid=03/08/16/1226253&mode=thread&tid=126&tid=156&tid=95&tid=96&tid=99'}else{href='javascript:void(0)'}" webstripperwas="http://slashdot.org/article.pl?sid=03/08/16/1226253&mode=thread&tid=126&tid=156&tid=95&tid=96&tid=99">featured</A>
+ on&nbsp;</B></TD><td align=LEFT width=136><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://slashdot.org?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://slashdot.org'}else{href='javascript:void(0)'}" webstripperwas="http://slashdot.org"><img src="slashdot.gif" webstripperlinkwas="slashdot.gif" border=0 vspace=2 alt="Go to Slashdot"></A>
+</TD></TR><tr><td colspan=2 align=CENTER><i>Read a <a href="comments.html" webstripperlinkwas="comments.html">sample</A> of
+ the comments.</I></TD></TR></TABLE>
+<b><u>Introduction</U></B>
+<blockquote><p align=JUSTIFY>
+ I've seen a few web-server-on-a-micro projects which are good, but usually use a bit
+ banged serial port and SLIP or PPP via some other machine to get onto the network proper.
+ I wanted something I could plug into an ethernet port on my home network without needing
+ another, intermediate, machine.
+</BLOCKQUOTE>
+<b><u>Hardware</U></B>
+<blockquote><p align=JUSTIFY>
+ Deciding what network chip to use was a choice between 3com Etherlink III, generic 8390
+ and Realtek 8019AS. As I'd seen projects that used the 8019AS and I have three cards the
+ same I decided to use the Realtek cards.
+<p align=JUSTIFY>
+ After getting the software to run on the Realtek cards I eventually looked into using
+ the 3Com cards of various types that I have. Investigation revealed that the 3C509B can
+ work in 8 bit mode but would need a small hardware change to access an ID port, this is
+ needed to initialise the card. As I have a few 3C509Bs of various types I made the
+ change and re-wrote the code to drive them. Both versions are available.
+<p align=JUSTIFY>
+ If you do decide to use a PC network card like I have, make sure that..
+<blockquote>
+<li>It works (one of my cards doesn't though it seems to).
+<li>It is configured for the expected I/O range and interrupt ($03xx and IRQ4 in this case).
+<li>It is configured for the media type you're going to use (BNC, twisted pair or AUI).
+</BLOCKQUOTE>
+<p align=JUSTIFY>
+ I chose to use the SuprChip V as the developement platform for two reasons. First, I was
+ already involved in developing software on it, and second, it was the easiest target to
+ build the <a href="../isa/index.html" webstripperlinkwas="../isa/index.html">ISA</A> slot for.
+<p align=JUSTIFY>
+ As it runs EhBASIC that part of the code should port to any 6502 EhBASIC system without
+ too much trouble (interrupts being the only real difference) and the assembly code that
+ actually drives the card depends on the system used so would probably need changing in
+ any case.
+</BLOCKQUOTE>
+<br clear=ALL>
+<img src="flow.png" webstripperlinkwas="flow.png" align=RIGHT border=1 alt="Flowchart of main program loop" hspace=8>
+<b><u>Software</U></B>
+<blockquote><p align=JUSTIFY>
+ Two assembly routines are used that allow EhBASIC easy access to the slot. Details about
+ them can be found <a href="../isa/slot_drv.html" webstripperlinkwas="../isa/slot_drv.html">here</A>.
+<p align=JUSTIFY>
+<a name="pages"></A>
+ The rest of the software is written in EhBASIC and, while it's not particularly fast
+ or pretty, does support ARP, ICMP echo requests (aka PING) and can serve one of
+ <s>three</S> <a href="pages.html" webstripperlinkwas="pages.html">four web pages</A> via TCP port 80.
+<p align=JUSTIFY>
+ The program spends its idle time just waiting for a packet to arrive. Once a packet is
+ flagged (this is done by the interrupt service routine) it is checked against known
+ types and processed as needed. When this has been done the NIC buffer is checked for any
+ pending packets and they are processed as needed. If the NIC buffer is empty then the
+ program returns to the idle loop and waits for the next packet to arrive.
+<p align=JUSTIFY>
+ The TCP handler is not a full TCP stack, it can only handle one passively opened thread,
+ and does not time wait on closing due to limited resources. It also ignores out of
+ sequence, repeated or error packets where it should send a RST. The other shortfall is
+ that it can only handle unfragmented data so is limited to less than 1500 bytes for both
+ receive and transmit.
+</BLOCKQUOTE>
+<a name="source"></A>
+<b><u>Source</U></B>
+<blockquote><p align=JUSTIFY>
+ There are now two versions of the source available, the original version for the Realtek
+ 8019AS cards and the newer version for the 3Com 3C509B cards. You can either download
+ them as zipped text files or view them as html.
+<blockquote>
+ <li> 8019AS source code - <a href="source.html" webstripperlinkwas="source.html">View</A> or <a href="source." webstripperlinkwas="source.zip">download<img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" alt="Download" border=0></A>
+ <li> 3C509B source code - <a href="3c509b.html" webstripperlinkwas="3c509b.html">View</A> or <a href="3c509b." webstripperlinkwas="3c509b.zip">download<img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" alt="Download" border=0></A>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 7th September, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE>
+<map name="Map"> 
+ <area shape="poly" href="index.html" webstripperlinkwas="index.html" alt="I2C clock memory card" coords="143,121, 145,63, 166,55, 163,107, 143,121">
+ <area shape="poly" href="index.html" webstripperlinkwas="index.html" alt="Realtek 8019AS card" coords="40,77, 159,38, 158,94, 52,150, 40,77">
+ <area shape="poly" href="../isa/index.html" webstripperlinkwas="../isa/index.html" alt="SuprChip to ISA board" coords="57,149, 140,102, 182,116, 111,167, 57,149">
+ <area shape="poly" href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/misc/lazyprom/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/misc/lazyprom/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/misc/lazyprom/index.html" alt="LazyPROM EPROM emulator" coords="192,171, 199,162, 201,148, 225,126, 231,127, 231,119, 233,119, 238,105, 241,105, 242,109, 237,120, 237,128, 243,130, 243,150, 256,153, 234,186, 192,171">
+ <area shape="poly" href="../index.html" webstripperlinkwas="../index.html" alt="SuprChip V microcontroller" coords="255,220, 131,175, 133,158, 170,131, 177,134, 177,147, 277,178, 255,220">
+ <area shape="rectangle" href="setup.html" webstripperlinkwas="setup.html" alt="Click for bigger image" coords="0,0, 320,240">
+</map></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish409ed90e" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=409ed90e&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

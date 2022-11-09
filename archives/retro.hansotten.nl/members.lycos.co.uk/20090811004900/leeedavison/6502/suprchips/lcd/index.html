@@ -1,0 +1,92 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish2f457c5f{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish2f457c5f{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip2f457c5f{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad2f457c5f"></div>
+<html><head><title>SuprDupr driver for LCD port</TITLE>
+<meta name="description" content="An LCD driver for the SuprDupr.">
+</HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=25%>
+<a href="../index.html#lcd" webstripperlinkwas="../index.html#lcd"><img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER><b><font size=+1>LCD port driver </FONT></B>
+<font size=-1>by Lee Davison</FONT></TD><td width=25%>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<b><u>Introduction.</U></B>
+<img src="sdpr_lcd.jpg" webstripperlinkwas="sdpr_lcd.jpg" align=RIGHT border=1 alt="SuprDupr with graphics LCD" hspace=8>
+<blockquote><p align=JUSTIFY>
+ The SuprDupr has a port wired to enable use of many inteligent LC displays. The
+ display, pictured right, is an LC7980 type though most of the other graphics and
+ text types are similarly driven.
+<p align=JUSTIFY>
+ One change needed to be made to the SuprDupr to use this display and that was to
+ disconnect the earthy end of the contrast pot from 0v and connect it to the -ve
+ charge pump output on the MAX232 chip. This is because the greater multiplex on
+ these graphics displays requires a more -ve bias to maintain the viewing angle.
+<p align=JUSTIFY>
+ A down side to this is that display contrast is effected by the loading on the
+ RS232 port and use of such things as a RS232 line monitor can have an adverse
+ effect on the display. Also if the load from the display is to great then the
+ MAX232 charge pump will not start. However this <i>should</I> not be a problem in
+ normal use.
+<p align=JUSTIFY>
+ Another change made to the SuprDupr was to wire +12v to the spare pin on the LCD
+ port to provide power for the backlight. This could be connected through a PNP
+ transistor and controlled by software via one of the port pins.
+</BLOCKQUOTE>
+<p align=JUSTIFY>
+<b><u>Software.</U></B>
+<blockquote><p align=JUSTIFY>
+ The software is unfinished and provided as a starting point for anyone who wishes
+ to make their own. It is usable and was used to produce the displays pictured above
+ and below.
+<p align=JUSTIFY>
+</BLOCKQUOTE>
+<a name="source"></A>
+<b><u>The source</U></B>
+<blockquote>
+ <a href="asm.html" webstripperlinkwas="asm.html">View</A> or <a href="asm." webstripperlinkwas="asm.zip">download <img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" border=0 alt="Download"></A> driver .asm file<br>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<center>
+<table align=CENTER>
+<tr><td colspan=2 align=CENTER><b><u>Example displays</U></B></TD></TR><tr><td>
+<img src="demo_01.png" webstripperlinkwas="demo_01.png" border=1 alt="30 x 5 text" hspace=8 vspace=8></TD><td>
+<img src="demo_02.png" webstripperlinkwas="demo_02.png" border=1 alt="34 x 5 text" hspace=8 vspace=8>
+</TD></TR><tr><td>
+<img src="demo_03.png" webstripperlinkwas="demo_03.png" border=1 alt="40 x 5 text" hspace=8 vspace=8></TD><td>
+<img src="demo_04.png" webstripperlinkwas="demo_04.png" border=1 alt="240 x 40 graphics" hspace=8 vspace=8>
+</TD></TR></TABLE>
+</CENTER>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 28th April, 2004.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish2f457c5f" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=2f457c5f&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

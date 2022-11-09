@@ -1,0 +1,121 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish5a4ef4ea{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish5a4ef4ea{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip5a4ef4ea{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad5a4ef4ea"></div>
+<html><head><title> Memory Plus manual </TITLE></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<a href="01.html" webstripperlinkwas="01.html"><img src="index.png" webstripperlinkwas="index.png" align=RIGHT border=0 alt="Index"></A>
+<b><font size=+2>MEMORY PLUS Manual </FONT></B><font size=-2>By Lee Davison</FONT>
+<br clear=all>
+<br>
+<a href="19.html" webstripperlinkwas="19.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="21.html" webstripperlinkwas="21.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 20
+</CENTER>
+<br clear=all>
+<hr>
+ <pre>
+
+				    RAM Memory Test
+
+	You should test the MEMORY PLUS RAM when you initially set up your system.
+	You may also want to test it from time-to-time to make sure it is all still
+	working properly.  And, of course, you will want to test it whenever you have
+	any reason to suspect that it may not be working right.  The following memory
+	test is based on the work cited under "NOTES" on page 24.
+
+	"Testing RAM isn't just a question or storing a value and then checking it.  It's
+	important to test for interference between locations.  Such tests often involve
+	writing to one location and then checking all other locations to see they haven't
+	been disturbed; this can be time consuming.
+
+	This program checks memory thoroughly and runs exceptionally fast.  It is adapted
+	from an algorithm by Knaizuk and Hartmann published in "IEEE Transactions on
+	Computers", April 1977.
+
+	The program first puts value FF in every location under test.  Then it puts 00
+	in every third location, after which it tests all locations for correctness.
+	The test is repeated twice more with the positions of the 00's changed each
+	time.  Finally, the whole thing is repeated with the FF and 00 values inter-
+	changed.
+
+	To Run:  Set the addresses of the first and last memory pages you wish to test
+	into locations 0000 and 0001 respectively.  Start the program at address 0002;
+	it will halt with a memory address on the display.  If no faults were found,
+	the address will be one location past the last address tested.  If a fault is
+	found, its address will be displayed."
+
+	The MEMORY PLUS version of the memory test is set up to test from page 20
+	(2000 hex) through page 3F (3FFF hex).  After loading the program from the
+	cassette tape (or by hand), set address 0002 and press GO.  If the memory
+	checks out completely, then after a few seconds the display will show the
+	address 4000 in the address portion of the display.  If an error is detected,
+	then the address containing the error will be displayed.  Since the program
+	will halt at the first detected error, there is no way to test for additional
+	errors within a page beyond the first error.  You can test other pages by
+	changing the starting and ending page addresses in locations 0000 and 0001.
+	The program may be re-run any number of times by restarting it at location
+	0002.
+
+
+
+	Once a bad location has been detected, you can examine the location via the
+	MICRO Monitor and perhaps determine the problem. For example, if the location
+	has a data value of 7F, it would indicate that the most significant bit was
+	not working.  Refering to the Memory organization drawing you could determine
+	which 2102 chip was responsible for this bit.  Since the RAM chips are all
+	socketted, it is a simple matter to remove the suspect chip and replace it
+	with another chip.  Even if you do not have any spare 2102 chips handy, you
+	can swap the suspect chip with another chip and see if the problem moves with
+	the chip or stays in the same location.  IMPORTANT NOTE:  Turn the power off
+	when removing any chips, otherwise you may destroy the memory chips.  If the
+	problem moves with the chip, then the solution is to get a replacement chip.
+	If the problem does not move with the chip, then you must look elsewhere for
+	the solution.
+
+	The next test would be to swap the 74LS367 chips and see if the problem shifted.
+	Then the 74LS138 chips could be swapped.  Finally you could replace the 74LS00,
+	74LS32, or 74LS04 chips.  Note that the replacements do not have to be "LS" type.
+	One of the above chip replacements should solve 99% of the problems which occur
+	in the field.
+
+ </PRE>
+<br clear=all>
+<hr>
+<a href="19.html" webstripperlinkwas="19.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="21.html" webstripperlinkwas="21.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 20
+</CENTER>
+<br clear=all>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 8th December, 2002.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish5a4ef4ea" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=5a4ef4ea&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

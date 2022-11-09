@@ -1,0 +1,127 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish0cb53e31{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish0cb53e31{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip0cb53e31{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad0cb53e31"></div>
+<html><head><title>Vic 20 network interface</TITLE>
+<meta name="description" content="Vic 20 network interface"></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=25%><a href="../index.html#network" webstripperlinkwas="../index.html#network">
+  <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td align=CENTER>
+<b><font size=+1>Vic 20 network interface </FONT></B><font size=-1>by Lee Davison</FONT>
+</TD><td width=25%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<b><u>Introduction</U></B>
+<img src="network.jpg" webstripperlinkwas="network.jpg" align=RIGHT border=1 alt="Live Vic 20 network
+  card screenshot" hspace=8>
+<blockquote><p align=JUSTIFY>
+ This is a developement of my <a href="../../suprchips/network/index.html" webstripperlinkwas="../../suprchips/network/index.html">SuprChip V
+ network interface</A> for the Vic 20. So now I can plug my Vic 20 into an ethernet port
+ on my home network.
+<p align=JUSTIFY>
+ As far as I know this is the first ever ethernet equipped Vic 20 and the first Vic 20
+ web server. It may not be much use as such but shows that just because something is
+ twenty years old, and not to well specified compared to today's PCs, doesn't mean it
+ gets relegated to holding doors open.
+<p align=JUSTIFY>
+ I did this for the Vic 20 to see if I could and because I have a Vic 20 or two not doing
+ much. I also thought the <a href="../isa/index.html" webstripperlinkwas="../isa/index.html">ISA card slot</A> and <a href="../rom_ram/index.html" webstripperlinkwas="../rom_ram/index.html">ROM/RAM expansion</A> may be usefull for something else
+ someday.
+</BLOCKQUOTE><br clear=ALL>
+<b><u>Hardware</U></B>
+<img src="cardmac.jpg" webstripperlinkwas="cardmac.jpg" align=RIGHT border=1 alt="Woohoo! The MAC address in the
+ screenshot above is correct!" hspace=8>
+<blockquote><p align=JUSTIFY>
+ I decided straight off to use a 3Com 3C509B network interface card for two reasons. First
+ I seem to have a shed load of the things, and second the code is easier because the 3Com
+ card handles much of the housekeeping needed with an NE2000 type NIC.
+<p align=JUSTIFY>
+ If you do decide to use some other PC network card make sure that..
+<blockquote>
+<li>It works (try it in a PC first).
+<li>The I/O range and interrupt are configured.
+<li>The media type is configured.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<br clear=ALL>
+<b><u>Software</U></B>
+<img src="flow.png" webstripperlinkwas="flow.png" align=RIGHT border=1 alt="Flowchart of main program loop" hspace=8>
+<blockquote><p align=JUSTIFY>
+<a name="pages"></A>
+ The software is written entirely in assembler for a number of reasons. Vic BASIC doesn't
+ directly support interrupts so I would need to use assembly code for that, the Vic BASIC
+ <a name=poke href="vicpoke.html" webstripperlinkwas="vicpoke.html">POKE</A> command doesn't quite work as expected, so that
+ would also need to be patched, and it's easier for me to make a ROM than LOAD & SAVE from
+ BASIC on the Vic.
+<p align=JUSTIFY>
+ The software as it is supports ARP, ICMP echo requests (aka PING) and can serve one of
+ <a href="pages.html" webstripperlinkwas="pages.html">three web pages</A>, three image files and two HTTP error responses
+ via TCP port 80. To support the web serving a <a href="../../filesys/index.html" webstripperlinkwas="../../filesys/index.html">simple
+ ROM filesystem</A> was designed and implemented.
+<p align=JUSTIFY>
+ With the limited RAM available a single buffer is used for holding packets, this buffer
+ is large enough to contain one maximum size packet. When a packet is received it is
+ copied to the buffer and processed there, the outgoing packet is constructed in the same
+ buffer and overwrites the received packet. This has not been a problem so far.
+<p align=JUSTIFY>
+ A flag is used to indicate the arrival of a packet and to prevent the buffer being
+ overwritten by new packets before the data has been processed. Packets received when
+ the buffer is in use are queued by the network card. Most network cards have buffers
+ that are large enough to hold four maximum sized ethernet packets. Once the packet
+ processing is complete the flag is cleared and the buffer is free to receive the next
+ packet.
+<p align=JUSTIFY>
+ The program spends its idle time just waiting for a packet to arrive and keeping the
+ display up to date. Once a received packet is flagged (this is done by the interrupt
+ service routine) it is checked against known types and processed as needed. When this
+ has been done the program clears the packet flag and returns to the idle loop to wait
+ for the next packet to arrive.
+<p align=JUSTIFY>
+ The TCP handler is not a full TCP stack, it can only handle one passively opened thread,
+ and does not time wait on closing due to limited resources. It also ignores out of
+ sequence, repeated or error packets where it should send a RST. The other shortfall is
+ that it can only handle unfragmented data so is limited to less than 1500 data bytes for
+ both receive and transmit.
+</BLOCKQUOTE>
+<a name="source"></A>
+<b><u>Source</U></B>
+<blockquote><p align=JUSTIFY>
+ You can just <a href="source." webstripperlinkwas="source.zip">download <img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" alt="Download" border=0></A> the latest source as zipped .asm file or <a href="source.html" webstripperlinkwas="source.html">view</A> some highlights as html.
+</BLOCKQUOTE>
+<b><u>Update</U></B>
+<blockquote><p align=JUSTIFY>
+ A new version that supports multiple simultaneous TCP connections can be found <a href="../multitcp/index.html" webstripperlinkwas="../multitcp/index.html">here</A>.
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 28th April, 2004.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish0cb53e31" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=0cb53e31&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

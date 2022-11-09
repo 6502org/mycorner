@@ -1,0 +1,132 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish147dfb24{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish147dfb24{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip147dfb24{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad147dfb24"></div>
+<html><head><title>Vic 20 network interface - software</TITLE></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=25%><a href="source.html#mainloop" webstripperlinkwas="source.html#mainloop">
+ <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER>
+<b><font size=+1>Vic 20 network - software </FONT></B>
+<font size=-1>by Lee Davison</FONT>
+</TD><td width=25%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<b><u>Main program loop</U></B>
+<blockquote><p align=JUSTIFY>
+ This is the main program loop that spends most of the time waiting for something to
+ happen. If an interrupt is flagged then that is processed, if that results in a valid
+ packet being received then that packet is now processed.
+<p align=JUSTIFY>
+ After this the interrupt flag byte is checked again and if there are still flagged
+ interrupts pending then the service code is re-entered at the start. If not then all
+ interrupt status bits are cleared and the background tasks are serviced.
+<p align=JUSTIFY>
+ This would probably work better as a mini task scheduler but that is moving into the
+ realm of OS creation. For now it stays like this.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; *********************************************************************		
+; main program loop
+
+LAB_200
+	LDA	IB			; get interrupt flag byte
+	BEQ	LAB_990			; branch if no interrupt flagged
+
+LAB_210
+	AND	#$02			; mask adapter fail interrupt
+	BEQ	LAB_220			; branch if not adapter fail
+
+	JSR	LAB_20300		; else do adapter fail interrupt
+LAB_220
+	LDA	IB			; get interrupt flag byte
+	AND	#$04			; mask Tx interrupt
+	BEQ	LAB_225			; branch if no Tx interrupt
+
+	JSR	LAB_20200		; else do tx interrupt
+LAB_225
+	LDA	IB			; get interrupt flag byte
+	AND	#$10			; mask Rx interrupt
+	BEQ	LAB_300			; branch if no Rx interrupt
+
+	JSR	LAB_20100		; else do rx interrupt
+LAB_300
+	LDA	valid_pkt		; get valid packet flag
+	BEQ	LAB_985			; skip check if no valid packet
+
+					; now decipher packet info
+	LDA	pk_buff+ET_type_h	; get type byte
+	CMP	#$08			; compare with $08
+	BNE	LAB_980			; branch if not recognised
+
+	LDA	pk_buff+ET_type_l	; get type byte
+	BNE	LAB_315			; branch if not IP
+
+	JSR	LAB_21500		; handle known IP packet type
+	JMP	LAB_980			; go clear packet & loop
+
+LAB_315
+	CMP	#$06			; compare with $06
+	BNE	LAB_980			; branch if not recognised
+
+	JSR	LAB_21000		; else handle ARP packet
+LAB_980
+	LDA	#$00			; clear A
+	STA	valid_pkt		; clear valid packet
+
+LAB_985
+	LDA	IB			; get interrupt flag byte
+	AND	#$FE			; mask only needed bits
+	BNE	LAB_210			; loop while interrupts to service
+
+	LDX	#$FF			; bit 0 interrupt latch
+	LDA	#$68			; acknowledge interrupt command
+	STX	com_reg_l		;
+	STA	com_reg_h		; ack the interrupt(s)
+
+LAB_990					; do background tasks
+	JSR	print_tcp		; print TCP state
+	JSR	periodic		; go check periodic timeout(s)
+	INC	prng			; increment PRNG seed byte
+	JMP	LAB_200			; loop forever
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+<p align=JUSTIFY>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 29th February, 2004.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish147dfb24" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=147dfb24&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

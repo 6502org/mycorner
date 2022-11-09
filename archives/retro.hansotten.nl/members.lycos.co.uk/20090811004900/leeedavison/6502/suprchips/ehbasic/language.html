@@ -1,0 +1,444 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish78debd4d{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish78debd4d{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip78debd4d{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad78debd4d"></div>
+<html><head><title>Enhanced BASIC74 language reference</TITLE><meta name="description" content="An advanced BASIC interpreter for the 740 series microprocessor family"></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr>
+<td width=25%>
+<a href="index.html#lang" webstripperlinkwas="index.html#lang">
+  <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER>
+<b><font size=+1>Enhanced BASIC, language reference. </FONT></B><font size=-1>by Lee
+ Davison</FONT>
+</TD>
+<td width=25%>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<p>
+<b><u>Introduction</B></U>
+<blockquote>
+ Most of EhBASIC74 is identical in operation to <a href="../../ehbasic/index.html" webstripperlinkwas="../../ehbasic/index.html">6502
+ EhBASIC</A> so this page will just describe the keywords that differ from that version.
+ Code that doesn't use the features of one version should run identically on the other.
+</BLOCKQUOTE>
+<b><u>BASIC Keywords</B></U>
+<blockquote>
+ Here is a list of BASIC keywords that differ from the 6502 version of EhBASIC. They
+ are only valid when entered in upper case as shown and spaces may not be included
+ in them. So, for example, TIMER1 is valid but TIMER 1 is not.
+
+  <p>
+  <center>
+    <table width=85% cellpadding=3 cellspacing=0 border=0>
+    <tr>
+      <td><a href="#A2D">A2D</A></TD>
+      <td><a href="#CLEAR">CLEAR</A></TD>
+      <td><a href="#CNTRx">CNTR0</A></TD>
+      <td><a href="#CNTRx">CNTR1</A></TD>
+      <td><a href="#TIMERpM">COUNT</A></TD>
+      <td><a href="#D2Ax">D2A1</A></TD>
+    </TR>
+    <tr>
+      <td><a href="#D2Ax">D2A2</A></TD>
+      <td><a href="#EVENT">EVENT</A></TD>
+      <td><a href="#FLUSH">FLUSH</A></TD>
+      <td><a href="#INTx">INT0</A></TD>
+      <td><a href="#INTx">INT1</A></TD>
+      <td><a href="#INTx">INT2</A></TD>
+    </TR>
+    <tr>
+      <td><a href="#INTx">INT3</A></TD>
+      <td><a href="#INTx">INT4</A></TD>
+      <td><a href="#IRQ">IRQ</A></TD>
+      <td><a href="#NMI">NMI</A></TD>
+      <td><a href="#ON">ON</A></TD>
+      <td><a href="#OFF">OFF</A></TD>
+    </TR>
+    <tr>
+      <td><a href="#PRESq">PRES12</A></TD>
+      <td><a href="#PRESq">PRESX</A></TD>
+      <td><a href="#PRESq">PRESY</A></TD>
+      <td><a href="#TIMERpM">PULSE</A></TD>
+      <td><a href="#TIMERpM">PWM</A></TD>
+      <td><a href="#RETIRQ">RETIRQ</A></TD>
+    </TR>
+    <tr>
+      <td><a href="#RETNMI">RETNMI</A></TD>
+      <td><a href="#RETURN">RETURN</A></TD>
+      <td><a href="#TIMERqSS">START</A></TD>
+      <td><a href="#TIMERqSS">STOP</A></TD>
+      <td><a href="#TIMERpM">TIMER</A></TD>
+      <td><a href="#TIMERq">TIMER1</A></TD>
+    </TR>
+    <tr>
+      <td><a href="#TIMERq">TIMER2</A></TD>
+      <td><a href="#TIMERpM">TIMERX</A></TD>
+      <td><a href="#TIMERpM">TIMERY</A></TD>
+      <td><a href="#PLUS">+</A></TD>
+      <td><a href="#MINUS">-</A></TD>
+    </TR>
+    </TABLE>
+  </CENTER>
+ </BLOCKQUOTE>
+ 
+  <ul>
+    <li>Anything in upper case is part of the command/function structure and must be
+        present
+    <li>Anything in lower case enclosed in <> is to be supplied by the user
+    <li>Anything enclosed in [ ] is optional
+    <li>Anything enclosed in { } and separated by | characters are multi choice options
+    <li>Any items followed by an ellipsis, ... , may be repeated any number of times
+    <li>Any punctuation and symbols, except those above, are part of the structure and
+        must be included
+  </UL>
+
+  <blockquote>
+  <table cellpadding=0 cellspacing=0 border=0>
+  <tr><td>var</TD><td>is a valid variable name</TD></TR>
+  <tr><td>var$</TD><td>is a valid string variable name</TD></TR>
+  <tr><td>var()</TD><td>is a valid array name</TD></TR>
+  <tr><td>var$()</TD><td>is a valid string array name</TD></TR>
+  <tr><td>&nbsp;</TD></TR>
+  <tr><td>expression</TD><td>is any expression returning a result</TD></TR>
+  <tr><td>expression$&nbsp;&nbsp;&nbsp;</TD><td>is any expression returning a string
+ result</TD></TR>
+  <tr><td>&nbsp;</TD></TR>
+  <tr><td>addr</TD><td>is an unsigned integer in the range +/- 16777215 that will be
+ wrapped to the range 0 to 65535</TD></TR>
+  <tr><td>b</TD><td>is a byte value 0 to 255</TD></TR>
+  <tr><td>n</TD><td>is an integer in the range 0 to 63999</TD></TR>
+  <tr><td>w</TD><td>is an integer in the range -32768 to 32767</TD></TR>
+  <tr><td>i</TD><td>is a +ve integer value</TD></TR>
+  <tr><td>r</TD><td>is real number</TD></TR>
+  <tr><td>+r</TD><td>is a +ve value real number (0 is considered +ve)</TD></TR>
+  <tr><td>$</TD><td>is a string literal</TD></TR>
+  </TABLE>
+  </BLOCKQUOTE>
+</BLOCKQUOTE>
+
+<p><b><u>BASIC74 Commands</U></B>
+
+<blockquote>
+  <a name=FLUSH></A>
+  <b>FLUSH</B>
+  <blockquote>
+    This command, specific to version 1.10 on, clears the input buffer of any pending
+    keystrokes. The buffer is also cleared by CLEAR and RUN.
+  </BLOCKQUOTE>
+
+  <a name=INTx></A>
+  <b>INTx {ON|OFF|CLEAR}</B>
+  <blockquote>
+    Changes INTx event handling (where x is one of 0, 1, 2, 3 or 4).<p>
+   <b><i>ON</I></B>
+  <blockquote>
+    Enables the INTx handling subroutine after it has been turned off.<p>
+    <b>Note</B> If a INTx event occured while the INTx event handling was disabled
+    then it will be actioned immediately after this command.
+  </BLOCKQUOTE>
+   <b><i>OFF</I></B>
+  <blockquote>
+    Disables the INTx handling subroutine but does not remove the assignment. INTx 
+    events that occur while the handler is disabled will still be flagged for action.
+  </BLOCKQUOTE>
+   <b><i>CLEAR</I></B>
+  <blockquote>
+    Cleares the INTx handling assignment. After an INTx CLEAR the handling subroutine
+    can only be restarted with an <a href="#ONINT">ON INTx</A> command.
+  </BLOCKQUOTE>
+  </BLOCKQUOTE>
+  <a name=INTxP></A>
+  <b>INTx {+|-}</B>
+  <blockquote>
+    Sets the detection edge for INTx (where x is one of 0, 1, 2, 3 or 4). + sets a low
+    to high transition (positive edge) as the trigger, - sets a high to low (negative
+    edge) as the trigger. The default is -. Note that changing the trigger edge when the
+    interrupt is enabled may cause the interrupt to trigger.
+  </BLOCKQUOTE>
+
+  <a name=CNTRx></A>
+  <b>CNTRx {ON|OFF|CLEAR}</B>
+  <blockquote>
+    Changes CNTRx event handling (where x is either 0 or 1).<p>
+   <b><i>ON</I></B>
+  <blockquote>
+    Enables the CNTRx handling subroutine after it has been turned off.<p>
+    <b>Note</B> If a CNTRx event occured while the CNTRx event handling was disabled
+    then it will be actioned immediately after this command.
+  </BLOCKQUOTE>
+   <b><i>OFF</I></B>
+  <blockquote>
+    Disables the CNTRx handling subroutine but does not remove the assignment. INTx 
+    events that occur while the handler is disabled will still be flagged for action.
+  </BLOCKQUOTE>
+   <b><i>CLEAR</I></B>
+  <blockquote>
+    Cleares the CNTRx handling assignment. After a CNTRx CLEAR the handling subroutine
+    can only be restarted with an <a href="#ONCOUNT">ON CNTRx</A> command.
+  </BLOCKQUOTE>
+  </BLOCKQUOTE>
+  <a name=CNTRxP></A>
+  <b>CNTRx {+|-}</B>
+  <blockquote>
+    Sets the detection edge for CNTRx (where x is one of 0 or 1). + sets a low to high
+    transition (positive edge) as the trigger, - sets a high to low (negative edge) as
+    the trigger. The default is -. Note that changing the trigger edge when the interrupt
+    is enabled may cause the interrupt to trigger.
+  </BLOCKQUOTE>
+
+  <a name=PRESq></A>
+  <b>PRESq &#60;b&#62;</B>
+  <blockquote>
+    Sets the value for prescaller q (where q is one of 12, X or Y).
+  </BLOCKQUOTE>
+
+  <a name=TIMERpM></A>
+  <b>TIMERp {TIMER|PWM|COUNT|PULSE}</B>
+  <blockquote>
+    Sets TIMERp timing mode (where p is either X or Y).<p>
+   <b><i>TIMER</I></B>
+  <blockquote>
+    The timer (X or Y) counts down (f/16)/(1+PRESq)/(1+TIMERp).
+  </BLOCKQUOTE>
+   <b><i>PWM</I></B>
+  <blockquote>
+    If the corresponding active edge selection bit (CNTR0 for timer X, CNTR1 for timer Y)
+    is "0" (CNTRx -) then the counter counts as in timer mode while the pin is at "1".
+    If the corresponding active edge selection bit (CNTR0 for timer X, CNTR1 for timer Y)
+    is "1" (CNTRx +) then the counter counts as in timer mode while the pin is at "0".
+    The Prescaller and timer latches are preset to $FF by setting this mode and when the
+    selected event (-ve or +ve edge) happens the prescaller and timer values are copied
+    and available to BASIC using the <a href="#TIMERpF">TIMERp</A> (where p is either X
+    or Y) function.
+  </BLOCKQUOTE>
+   <b><i>COUNT</I></B>
+  <blockquote>
+    The same as timer mode except pulses on the corresponding counter pin (CNTR0 for timer
+    X, CNTR1 for timer Y) are counted. Selecting this mode also sets the corresponding
+    pin to input mode.
+  </BLOCKQUOTE>
+   <b><i>PULSE</I></B>
+  <blockquote>
+    As timer mode except when the timer reaches $0000 the counter pin (CNTR0 for timer
+    X, CNTR1 for timer Y) is inverted. Selecting this mode also sets the corresponding
+    pin to output mode.
+  </BLOCKQUOTE>
+  </BLOCKQUOTE>
+  <a name=TIMERqSS></A>
+  <b>TIMERp {START|STOP}</B>
+  <blockquote>
+    Enables or disables counting for TIMERp (where p is either X or Y).
+  </BLOCKQUOTE>
+  <a name=TIMERq></A>
+  <b>TIMERq {ON|OFF|CLEAR}</B>
+  <blockquote>
+    Changes TIMERq event handling (where q is one of 1, 2, X or Y).<p>
+   <b><i>ON</I></B>
+  <blockquote>
+    Enables the TIMERq handling subroutine after it has been turned off.<p>
+    <b>Note</B> If a TIMERq event occured while the TIMERq event handling was disabled
+    then it will be actioned immediately after this command.
+  </BLOCKQUOTE>
+   <b><i>OFF</I></B>
+  <blockquote>
+    Disables the TIMERq handling subroutine but does not remove the assignment. TIMERq
+    events that occur while the handler is disabled will still be flagged for action.
+  </BLOCKQUOTE>
+   <b><i>CLEAR</I></B>
+  <blockquote>
+    Cleares the TIMERq handling assignment. After a TIMERq CLEAR the handling subroutine
+    can only be restarted with an <a href="#ONTIMER">ON TIMERq</A> command.
+  </BLOCKQUOTE>
+  </BLOCKQUOTE>
+
+  <b>TIMERq &#60;b&#62;</B>
+  <blockquote>
+    Sets the value of TIMERq (where q is one of 1, 2, X or Y).
+  </BLOCKQUOTE>
+
+  <a name=RETIRQ></A>
+  <b>RETIRQ</B>
+  <blockquote>
+    This command has been removed from EhBASIC74. It's function is now handled by an
+    enhanced <a href="#RETURN">RETURN</A> command.
+  </BLOCKQUOTE>
+
+  <a name=RETNMI></A>
+  <b>RETNMI</B>
+  <blockquote>
+    This command has been removed from EhBASIC74. It's function is now handled by an
+    enhanced <a href="#RETURN">RETURN</A> command.
+  </BLOCKQUOTE>
+
+  <a name=RETURN></A>
+  <b>RETURN</B>
+  <blockquote>
+     As well as returning program execution to the next statement after the last GOSUB
+     in EhBASIC74 RETURN also restores execution to the next statement after event
+     subroutine has been executed. <b>RETURN</B> checks the type of event and
+     automatically restores the enabled flag for the interrupt that caused the event.
+  </BLOCKQUOTE>
+
+  <a name=ON></A>
+  <b>ON</B>
+  <blockquote>
+    See <a href="#INTx">INTx</A> {ON|OFF|CLEAR}, <a href="#CNTRx">CNTRx</A>
+    {ON|OFF|CLEAR} or <a href="#TIMERq">TIMERq</A> {ON|OFF|CLEAR}.
+  </BLOCKQUOTE>
+
+  <a name=OFF></A>
+  <b>OFF</B>
+  <blockquote>
+    See <a href="#INTx">INTx</A> {ON|OFF|CLEAR}, <a href="#CNTRx">CNTRx</A>
+    {ON|OFF|CLEAR} or <a href="#TIMERq">TIMERq</A> {ON|OFF|CLEAR}.
+  </BLOCKQUOTE>
+
+  <a name=CLEAR></A>
+  <b>CLEAR</B>
+  <blockquote>
+    See <a href="#INTx">INTx</A> {ON|OFF|CLEAR}, <a href="#CNTRx">CNTRx</A>
+    {ON|OFF|CLEAR} or <a href="#TIMERq">TIMERq</A> {ON|OFF|CLEAR}.
+  </BLOCKQUOTE>
+
+  <a name=ON6502></A>
+  <b>ON {IRQ|NMI} &#60;n&#62;</B>
+  <blockquote>
+    These commands have been removed from EhBASIC74 as there is no IRQ or NMI interrupt
+    on the 740 series microprocessor.
+  </BLOCKQUOTE>
+
+  <a name=ONINT></A>
+  <b>ON INTx &#60;n&#62;</B>
+  <blockquote>
+    Set up the INTx routine pointers (where x is one of 0, 1, 2, 3 or 4). This sets up
+    the effective GOSUB line that is taken when an interrupt happens. When the effective
+    GOSUB is taken the interrupt, INTx, is turned off. The interrupt is turned back on
+    when normal program flow is resumed by a matched <a href="#RETURN">RETURN</A> command.
+  </BLOCKQUOTE>
+
+  <a name=ONCOUNT></A>
+  <b>ON CNTRx &#60;n&#62;</B>
+  <blockquote>
+    Set up the CNTRx routine pointers (where x is one of 0 or 1). This sets up the
+    effective GOSUB line that is taken when a counter interrupt happens. When the
+    effective GOSUB is taken the interrupt, CNTRx, is turned off. The interrupt is
+    turned back on when normal program flow is resumed by a matched
+    <a href="#RETURN">RETURN</A> command.
+  </BLOCKQUOTE>
+
+  <a name=ONTIMER></A>
+  <b>ON TIMERq &#60;n&#62;</B>
+  <blockquote>
+    Set up the TIMERq routine pointers (where q is one of 1, 2, X or Y). This sets up
+    the effective GOSUB line that is taken when a timer interrupt happens. When the
+    effective GOSUB is taken the interrupt, TIMERq, is turned off. The interrupt is
+    turned back on when normal program flow is resumed by a <a href="#RETURN">RETURN</A>
+    command.
+  </BLOCKQUOTE>
+
+  <a name=IRQ></A>
+  <b>IRQ {ON|OFF|CLEAR}</B>
+  <blockquote>
+    This command has been removed from EhBASIC74 as there is no IRQ interrupt on the
+    740 series microprocessor.
+  </BLOCKQUOTE>
+
+  <a name=NMI></A>
+  <b>NMI {ON|OFF|CLEAR}</B>
+  <blockquote>
+    This command has been removed from EhBASIC74 as there is no NMI interrupt on the
+    740 series microprocessor.
+  </BLOCKQUOTE>
+
+  <a name=D2Ax></A>
+  <b>D2Ax &#60;b&#62;</B>
+  <blockquote>
+    Output byte b as an analog voltage on D-A port x (where x is 1 or 2). Setting either
+    convertor also sets the corresponding pin to analog output mode.
+  </BLOCKQUOTE>
+  <b>D2Ax {ON|OFF}</B>
+  <blockquote>
+    Enables or disables the D2Ax output (where x is one of 0 or 1).
+  </BLOCKQUOTE>
+
+  <a name=PLUS></A>
+  <b>+</B>
+  <blockquote>
+    See <a href="#INTxP">INTx</A> {+|-} or  <a href="#CNTRxP">CNTRx</A>
+    {+|-}.
+  </BLOCKQUOTE>
+
+  <a name=MINUS></A>
+  <b>-</B>
+  <blockquote>
+    See <a href="#INTxP">INTx</A> {+|-} or  <a href="#CNTRxP">CNTRx</A>
+    {+|-}.
+  </BLOCKQUOTE>
+
+</BLOCKQUOTE>
+
+<b><u>BASIC74 Functions</U></B>
+<blockquote>
+  Functions always return a value, be it numeric or string, so are used on
+  the right hand side of the = sign or in commands requiring an
+  expression e.g. after PRINT, within expressions, or in other functions.
+
+  <p><a name=A2D></A>
+  <b>A2D(&#60;b&#62;)</B>
+  <blockquote>
+    Returns the value of the A-D convertor input b, where b is 0 to 7. Any value for b
+    outside this range will cause a function call error.
+  </BLOCKQUOTE>
+
+  <p><a name=EVENT></A>
+  <b>EVENT</B>
+  <blockquote>
+    Returns a boolean value. If any enabled interrupt has occured since EVENT was last
+    examined then EVENT will return -1 else EVENT will return 0
+  </BLOCKQUOTE>
+
+  <a name=TIMERpF></A>
+  <b>TIMERp</B>
+  <blockquote>
+    Returns the count value from TIMERp (where p is either X or Y). As this is a count
+    down timer the value returned is first subtracted from zero then returned as if it
+    had been DEEKed from the timer registers. This function is only of any use when
+    TIMERp is being used in PWM mode.
+  </BLOCKQUOTE>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 9th July, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish78debd4d" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=78debd4d&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

@@ -1,0 +1,197 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish59b58f9c{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish59b58f9c{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip59b58f9c{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad59b58f9c"></div>
+<html><head><title>Vic 20 network interface - software</TITLE></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=25%><a href="source.html#arp" webstripperlinkwas="source.html#arp">
+ <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER>
+<b><font size=+1>Vic 20 network - software </FONT></B>
+<font size=-1>by Lee Davison</FONT>
+</TD><td width=25%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<b><u>Address resolution protocol</U></B>
+<blockquote><p align=JUSTIFY>
+ If you want to talk IP over an ethernet network this is probably one of the most
+ important protocols to implement. What it does is allow other machines to discover your
+ hardware address automatically and talk to you. It's not absolutely necessary but without
+ it you will need to do a lot of manual configuration.
+<p align=JUSTIFY>
+
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; *********************************************************************		
+; construct a reply to an ARP request aimed at us
+; see RFC826 for a description of the ARP packet
+
+LAB_21000
+	LDA	arp_buff+ARP_hrdsp_l	; hardware type - always $01
+	CMP	#$01			; check type
+	BNE	LAB_20350		; exit if incorrect
+
+	LDA	arp_buff+ARP_prtsp_h	; hardware protocol high byte
+	CMP	#$08			; check protocol
+	BNE	LAB_20350		; exit if incorrect
+
+	LDA	arp_buff+ARP_prtsp_l	; hardware protocol low byte
+	BNE	LAB_20350		; exit if incorrect
+
+	LDA	arp_buff+ARP_hrd_len	; hardware (MAC) address length
+	CMP	#$06			; check length
+	BNE	LAB_20350		; exit if incorrect
+
+	LDA	arp_buff+ARP_prt_len	; protocol (IP) address length
+	CMP	#$04			; check length
+	BNE	LAB_20350		; exit if incorrect
+
+	LDA	arp_buff+ARP_code_l	; type of packet
+	CMP	#$01			; check type
+	BNE	LAB_20350		; exit if incorrect
+
+	LDX	#arp_ofs+ARP_dst_ip	; index protocol destination address
+	JSR	match_ip		; compare with our IP address
+	BNE	LAB_20350		; exit if not for us
+
+; we have recognised the packet as correct and the target as us
+; so set up the buffer for transmit
+
+					; do MAC addresses
+	LDX	#$05			; set index/count
+LAB_21050
+	LDA	arp_buff+ARP_src_mac,X	; copy source MAC address byte
+	STA	pk_buff+ET_dst_adr,X	; save destiantion MAC address byte
+	STA	arp_buff+ARP_dst_mac,X	; save destiantion MAC address byte
+	LDA	mac_ours,X		; get our MAC address byte
+	STA	pk_buff+ET_src_adr,X	; save source MAC address byte
+	STA	arp_buff+ARP_src_mac,X	; save source MAC address byte
+	DEX
+	BPL	LAB_21050		; loop if not all done
+
+					; do IP addresses
+	LDX	#$03			; set index/count
+LAB_21055
+	LDA	arp_buff+ARP_src_ip,X	; get source IP address byte
+	STA	arp_buff+ARP_dst_ip,X	; save destination IP address byte
+	LDA	ip_ours,X		; get our IP address byte
+	STA	arp_buff+ARP_src_ip,X	; save source IP address byte
+	DEX				; increment index
+	BPL	LAB_21055		; loop if not all done
+
+					; make it an ARP reply
+	LDA	#$02			; set op type to reply
+	STA	arp_buff+ARP_code_l	; save op type
+
+	LDA	#$2A			; ARP reply length low byte
+	STA	tx_len_l		; set Tx length low byte
+	LDA	#$00			; ARP reply length high byte
+	STA	tx_len_h		; set Tx length high byte
+
+					; packet set up, now Tx it
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ Constructing the reply leads straight into transmitting the packet. With the 3Com card
+ packets do not have to be padded out to minimum size, this is done by the card, but they
+ do need to be a whole number of longwords (32 bits) in length. To ensure this the
+ routine pads out any short packets with null bytes.
+<p align=JUSTIFY>
+ This is the routine that is used to transmit all the packets over the network.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; *********************************************************************		
+; Tx ethernet packet, tx_len is the packet length
+
+LAB_21200
+	LDA	tx_len_l		; get Tx length low byte
+	STA	tc_l			; save to temp count
+	STA	data_reg		; save to NIC
+	LDA	tx_len_h		; get Tx length high byte
+	STA	tc_h			; save to temp count
+	ORA	#$80			; generates an interrupt when sent
+	STA	data_reg		; save to NIC
+	LDY	#$00			; clear index
+	STY	data_reg		; save to NIC
+	STY	data_reg		; save to NIC
+
+					; header written, now write data
+	LDA	#&gt;pk_buff		; get buffer pointer high byte
+	STA	tp_h			; save to temp pointer high byte
+	LDA	#&lt;pk_buff		; get IP buffer pointer low byte
+	STA	tp_l			; save to temp pointer low byte
+LAB_22105
+	LDA	(tp_l),Y		; get byte from IP buffer
+	STA	data_reg		; save to NIC
+	INY				; increment index (pointer low byte)
+	BNE	LAB_22110		; branch if no overflow
+
+	INC	tp_h			; else increment pointer high byte
+LAB_22110
+	DEC	tc_l			; decrement count low byte
+	BNE	LAB_22105		; loop if not all done
+
+	DEC	tc_h			; else decrement count high byte
+	BPL	LAB_22105		; loop if not all done
+
+					; now calculate longword remainder
+	LDA	tx_len_l		; get count low byte
+	AND	#$03			; do MOD 4
+	BEQ	LAB_21220		; exit if no remainder
+
+					; else pad to next longword
+	EOR	#$03			; do 3-MOD
+	TAX				; copy to index
+	LDA	#$00			; clear A
+LAB_21215
+	STA	data_reg		; save to NIC
+	DEX				; decrement count
+	BPL	LAB_21215		; loop if not all done
+
+LAB_21220
+	RTS
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+<p align=JUSTIFY>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 29th February, 2004.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish59b58f9c" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=59b58f9c&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

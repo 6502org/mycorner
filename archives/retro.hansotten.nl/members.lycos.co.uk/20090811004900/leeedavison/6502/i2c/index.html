@@ -1,0 +1,180 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish401d070f{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish401d070f{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip401d070f{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad401d070f"></div>
+<html><head><title>I2C Bus interface</TITLE>
+<meta name="description" content="An I2C bus interface for the 6502."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/6502/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/6502/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/6502/index.html"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER><b><font size=+1>I2C Bus interface. </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<b><u>Hardware.</U></B><p>
+<img src="i2cbus.png" webstripperlinkwas="i2cbus.png" title="I2C bus interface circuit" border=1 hspace=8 align=RIGHT>
+<blockquote><p align=JUSTIFY>
+ The connector on the top left of the diagram is from my own 6502 boards (see <a href="../sbc/index.html" webstripperlinkwas="../sbc/index.html">sbc project</A>) and is as it is for two reasons. It's easy
+ to wire on a stripboard layout and I have a lot of 26 way ribbon, headers and plugs.
+ All the signals are directly from the 6502 except /SEL0 and /SEL1 which are used to
+ select the block $F1xx with /SEL0 = 1 and /SEL1 = 0.
+<p align=JUSTIFY>
+ There is no socket shown for the I2C bus, this is up to the user.
+<p align=JUSTIFY>
+ The two capacitors are low ESR electrolytics and are placed near the GAL and between
+ the two chips. If you don't have this type to hand you can use standard electrolytics
+ with some low value ceramic capacitor, say 0.1uF, in parallel.
+<p align=JUSTIFY>
+<a name=link_1></A>
+ The GAL16V8A is used purely to generate the read and write strobes. Each is a negative
+ going pulse coincident with phase 2. The interface uses just one byte in the address
+ range. For anyone interested the equations for this chip are in <a href="i2c_01pld.html" webstripperlinkwas="i2c_01pld.html">
+ i2c_01.pld</A> and can be compiled with WinCUPL. The fuse file, <a href="i2c_01jed.html" webstripperlinkwas="i2c_01jed.html">
+ i2c_01.jed</A> and the compiler list file <a href="i2c_01txt.html" webstripperlinkwas="i2c_01txt.html"> i2c_01.txt</A> are
+ also included.
+<p align=JUSTIFY>
+ The 74LS74 is used to latch the two lowest bits of the data bus during write access to
+ the interface. The reset line is connected so that both of these outputs are set at
+ startup (this disables the I2C bus until required). This is very similar to my AT
+ keyboard with the exeption that reset sets the opposite state.
+<p align=JUSTIFY>
+ The outputs from the latches are used to drive the enable pins on two of the four
+ buffers from the 74LS125, these are then used to drive the data and clock lines of the
+ I2C bus. The buffers have their inputs tied low so behave like open collector outputs
+ when used like this.
+<p align=JUSTIFY>
+ The other two buffers are used to drive the data bus during read access.
+</BLOCKQUOTE>
+<center>
+<b> The finished board.</B><p>
+ <img title="The finished board." src="board.jpg" webstripperlinkwas="board.jpg" border=1>
+ <img title="With the teletext board." src="plusteletext.jpg" webstripperlinkwas="plusteletext.jpg" border=1><p>
+<b> 256k byte memory.</B><p>
+ <img title="256k byte memory" src="mem.png" webstripperlinkwas="mem.png" border=1>
+</CENTER>
+<p>
+<b><u>Software.</U></B>
+<blockquote>
+The software has a four main routines to handle the I2C bus ...
+<blockquote>
+<table cellspacing=0 cellpadding=0 border=0>
+<tr><td width=120><b>SendAddr</B></TD><td>Send start and slave address to the I2C
+ bus.</TD></TR>
+<tr><td><b>SendData</B></TD><td>Send data byte(s) to an addressed device.</TD></TR>
+<tr><td><b>ReadData</B></TD><td>Read data byte(s) from an addressed device.</TD></TR>
+<tr><td><b>StopI2c</B></TD><td>generates a stop condition on the i2c bus.</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+This is a description of all the I2C routines ...
+<blockquote>
+<b>SendAddr</B>
+<blockquote><p align=JUSTIFY>
+ This routine sends the slave address to the I2C bus. There are a number of locations
+ that need set-up before this routine is called. Each device has an 8 bit address, the
+ lowest bit of which is a read/write bit, this address is set in I2cAddr. Next is the
+ byte count, if you are just addressing the device this can be zero but otherwise it
+ is the byte pair in I2cCountL/H. Lastly, if there is data to be sent, is the buffer
+ pointer TxBuffL/H. This should be set to the start of the data to be sent. If all
+ is well this routine exits with Cb=0 and the bus in an held state, you can then either
+ send data, receive data or just send stop.
+</BLOCKQUOTE>
+<b>ReadData</B>
+<blockquote><p align=JUSTIFY>
+ This routine reads I2cCountL/H bytes from an already addressed device. It should be
+ entered with RxBuffL/H pointing to a suitable buffer area. On exit Cb=0 if there were
+ no errors and the I2C bus is in a held state, you can then either receive more data or
+ just send stop.
+</BLOCKQUOTE>
+<b>SendData</B>
+<blockquote><p align=JUSTIFY>
+ The same as ReadData but sends I2cCountL/H bytes to an already addressed device. Again
+ on exit Cb=0 if there were no errors and the I2C bus is in a held state, you can then
+ either send more data or just send stop.
+</BLOCKQUOTE>
+<b>StopI2c</B>
+<blockquote><p align=JUSTIFY>
+ This routine just generates a stop condition on i2c bus. On entry it is assumed only
+ that the clock is held low.
+</BLOCKQUOTE>
+<b>ByteIn</B>
+<blockquote><p align=JUSTIFY>
+ Read a byte from the I2C bus, the byte is returned in A. Entry to this routine should
+ be with the bus in a held state and it exits with the bus in the same state. Note there
+ is no timeout on this routine so it could end up waiting for ever. After this routine
+ you should send an ack but if it's the end of what you want you can just send stop.
+</BLOCKQUOTE>
+<b>ByteOut</B>
+<blockquote><p align=JUSTIFY>
+ Send a byte to the I2C bus, the byte to be sent is in A. Entry to this routine should
+ be with the bus in a held state and it exits with the bus in the same state. Note there
+ is no timeout on this routine so it could end up waiting for ever. Returns with the ack
+ bit in Cb=0.
+</BLOCKQUOTE>
+<b>DoAck</B>
+<blockquote><p align=JUSTIFY>
+ Send ack bit, the ack bit state to send is in Cb. Entry is with the clock low, then ack
+ needs to be set and then the clock released. The routine then waits for the clock to
+ rise before pulling it low and then exiting.
+</BLOCKQUOTE>
+<b>GetAck</B>
+<blockquote><p align=JUSTIFY>
+ Get the ack bit, the received ack bit is returned in Cb. Entry is with the clock low,
+ then the data line is released followed by the clock. Then, once the clock rises, the
+ ack bit is read.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<a name=link_2></A>
+<b>View the source</B>
+<blockquote>
+<a href="i2c_drvasm.html" webstripperlinkwas="i2c_drvasm.html">.asm driver</A><br>
+<a href="teletext.html" webstripperlinkwas="teletext.html">EhBASIC teletext</A>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<center>
+<b> The board in use and screen shots.</B><p>
+ <table>
+ <tr>
+ <td rowspan=3>
+ <img title="The board in use." src="inuse.jpg" webstripperlinkwas="inuse.jpg" border=1></TD>
+ <td><a href="ch5.html" webstripperlinkwas="ch5.html"><img title="Screen shot." src="ch5_sm.jpg" webstripperlinkwas="ch5_sm.jpg" border=1></A></TD>
+ <td><a href="cnn.html" webstripperlinkwas="cnn.html"><img title="Screen shot." src="cnn_sm.jpg" webstripperlinkwas="cnn_sm.jpg" border=1></A></TD>
+ <td><a href="dsny.html" webstripperlinkwas="dsny.html"><img title="Screen shot." src="dsny_sm.jpg" webstripperlinkwas="dsny_sm.jpg" border=1></A></TD>
+ </TR>
+ <tr>
+ <td><a href="mtv.html" webstripperlinkwas="mtv.html"><img title="Screen shot." src="mtv_sm.jpg" webstripperlinkwas="mtv_sm.jpg" border=1></A></TD>
+ <td><a href="nick.html" webstripperlinkwas="nick.html"><img title="Screen shot." src="nick_sm.jpg" webstripperlinkwas="nick_sm.jpg" border=1></A></TD>
+ <td><a href="toon.html" webstripperlinkwas="toon.html"><img title="Screen shot." src="toon_sm.jpg" webstripperlinkwas="toon_sm.jpg" border=1></A></TD>
+ </TR>
+ </TABLE>
+</CENTER>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 28th April, 2002.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish401d070f" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=401d070f&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

@@ -1,0 +1,236 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish0870e909{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish0870e909{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip0870e909{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad0870e909"></div>
+<html><head><title>6502 pseudo random number generator</TITLE>
+<meta name="description" content="Content."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="index.html" webstripperlinkwas="index.html"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER><b><font size=+1>6502 8 bit PRNG.</FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<b><u>Introduction.</U></B>
+<blockquote><p align=JUSTIFY>
+ This is a short peice of code that generates a maximal length, 8 bit, pseudo random
+ number sequence. This is the 6502 version of <a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/z80/prng/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/z80/prng/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/z80/prng/index.html">Z80
+ random</A>. A 32 bit 68k version can be found
+ <a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/68k/prng/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/68k/prng/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/68k/prng/index.html">here</A>.
+</BLOCKQUOTE>
+<b><u>The code.</U></B>
+<blockquote><p align=JUSTIFY>
+ This routine is no great shakes in the speed stakes, it's just a demo of a usefull
+ technique.
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; returns pseudo random 8 bit number in A. Affects A, X and Y.
+; (r_seed) is the byte from which the number is generated and MUST be
+; initialised to a non zero value or this function will always return
+; zero. Also r_seed must be in RAM, you can see why......
+
+rand_8
+	LDA	r_seed		; get seed
+	AND	#$B8		; mask non feedback bits
+				; for maximal length run with 8 bits we need
+				; taps at b7, b5, b4 and b3
+	LDX	#$05		; bit count (shift top 5 bits)
+	LDY	#$00		; clear feedback count
+F_loop
+	ASL	A		; shift bit into carry
+	BCC	bit_clr		; branch if bit = 0
+
+	INY			; increment feedback count (b0 is XOR all the	
+				; shifted bits from A)
+bit_clr
+	DEX			; decrement count
+	BNE	F_loop		; loop if not all done
+
+no_clr
+	TYA			; copy feedback count
+	LSR	A		; bit 0 into Cb
+	LDA	r_seed		; get seed back
+	ROL	A		; rotate carry into byte
+	STA	r_seed		; save number as next seed
+	RTS			; done
+
+r_seed
+	.byte	1		; prng seed byte (must not be zero)
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<b><u>Other number lengths.</U></B>
+<blockquote>
+ A maximal length pseudo random number generator is basically just a shif register with
+ feedback from the later stages to generate the next input bit. The form for a generator
+ of length <i>n</I> with feedback from <i>t</I> is shown below.
+</BLOCKQUOTE>
+<center>
+<b>Pseudo random sequence generator.</B>
+<p>
+ <img src="shift.png" webstripperlinkwas="shift.png" title="n length pseudo random sequence generator" border=1><p>
+</CENTER>
+<blockquote>
+ You don't have to limit the length to only 8 bits, any number of bits from two upwards
+ will work if you chose the right feedback tap(s). Here is a table of some values.
+<p>
+<table bgcolor="white" align=CENTER border=1 cellspacing=0 cellpadding=0 width=80%>
+<td width=10% align=CENTER><b><i>Bits [n]</I></B></TD>
+<td width=20% align=CENTER><b><i>Tap(s) [t]</I></B></TD>
+<td width=20% align=CENTER><b><i>Length</I></B></TD>
+<td width=10% align=CENTER><b><i>Bits [n]</I></B></TD>
+<td width=20% align=CENTER><b><i>Tap(s) [t]</I></B></TD>
+<td width=20% align=CENTER><b><i>Length</I></B></TD></TR>
+<tr><td align=CENTER>2</TD><td align=CENTER>1</TD><td align=RIGHT>3&nbsp;</TD>
+<td align=CENTER>3</TD><td align=CENTER>2</TD><td align=RIGHT>7&nbsp;</TD></TR>
+<tr><td align=CENTER>4</TD><td align=CENTER>3</TD><td align=RIGHT>15&nbsp;</TD>
+<td align=CENTER>5</TD><td align=CENTER>3</TD><td align=RIGHT>31&nbsp;</TD></TR>
+<tr><td align=CENTER>6</TD><td align=CENTER>5</TD><td align=RIGHT>63&nbsp;</TD>
+<td align=CENTER>7</TD><td align=CENTER>6</TD><td align=RIGHT>127&nbsp;</TD></TR>
+<tr><td align=CENTER><b>8</B></TD><td align=CENTER><b>6,5,4</B></TD><td align=RIGHT><b>255&nbsp;</B></TD>
+<td align=CENTER>9</TD><td align=CENTER>5</TD><td align=RIGHT>511&nbsp;</TD></TR>
+<tr><td align=CENTER>10</TD><td align=CENTER>7</TD><td align=RIGHT>1023&nbsp;</TD>
+<td align=CENTER>11</TD><td align=CENTER>9</TD><td align=RIGHT>2047&nbsp;</TD></TR>
+<tr><td align=CENTER>15</TD><td align=CENTER>14</TD><td align=RIGHT>32767&nbsp;</TD>
+<td align=CENTER><b>16</B></TD><td align=CENTER><b>15,13,4</B></TD><td align=RIGHT><b>65535&nbsp;</B></TD>
+</TR>
+<tr><td align=CENTER>17</TD><td align=CENTER>14</TD><td align=RIGHT>131071&nbsp;</TD>
+<td align=CENTER>18</TD><td align=CENTER>11</TD><td align=RIGHT>262143&nbsp;</TD></TR>
+<tr><td align=CENTER>20</TD><td align=CENTER>17</TD><td align=RIGHT>1048575&nbsp;</TD>
+<td align=CENTER>21</TD><td align=CENTER>19</TD><td align=RIGHT>2097151&nbsp;</TD></TR>
+<tr><td align=CENTER>22</TD><td align=CENTER>21</TD><td align=RIGHT>4194303&nbsp;</TD>
+<td align=CENTER>23</TD><td align=CENTER>18</TD><td align=RIGHT>8388607&nbsp;</TD></TR>
+<tr><td align=CENTER><b>24</B></TD><td align=CENTER><b>23,22,17</B></TD><td align=RIGHT><b>16777215&nbsp;</B>
+</TD>
+<td align=CENTER>25</TD><td align=CENTER>22</TD><td align=RIGHT>33554431&nbsp;</TD></TR>
+<tr><td align=CENTER>28</TD><td align=CENTER>25</TD><td align=RIGHT>268435455&nbsp;</TD>
+<td align=CENTER>29</TD><td align=CENTER>27</TD><td align=RIGHT>536870911&nbsp;</TD></TR>
+<tr><td align=CENTER>31</TD><td align=CENTER>28</TD><td align=RIGHT>2147483647&nbsp;</TD>
+<td>&nbsp;</TD><td>&nbsp;</TD><td>&nbsp;</TD></TR>
+</TABLE>
+<p align=JUSTIFY>
+ In the last case, with 31 bits, if you took a new value once a second the sequence
+ wouldn't repeat for over sixty eight years. Even clocked at 1MHz it would still take
+ over thirty five minutes to cycle through every state.
+</BLOCKQUOTE>
+<b><u>Faster, shorter method.</U></B>
+<blockquote><p align=JUSTIFY>
+ The above pseudo random number generator is known as a Fibonacci generator and, while it
+ works, it turns out there is a much better generator to implement with a microprocessor.
+</BLOCKQUOTE>
+<center>
+<b>Galois pseudo random sequence generator.</B>
+<p>
+ <img src="tfihs.png" webstripperlinkwas="tfihs.png" title="n length pseudo random sequence generator" border=1>
+</CENTER>
+<blockquote><p align=JUSTIFY>
+ The Galois generator needs only to test the state of one bit and that can be tested after
+ the shift has been performed. The state of this bit determines whether the feedback term
+ is exclusive ORed with the result. This single bit test and multiple bit feedback is
+ easily done as can be seen from the code below.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; returns pseudo random 8 bit number in A. Affects A. (r_seed) is the
+; byte from which the number is generated and MUST be initialised to a
+; non zero value or this function will always return zero. Also r_seed		
+; must be in RAM, you can see why......
+
+rand_8
+	LDA	r_seed		; get seed
+	ASL			; shift byte
+	BCC	no_eor		; branch if no carry
+
+	EOR	#$CF		; else EOR with $CF
+no_eor
+	STA	r_seed		; save number as next seed
+	RTS			; done
+
+r_seed
+	.byte	1		; prng seed byte, must not be zero
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ You don't have to limit the length to only 8 bits, any number of bits from three upwards
+ will work if you chose the right feedback value. Here is a table of some values that
+ have been chosen to give a feedback value that fits in a byte, this makes implementation
+ on an 8 bit micro as short as possible. For these values bit n is the least significant
+ bit in the value and the tested bit is the bit shifted out from bit 1.
+<p align=JUSTIFY>
+<table bgcolor="white" align=CENTER border=1 cellspacing=0 cellpadding=0 width=80%>
+<td width=10% align=CENTER><b><i>Bits [n]</I></B></TD>
+<td width=20% align=CENTER><b><i>Feedback</I></B></TD>
+<td width=20% align=CENTER><b><i>Length</I></B></TD>
+<td width=10% align=CENTER><b><i>Bits [n]</I></B></TD>
+<td width=20% align=CENTER><b><i>Feedback</I></B></TD>
+<td width=20% align=CENTER><b><i>Length</I></B></TD></TR>
+<tr><td align=CENTER>3</TD><td align=CENTER>$03</TD><td align=RIGHT>7&nbsp;</TD>
+<td align=CENTER>4</TD><td align=CENTER>$03</TD><td align=RIGHT>15&nbsp;</TD></TR>
+<tr><td align=CENTER>5</TD><td align=CENTER>$17</TD><td align=RIGHT>31&nbsp;</TD>
+<td align=CENTER>6</TD><td align=CENTER>$27</TD><td align=RIGHT>63&nbsp;</TD></TR>
+<tr><td align=CENTER>7</TD><td align=CENTER>$4B</TD><td align=RIGHT>127&nbsp;</TD>
+<td align=CENTER><b>8</B></TD><td align=CENTER><b>$CF</B></TD><td align=RIGHT><b>255&nbsp;</B></TD></TR>
+<tr><td align=CENTER>9</TD><td align=CENTER>$B7</TD><td align=RIGHT>511&nbsp;</TD>
+<td align=CENTER>10</TD><td align=CENTER>$E7</TD><td align=RIGHT>1023&nbsp;</TD></TR>
+<tr><td align=CENTER>11</TD><td align=CENTER>$EB</TD><td align=RIGHT>2047&nbsp;</TD>
+<td align=CENTER>12</TD><td align=CENTER>$EB</TD><td align=RIGHT>4095&nbsp;</TD></TR>
+<tr><td align=CENTER>13</TD><td align=CENTER>$BB</TD><td align=RIGHT>8191&nbsp;</TD>
+<td align=CENTER>14</TD><td align=CENTER>$BB</TD><td align=RIGHT>16383&nbsp;</TD></TR>
+<tr><td align=CENTER>15</TD><td align=CENTER>$DD</TD><td align=RIGHT>32767&nbsp;</TD>
+<td align=CENTER><b>16</B></TD><td align=CENTER><b>$D7</B></TD><td align=RIGHT><b>65535&nbsp;</B></TD></TR>
+<tr><td align=CENTER>17</TD><td align=CENTER>$AF</TD><td align=RIGHT>131071&nbsp;</TD>
+<td align=CENTER>18</TD><td align=CENTER>$E7</TD><td align=RIGHT>262143&nbsp;</TD></TR>
+<tr><td align=CENTER>19</TD><td align=CENTER>$AF</TD><td align=RIGHT>524287&nbsp;</TD>
+<td align=CENTER>20</TD><td align=CENTER>$F3</TD><td align=RIGHT>1048575&nbsp;</TD></TR>
+<tr><td align=CENTER>21</TD><td align=CENTER>$B7</TD><td align=RIGHT>2097151&nbsp;</TD>
+<td align=CENTER>22</TD><td align=CENTER>$BB</TD><td align=RIGHT>4194303&nbsp;</TD></TR>
+<tr><td align=CENTER>23</TD><td align=CENTER>$F3</TD><td align=RIGHT>8388607&nbsp;</TD>
+<td align=CENTER><b>24</B></TD><td align=CENTER><b>$DB</B></TD><td align=RIGHT><b>16777215&nbsp;</B></TD></TR>
+<tr><td align=CENTER>25</TD><td align=CENTER>$93</TD><td align=RIGHT>33554431&nbsp;</TD>
+<td align=CENTER>26</TD><td align=CENTER>$B1</TD><td align=RIGHT>67108863&nbsp;</TD></TR>
+<tr><td align=CENTER>27</TD><td align=CENTER>$B1</TD><td align=RIGHT>134217727&nbsp;</TD>
+<td align=CENTER>28</TD><td align=CENTER>$E1</TD><td align=RIGHT>268435455&nbsp;</TD></TR>
+<tr><td align=CENTER>29</TD><td align=CENTER>$C3</TD><td align=RIGHT>536870911&nbsp;</TD>
+<td align=CENTER>30</TD><td align=CENTER>$AF</TD><td align=RIGHT>1073741823&nbsp;</TD></TR>
+<tr><td align=CENTER>31</TD><td align=CENTER>$8B</TD><td align=RIGHT>2147483647&nbsp;</TD>
+<td align=CENTER><b>32</B></TD><td align=CENTER><b>$AF</B></TD><td align=RIGHT><b>4294967295&nbsp;</B></TD></TR>
+</TABLE>
+<p align=JUSTIFY>
+ This is now the form of sequence generator used to generate values for the RND()
+ function in <a href="../ehbasic/index.html" webstripperlinkwas="../ehbasic/index.html">EhBASIC</A>.
+</BLOCKQUOTE>
+<center><i><b>"The generation of random numbers is too important to be left to chance."
+</I></B><br>Robert R. Coveyou.</CENTER>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 24th January, 2005.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish0870e909" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=0870e909&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

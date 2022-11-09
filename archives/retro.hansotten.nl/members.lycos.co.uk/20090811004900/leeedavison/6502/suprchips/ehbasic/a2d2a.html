@@ -1,0 +1,89 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish16a087bf{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish16a087bf{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip16a087bf{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad16a087bf"></div>
+<html><head><title>Enhanced BASIC74 examples</TITLE><meta name="description" content="An advanced BASIC interpreter for the 740 microprocessor family"></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr>
+<td width=25%>
+<a href="examples.html" webstripperlinkwas="examples.html">
+  <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER>
+<b><font size=+1>A-D & D-A port example. </FONT></B><font size=-1>by Lee Davison</FONT>
+</TD>
+<td width=25%>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<p>
+<img src="a2d2a.jpg" webstripperlinkwas="a2d2a.jpg" align=RIGHT border=0 alt="Typical display
+ on the 'scope" hspace=8>
+<u><b>Introduction.</B></U>
+<blockquote>
+ In this example the SuprDupr is used as an analog multiplexer to display eight analog
+ inputs as a 'bargraph' type display on a 'scope.
+<p>
+ The SuprDupr also generates a trigger pulse to synchronise the 'scope on the second
+ analog output.
+<p>
+ The upper trace is the multiplex out, the lower trace is the trigger pulse.
+</BLOCKQUOTE>
+<br clear=ALL>
+<u><b>The code.</B></U>
+<blockquote>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+10 REM 8 channel analog multiplex
+20 REM displays 8 analog inputs as
+30 REM a 'bargraph' type display on
+40 REM a two channel 'scope.
+50 REM
+60 REM Analog out 1 is the trigger signal
+70 REM Analog out 2 is the multiplex
+80 REM
+100 DO             : REM start of main loop
+110  D2A1 255      : REM trigger pulse high
+120  D2A1 0        : REM trigger pulse low
+130  FOR ch=0 TO 7 : REM for each channel
+140   D2A2 A2D(ch) : REM read port & out to scope
+150  NEXT ch
+160  D2A2 0        : REM set bar output level
+170 LOOP
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 9th July, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish16a087bf" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=16a087bf&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

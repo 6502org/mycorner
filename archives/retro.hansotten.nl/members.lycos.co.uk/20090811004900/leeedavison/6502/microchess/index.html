@@ -1,0 +1,157 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish3f8066d6{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish3f8066d6{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip3f8066d6{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad3f8066d6"></div>
+<html><head><title>6502 Microchess</TITLE></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/6502/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/6502/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/6502/index.html"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER><b><font size=+1>6502 Microchess. </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<img src="microchess.png" webstripperlinkwas="microchess.png" align=RIGHT width=522 height=326 border=1 hspace=8 alt="Start of a game">
+<b><u>Introduction.</U></B>
+<blockquote><p align=JUSTIFY>
+ Many years ago, when a 6502 and a few k or RAM were cutting edge in home computing, I
+ tried, and failed, to get the KIM version of MicroChess to run on my Compukit UK101.
+<p align=JUSTIFY>
+ I recently found the source and, in a fit of nostalgia, made this version which runs
+ on Michal Kowalski's <a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://home.pacbell.net/michal_k/?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://home.pacbell.net/michal_k/'}else{href='javascript:void(0)'}" webstripperwas="http://home.pacbell.net/michal_k/">6502
+ simulator</A>.
+<br clear=all>
+<p align=JUSTIFY>
+ This version is posted with the permission of Peter Jennings, <a href="mailto:peterj@benlo.com"> peterj@benlo.com <img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A>
+</BLOCKQUOTE>
+<b><u>The program.</U></B>
+<blockquote><p align=JUSTIFY>
+ Once you have the source (see later) you will need to load it into the simulator,
+ assemble it, and the run it in the debugger.
+</BLOCKQUOTE>
+<img src="rowncol.png" webstripperlinkwas="rowncol.png" align=RIGHT width=160 height=200 border=1 hspace=8 alt="Rows and columns">
+<b><u>The game.</U></B>
+<blockquote>
+<b><u>Notation.</U></B>
+<blockquote><p align=JUSTIFY>
+ Each square on the chess board is identified by a two digit number as shown here.
+ The first digit specifies the rank (0x to 7x) from the computer's end of the board.
+ The second digit specifies the file (x0 to x7) from the player's left. Moves are
+ made by the <b>FROM</B> square and the <b>TO</B> square using this notation.
+</BLOCKQUOTE>
+<br clear=ALL>
+<b><u>Command keys.</U></B>
+<blockquote><p align=JUSTIFY>
+ Few keys are needed to play. The original KIM had only a hex kaypad and a few command
+ keys. This version has code to interpret standard ASCII codes in their place. Alpha
+ keys can be used in either upper or lower case, both have the same effect.
+</BLOCKQUOTE>
+<table border=0 cellpadding=8>
+<tr>
+<td valign=TOP align=CENTER><b>[C]</B></TD>
+<td><p align=JUSTIFY>This key <b>[C]</B>lears the internal chessboard and resets it to
+ begin another game. The board is set up with the computer playing white.<br>
+ '<b>? Reset &nbsp;&nbsp;&nbsp;00 00</B>' is  displayed instead of a move to indicate
+ that the board has been reset.</TD>
+</TR>
+<tr>
+<td valign=TOP align=CENTER><b>[E]</B></TD>
+<td><p align=JUSTIFY>This key <b>[E]</B>xchanges the two sets of pieces without the actual
+ position of the board being changed.<br>
+ '<b>? Exchange 00 00</B>' is displayed instead of a move to
+ indicate that the exchange has been made.<br>
+ If <b>[C]</B> then <b>[E]</B> is pressed, the board will be set up to begin a game
+ with the computer playing black.<br>
+ If <b>[P]</B> followed by <b>[E]</B> followed by <b>[P]</B>, and so on, is pressed
+ the computer will play a game against itself.</TD>
+</TR>
+<tr>
+<td valign=TOP align=CENTER><b>[P]</B></TD>
+<td><p align=JUSTIFY>This key tells the computer to <b>[P]</B>lay its move. While the
+ computer decides on the best move it will flash the <b>'?'</B> character on the move
+ line and, sometimes, display the move it's deciding on.</TD>
+</TR>
+<tr>
+<td valign=TOP align=CENTER><b>[ENTER]</B></TD>
+<td><p align=JUSTIFY>This key is used to register the player's move. It moves the piece
+ on the <b>FROM</B> square to the <b>TO</B> square. This can be used to move one of the
+ computer's men if desired.</TD>
+</TR>
+</TABLE>
+&nbsp;<p>
+</BLOCKQUOTE>
+<img src="status.png" webstripperlinkwas="status.png" align=RIGHT width=260 height=180 border=1 hspace=8 alt="Status line">
+<blockquote>
+<b><u>Entering moves.</U></B>
+<blockquote><p align=JUSTIFY>
+ Your moves are entered into the game numerically using the notation described above. You
+ do not enter piece being moved, just the <b>FROM</B> and <b>TO</B> square locations.
+<p align=JUSTIFY>
+ As move numbers are entered they scroll from right to left through the <b>TO</B> and
+ <b>FROM</B> digits, the <b>FROM</B> square piece is updated after every key. Should
+ you make an error while entering the move just re-enter the move and the display will
+ scroll to the left until the correct move is displayed.
+<p align=JUSTIFY>
+ While you are entering your move the piece located on the <b>FROM</B> square is displayed
+ on the left of the status line after the '<b>?</B>' character. There is no indication
+ of the pieces colour, it is up to you to move only your own pieces.
+<p align=JUSTIFY>
+ When you are sure the move you've entered is the correct one press the <b>[ENTER]</B>
+ key to register the move on the board. Once you have pressed <b>[ENTER]</B> the display
+ confirms the move by showing the piece now in the <b>TO</B> square and the <b>FROM</B>
+ and <b>TO</B> squares.
+<p align=JUSTIFY>
+ You may make as many moves like this as you wish and may move either your own men or the
+ computer's. No check on the legality of the move is carried out. Illegal moves will be
+ executed just as legal moves, so you should be carefull that you do not accidentally
+ make an illegal move. There is no warning if your king is in check, you must be careful
+ not to leave this situation after your move. If you do the computer will usually take
+ your king on its next move if possible.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<b><u>The source.</U></B>
+<blockquote><p align=JUSTIFY>
+ The source is changed from the original source to use the ASCII input/output of the
+ simulator. This roughly follows the suggestions in the KIM MicroChess programmers
+ manual on teletype I/O.
+<p align=JUSTIFY>
+ Where code has been added it has lower case comments and where code has been changed
+ the original code has usually been commented out, but otherwise left in place. The main
+ strategy and computer play routines are essentially unchanged from the original.
+<p align=JUSTIFY>
+ The OCRed source that I worked from had some transcription errors. Though I found and
+ corrected some, others may remain.
+<p align=JUSTIFY>
+ You can either view the source as <a href="source.html" webstripperlinkwas="source.html">html</A> or download the
+ source as a <a href="source." webstripperlinkwas="source.zip">zip<img src="../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../zip_sm.png" alt="[Download]" border=0></A> archive.
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 22nd Februaru, 2005.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish3f8066d6" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=3f8066d6&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

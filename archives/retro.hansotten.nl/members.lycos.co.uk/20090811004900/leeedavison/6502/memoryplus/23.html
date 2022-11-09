@@ -1,0 +1,112 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish790b36e6{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish790b36e6{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip790b36e6{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad790b36e6"></div>
+<html><head><title> Memory Plus manual </TITLE></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<a href="01.html" webstripperlinkwas="01.html"><img src="index.png" webstripperlinkwas="index.png" align=RIGHT border=0 alt="Index"></A>
+<b><font size=+2>MEMORY PLUS Manual </FONT></B><font size=-2>By Lee Davison</FONT>
+<br clear=all>
+<br>
+<a href="22.html" webstripperlinkwas="22.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="24.html" webstripperlinkwas="24.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 23
+</CENTER>
+<br clear=all>
+<hr>
+ <pre>
+
+
+  0091	48				PHA		ON STACK
+  0092	A0 04				LDYIM	$04	SHIFT 4 POSITIONS PER CHARACTER
+  0094	A5 D8				LDAZ	ADATA	GET DATA
+  0096	29 0F				ANDIM	$0F	MASK TO NIBBLE
+  0098	C9 0A				CMPIM	$0A	TEST DECIMAL
+  009A	30 03				BMI	AOKAY	DECIMAL
+  009C	18				CLC		A - F. MUST CONVERT TO
+  009D	69 07				ADCIM	$07	ASCII
+  009F	18		AOKAY		CLC		FINISH CONVERSION
+  00A0	69 B0				ADCIM	$B0	ASCII + AIM FLAG
+  00A2	20 7B EF			JSR	ASCOUT	OUTPUT TO DISPLAY
+  00A5	46 D6		AMOVE		LSRZ	AHICH	MOVE TO NEXT NIBBLE
+  00A7	66 D7				RORZ	ALOW
+  00A9	66 D8				RORZ	ADATA
+  00AB	88				DEY
+  00AC	D0 F7				BNE	AMOVE
+
+  00AE	68				PLA		RESTORE X
+  00AF	AA				TAX
+  00B0	CA				DEX
+  00B1	F0 0E				CPXIM	$0E	DONE?
+  00B3	B0 DB				BCS	ALOOP	NO
+  00B5	90 C9				BCC	AIM	YES. REPEAT
+
+  00B7	20 86 8B	SYM		JSR	ACCESS	ENABLE SYM MOEMORY
+  00BA	A5 D2				LDAZ	POINTH
+  00BC	20 FA 82			JSR	OUTBYT	OUTPUT
+  00BF	A5 D1				LDAZ	POINTL
+  00C1	20 FA 82			JSR	OUTBYT
+  00C4	A0 00				LDYIM	$00
+  00C6	B1 D1				LDAIY	POINTL	GET DATA
+  00C8	20 FA 82			JSR	OUTBYT
+
+  00CB	20 06 89	DISPLY		JSR	SCANDS	SCAN DISPLAY
+  00CE	4C CB 00			JMP	DISPLY	CONTINUE
+
+  00D1	00		POINTL		=	$00
+  00D2	00		POINTH		=	$00
+  00D3	00		FLAG		=	$00
+  00D4	00		FLIP		=	$00
+  00D5	00		PASS		=	$00
+  00D6	00		AHIGH		=	$00
+  00D7	00		ALOW		=	$00
+  00D8	00		ADATA		=	$00
+
+
+
+
+
+
+
+
+
+ </PRE>
+<br clear=all>
+<hr>
+<a href="22.html" webstripperlinkwas="22.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="24.html" webstripperlinkwas="24.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 23
+</CENTER>
+<br clear=all>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 8th December, 2002.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish790b36e6" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=790b36e6&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

@@ -1,0 +1,334 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish6dd82e8b{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish6dd82e8b{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip6dd82e8b{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad6dd82e8b"></div>
+<html><head><title>LCD port - Driver assembly source file.</TITLE>
+<meta name="description" content="An LCD driver for the SuprDupr.">
+</HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=25%>
+<a href="index.html#source" webstripperlinkwas="index.html#source"><img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER><b><font size=+1>LCD port driver </FONT></B>
+<font size=-1>by Lee Davison</FONT></TD><td width=25%>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<a href="asm." webstripperlinkwas="asm.zip">Download this file <img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" alt="[Download]" border=0></A>
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; suprdupr LCD driver ver$ 0.1
+
+; Some basic routines to drive an LCD graphic module in both graphic and
+; alpha modes. This code is mostly a translation of my Z80 LCD drivers
+; for the MPF
+
+; The display plugs into the LCD port on the SuprDupr board.
+
+Port6		= $0C		; LCD control port data register
+PDir6		= $0D		; LCD control port direction register
+Port8		= $10		; LCD port data register
+PDir8		= $11		; LCD port direction register
+
+LCD_c		= Port6		; LCD control port data register
+LCD_d		= PDir6		; LCD control port direction register
+LCD_E		= 2		; LCD E pin
+LCD_WR		= 6		; LCD /WR line
+LCD_RS		= 7		; LCD register select line
+LCD_DA		= Port8		; LCD port data register
+LCD_DIR		= PDir8		; LCD port direction register
+
+DispMode	= $52		; display mode byte off/master/noblink/nocsr/cgr/intcg)
+ChrHigh		= $53		; current character height (8 default)
+ChrWidt		= $54		; current character width (8 default)
+LineLen		= $55		; current visible line length (32 default)
+CursorAt	= $56		; cursor address in display
+StrtOff		= $58		; default display start offset
+DispOff		= $5A		; offset for display
+
+; Display attribute equates
+
+DispOn		= $20		; display on bit
+DispBlnk	= $08		; cursor blink bit
+DispCrsr	= $04		; cursor on bit
+DispGrap	= $02		; display graph mode bit
+DispExCg	= $01		; external GC bit
+
+	*=	$8000		; code origin
+
+; set default LCD parameters
+
+LCD_default:
+	LDM	#$20,DispMode	; display mode byte (on/master/noblink/nocsr/cgr/intcg)
+	LDM	#$70,ChrHigh	; current character height (8 default)
+	LDM	#$07,ChrWidt	; current character width (8 default)
+	LDM	#$20,LineLen	; current visible line length (32 default)
+	LDM	#$00,CursorAt	; cursor address in display
+	LDM	#$00,CursorAt+1	; cursor address in display
+	LDM	#$E0,StrtOff	; default display start offset
+	LDM	#$FF,StrtOff+1	; default display start offset
+	LDM	#$00,DispOff	; offset for display
+	LDM	#$00,DispOff+1	; offset for display
+	RTS
+
+; initialise 240x40 LCD display. Sets line length to 64 and time divisions
+; to 40
+
+LCD_init:
+	CLB	LCD_E,LCD_c	; disable LCD's port
+	SEB	LCD_E,LCD_d	; set control bit to output
+	SEB	LCD_WR,LCD_d	; set control bit to output
+	SEB	LCD_RS,LCD_d	; set control bit to output
+
+	LDA	#$03		; set time divisions instruction
+	JSR	LCD_instr	; send display control instruction
+	LDA	#$28		; set refresh to 40 lines
+	JMP	LCD_data	; go write data byte & return
+
+; output instruction. We need to wait until the busy flag is clear before
+; attempting to write a new instruction.
+
+LCD_instr:
+	JSR	LCD_busy	; wait until ready
+	SEB	LCD_RS,LCD_c	; register select line high
+	BRA	LCD_inst	; go write data byte
+
+; output data. We don't need to wait until the busy flag is clear before
+; attempting to write data.
+
+LCD_data:
+	CLB	LCD_RS,LCD_c	; register select line low
+LCD_inst:
+	STA	LCD_DA		; byte out to port
+	CLB	LCD_WR,LCD_c	; control line to write
+	LDM	#$FF,LCD_DIR	; data port to output
+
+	SEB	LCD_E,LCD_c	; LCD E high
+	CLB	LCD_E,LCD_c	; LCD E low
+
+	RTS
+
+; wait until the display is not busy.
+
+LCD_busy:
+	PHA			; save data or instruction
+	LDM	#$00,LCD_DIR	; data port to input
+	SEB	LCD_WR,LCD_c	; control line to read
+	SEB	LCD_RS,LCD_c	; register select line high
+LCD_busy1:
+	SEB	LCD_E,LCD_c	; enable LCD
+	LDA	LCD_DA		; in from display port
+	CLB	LCD_E,LCD_c	; disable LCD
+	BBS	7,A,LCD_busy1	; loop while LCD busy
+
+	PLA			; restore data or instruction
+	RTS
+
+; Clear LCD display. Turns off display, checks mode and then fills 2048 display bytes
+; with either $00 (graph mode) or $20 (chr mode). It also homes the cursor.
+
+; If the commented out instructions are restored then the display will blank during
+; clearing.
+
+LCD_clr:
+;	LDA	DispMode	; get mode
+;	AND	#$1F		; display off
+;	JSR	LCD_mode	; set display mode
+
+	LDA	#$00		; space chr to clear graph mode display
+	STA	CursorAt	; clear byte
+	STA	CursorAt+1	; clear word
+
+	BBS	1,DispMode,ClGraph	; if graph go clear graph mode
+
+	LDA	#$20		; space chr to clear character mode display
+ClGraph:
+	PHA			; save blank character
+	LDX	$00		; reset cursor low address
+	LDY	$00		; reset cursor high address
+	JSR	Set_cursor	; Set cursor address. 16 bit value in XY (low/high)
+	LDA	#$0C		; write display data
+	JSR	LCD_instr	; set instruction
+	LDY	#$08		; 8 x 256 = 2048 bytes
+	PLA			; get blank character back
+Clear_l:
+	JSR	LCD_busy	; wait until ready
+	JSR	LCD_data	; go write data byte
+	DEX			; decrement byte count
+	BNE	Clear_l		; loop until all chrs done
+
+	DEY			; inner loop
+	BNE	Clear_l		; loop until all blocks done
+
+	JSR	Set_cursor	; set cursor position (XY will be $0000)
+	LDX	DispMode	; get mode
+	JSR	LCD_Xmode	; set display mode from X
+	RTS
+
+; Set cursor address. 16 bit value in XY (low/high)
+
+Set_cursor:
+	STX	CursorAt	; save cursor position low byte
+	STY	CursorAt+1	; save cursor position low byte
+
+	LDA	#$0A		; Set cursor low addr instruction
+	JSR	LCD_instr	; send display control instruction
+
+	TXA			; set low address
+	JSR	LCD_data	; go write data byte
+
+	LDA	#$0B		; Set cursor high addr instruction
+	JSR	LCD_instr	; send display control instruction
+
+	TYA			; set high address
+	JSR	LCD_data	; go write data byte
+
+	RTS
+
+; set display start address to XY (low/high)
+
+Set_start:
+	STX	StrtOff		; save start offset low byte
+	STY	StrtOff+1	; save start offset high byte
+
+	LDA	#$08		; Set display start low addr instruction
+	JSR	LCD_instr	; send display control instruction
+
+	TXA			; set low byte
+	JSR	LCD_data	; go write data byte
+
+	LDA	#$09		; Set display start high addr instruction
+	JSR	LCD_instr	; send display control instruction
+
+	TYA			; set high byte
+	JSR	LCD_data	; go write data byte
+
+	RTS
+
+; Turn on the LCD. without changing the mode parameters.
+
+LCD_on:
+	LDA	DispMode	; get the display mode
+	ORA	#DispOn		; turn on bit
+	STA	DispMode	; save mode
+	JMP	LCD_mode	; set display mode & return
+
+; Turn off the LCD. without changing the mode parameters.
+
+LCD_off:
+	LDA	DispMode	; get the display mode
+	AND	#$FF-DispOn	; turn off bit
+	STA	DispMode	; save mode
+
+; Set the LCD mode. mode byte should be in A
+
+LCD_mode:
+	TAX			; save mode byte
+LCD_Xmode:
+	LDA	#$00		; clear A
+	JSR	LCD_instr	; set display control instruction
+
+	TXA			; get mode byte back
+	JMP	LCD_data	; go write data byte & return
+
+; Set graph mode. This will set the width to eight and the display to 32
+; chrs/line. If you want the display on when graph mode is set call this
+; routine with A<>0
+
+LCD_setgramode:
+	LDX	#$02		; display off/graph mode
+	ORA	#$00		; set the flags
+	BEQ	GsetOff		; jump if display is to be off
+
+	LDX	#$22		; display on/graph mode
+GsetOff:
+	STX	DispMode	; save mode
+	JSR	LCD_Xmode	; set display mode from X
+
+	LDA	#$01		; set chr pitch instruction
+	JSR	LCD_instr	; send display control instruction
+
+	LDA	#$07		; chr width 8 bits/chr
+	JSR	LCD_data	; go write data byte
+
+	LDA	#$02		; set no. of chrs instruction
+	JSR	LCD_instr	; send display control instruction
+
+	LDA	#$1E		; 32 chr mode
+	JSR	LCD_data	; go write data byte
+
+	LDX	#$00		; set start of display low byte
+	LDY	#$00		; set start of display high byte
+	BRA	Set_start	; set start address & return
+;	RTS
+
+; Set character mode. This will read the default values and use those for
+; the chr width and height, it will also set the display to 64 chrs/line.
+; If you want the display on when chr mode is set call this routine with
+; A<>0 .
+
+LCD_setchrmode:
+;	LDX	#$00		; display off/chr mode
+;	ORA	#$00		; set the flags
+;	BEQ	CsetOff		; jump if display is to be off
+
+	LDX	#$20		; display on/chr mode
+CsetOff:
+	STX	DispMode	; save mode
+	JSR	LCD_Xmode	; set display mode from X
+
+	LDA	#$02		; Set no. of chrs instruction
+	JSR	LCD_instr	; send display control instruction
+
+	LDA	#$3E		; 64 chr mode
+	JSR	LCD_data	; go write data byte
+
+	LDA	ChrWidt		; get chr width
+	CLC			; clear carry for add
+	ADC	#$01		; +1 for routine
+;	JSR	LCD_chrw	; go set it & return
+;	RTS
+
+; Set the character width for the chr mode display. Width is in A, valid
+; widths are 6,7 and 8 bits. After the width is set the new visible length
+; and the new start offset are set.
+
+LCD_chrw:
+	SEC			; set carry for subtract
+	SBC	#$06		; convert to 0,1,2
+	BCC	LCD_make	; if <6 force to 8 bits wide cmp #$03 ; compare with 9 bcc lcd_wsok ; branch if was ok (range 6 to 8) lcd_make: lda #$02 ; default is 8 bits wide lcd_wsok: asl a ; *2 asl a ; *4 tax ; copy offset lda disptbl,x ; get width byte sta chrwidt ; save new width ora chrhigh ; or in chr height tay ; save size byte lda #$01 ; set chr pitch instruction jsr lcd_instr ; send display control instruction tya ; get size byte back jsr lcd_data ; go write webstripperattrwas webstripperlinkwas="http://members.lycos.co.uk/leeedavison/6502/suprchips/lcd/" byte ; now set the other values inx ; point to visible line length lda disptbl,x ; get visible line length sta linelen ; save it inx ; point to offset low byte lda disptbl,x ; get low byte inx ; point to offset high byte ldy disptbl,x ; get high byte tax ; copy low byte jmp set_start ; set start address & return ; rts ; write chr to display. this routine will emulate a tty display with auto ; scroll h (on/off) and auto scroll v (on/off) and a virtual display size ; of 64h x 32v characters. ; control codes include.... ; $0a line feed ; $0d carrage return ; $08 backspace ; $09 tab lcd_print: bbs 1,dispmode,ctrldone ; exit if graph mode and #$7f ; clear bit 7 cmp #$20 ; compare with ' ' bcc ctrl_chr ; jump if control character ; normal chr so out to display tax ; copy character lda #$0c ; write display webstripperattrwas webstripperlinkwas="http://members.lycos.co.uk/leeedavison/6502/suprchips/lcd/" jsr lcd_instr ; set instruction txa ; get chr back jsr lcd_data ; go write webstripperattrwas webstripperlinkwas="http://members.lycos.co.uk/leeedavison/6502/suprchips/lcd/" byte ; now increment the cursor position ldx cursorat ; get cursor position low byte ldy cursorat+1 ; get cursor position high byte inx ; increment low byte bne setexit ; skip high byte increment iny ; increment high byte bra setexit ; set cursor and exit ;wasbell: ; put your webstripperattrwas webstripperlinkwas="http://members.lycos.co.uk/leeedavison/6502/suprchips/lcd/" to go 'beep' here ; rts ctrl_chr: ; control characters get here.... ; cmp #$07 ; was it bell ; beq wasbell ; jump if so ldx cursorat ; get cursor position low byte ldy cursorat+1 ; get cursor position high byte cmp #$0d ; was it cr beq wascr ; jump if so cmp #$0a ; was it lf beq waslf ; jump if so cmp #$09 ; was it tab beq wasta ; jump if so cmp #$08 ; was it backspace beq wasba ; jump if so bra ctrldone ; else exit setexit: jsr set_cursor ; set cursor address. 16 bit value in xy (low/high) ctrldone: ; gets here if not valid ctrl chr rts ; all these routines are entered with the current cursor position in xy ; was carriage return wascr: txa ; copy cursor low byte and #$c0 ; clear cursor x bits tax ; save new low byte bra setexit ; set cursor and exit ; was line feed waslf: txa ; copy cursor low byte adc #$3f ; add linefeed offset+carry (carry set by cmp #$0a) tax ; save new low byte bcc setexit ; branch if no overflow iny ; increment high byte bra setexit ; set cursor and exit ; was tab - need to do something cleverer here! wasta: clc ; clear carry for add txa ; copy cursor low byte and #$f8 ; mask out tab bits adc #$08 ; add tab step tax ; save new low byte bcc setexit ; branch if no overflow iny ; increment high byte bra setexit ; set cursor and exit ; was backspace wasba: txa ; copy cursor low byte bne wasbb ; branch if not zero dey ; decrement high byte wasbb: dex ; step back one bra setexit ; set cursor and exit .end </pre>
+</TD></TR></TABLE>
+<p>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 4th June, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish6dd82e8b" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=6dd82e8b&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

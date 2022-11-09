@@ -1,0 +1,100 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish64f37172{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish64f37172{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip64f37172{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad64f37172"></div>
+<html><head><title>8 Bit ISA slot - EhBASIC routines.</TITLE>
+<meta name="description" content="An AT keyboard driver for the SuprDupr"></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr>
+<td width=25%>
+<a href="index.html#source" webstripperlinkwas="index.html#source">
+  <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER>
+<b><font size=+1>8 Bit ISA slot routines. </FONT></B><font size=-1>by Lee Davison</FONT>
+</TD>
+<td width=25%>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/6502/suprchips/isa/8019drv.zip?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/6502/suprchips/isa/8019drv.zip'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/6502/suprchips/isa/8019drv.zip">Download this file <img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" alt="Download" border=0></A>
+<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+rst_pin	=	7		; reset pin bit number
+ior_pin	=	1		; ISA /IOR pin bit number
+iow_pin	=	0		; ISA /IOW pin bit number
+
+		*=	$EF00	; set this as needed
+
+; write to NIC port CALL write_creg,address,byte
+
+write_creg:
+	JSR	LAB_1C01	; scan for "," else do syntax error/warm start	
+	JSR	LAB_GADB	; get two parameters for POKE or WAIT
+	STX	Port5		; byte out to data port
+	LDM	#$FF,PDir5	; data port to output
+	LDA	Port6		; get current address
+	AND	#$E0		; clear non address bits
+	STA	Port6		; save cleared address
+	LDA	Itempl		; get address back
+	AND	#$1F		; mask non address bits
+	ORA	Port6		; OR in non port bits
+	STA	Port6		; save address
+	CLB	iow_pin,Port4	; write bit low
+	SEB	iow_pin,Port4	; write bit high
+	RTS
+
+		*=	$EF20	; set this as needed
+
+; read from NIC port USR(n) where n is the address
+
+read_creg:
+	JSR	LAB_EVBY	; evaluate byte expression, result in X
+	LDM	#$00,PDir5	; data port to input
+	LDA	Port6		; get current address
+	AND	#$E0		; clear non address bits
+	STA	Port6		; save address
+	TXA			; get address
+	AND	#$1F		; mask non address bits
+	ORA	Port6		; OR in non port bits
+	STA	Port6		; save address
+	CLB	ior_pin,Port4	; read bit low
+	LDY	Port5		; get byte from data port
+	SEB	ior_pin,Port4	; read bit high
+	JMP	LAB_1FD0	; convert Y to byte in FAC1 & return
+</PRE>
+</TD></TR></TABLE>
+<p>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 3rd August, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish64f37172" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=64f37172&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

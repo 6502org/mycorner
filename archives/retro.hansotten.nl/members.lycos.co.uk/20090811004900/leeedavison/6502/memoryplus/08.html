@@ -1,0 +1,115 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish0b6a6db4{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish0b6a6db4{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip0b6a6db4{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad0b6a6db4"></div>
+<html><head><title> Memory Plus manual </TITLE></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<a href="01.html" webstripperlinkwas="01.html"><img src="index.png" webstripperlinkwas="index.png" align=RIGHT border=0 alt="Index"></A>
+<b><font size=+2>MEMORY PLUS Manual </FONT></B><font size=-2>By Lee Davison</FONT>
+<br clear=all>
+<br>
+<a href="07.html" webstripperlinkwas="07.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="09.html" webstripperlinkwas="09.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 8
+</CENTER>
+<br clear=all>
+<hr>
+ <pre>
+					RAM Memory
+
+
+
+	The Random Access Memory (RAM) used with MEMORY PLUS is 2102-type static RAM.
+	Each 2102 chip contains 1024 bits of memory.  Any single bit is directly
+	addressable.  By addressing eight chips in parallel, an eight bit word is
+	accessed.  It takes eight 2102 chips to provide 1024 8-bit bytes.  The
+	MEMORY PLUS provides 8K bytes of' 8-bit RAM (actually 8192 bytes).  This re-
+	quires 64 2102 chips: eight chips per 1K times eight K.
+
+
+	The 2102 chips used with MEMORY PLUS are synertek 21L02B or equivalent.
+	This version of 2102 has the following basic parameters:
+
+		SPEED:	450 nanosecond access time
+		POWER:	30 milliamp worst case (these are "low power" chips)
+			single +5 voltage required
+
+	The MEMORY PLUS RAM is organized into a single contiguous 8K block of' memory.
+	The location of the RAM in the MICRO addressing space is defined by a switch
+	which may be set to start at any 8K boundary (2K hex boundary).  Looking at the
+	board with the regulators at the top,  the RAM select switch is the left switch
+	of the pair of rotary switches. Using the flat side of the switch as the position
+	indicator, the addresses are set as follows:
+
+					4			    4
+				    6	    2			E	6
+
+	On-board Address Select	  8    RAM	Not Selected	   ROM	  8
+	Switches for RAM and ROM
+				    A	    E			2	A
+					C			    C
+
+
+	The address associated with each position is:
+
+		2K  2000 to 3FFF	Assumed as the RAM address in this manual.
+		4K  4000 to 5FFF
+		6K  6000 to 7FFF
+		8K  8000 to 9FFF
+		AK  A000 to BFFF
+		CK  C000 to DFFF	Assumed as the ROM address in this manual.
+		EK  E000 to FFFF	Not normally used for RAM since interrupt vectors
+					must be defined in FFFA to FFFF if this memory is
+					addressed.  See note in EPROM Memory about using
+					this space for EPROM.
+
+	The exact layout of the individual RAM chips may be found in a diagram in
+	the section on "MEMORY PLUS Testing and Field Repair".
+
+
+
+
+
+
+
+
+ </PRE>
+<br clear=all>
+<hr>
+<a href="07.html" webstripperlinkwas="07.html"><img src="lastpg.png" webstripperlinkwas="lastpg.png" align=LEFT border=0 alt="Previous page"></A>
+<a href="09.html" webstripperlinkwas="09.html"><img src="nextpg.png" webstripperlinkwas="nextpg.png" align=RIGHT border=0 alt="Next page"></A>
+<center>
+Page 8
+</CENTER>
+<br clear=all>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 8th December, 2002.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish0b6a6db4" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=0b6a6db4&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

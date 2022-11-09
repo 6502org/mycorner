@@ -1,0 +1,121 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish0c5582b5{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish0c5582b5{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip0c5582b5{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad0c5582b5"></div>
+<html><head><title>6502 Shorts - Hex to ASCII</TITLE></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=20%><a href="index.html" webstripperlinkwas="index.html"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER><b><font size=+1>Hex to ASCII. </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+<img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<b><u>Introduction.</U></B>
+<blockquote><p align=JUSTIFY>
+ I know you've all done this before but here's a use for decimal mode. Read on....
+</BLOCKQUOTE>
+<b><u>The code.</U></B>
+<blockquote><p align=JUSTIFY>
+ The classic way to convert a nibble in A into ASCII is to test if the nibble is greater
+ than nine and, if it is, to add seven before adding the 48 to make the ASCII character.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	CMP	#$0A		; set carry for +1 if >9	
+	BCC	NoAdjust	; branch if <=9 adc #6 ; adjust if a to f ; (six plus carry=7!) noadjust adc #"0" ; add ascii "0" </pre>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ This is eight bytes long and takes seven or eight cycles depending on the nibble.
+<p align=JUSTIFY>
+ Well here's a way that uses decimal mode addition to do that for you.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	SED			; set decimal mode
+	CMP	#$0A		; set carry for +1 if >9	
+	ADC	#"0"		; add ASCII "0"
+	CLD			; clear decimal mode
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ Six bytes and always nine cycles. Or, if you do a number of nibbles and leave decimal
+ mode set throughout, four bytes and five cycles per digit.
+</BLOCKQUOTE>
+<b><u>Another way.</U></B><a name=way></A>
+<blockquote><p align=JUSTIFY>
+ Following some posts on the classiccmp mailing list this became obvious. It's not fast
+ or short (really too long for this section but I'll let it pass) but it doesn't use
+ branches, decimal mode or other registers or memory.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#$00		; add 1 if it was  >= $0A
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#$00		; add 1 if it was  >= $0A
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#$00		; add 1 if it was  >= $0A
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#$00		; add 1 if it was  >= $0A
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#$00		; add 1 if it was  >= $0A
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#$00		; add 1 if it was  >= $0A
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#"0"		; add "0" and 1 if it was  >= $0A
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ Twenty eight bytes and twenty eight cycles, only really usefull for a 'convert hex to
+ ASCII without using branches, decimal mode or look up tables' competition.
+</BLOCKQUOTE>
+<b><u>Yet another way.</U></B><a name=way></A>
+<blockquote><p align=JUSTIFY>
+ Last one, honest. Not the shortest but this must be the fastest way. Starts with the
+ nibble to be converted in X not A<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	LDA	hex_table,X	; get the ASCII character	
+	.
+
+hex_table
+	.byte	"0123456789ABCDEF"
+				; conversion table
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ Nineteen bytes, eighteen if the table is in page zero, and only four cycles. Speedy!
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 11th December, 2005.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish0c5582b5" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=0c5582b5&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

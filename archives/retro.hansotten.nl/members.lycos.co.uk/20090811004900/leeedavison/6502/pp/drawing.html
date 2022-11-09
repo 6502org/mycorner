@@ -1,0 +1,316 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish652e5fcd{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish652e5fcd{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip652e5fcd{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad652e5fcd"></div>
+<html><head><title>6502 Pen plotter - Drawing</TITLE>
+<meta name="description" content="6502 Pen plotter."></HEAD>
+<body background="../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=20%>
+<a href="index.html#links" webstripperlinkwas="index.html#links"><img src="../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=60% align=CENTER><b><font size=+1>6502 Pen plotter - Drawing </FONT></B>
+<font size=-1>By Lee Davison.</FONT></TD><td width=20%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<b><u>Drawing.</U></B>
+<blockquote><p align=JUSTIFY>
+ The actual drawing is performed by an interrupt service routine. This is called either
+ by a software interrupt (BRK) if no drawing is taking place or by the completion of the
+ previous draw command signalled by a timer countdown interrupt.
+<p align=JUSTIFY>
+ For this description it doesn't matter how the routine was called, that it was is all
+ that matters.
+</BLOCKQUOTE>
+<b><u>Actions.</U></B>
+<blockquote><p align=JUSTIFY>
+ The mechanism can only do one of ten things, it can move in one of eight directions
+ either along the step axes or at 45 degrees to them (step x and y together), lift the
+ pen or drop the pen. Each of these actions takes a finite time and the maximum time for
+ that action has to pass before a new action can be started. For movement this time is
+ 3mS which, with a step size of 0.1mm gives a draw rate of 3.33cm/S. For lifting or
+ dropping the pen the time needed is 8mS which means we can draw a maximum of 45 separate
+ lines per second.
+<p align=JUSTIFY>
+ This is by no means fast and the 6502 is quite adequate to fully control these actions.
+</BLOCKQUOTE>
+<b><u>Draw command format.</U></B>
+<blockquote><p align=JUSTIFY>
+ The draw commands are fetched from the buffer one at a time and have the format.
+<p>
+<center>
+<table width=80%>
+ <tr><td width=20%><b>Count low</B></TD><td>Low byte of step count word</TD></TR>
+ <tr><td><b>Count high</B></TD><td>High byte of step count word</TD></TR>
+ <tr><td><b>Nbyte</B></TD><td>Negative step byte for the mechanism</TD></TR>
+ <tr><td><b>Pbyte</B></TD><td>Positive step byte for the mechanism</TD></TR>
+</TABLE>
+</CENTER>
+<p>
+ Nbyte and Pbyte have the following bit functions
+<p>
+<table bgcolor="white" border=1 align=CENTER>
+ <tr><td width=20% align=CENTER><b>Bit</B></TD><td width=40% align=CENTER><b>1</B></TD>
+  <td width=40% align=CENTER><b>0</B></TD></TR>
+ <tr><td align=CENTER>7</TD><td>Pen down</TD><td>Pen up</TD></TR>
+ <tr><td align=CENTER>6</TD><td colspan=2 align=CENTER>Unused</TD></TR>
+ <tr><td align=CENTER>5</TD><td>Half step</TD><td>Step</TD></TR>
+ <tr><td align=CENTER>4</TD><td>Disable motors</TD><td>Enable motors</TD></TR>
+ <tr><td align=CENTER>3</TD><td>Y direction positive</TD><td>Y direction negative</TD>
+  </TR>
+ <tr><td align=CENTER>2</TD><td>Step Y motor</TD><td>No Y step</TD></TR>
+ <tr><td align=CENTER>1</TD><td>X direction positive</TD><td>X direction negative</TD>
+ </TR>
+ <tr><td align=CENTER>0</TD><td>Step X motor</TD><td>No X step</TD></TR>
+</TABLE>
+<p align=JUSTIFY>
+ The only difference between them is that Nbyte always has the motor step bits, 0 and 2,
+ cleared whereas Pbyte will have the bits set for the motor(s) to be stepped. While this
+ may seem wastefull, Nbyte gan easily be generated from Pbyte by doing an AND #$FA, at
+ the time the hardware was not finalised and it was better to have the bits defined in the
+ higher level routines and leave this routine as dumb as possible.
+</BLOCKQUOTE>
+<b><u>Executing the command.</U></B>
+<blockquote>
+<b><u>Starting a new line.</U></B>
+<p align=JUSTIFY>
+ The first thing the draw routine does, after saving all the registers, is to check if it
+ was called by a timer event. If not it jumps to start a new line.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+DrawIRQ
+	PHA			; save A
+	TXA			; copy X
+	PHA			; save X
+	TYA			; copy Y
+	PHA			; save Y
+
+	LDA	Timer2r		; read and clear counter timer chip status	
+	BPL	Startnext	; branch if we were idle (i.e. not drawing)
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ Next it checks the buffer and, if there is a draw command present, branches to execute
+ the command.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+Startnext
+	JSR	Increadb	; increment pointer and read byte from buffer	
+	BCC	Newline		; branch if line to do
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ Now the draw command is copied to local variables and the motor and pen latch is set up.
+ Also the drawing flag is blindly set, it is quicker to do this than check the old state
+ first.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+Newline
+	STA	Cbytel		; save step count low byte
+	JSR	Increadb	; increment pointer and read byte from buffer
+	STA	Cbyteh		; save step count high byte
+
+	LDA	#$FF		; flag drawing in progress
+	STA	drawf		; set draw flag
+
+	JSR	Increadb	; increment pointer and read byte from buffer
+	STA	Nbyte		; save latch negative byte. this is needed here
+				; because the step input MUST be low when
+				; changing mode or direction to avoid erroneous	
+				; stepping.
+	STA	Mport		; byte out to port (set pen & directions)
+	JSR	Increadb	; increment pointer and read byte from buffer
+	STA	Pbyte		; save latch positive byte
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ Next the pen state for this command is compared with the current pen state. If the pen
+ state has changed then the routine sets up the delay value for the pen to complete its
+ action.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	AND	#$80		; mask pen status bit
+	CMP	Lastp		; compare current pen mode with last pen mode	
+	STA	Lastp		; set pen byte to new state
+	BEQ	Decrstep	; branch if pen bits = (go do count-1)
+
+; pen state has changed so set the pen up/down delay & exit
+
+	LDY	#$01		; get count for 8mS pen delay low byte
+	LDX	#$F8		; get count for 8mS pen delay high byte
+	BNE	Exitdraw	; start count & exit, branch always
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ If the pen state hasn't changed then the step count is decremented, the motor(s) are
+ stepped and the delay value is set up for the motor(s) to complete the step.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+Decrstep
+	LDA	Cbytel		; get step count low byte
+	BNE	Lowonly		; skip high byte decrement if <>0
+
+	LDA	Cbyteh		; get step count low byte
+	BEQ	Startnext	; branch if done (low & high bytes = 0)		
+
+Highnlow
+	DEC	Cbyteh		; else decrement step count high byte
+Lowonly
+	DEC	Cbytel		; decrement step count low byte
+
+	LDA	Pbyte		; get latch positive byte
+	STA	Mport		; byte out to port
+	LDA	Nbyte		; get latch negative byte
+	STA	Mport		; byte out to port
+
+	LDY	#$01		; set count for 3mS step delay low byte
+	LDX	#$24		; set count for 3mS step delay high byte
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ Finally, the timer delay value is set, ..<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+Exitdraw
+	STX	Timer2h		; save timer 2 count high byte
+	STY	Timer2l		; save timer 2 count low byte
+	LDA	#$E3		; set single shot count down
+	STA	Timer2r		; set timer
+	BNE	ResEXIT		; this was an interrupt service so exit properly
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ .. the registers are restored and the routine exits.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+ResEXIT
+	PLA			; pull Y
+	TAY			; restore it
+	PLA			; pull X
+	TAX			; restore it
+	PLA			; restore A
+ExitINT
+	RTI			; this was an interrupt service so exit properly
+</PRE>
+</TD></TR></TABLE>
+<p>
+<b><u>Continuing a line.</U></B>
+<p align=JUSTIFY>
+ The routine saves the registers, as before, but, as we are already drawing, this time it
+ drops through to the motor step code.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+DrawIRQ
+	PHA			; save A
+	TXA			; copy X
+	PHA			; save X
+	TYA			; copy Y
+	PHA			; save Y
+
+	LDA	Timer2r		; read and clear counter timer chip status
+	BPL	Startnext	; branch if we were idle (i.e. not drawing)
+
+	LDA	Timer2h		; clear counter timer chip timer 2 interrupt	
+
+				; we were drawing so decrement count
+Decrstep
+	<b>...</B>
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ The step count is then decremented, the motor(s) are stepped, the delay value is set up
+ for the motor(s) to complete the step, and the routine exits as it did in the last
+ section.
+<p>
+<b><u>Ending a line.</U></B>
+<p align=JUSTIFY>
+ This time, after saving the registers and clearing the timer, the step count has reached
+ zero so the routine branches to check for a new line.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+Decrstep
+	LDA	Cbytel		; get step count low byte
+	BNE	Lowonly		; skip high byte decrement if <>0
+
+	LDA	Cbyteh		; get step count low byte
+	BEQ	Startnext	; branch if done (low & high bytes = 0)		
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ On attempting to read from the buffer there is no new data waiting so the newline branch
+ is not taken.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+Startnext
+	JSR	Increadb	; increment pointer and read byte from buffer	
+	BCC	Newline		; branch if line to do
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ So this time the drawing flag is cleared, the pen is released and the motors are disabled
+ to reduce dissipation in the driver stages.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+	LDA	#$00		; clear byte
+	STA	drawf		; clear draw flag
+	STA	Lastp		; save as last pen byte
+	LDA	#$10		; turn off the motors and set pen up		
+	STA	Mport		; byte out to port
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+ Lastly the registers are restored and the routine exits a s before.<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+ResEXIT
+	PLA			; pull Y
+	TAY			; restore it
+	PLA			; pull X
+	TAX			; restore it
+	PLA			; restore A
+ExitINT
+	RTI			; this was an interrupt service so exit properly
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 2nd May, 2002.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML>
+</style></noframes></pre></xmp></noscript>
+
+<div id="catfish652e5fcd" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=652e5fcd&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

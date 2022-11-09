@@ -1,0 +1,110 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish2a2dcebf{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish2a2dcebf{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip2a2dcebf{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad2a2dcebf"></div>
+<html><head><title>8 Bit ISA slot</TITLE>
+<meta name="description" content="8 bit ISA slot."></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr><td width=25%>
+<a href="../index.html#isa" webstripperlinkwas="../index.html#isa"><img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER><b><font size=+1>8 Bit ISA slot. </FONT></B>
+<font size=-1>by Lee Davison</FONT></TD><td width=25%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+<img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A></TD></TR></TABLE>
+<hr>
+<img src="isa.png" webstripperlinkwas="isa.png" align=RIGHT border=1 alt="SuprChip V 8 bit ISA slot." hspace=8>
+<b><u>Introduction</U></B>
+<blockquote><p align=JUSTIFY>
+ I wanted a quick way to connect an 8 bit ISA slot, only to access the IO adresse range,
+ to the SuprChip V microcontroller. The circuit I came up with appears on the right.
+<p align=JUSTIFY>
+ The address lines A5 to A15 can either be set using jumpers or switches (I used switches)
+ or, if you only need one address range, can be hard wired to the corresponding address.
+<p align=JUSTIFY>
+ Any of the five interrupt lines, from IRQ3 to IRQ7, can be selected by the use of a
+ jumper. Again if you will only need one (or none) of these then the desired interrupt
+ can be hard wired.
+<p align=JUSTIFY>
+ This circuit could be fairly easily adapted as a memory mapped device by connecting the
+ corresponding address and data lines (possibly through buffers), by driving the IOR and
+ IOW pins with decoded read and write signals, and by connecting the interrupt, via an
+ invertor, to the NMI input on the processor. The RESET line can be driven, again via
+ an invertor, by the processor RESET line or by an output port line. This line is active
+ high.
+<p align=JUSTIFY>
+ While experimenting with different network cards I discovered some of them need the +12v
+ supply in addition to the +5v supply. This additional connection is shown in <font color=RED>red</FONT> on the diagram.
+<p align=JUSTIFY>
+ As I had a stack of 3Com 3C509B NICs of various types I decided to try to use them. Well
+ it turns out that even with PnP disabled you still need to access the card's id port on
+ $01xx. To allow this Port 6 bit 6 was connected to the A9 line, so both $03xx and $01xx
+ can be accessed by the software. This additional connection is shown in <font color=##00FF00>green</FONT> on the diagram.
+</BLOCKQUOTE>
+<br clear=ALL>
+<b><u>Software</U></B>
+<blockquote><p align=JUSTIFY>
+ Though the slot can be accessed entirely from EhBASIC it was decided to create two short
+ routines to make accessing the slot faster and easier. To that end one function, to read
+ a byte, and one subroutine, to write a byte, were written.
+<p>
+ After initialising the function and subroutine addresses thus ..<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+..
+30 DOKE $44,$EF20 : REM USR(n) = read from IO address $xxnn	
+31 rr = $EF00 : REM call address for write to IO address
+..
+</PRE>
+</TD></TR></TABLE><p>
+ It is a simple matter to write a byte by doing ..<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+20500 CALL rr,cr,dd : REM set control register			
+20505 REM cr is the IO address - $00 to $1F
+20510 REM dd is the byte value for that IO address
+</PRE>
+</TD></TR></TABLE><p>
+ .. and read a byte by doing ..<p>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+10050 by = USR(cr)						
+10055 REM cr is the IO address - $00 to $1F
+10060 REM the byte value is returned to by
+</PRE>
+</TD></TR></TABLE><p>
+<a name="source"></A>
+ You can <a href="slot_drv." webstripperlinkwas="slot_drv.zip">download<img src="../../members.lycos.co.uk/leeedavison/zip_sm.png" webstripperlinkwas="../../../zip_sm.png" border=0 alt="Download"></A> or <a href="slot_drv.html" webstripperlinkwas="slot_drv.html">view</A> the assembly source for the
+ read and write routines.
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 7th September, 2003.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish2a2dcebf" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=2a2dcebf&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

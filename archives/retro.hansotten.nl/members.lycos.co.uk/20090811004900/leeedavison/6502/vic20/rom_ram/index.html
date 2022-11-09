@@ -1,0 +1,114 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish63c1b43e{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish63c1b43e{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip63c1b43e{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad63c1b43e"></div>
+<html><head><title>32k ROM/RAM expansion</TITLE></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr>
+<td width=25%>
+<a href="../index.html#rom_ram" webstripperlinkwas="../index.html#rom_ram">
+  <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER>
+<b><font size=+1>32k ROM/RAM expansion </FONT></B><font size=-1>by Lee Davison</FONT>
+</TD>
+<td width=25%>
+<a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<a href="romram.html" webstripperlinkwas="romram.html"><img src="romram_s.jpg" webstripperlinkwas="romram_s.jpg" align=RIGHT border=1 alt="Vic 20 ROM/RAM expansion" hspace=8></A>
+<b><u>Introduction</U></B>
+<blockquote><p align=JUSTIFY>
+ I wanted to make an <a href="../isa/index.html" webstripperlinkwas="../isa/index.html">ISA card slot</A> for my Vic 20 and
+ decided to use a scrap 8k RAM expansion cartridge (the same as the 16k cart but only
+ half populated) as the physical base for that. While I was about it it seemed a shame
+ not to use some of the space to give me some extra ROM and RAM capacity.
+<p align=JUSTIFY>
+ 256k bit size devices are used for both the ROM and RAM and, as most of the pins are the
+ same as those for the original 16k bit RAM chips, these were located in the same
+ positions (with a little overlap) as two of the original devices. This gives enough RAM
+ to fully populate the Vic with 32k of continuous RAM, or add up to 24k continuous RAM and
+ populate the cartridge addresses with RAM.
+</BLOCKQUOTE>
+<br clear=ALL>
+<b><u>The Circuit</U></B>
+<img src="rom_ram.png" webstripperlinkwas="rom_ram.png" align=RIGHT border=1 alt="Vic 20 ROM/RAM expansion" hspace=8>
+<blockquote><p align=JUSTIFY>
+<p align=JUSTIFY>
+ Most of the connections are direct from the Vic expansion connector and only the two
+ chip selects and the address lines A14 and A13 need to be generated. These are generated
+ by a GAL used for nearly all the glue logic on the card. The equations for this GAL are
+ in <a href="mempld.html" webstripperlinkwas="mempld.html" name=pld>mem.pld</A> and can be compiled with WinCUPL. The fuse
+ file, <a href="memjed.html" webstripperlinkwas="memjed.html" name=jed>mem.jed</A> and the compiler listing, <a href="memtxt.html" webstripperlinkwas="memtxt.html" name=txt>mem.txt</A> are also included.
+<p align=JUSTIFY>
+ The 150ns delay line is only needed if you want the <a href="../isa/index.html" webstripperlinkwas="../isa/index.html">ISA card
+ slot</A> as well as the ROM/RAM expansion. If it's not needed just omit it and tie the
+ dlyÿ2 pin on the GAL to +V.
+<p align=JUSTIFY>
+ The Vic expansion connector is shown in the diagram as if you are holding the expansion
+ card component side up with the edge connector towards you.
+ The upper side is, from left to right, 22 to 1 and the lower side is, again from left
+ to right, Z to A. <b>Note</B> that there are some letters not used in identifying
+ connections on the lower side, the missing ones being G, I, O and Q.
+</BLOCKQUOTE><br clear=ALL>
+<b><u>Construction</U></B>
+<a href="pins.html" webstripperlinkwas="pins.html" name=pins><img src="pins_s.jpg" webstripperlinkwas="pins_s.jpg" align=RIGHT border=1 alt="28 pin overlap of
+ 24 pin position" hspace=8></A>
+<blockquote><p align=JUSTIFY>
+ Two of the positions that the original RAM chips occupied were populated with 24 pin
+ turned pin type sockets and into these were pushed the 28 pin turned pin sockets needed
+ for the 256k bit devices. The track to pin 24 on the original position was cut for both
+ positions as was the pin 21 track. The connections to these pins was made by soldering
+ wire to the pads and the extra four pins were connected by soldering wires direct to the
+ socket pins. This just gives enough clearance to get the modified board into the Vic
+ cartridge slot but the cartridge case will never fit again! It should be possible using
+ this method to mount 32 pin devices as enough room is available on the board. Some form
+ of bank switching could be provided by using a bigger GAL and a latch for the upper
+ address lines.
+<p align=JUSTIFY>
+ The GAL was mounted by soldering a 20 pin turned pin socket to a small piece of
+ stripboard with the strip side up (remembering to cut the tracks between the pins first!)
+ and glueing this to the top side of the card using quick set epoxy adhesive. Once the
+ adhesive had set the connections to the GAL were made by soldering to the strips with
+ tinned copper wire for the supplies and insulated solid copper wire for all the other
+ connections.
+</BLOCKQUOTE>
+<a href="gal_n_bug.html" webstripperlinkwas="gal_n_bug.html" name=gal_n_bug><img src="gal_n_bug_s.jpg" webstripperlinkwas="gal_n_bug_s.jpg" align=RIGHT border=1 alt="Details of GAL and delay
+line mounting" hspace=8></A>
+<blockquote><p align=JUSTIFY>
+ The 150ns delay line was added after some testing and is held in place, 'dead bug' style,
+ by the tinned wire that supplies the Vcc and GND connections. This may later be glued in
+ place.
+</BLOCKQUOTE>
+<br clear=ALL>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 26th February, 2004.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish63c1b43e" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=63c1b43e&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>

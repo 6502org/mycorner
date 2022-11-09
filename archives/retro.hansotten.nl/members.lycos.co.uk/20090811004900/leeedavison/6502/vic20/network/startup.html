@@ -1,0 +1,99 @@
+<script type="text/javascript">
+window.google_analytics_uacct = "UA-7539432-13";
+</script>
+<style>
+#catfish6cf39d48{PADDING: 0px;MARGIN: 0px 0px -90px;WIDTH: 100%;HEIGHT: 90px;BOTTOM: 0px;POSITION: fixed;}
+</style>
+<!--[if ie]>
+<style>
+#catfish6cf39d48{ Z-INDEX: 1000; OVERFLOW: hidden; POSITION: absolute;}
+HTML,BODY {OVERFLOW: hidden;WIDTH: auto;HEIGHT: 100%;}
+DIV#zip6cf39d48{PADDING: 0px;MARGIN: 0px;OVERFLOW: auto;WIDTH: 100%;HEIGHT: 100%;POSITION: relative;}
+</style>
+<![endif]-->
+<div id="topad6cf39d48"></div>
+<html><head><title>Vic 20 network interface - software</TITLE></HEAD>
+<body background="../../members.lycos.co.uk/leeedavison/back.png" webstripperlinkwas="../../../back.png" link="#0000EE" vlink="#0000CC">
+<table border=0 width=100% cellspacing=0 cellpadding=0>
+<tr><td width=25%><a href="source.html#startup" webstripperlinkwas="source.html#startup">
+ <img src="../../members.lycos.co.uk/leeedavison/up.gif" webstripperlinkwas="../../../up.gif" border=0 alt="Up one"></A></TD>
+<td width=50% align=CENTER>
+<b><font size=+1>Vic 20 network - software </FONT></B>
+<font size=-1>by Lee Davison</FONT>
+</TD><td width=25%><a href="Dial Protected" onclick="if(confirm('WebStripper Dial Protection\n\nAre you sure you want to open the page http://members.lycos.co.uk/leeedavison/index.html?\n\n(To alter dial protection settings open Options|options in WebStripper)')) {href='http://members.lycos.co.uk/leeedavison/index.html'}else{href='javascript:void(0)'}" webstripperwas="http://members.lycos.co.uk/leeedavison/index.html">
+ <img src="../../members.lycos.co.uk/leeedavison/epc.png" webstripperlinkwas="../../../epc.png" align=RIGHT border=0 alt="Up to top"></A>
+</TD></TR></TABLE>
+<hr>
+<b><u>Initialisation</U></B>
+<blockquote><p align=JUSTIFY>
+ This is the code that sets up the Vic hardware, the system variables and the network
+ card. It also has the Vic cartridge startup string and the entry point vectors so that
+ when this ROM is connected it takes over the Vic completely.
+<p align=JUSTIFY>
+<table cellpadding=8 cellspacing=0 border=1 bgcolor=white><tr><td>
+<pre>
+
+; *********************************************************************		
+; ROM to be used is $A000 and possibly $2000, $4000 and $6000 if needed
+
+		*=	$A000
+
+					; first up is the auto-boot header
+	.dw	LAB_start		; entry point for code (power up)
+	.dw	LAB_restart		; warm start entry point (restore key)
+
+	.db	"A0",$C3,$C2,$CD	; 'A0CBM' boot string
+
+LAB_restart
+LAB_start
+	JSR	vicinit			; initialise VIC 20 hardware
+	JSR	setscr			; initialise the screen
+
+	LDA	#$A9			; 169
+	STA	ip_ours			; save my IP address first byte
+	LDA	#$FE			; 254
+	STA	ip_ours+$01		; save my IP address second byte
+					; 3rd and 4th are from MAC address
+	LDX	#$00			; clear X
+	STX	IB			; clear interrupt flag byte
+	STX	valid_pkt		; clear valid packet
+	STX	cdtb_l			; clear countdown timer b low byte
+	STX	cdtb_h			; clear countdown timer b high byte
+	STX	cdtf_l			; clear countdown timer f low byte
+	INX				; = $01
+	STX	cdtf_h			; set countdown timer f high byte
+	STX	tcp_state		; set TCP state to listen
+
+	LDA	NMI_res			; reset NMI latch
+	JSR	LAB_10500		; initialise network card
+
+	JSR	print_ip		; print out IP address
+	JSR	print_mac		; print out MAC address
+	JSR	print_tcp		; print TCP state
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<p align=JUSTIFY>
+<p align=JUSTIFY>
+</BLOCKQUOTE>
+<hr>
+<table border=0 width=100% cellspacing=0 cellpadding=0><tr>
+<td width=30%><font size=-1>Last page update: 29th February, 2004.</FONT></TD>
+<td width=40% align=CENTER><a href="mailto:leeedavison@googlemail.com">e-mail me 
+<img src="../../members.lycos.co.uk/leeedavison/eml_sm.png" webstripperlinkwas="../../../eml_sm.png" align=CENTER border=0 alt="e-mail"></A></TD>
+<td width=30%></TD></TR></TABLE></BODY></HTML></style></noframes></pre></xmp></noscript>
+
+<div id="catfish6cf39d48" style="display:none"></div>
+<script webstripperattrwas="src" webstripperlinkwas="http://ads.mmania.com/displaycf.js.php?r=6cf39d48&cc=uk" type=text/javascript></script>
+
+<script type="text/javascript">
+   var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "../../WebStripper/protected.html#link=http://www.");
+   document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+   try {
+      var pageTracker = _gat._getTracker("UA-7539432-13");
+      pageTracker._trackPageview();
+   } catch(err) {}
+</script>
