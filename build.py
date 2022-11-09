@@ -161,18 +161,16 @@ class ArchivedFile(object):
         self.sha1_sanitized = h.hexdigest()
 
     def read_sanitized(self):
-        '''
-        Remove advertising and tracking scripts outside of <html>.  See:
-        members.lycos.co.uk/20090226165902/leeedavison/misc/vfd/proto.html
-        '''
         pagedata = self.read_raw()
 
         if self.filename.endswith('html'):
+            # Remove advertising and tracking scripts outside of <html>.  See:
+            # archives/archive.org/members.lycos.co.uk/20090226165902/leeedavison/misc/vfd/proto.html
             start_tag = b'<HTML>'
             idx = pagedata.find(start_tag)
             if idx != -1:
                 leading_stuff = pagedata[0:idx].decode('utf-8', 'ignore')
-                if re.findall('[^\s]', leading_stuff):
+                if re.findall(r'[^\s]', leading_stuff):
                     pagedata = pagedata[idx:]
 
             end_tag = b'</HTML>'
@@ -180,8 +178,12 @@ class ArchivedFile(object):
             if idx != -1:
                 trailing_idx = idx + len(end_tag)
                 trailing_stuff = pagedata[trailing_idx:].decode('utf-8', 'ignore')
-                if re.findall('[^\s]', trailing_stuff):
+                if re.findall(r'[^\s]', trailing_stuff):
                     pagedata = pagedata[:trailing_idx]
+
+            # Remove HTTrack comments. See:
+            # archives/retro.hansotten.nl/members.lycos.co.uk/20090117205334/leeedavison/index.html
+            pagedata = re.sub(b'([\r\n]+<!-- Mirrored from.+HTTrack.*GMT -->[\r\n]+)', b'\n', pagedata)
 
         return pagedata
 
