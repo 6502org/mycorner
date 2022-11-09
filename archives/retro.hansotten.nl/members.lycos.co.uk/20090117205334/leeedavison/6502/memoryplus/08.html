@@ -1,0 +1,132 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=33638239&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/08.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:15:52 GMT -->
+<HEAD>
+<TITLE> Memory Plus manual </TITLE>
+</HEAD>
+<BODY
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="01.html"><IMG SRC="index.png" ALIGN=RIGHT BORDER=0 ALT="Index"></A>
+<B><FONT SIZE=+2>MEMORY PLUS Manual </FONT></B><FONT SIZE=-2>By Lee Davison</FONT>
+<BR CLEAR=all>
+<BR>
+<A HREF="07.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="09.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 8
+</CENTER>
+<BR CLEAR=all>
+<HR>
+ <PRE>
+					RAM Memory
+
+
+
+	The Random Access Memory (RAM) used with MEMORY PLUS is 2102-type static RAM.
+	Each 2102 chip contains 1024 bits of memory.  Any single bit is directly
+	addressable.  By addressing eight chips in parallel, an eight bit word is
+	accessed.  It takes eight 2102 chips to provide 1024 8-bit bytes.  The
+	MEMORY PLUS provides 8K bytes of' 8-bit RAM (actually 8192 bytes).  This re-
+	quires 64 2102 chips: eight chips per 1K times eight K.
+
+
+	The 2102 chips used with MEMORY PLUS are synertek 21L02B or equivalent.
+	This version of 2102 has the following basic parameters:
+
+		SPEED:	450 nanosecond access time
+		POWER:	30 milliamp worst case (these are "low power" chips)
+			single +5 voltage required
+
+	The MEMORY PLUS RAM is organized into a single contiguous 8K block of' memory.
+	The location of the RAM in the MICRO addressing space is defined by a switch
+	which may be set to start at any 8K boundary (2K hex boundary).  Looking at the
+	board with the regulators at the top,  the RAM select switch is the left switch
+	of the pair of rotary switches. Using the flat side of the switch as the position
+	indicator, the addresses are set as follows:
+
+					4			    4
+				    6	    2			E	6
+
+	On-board Address Select	  8    RAM	Not Selected	   ROM	  8
+	Switches for RAM and ROM
+				    A	    E			2	A
+					C			    C
+
+
+	The address associated with each position is:
+
+		2K  2000 to 3FFF	Assumed as the RAM address in this manual.
+		4K  4000 to 5FFF
+		6K  6000 to 7FFF
+		8K  8000 to 9FFF
+		AK  A000 to BFFF
+		CK  C000 to DFFF	Assumed as the ROM address in this manual.
+		EK  E000 to FFFF	Not normally used for RAM since interrupt vectors
+					must be defined in FFFA to FFFF if this memory is
+					addressed.  See note in EPROM Memory about using
+					this space for EPROM.
+
+	The exact layout of the individual RAM chips may be found in a diagram in
+	the section on "MEMORY PLUS Testing and Field Repair".
+
+
+
+
+
+
+
+
+ </PRE>
+<BR CLEAR=all>
+<HR>
+<A HREF="07.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="09.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 8
+</CENTER>
+<BR CLEAR=all>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 8th December, 2002.</FONT>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/08.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:15:52 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

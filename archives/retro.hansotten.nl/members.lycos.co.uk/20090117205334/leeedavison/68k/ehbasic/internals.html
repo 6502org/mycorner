@@ -1,0 +1,157 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=30a9c871&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/ehbasic/internals.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:03:58 GMT -->
+<HEAD><TITLE>Enhanced 68k BASIC, internals</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 680x0 family of
+ microprocessors."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_1"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Internals. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index-2.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>BASIC program memory use.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ A BASIC program is stored in memory as follows ..
+<P><CENTER><IMG SRC="basic.gif" TITLE="BASIC program storage"></CENTER>
+<P ALIGN=JUSTIFY>
+ The start of memory is held in Smeml which is at RAMBASE+$2E. Each BASIC program line
+ is stored as a longword pointer to the next line, a longword line number, the tokenised
+ line text and an end of line byte. Optionally, if the next byte is at an odd address,
+ there is a null pad byte.
+<P ALIGN=JUSTIFY>
+ This repeats for each line until the pointer after the last line which is null, this is
+ the end of program marker.
+<P ALIGN=JUSTIFY>
+ If there is no program in memory only the end marker will be present.
+</BLOCKQUOTE>
+<B><U>BASIC functions, variables and arrays.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ After the program comes the functions, variables and arrays. Each has a name of up to
+ four characters in length and may have b7 of the second character set if the type is
+ string, and b7 of the third character set if the type is integer. Characters that are
+ not defined are left as zero.
+<P><CENTER><IMG SRC="name.gif" TITLE="BASIC function, variable and array names"></CENTER>
+<P ALIGN=JUSTIFY>
+ Directly following the name is the data, this is as follows ..
+<P ALIGN=JUSTIFY>
+<B>Functions</B>
+<TABLE ALIGN=CENTER BGCOLOR="white" CELLPADDING=3 CELLSPACING=0 BORDER=2>
+<TR ALIGN=CENTER><TD WIDTH=135>Function name</TD>
+<TD WIDTH=134>Execute pointer</TD>
+<TD WIDTH=135>Variable name</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ A function is twelve bytes in length made up of its name, a longword pointer to the
+ BASIC code of the function and the name of the function variable. The type of function
+ variable is independant of the type of function so a string function can have a numeric
+ variable and vice versa.
+<P ALIGN=JUSTIFY>
+<B>Variables</B>
+<P ALIGN=JUSTIFY>
+ Numeric variables take eight bytes, four for the name and four for the floating point or
+ integer value.
+<P ALIGN=JUSTIFY>
+<TABLE ALIGN=CENTER>
+<TR><TD ROWSPAN=3 WIDTH=60 VALIGN=CENTER><B>Or</B></TD>
+<TD><TABLE BGCOLOR="white" CELLPADDING=3 CELLSPACING=0 BORDER=2>
+<TR ALIGN=CENTER><TD WIDTH=135>Variable name</TD>
+<TD WIDTH=135>Floating point value</TD></TR></TABLE></TD>
+<TD ROWSPAN=3 WIDTH=60></TD></TR>
+<TR><TD>&nbsp;</TD></TR>
+<TR><TD><TABLE ALIGN=CENTER BGCOLOR="white" CELLPADDING=3 CELLSPACING=0 BORDER=2>
+<TR ALIGN=CENTER><TD WIDTH=135>Variable name</TD>
+<TD WIDTH=135>Integer value</TD></TR></TABLE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The floating point value is stored as an exponent byte, biased to +$80, and a left
+ justified twenty four bit mantissa. As the highest bit of the mantissa is always one
+ this bit is replaced by a bit representing the sign. If this bit is 1 then the value
+ is negative.
+<P ALIGN=JUSTIFY>
+<TABLE ALIGN=CENTER BGCOLOR="white" CELLPADDING=3 CELLSPACING=0 BORDER=2>
+<TR ALIGN=CENTER><TD WIDTH=80>Exponent</TD><TD>S</TD><TD WIDTH=173>23 Mantissa bits</TD> 
+</TR></TABLE>
+<BLOCKQUOTE>
+<B><I><U>Example.</U></I></B><P>
+<P><CENTER><IMG SRC="floating.gif" TITLE="BASIC program storage"></CENTER>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ Zero is represented by the exponent being zero.
+<P ALIGN=JUSTIFY>
+ Integer values are stored big endian with the most significant byte first.
+<P ALIGN=JUSTIFY>
+<TABLE ALIGN=CENTER BGCOLOR="white" CELLPADDING=3 CELLSPACING=0 BORDER=2>
+<TR ALIGN=CENTER>
+ <TD WIDTH=64>MS Byte</TD><TD WIDTH=63>Byte</TD>
+ <TD WIDTH=63>Byte</TD><TD WIDTH=64>LS Byte</TD> 
+</TR></TABLE>
+<P ALIGN=JUSTIFY>
+ String variables take ten bytes, four for the name, four for the string pointer and two
+ for the string length. A string variable also needs enough bytes to store the string,
+ this rounded up to the next even length if the string length was odd but the recorded
+ length is the actual length of the string.
+<P ALIGN=JUSTIFY>
+<TABLE ALIGN=CENTER BGCOLOR="white" CELLPADDING=3 CELLSPACING=0 BORDER=2>
+<TR ALIGN=CENTER><TD WIDTH=135>String name</TD>
+<TD WIDTH=135>String pointer</TD>
+<TD WIDTH=67>Length</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+<B>Arrays</B>
+<P ALIGN=JUSTIFY>
+<TABLE ALIGN=CENTER BGCOLOR="white" CELLPADDING=3 CELLSPACING=0 BORDER=2>
+<TR ALIGN=CENTER>
+<TD WIDTH=135>Array name</TD><TD WIDTH=135>Array size</TD>
+<TD WIDTH=63>Dimensions</TD><TD WIDTH=64>Dim max</TD>
+<TD WIDTH=64>Dim max</TD><TD WIDTH=64>Dim max</TD>
+</TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The array size is a longword and is the total length of the array including the header.
+ Dimensions is a word count of the number of dimensions in the array and Dim max is the
+ word index of the highest element number in that dimension. The dimension maxima are
+ stored in reverse order with the last dimension being stored first.
+<P ALIGN=JUSTIFY>
+ After the header come the array elements, four bytes each for the elements of numeric
+ arrays and six bytes each for the elements of string arrays, stored in index order. So
+ the first element is 0,0,0 then 1,0,0 then 2,0,0 and on until n,0,0 where n=maximum,
+ and then 0,1,0 and 1,1,0 and 2,1,0 and so on.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 17th February, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/ehbasic/internals.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:03:58 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

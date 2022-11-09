@@ -1,0 +1,542 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=6e072e08&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/ehbasic/advanced.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:03:58 GMT -->
+<HEAD>
+<TITLE>Enhanced 68k BASIC, advanced examples</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 680x0 family of
+ microprocessors.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#link_1">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Advanced examples. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index-2.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Creating buffer space.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Sometimes there is a need for a byte oriented buffer space. This can be achieved by
+ lowering the top of BASIC memory and using the "protected" space created thus. The
+ main problem with this is that there may not be the same RAM configuration in all
+ the systems this code is to run on.
+<P ALIGN=JUSTIFY>
+ One way round this is to allocate the space from BASIC's array memory by dimensioning
+ an array big enough to hold your data. As arrays always start from zero then to work
+ out the array size needed you do ..<P ALIGN=JUSTIFY>
+ Array dimension = (bytes needed/4)-1.<P ALIGN=JUSTIFY>
+ E.g.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 DIM b1(19) : REM need 80 bytes for input buffer
+20 DIM b2($FF) : REM need $0400 bytes for a screen buffer	
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ So you've allocated the buffer but where is it? This is one use of the <A
+ HREF="language.html#VARPTR">VARPTR</A> function, it is used in this case to return
+ the start of the array's data space.<P ALIGN=JUSTIFY>
+ E.g.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 a1 = VARPTR(b1(0)) : REM get the address of the buffer space
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ But wait, there is another problem here. Because variables are created when they are
+ first assigned a value any new variable created after the array is dimensioned will
+ move the array in memory. So the following will not work..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 DIM b1(19) : REM 80 bytes for buffer
+20 a1 = VARPTR(b1(0)) : REM get the address of the buffer space	
+40 FOR x = 0 to 79
+50 POKE a1+x,ASC(" ")
+60 NEXT
+.
+.
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ When we get to line 40, a1, the pointer to the array data space, is wrong because the
+ variable x has been created and moved all the arrays up by six bytes.
+
+ The way round this is to ensure that all variables that you will use have been created
+ prior to getting the pointer. This also means you start with known values in all your
+ variables.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 DIM b1(19) : REM 80 bytes for buffer
+20 x = 0 : REM loop counter
+30 a1 = VARPTR(b1(0)) : REM get the address of the buffer space	
+40 FOR x = 0 to 79
+50 POKE a1+x,ASC(" ")
+60 NEXT
+.
+.
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Another way is to get the pointer every time you use it. This has the advantage of
+ always being correct but is somewhat slower.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 DIM b1(19) : REM 80 bytes for buffer				
+40 FOR x = 0 to 79
+50 POKE VARPTR(b1(0))+x,ASC(" ")
+60 NEXT
+.
+.
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ One thing to remember, never try to use a string array as a buffer. Everything will
+ seem to work until you run out of string space and the garbage collection routine is
+ called. Once this happens it's likely that your buffer will get trashed and you may
+ even find that the program freezes because the garbage collection routine now thinks
+ that there are more string bytes than there are memory.
+</BLOCKQUOTE>
+<BR>
+<B><U>Creating short code space.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ While the techniques explained above can also be used to create space for machine code
+ routines there is a simpler way for position independent routines up to 65535 bytes long
+ to be held in memory.
+<P ALIGN=JUSTIFY>
+ Assemble the code and use the hex output from your assembler to create a set of BASIC
+ data statements.<BR>
+  E.g.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+1000 DATA $B1,$F9,$00,$04,$04,$4A,$65,$0C			
+1010 DATA $61,$00,$15,$36,$B1,$F9,$00,$04
+1020 DATA $04,$4A,$63,$3E,$4E,$75
+1030 DATA -1
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Now we just use a loop like this to load this hex code into a string.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 RESTORE 1000
+20 READ by : REM assume at least one byte			
+30 DO
+40 co$ = co$+CHR$(by)
+50 READ by
+60 LOOP UNTIL by=-1
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The code can now be called by doing ..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+140 CALL(SADD(co$))						
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Note that you must always use the SADD() function to get the address for the CALL as the
+ garbage collection routine may move the string in memory and this is the best way to
+ ensure that the address is always correct.
+</BLOCKQUOTE>
+<BR>
+<B><U>Coding for speed</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B>Spaces</B>
+<P ALIGN=JUSTIFY>
+  Remove spaces from your code. Spaces, while they don't affect the program flow, do
+  take a finite time to skip over. The only space you don't need to worry about is the
+  one between the line number and the code as this is stripped during input parsing and
+  the apparent space is generated by the LIST command output.
+<P ALIGN=JUSTIFY>
+  E.g. the following ..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 REM line 10
+20   REM line 20
+30     REM line 30						
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+  .. reads as follows when LISTed
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 REM line 10
+20 REM line 20
+30 REM line 30							
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+<B>Removing REM</B>
+<P ALIGN=JUSTIFY>
+  Remove remarks from your code. Remarks like spaces don't do anything, program wise,
+  but take time to skip. Removing remarks, especially from time critical code, can
+  make a big difference.
+<P ALIGN=JUSTIFY>
+<B>Variables</B>
+<P ALIGN=JUSTIFY>
+  Use variables. One place where time is wasted, especially in loops, is repeatedly
+  interpreting numeric values or unchanging functions.<BR>
+  E.g.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.
+140 FOR x = 0 to 79
+150 POKE $F400+x,ASC(" ")					
+160 NEXT
+.
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+  This loop can be improved in a number of ways. First assign a variable the value $F400
+  and use that. Doing this is faster after only three uses.<BR>
+  E.g.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 a1 = $F400
+.
+140 FOR x = 0 to 79
+150 POKE a1+x,ASC(" ")						
+160 NEXT
+.
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+  The other way to make this loop faster is to assign the value of the (unchanging)
+  function to a variable, then move the function outside the loop.<BR>
+  E.g.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+10 a1 = $F400
+.
+130 sp = ASC(" ")
+140 FOR x = 0 to 79						
+150 POKE a1+x,sp
+160 NEXT
+.
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+  Now the ASC(" ") is only evaluated once and the loop is executed faster.
+<P ALIGN=JUSTIFY>
+<B>GOTO and GOSUB</B>
+<P ALIGN=JUSTIFY>
+ When EhBASIC encounters a GOTO or GOSUB it has to search through memory for the
+ target line. If the target line follows the command then it searches from the next
+ line, if the target line precedes the command then the search starts from the beginning
+ of program memory. So keeping this distance, in lines, as short as possible will make
+ the program run faster.
+<P ALIGN=JUSTIFY>
+ One place that this is difficult is in a conditional loop. In calculating points in the
+ Mandelbrot set, for example, code like this is used ..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.
+230 INC it
+235 tp = mx*mx-my*my+x
+240 my = 2*mx*my+y
+245 mx = tp
+250 co = (mx*mx + my*my)
+255 IF (it<128) AND (co<4.0) THEN 230				
+. 
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Each time the condition in line 255 is met the interpreter has to search from the start
+ of memory for line 230. While this may not take long if the program is short it can
+ slow longer programs considerably.
+<P ALIGN=JUSTIFY>
+ This can easily be resolved though by using a <A HREF="language.html#DO">DO .. LOOP</A>
+ instead. So our example code becomes..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.
+220 DO
+230 INC it
+235 tp = mx*mx-my*my+x
+240 my = 2*mx*my+y
+245 mx = tp
+250 co = (mx*mx + my*my)
+255 LOOP WHILE (it<128) AND (co<4.0)				
+.
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ This is quicker because the location of the start of the loop, the DO, is placed on the
+ stack and the interpreter doesn't have to search for it.
+<P ALIGN=JUSTIFY>
+<B><U>Packing them in.</U></B>
+<P ALIGN=JUSTIFY>
+ Another way to speed up time critical code is to place as many commands as possible on
+ each line, this can make a noticeable speed gain.<BR>
+ E.g.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+.
+220 DO:INCit:tp=mx*mx-my*my+x
+230 my=2*mx*my+y:mx=tp:co=(mx*mx + my*my)			
+240 LOOP WHILE (it<128) AND (co<4.0)
+.
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+</BLOCKQUOTE>
+<B><U>INC and DEC.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+  INCrement and DECrement are quick and clear ways of altering a numeric value by plus
+  or minus one and are faster than using add or subtract.<BR>
+  E.g.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 INC a							
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+  .. is quicker than ..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 a = a+1							
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+  .. and ..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 INC a,a							
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+  .. is still quicker than ..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 a = a+2							
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+  Also combine increments or decrements if you can.<BR>
+  E.g.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 INC so,d							
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+  .. is quicker than ..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 INC so : INC de						
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+<P ALIGN=JUSTIFY>
+<B>&gt;&gt; and &lt;&lt;</B>
+<P ALIGN=JUSTIFY>
+ Using &gt;&gt; and &lt;&lt; can be quicker than using / or * where integer math and a
+ power of two is involved.<BR>
+ E.g. you want to find the byte that holds the pixel at x,y in a 256 x 32 display
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 ad = y*32 + INT(x/8) : REM pixel address			
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+  .. is done quicker with.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+100 ad = y&lt;&lt;5 + x&gt;&gt;3 : REM pixel address			
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<BR>
+<B><U>Coding for space</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Most of the techniques used to improve the speed of a program can also reduce the
+ number of bytes used by that program.
+<P ALIGN=JUSTIFY>
+<B>Spaces</B>
+<P ALIGN=JUSTIFY>
+ Remove spaces from your code. The only space you don't need to worry about is the
+ one between the line number and the code as this is stripped during input parsing and
+ the apparent space is generated by the LIST command output.
+<P ALIGN=JUSTIFY>
+<B>Removing REM</B>
+<P ALIGN=JUSTIFY>
+ Remove remarks from your code. Remarks like spaces don't do anything, removing remarks,
+ can save a lot of space.
+<P ALIGN=JUSTIFY>
+<B>Variables</B>
+<P ALIGN=JUSTIFY>
+ Use variables. Often you will find yourself using the same numeric value again and
+ again. If this value has many digits, such as the value for e (2.718282), then
+ assigning that value at the beginning of the program can start to save space with the
+ third use.
+<P ALIGN=JUSTIFY>
+ Re-use variables. Every time you assign a new variable a value it takes up eight more
+ bytes (ten for strings) of the available memory. If you have a variable that is only
+ used as a loop counter then try to use it for temporary values or GET values elsewhere
+ in the program.
+<P ALIGN=JUSTIFY>
+<B>Constants</B>
+<P ALIGN=JUSTIFY>
+ There are two constants defined in EhBASIC, PI and TWOPI. They are the closest floating
+ values to pi and 2*pi and will save memory and improve accuracy (they have 32 bit
+ mantissas) each time you can use them.
+<P ALIGN=JUSTIFY>
+<B>Packing them in</B>
+<P ALIGN=JUSTIFY>
+ Another way to save space is to place as many commands as possible on each line, this
+ will save you five bytes every time you put another command on an existing line compared
+ to using a new line.
+<P ALIGN=JUSTIFY>
+<B>INC and DEC</B>
+<P ALIGN=JUSTIFY>
+ INCrement and DECrement also save space. Either will save you three bytes for each
+ variable INCremented or DECremented.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<BR>
+<U><B>Derived functions</B></U> 
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+  The following functions, while not part of BASIC, can be calculated using the
+  existing BASIC functions.
+<P ALIGN=JUSTIFY>
+<CENTER>
+<TABLE BGCOLOR="white" WIDTH=85% cellSpacing=0 cellPadding=3 border=1>
+  <TR>
+    <TD>Secant</TD><TD>SEC(X)=1/COS(X)</TD></TR>
+  <TR>
+    <TD>Cosecant</TD><TD>CSC(X)=1/SIN(X)</TD></TR>
+  <TR>
+    <TD>Cotangent</TD><TD>COT(X)=1/TAN(X)</TD></TR>
+  <TR>
+    <TD>Inverse sine</TD><TD>ARCSIN(X)=ATN(X/SQR(X*X+1))</TD></TR>
+  <TR>
+    <TD>Inverse cosine</TD><TD>ARCCOS(X)=-ATN(X/SQR(X*X+1))+PI/2</TD></TR>
+  <TR>
+    <TD>Inverse secant</TD><TD>ARCSEC(X)=ATN(SQR(X*X-1))+(SGN(X)-1)*PI/2</TD></TR>
+  <TR>
+    <TD>Inverse cosecant</TD><TD>ARCCSC(X)=ATN(1/SQR(X*X-1))+(SGN(X)-1)*PI/2</TD></TR>
+  <TR>
+    <TD>Inverse cotangent</TD><TD>ARCCOT(X)=-ATN(X)+PI/2</TD></TR>
+  <TR>
+    <TD>Hyperbolic sine</TD><TD>SINH(X)=(EXP(X)-EXP(-X))/2</TD></TR>
+  <TR>
+    <TD>Hyperbolic cosine</TD><TD>COSH(X)=(EXP(X)+EXP(-X))/2</TD></TR>
+  <TR>
+    <TD>Hyperbolic tangent</TD><TD>TANH(X)=-EXP(-X)/(EXP(X)+EXP(-X))*2+1</TD></TR>
+  <TR>
+    <TD>Hyperbolic secant</TD><TD>SECH(X)=2/(EXP(X)+EXP(-X))</TD></TR>
+  <TR>
+    <TD>Hyperbolic cosecant</TD><TD>CSCH(X)=2/(EXP(X)-EXP(-X))</TD></TR>
+  <TR>
+    <TD>Hyperbolic cotangent</TD><TD>COTH(X)=EXP(-X)/(EXP(X)-EXP(-X))*2+1</TD></TR>
+  <TR>
+    <TD>Inverse hyperbolic sine</TD><TD>ARCSINH(X)=LOG(X+SQR(X*X+1))</TD></TR>
+  <TR>
+    <TD>Inverse hyperbolic cosine</TD><TD>ARCCOSH(X)=LOG(X+SQR(X*X-1))</TD></TR>
+  <TR>
+    <TD>Inverse hyperbolic tangent</TD><TD>ARCTANH(X)=LOG((1+X)/(X))/2</TD></TR>
+  <TR>
+    <TD>Inverse hyperbolic secant</TD><TD>ARCSECH(X)=LOG((SQR(X*X+1)+1)/X)</TD></TR>
+  <TR>
+    <TD>Inverse hyperbolic cosecant</TD><TD>ARCCSCH(X)=LOG((SGN(X)*SQR(X*X+1)+1)/X)</TD>
+  </TR>
+  <TR>
+    <TD>Inverse hyperbolic cotangent</TD><TD>ARCCOTH(X)=LOG((X+1)/(X-1))/2</TD></TR>
+</TABLE>
+</CENTER>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 4th May, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/ehbasic/advanced.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:03:58 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

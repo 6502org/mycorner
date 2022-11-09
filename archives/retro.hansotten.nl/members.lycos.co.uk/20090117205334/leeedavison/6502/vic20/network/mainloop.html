@@ -1,0 +1,144 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=3ecfc246&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/network/mainloop.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:15:30 GMT -->
+<HEAD>
+<TITLE>Vic 20 network interface - software</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=25%><A HREF="source.html#mainloop">
+ <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>Vic 20 network - software </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT>
+</TD><TD WIDTH=25%><A HREF="../../../index-2.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Main program loop</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This is the main program loop that spends most of the time waiting for something to
+ happen. If an interrupt is flagged then that is processed, if that results in a valid
+ packet being received then that packet is now processed.
+<P ALIGN=JUSTIFY>
+ After this the interrupt flag byte is checked again and if there are still flagged
+ interrupts pending then the service code is re-entered at the start. If not then all
+ interrupt status bits are cleared and the background tasks are serviced.
+<P ALIGN=JUSTIFY>
+ This would probably work better as a mini task scheduler but that is moving into the
+ realm of OS creation. For now it stays like this.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; main program loop
+
+LAB_200
+	LDA	IB			; get interrupt flag byte
+	BEQ	LAB_990			; branch if no interrupt flagged
+
+LAB_210
+	AND	#$02			; mask adapter fail interrupt
+	BEQ	LAB_220			; branch if not adapter fail
+
+	JSR	LAB_20300		; else do adapter fail interrupt
+LAB_220
+	LDA	IB			; get interrupt flag byte
+	AND	#$04			; mask Tx interrupt
+	BEQ	LAB_225			; branch if no Tx interrupt
+
+	JSR	LAB_20200		; else do tx interrupt
+LAB_225
+	LDA	IB			; get interrupt flag byte
+	AND	#$10			; mask Rx interrupt
+	BEQ	LAB_300			; branch if no Rx interrupt
+
+	JSR	LAB_20100		; else do rx interrupt
+LAB_300
+	LDA	valid_pkt		; get valid packet flag
+	BEQ	LAB_985			; skip check if no valid packet
+
+					; now decipher packet info
+	LDA	pk_buff+ET_type_h	; get type byte
+	CMP	#$08			; compare with $08
+	BNE	LAB_980			; branch if not recognised
+
+	LDA	pk_buff+ET_type_l	; get type byte
+	BNE	LAB_315			; branch if not IP
+
+	JSR	LAB_21500		; handle known IP packet type
+	JMP	LAB_980			; go clear packet & loop
+
+LAB_315
+	CMP	#$06			; compare with $06
+	BNE	LAB_980			; branch if not recognised
+
+	JSR	LAB_21000		; else handle ARP packet
+LAB_980
+	LDA	#$00			; clear A
+	STA	valid_pkt		; clear valid packet
+
+LAB_985
+	LDA	IB			; get interrupt flag byte
+	AND	#$FE			; mask only needed bits
+	BNE	LAB_210			; loop while interrupts to service
+
+	LDX	#$FF			; bit 0 interrupt latch
+	LDA	#$68			; acknowledge interrupt command
+	STX	com_reg_l		;
+	STA	com_reg_h		; ack the interrupt(s)
+
+LAB_990					; do background tasks
+	JSR	print_tcp		; print TCP state
+	JSR	periodic		; go check periodic timeout(s)
+	INC	prng			; increment PRNG seed byte
+	JMP	LAB_200			; loop forever
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+<P ALIGN=JUSTIFY>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 29th February, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/network/mainloop.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:15:30 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

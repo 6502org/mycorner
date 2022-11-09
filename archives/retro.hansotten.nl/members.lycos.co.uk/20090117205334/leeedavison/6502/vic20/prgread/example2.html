@@ -1,0 +1,63 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=7d362f56&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/prgread/example2.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 20:59:03 GMT -->
+<HEAD><TITLE>bounce.prg for the Vic 20</TITLE></HEAD>
+<BODY>
+Program listing of <TT><B>bounce.prg</B></TT> for the Vic 20
+<HR>
+<PRE>
+&nbsp;LOAD address $1001
+
+<FONT COLOR=blue> 0 </FONT>A<FONT COLOR=red>=</FONT>36865:B<FONT COLOR=red>=</FONT>36864:D<FONT COLOR=red>=</FONT>12:E<FONT COLOR=red>=</FONT>32:K<FONT COLOR=red>=</FONT>253
+<FONT COLOR=blue> 1 </FONT>C<FONT COLOR=red>=INT</FONT>(5<FONT COLOR=red>*RND</FONT>(0))
+<FONT COLOR=blue> 2 </FONT><FONT COLOR=red>IF</FONT>C<FONT COLOR=red>=</FONT>1<FONT COLOR=red>THEN</FONT>D<FONT COLOR=red>=</FONT>D<FONT COLOR=red>+</FONT>1:K<FONT COLOR=red>=</FONT>K<FONT COLOR=red>+</FONT>1
+<FONT COLOR=blue> 3 </FONT><FONT COLOR=red>IF</FONT>C<FONT COLOR=red>=</FONT>2<FONT COLOR=red>THEN</FONT>D<FONT COLOR=red>=</FONT>D<FONT COLOR=red>-</FONT>1:K<FONT COLOR=red>=</FONT>K<FONT COLOR=red>-</FONT>1
+<FONT COLOR=blue> 4 </FONT><FONT COLOR=red>IF</FONT>C<FONT COLOR=red>=</FONT>3<FONT COLOR=red>THEN</FONT>E<FONT COLOR=red>=</FONT>E<FONT COLOR=red>-</FONT>1:K<FONT COLOR=red>=</FONT>K<FONT COLOR=red>-</FONT>22
+<FONT COLOR=blue> 5 </FONT><FONT COLOR=red>IF</FONT>C<FONT COLOR=red>=</FONT>4<FONT COLOR=red>THEN</FONT>E<FONT COLOR=red>=</FONT>E<FONT COLOR=red>+</FONT>1:K<FONT COLOR=red>=</FONT>K<FONT COLOR=red>+</FONT>22
+<FONT COLOR=blue> 6 </FONT><FONT COLOR=red>IF</FONT>E<FONT COLOR=red>=</FONT>60<FONT COLOR=red>THEN</FONT>E<FONT COLOR=red>=</FONT>59
+<FONT COLOR=blue> 7 </FONT><FONT COLOR=red>IF</FONT>D<FONT COLOR=red>&gt;</FONT>15<FONT COLOR=red>THEN</FONT>D<FONT COLOR=red>=</FONT>15
+<FONT COLOR=blue> 8 </FONT><FONT COLOR=red>IF</FONT>D<FONT COLOR=red>&lt;</FONT>9<FONT COLOR=red>THEN</FONT>D<FONT COLOR=red>=</FONT>9
+<FONT COLOR=blue> 9 </FONT><FONT COLOR=red>IF</FONT>E<FONT COLOR=red>=</FONT>0<FONT COLOR=red>THEN</FONT>E<FONT COLOR=red>=</FONT>1
+<FONT COLOR=blue> 10 </FONT>V<FONT COLOR=red>=INT</FONT>(7<FONT COLOR=red>*RND</FONT>(0))
+<FONT COLOR=blue> 11 </FONT><FONT COLOR=red>PRINT</FONT><FONT COLOR=green>"<IMG SRC=d3.bmp ALT={CLR}>"</FONT>:<FONT COLOR=red>POKE</FONT>7680<FONT COLOR=red>+</FONT>K,102
+<FONT COLOR=blue> 12 </FONT><FONT COLOR=red>POKE</FONT>38400<FONT COLOR=red>+</FONT>K,V
+<FONT COLOR=blue> 13 </FONT><FONT COLOR=red>IF</FONT>K<FONT COLOR=red>&lt;</FONT>24<FONT COLOR=red>THEN</FONT>K<FONT COLOR=red>=</FONT>253
+<FONT COLOR=blue> 14 </FONT><FONT COLOR=red>IF</FONT>K<FONT COLOR=red>&gt;</FONT>483<FONT COLOR=red>THEN</FONT>K<FONT COLOR=red>=</FONT>253
+<FONT COLOR=blue> 15 </FONT><FONT COLOR=red>POKE</FONT>A,E:<FONT COLOR=red>POKE</FONT>B,D:<FONT COLOR=red>GOTO</FONT>1
+</PRE>
+<HR>
+Converted to HTML using <TT><B>prgread.exe v1.42</TT></B> by <A HREF="mailto:leeedavison@lycos.co.uk">Lee Davison</A>
+</BODY>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/prgread/example2.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 20:59:03 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

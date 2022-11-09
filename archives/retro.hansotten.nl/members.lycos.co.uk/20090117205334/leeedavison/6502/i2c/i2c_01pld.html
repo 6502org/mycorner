@@ -1,0 +1,114 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=95d487f4&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/i2c/i2c_01pld.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:02:17 GMT -->
+<HEAD><TITLE>I2C Bus interface - GAL logic equations file.</TITLE>
+<META name="description" content="An I2C bus interface for the 6502.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_1"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>GAL logic equations file. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index-2.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<A HREF="i2c_01_pld.zip">Download this file <IMG SRC="../../zip_sm.png" ALT="Download"
+ BORDER=0></A><P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+Name     I2C_01 ;
+PartNo   00 ;
+Date     19/03/01 ;
+Revision 01 ;
+Designer Lee ;
+Company   ;
+Assembly None ;
+Location  ;
+Device   g16v8as ;
+
+/* This GAL is the select logic for the I2C interface board	*/
+
+/* Logic minimisations			None			*/
+/* Optimisations			None			*/
+/* Download				JEDEC/POF/PRG		*/
+/* Doc File Options			fuse plot, equations	*/
+/* Output				None			*/
+
+/* *************** INPUT PINS *********************/
+
+PIN	1 = A4		;			/* address bus		*/ 
+PIN	2 = A3		;			/* address bus		*/ 
+PIN	3 = A2		;			/* address bus		*/ 
+PIN	4 = A0		;			/* address bus		*/ 
+PIN	5 = A1		;			/* address bus		*/ 
+PIN	6 = p02		;			/* CPU phase 2		*/ 
+PIN	7 = RW		;			/* read write		*/ 
+PIN	8 = !SEL1	;			/* block select		*/ 
+PIN	9 = !SEL0	;			/* block select		*/ 
+PIN	11 = A6		;			/* address bus		*/ 
+PIN	12 = A5		;			/* address bus		*/ 
+PIN	13 = A7		;			/* address bus		*/ 
+
+/* *************** OUTPUT PINS *********************/
+
+PIN  19 = !KBR		;			/* key port read strobe		*/ 
+PIN  18 = !KBW		;			/* key port write strobe	*/ 
+/*PIN  17 = 		;			/* 				*/ 
+/*PIN  16 = 		;			/* 				*/ 
+/*PIN  15 = 		;			/* 				*/ 
+/*PIN  14 = 		;			/* 				*/ 
+
+/* intermediate terms */
+
+ADDR		= !A7 & !A6 & A5 & !A4 & !A3 & !A2 & !A1 & A0 & !SEL0 & SEL1 ;
+							/* F121h (0010 0001)
+
+/* Output terms */
+
+KBR	= ADDR &  RW & p02 ;			/* key port read strobe		*/
+KBW	= ADDR & !RW & p02 ;			/* key port write strobe	*/
+
+</PRE>
+</TD></TR></TABLE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 28th April, 2002.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/i2c/i2c_01pld.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:02:17 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

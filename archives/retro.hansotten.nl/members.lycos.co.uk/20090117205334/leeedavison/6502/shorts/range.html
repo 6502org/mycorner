@@ -1,0 +1,158 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=97b7cf0d&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/shorts/range.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:01:44 GMT -->
+<HEAD>
+<TITLE>
+  6502 Shorts - Range test
+</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Range test. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index-2.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE>
+ Sometimes you need to check if a byte is in a certain range that does not start,
+ or end, on the byte limits. For example, if a byte is numeric (n = '0', m = '9')
+ or lower case ASCII (n = 'a', m = 'z').
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE>
+ For all of these we assume that the byte to be tested is in A and that the start
+ and end values, n and m, are already defined. Also that 0 < n < m < $FF.
+<P>
+ If you don't need to preserve the byte in A then testing the byte can be done in
+ five bytes and only six cycles. This sets the carry if A is in the range n to m.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	CLC		; clear carry for add
+	ADC	#$FF-m	; make m = $FF
+	ADC	#m-n+1	; carry set if in range n to m		
+</PRE>
+</TD></TR></TABLE>
+<P>
+ If you want the carry clear instead of set you use subtract instead of add.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	SEC		; set carry for subtract
+	SBC	#n	; make n = $00
+	SBC	#m-n+1	; carry clear if in range n to m	
+</PRE>
+</TD></TR></TABLE>
+<P>
+ If you need to preserve A and have either the X or Y register free you can do it
+ like this.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	TAX		; copy A (or TAY)
+	CLC		; clear carry for add
+	ADC	#$FF-m	; make m = $FF
+	ADC	#m-n+1	; carry set if in range n to m		
+	TXA		; restore A (or TYA)
+</PRE>
+</TD></TR></TABLE>
+<P>
+ If you can spare the cycles but not the registers then this is the slowest of the
+ range tests comming in at thirteen cycles.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	PHA		; save A
+	CLC		; clear carry for add
+	ADC	#$FF-m	; make m = $FF
+	ADC	#m-n+1	; carry set if in range n to m		
+	PLA		; restore A
+</PRE>
+</TD></TR></TABLE>
+<P>
+ Finally a method that preserves A without using any other registers, or memory.
+ This has the disadvantage that it can take either five or ten cycles (so timing
+ would be unsure) and takes the most bytes. This one sets the carry if A is in the
+ range n to m.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	CMP	#n	; is it less than required?
+	BCC	ERnge	; branch if it is
+
+	ADC	#$FE-m	; add $FF-m (carry is set)
+	CLC		; clear carry for add
+	ADC	#m+1	; A is now back to original value	
+ERnge
+</PRE>
+</TD></TR></TABLE>
+<P>
+ And this one clears the carry if A is in the range n to m.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	CMP	#m+1	; is it greater than required?
+	BCS	ERnge	; branch if it is
+
+	SBC	#n-1	; subtract n (carry is clear)
+	SEC		; set carry for subtract
+	SBC	#-n	; A is now back to original value	
+ERnge
+</PRE>
+</TD></TR></TABLE>
+<P>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 28th August, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/shorts/range.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:01:44 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

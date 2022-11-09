@@ -1,0 +1,483 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=6e072e08&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/epac/bios.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:03:58 GMT -->
+<HEAD><TITLE>EPAC 68008.</TITLE><META name="description" content="EPAC 68008, EPAC,
+ 68008, MC68008, single board computer"></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#atlas"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>EPAC BIOS. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index-2.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The EPAC I received came without an EPROM or any other software. To be able to use it I
+ worte a BIOS that supports EhBASIC, can download code as s-records and run or trace it
+ and also supports a lot of EASy68K's TRAP #15 I/O calls so EASy68K can be used to write,
+ assemble and test code for the EPAC.
+</BLOCKQUOTE>
+<B><U>Source</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<!-- The source as presented will not run on an unmodified EPAC. It requires that IC7, the
+ address decoder, be changed for one that supports a more expandable <A
+ HREF="mem.html">memory map</A>. This is so that just one version of the BIOS will run to
+ some degree on all memory sizes.-->
+ The source as presented will not run on an unmodified EPAC. It requires that IC7, the
+ address decoder, be changed for one that supports a more expandable memory map. This is
+ so that just one version of the BIOS will run to some degree on all memory sizes.
+</BLOCKQUOTE>
+<B><U>Instructions</U></B>
+<PRE>
+  ***************************************************************************************
+  *											*
+  *	BIOS for EPAC 68008 2006/1/27. V0.70						*
+  *											*
+  *											*
+  *	More 68000 and other projects can be found on my website at ..			*
+  *											*
+  *	 http://www.themotionstore.com/leeedavison/index.html				*
+  *											*
+  *	.. or ..									*
+  *											*
+  *	 http://members.lycos.co.uk/leeedavison/index.html				*
+  *											*
+  *	mail : leeedavison@lycos.co.uk							*
+  *											*
+  ***************************************************************************************
+
+ Startup
+
+	When started the BIOS will announce itself and then present a prompt for user
+ input. Commands are case insensetive and may be entered in either case, as are the
+ characters A to F when used in hexadecimal values. The following commands are available.
+
+	<B>help</B> or <B>?</B>
+		Displays the brief help message.
+
+	<B>ver</B>
+		Display the BIOS version string.
+
+	<B>dn</B> &lt;hex&gt;
+		Display or set the value of data register n, where n is a single digit
+		0 to 7 and &lt;hex&gt; is an optional, unsigned hexadecimal longword. So if
+		you type d0 [Enter] the BIOS will respond with ..
+
+		 = $xxxxxxxx
+
+		.. where xxxxxxxx is the hexadecimal contents of d0. If however you type
+		d0 deadbeef [Enter] then d0 will be set to the hexadevimal value DEADBEEF.
+
+	<B>an</B> &lt;hex&gt;
+		Display or set the value of address register n, where n is a single digit
+		0 to 7 and &lt;hex&gt; is an optional, unsigned, hexadecimal longword.
+
+	<B>us</B> &lt;hex&gt;
+		Display or set the value of the user stack pointer. &lt;hex&gt; is an
+		optional, unsigned, hexadecimal longword.
+
+	<B>pc</B> &lt;hex&gt;
+		Display or set the value of the user program counter. &lt;hex&gt; is an
+		optional, unsigned, hexadecimal longword.
+
+	<B>regs</B>
+		Display the saved user registers. All the 680x0 registers are displayed
+		in a layout similar to that used in the simulator window in Sim68K. 'A7'
+		and the user stack pointer 'US' are the same register, changing one will
+		change the other. When the monitor is first started the register contents
+		will look like this ..
+
+	                                                              T S  INT   XNZVC
+	 D0 = 00000000 D4 = 00000000 A0 = 00000000 A4 = 00000000 SR = 0000000000000000
+	 D1 = 00000000 D5 = 00000000 A1 = 00000000 A5 = 00000000 US = 00000000
+	 D2 = 00000000 D6 = 00000000 A2 = 00000000 A6 = 00000000 SS = 000007FC
+	 D3 = 00000000 D7 = 00000000 A3 = 00000000 A7 = 00000000 PC = 00000000
+
+
+		These register values will be loaded into the corresponding registers when
+		code is run or traced. After each instruction while tracing and at the end
+		of a run program the saved values will be updated to reflect the current
+		register values.
+
+	<B>run</B> &lt;hex&gt;
+		Executes code, in user mode, from the current user pc value or the hex
+		value entered. Programs loaded with the load command (see later) can be
+		started with run if the start address was set correctly in the assembly.
+		&lt;hex&gt; is an optional, unsigned, hexadecimal longword.
+
+	<B>trace</B> &lt;hex&gt;
+		Single step code, in user mode, from the current user pc value or the hex
+		value entered. Programs loaded with the load command (see later) can be
+		started with trace if the start address was set correctly in the assembly.
+		&lt;hex&gt; is an optional, unsigned, hexadecimal longword.
+
+		The first time trace is executed after a load, or when trace &lt;hex&gt; is
+		entered will just display the registers and the instruction at the user
+		program counter. The prompt will change from '&gt;&gt;' to 'T&gt;' and can
+		now be stepped, instruction by instruction, by pressing enter. Registers can
+		be examined or set though setting the program counter will exit the trace
+		mode and the prompt will change back to '&gt;&gt;' requiring trace to be
+		entered again to continue tracing.
+
+	<B>restart</B>
+		Restart the monitor. This executes the code in exactly the way that a power
+		on reset would. The vector addresses are reset and the system base address
+		and stack pointers reset to their original values. The time is reset to
+		$00000000 and all the saved registers are cleared. Also the I/O devices are
+		initialized.
+
+	<B>load</B>
+		Load an S-Record file into the host memory. After entering load the user
+		will  be prompted to 'Send S-Record now'. As each record is received and
+		loaded a '.' character is output to give some idea of progress. Most S-
+		Record record types are recognised and used. Type 0 records are decoded
+		and displayed as ASCII strings, types 7, 8 and 9 are used to load the
+		start address of the code and also act as end of file markers.
+
+		If all goes well then after the end record has been loaded the message
+		'S-Record(s) loaded' will be displayed however during loading other mesages
+		may appear.
+
+		'S-Record error'
+			There was an error in the record, either a non hex character in the
+			stream or the checksum was incorrect. In this case nothing is saved
+			to memory and the loader disregards the entire record.
+
+		'S-Record too long'
+			The record was too long to fit in the buffer and so was dropped. As
+			records are not supposed to exceede 78 characters and the buffer is
+			long enough for eighty character pairs this should never happen.
+
+		'Unrecognised S-Record type'
+			The record was received correctly but is of a type not used by the
+			loader and so has been disregarded. Only record types 4, 5 and 6
+			will cause this.
+
+	<B>time</B> &lt;hex&gt;
+		Display or set the system time in centiseconds since midnight. If no time or
+		a time of more than 83D5FF is entered then the current system time count will
+		be displayed. If a time is entered and is between 000000 and 83D5FF inclusive
+		then the system time will be set to this value.
+
+	<B>basic</B> &lt;hex&lt;,hex&gt;&gt;
+		EhBASIC has been included as part of the BIOS and may be started by entering
+		basic (see EhBASIC documentation for details on use). This version has the
+		extra command EXIT that will quit EhBASIC and return to the BIOS monitor.
+
+		If one hex value follows the basic command then this will set the default
+		end of memory for EhBASIC and is an absolute address, this can still be
+		overriden by inputting an end address in response to the "Memory size?"
+		prompt. If a second hex value follows the first one this will set the start
+		of memory for EhBASIC. By setting both start and end addresses you can have
+		more than one BASIC workspace in memory at any time.
+
+		E.g.
+
+			&gt;&gt;basic			.. use all available memory
+			&gt;&gt;basic 4000		.. use all available memory up to $4000
+			&gt;&gt;basic 8000,4000	.. use memory from $4000 up to $8000
+			&gt;&gt;basic 10000,8000	.. use memory from $8000 up to $10000
+
+		Each area is independant and should remain unaffected by programs and
+		variables in other workspace areas.
+
+		Note that the end address is the next address after the last address that
+		EhBASIC will use and should always be an even address.
+
+	<B>warm</B> &lt;hex&gt;
+		Re-enter EhBASIC without initializing the BASIC workspace. This means that
+		any program in memory or variables should be unchanged. Note that you must
+		have started EhBASIC by using the basic command, with a corresponding start
+		address if used, before using warm to do the initial BASIC workspace setup.
+
+ 		If a hex value follows the warm command this will set the start address of
+		the BASIC workspace. By setting this address you could chose which BASIC
+		workspace in memory you will use.
+
+		E.g.
+
+			&gt;&gt;warm			.. use the default workspace
+			&gt;&gt;warm 4000		.. use the workspace from $4000
+			&gt;&gt;warm 8000		.. use the workspace from $8000
+
+ System functions
+
+ 	Sim68K uses TRAP #15 calls to access system resources and, where possible, this
+ BIOS emulates those calls. Obviously in any system that lacks the physical hardware
+ for functions these functions are not available though they should still return
+ practical values where possible. For example the file system calls, tasks 50 to 57
+ mostly return an error indiaction as no storage devices are (currently) available.
+
+	There are some extra task numbers not used in Sim68K that are used by the BIOS
+ to assist in running and debugging user code, these are required by the BIOS monitor
+ as some actions can only be performed in the supervisor state.
+
+	The following are all the supported, or partly supported, Sim68K TRAP #15 tasks
+ available in the BIOS as well as the BIOS' own TRAP #15 tasks.
+
+	Text/Time/Terminate
+
+	Task No.	Function
+	--------	--------
+	 0		Output the string at (a1), d1.w bytes long, with a carriage return
+			and line feed. 
+	 1		Output the string at (a1), d1.w bytes long, without a carriage return
+			and line feed.
+	 2		Read a [CR] terminated string from the input device to a buffer at
+			(a1), the length is retuned in d1.w with a maximum langth of eighty
+			characters.
+	 3		Output d1.l as a leading zero supressed, signed, decimal number.
+	 4		Read a signed decimal number from the input device into d1.l
+	 5		Wait for a character from the input device and read it into d1.b
+	 6		Write the character in d1.b to the output device.
+	 7		Poll the input device, set d1.b = 1 if there ia a character pending
+			else set d1.b = 0
+	 8		Return time in hundredths of a second since midnight in d1.l
+	 9		Terminate the program and return to the BIOS monitor.
+
+	12		Set the input device echo, enter with d1.b = 0 to turn off the input
+			device echo or with d1.b &lt;&gt; 0 to turn it on (default). 
+			Echo is restored on 'Reset' or when a new file is loaded.
+
+	13		Output the NULL terminated string at (a1) with a carriage return and
+			line feed.
+	14		Output the NULL terminated string at (a1) without a carriage return
+			and line feed.
+	15		Output the unsigned number in d1.l in the number base contained in d2.b.
+			Values of d2.b outside the range 2 to 36 inclusive are ignored.
+
+	17		A combination of task numbers 14 & 3. Output the NULL terminated string
+			at (a1) without a carriage return and line feed then output d1.l as a
+			leading zero supressed, signed, decimal number.
+	18		A combination of task numbers 14 & 4. Output the NULL terminated string
+			at (a1) without a carriage return and line feed then read a signed
+			decimal number from the input device into d1.l
+	19		Return a key scan code. On entry with d1.l = $00000000 the character
+			code of the last character input is returned in d1.b
+	20		Output d1.l as a leading zero supressed, signed, decimal number in a
+			minimum of d2.b digits.
+
+	Environment
+
+	Task No.	Function
+	--------	--------
+	31		Return the cycle counter in d1.l. unless a cycle counter is fitted this
+			function will always return d1.l = 00000000
+	32		Get hardware values in d1.l. this function will ignore any set calls
+			and always return d1.l = 00000000 for any get calls
+
+	File I/O
+
+	Task No.	Function
+	--------	--------
+	50		Close all files. This always returns without error and d0.w = $0000
+	51		Open existing file. (a1) points to the null terminated file name. This
+			always returns a null File-ID in d1.l and the error d0.w = $0002
+	52		Open new file. As above this always returns a null File-ID in d1.l and
+			the error d0.w = $0002
+	53		Read d2.l bytes from the file identified by the FID in d1.l to (a1).
+			This always returns the number of bytes actually read in d2.l as zero
+			and the error d0.w = $0002
+	54		Write d2.l bytes to the file identified by the FID in d1.l from (a1).
+			This always the error d0.w = $0002
+	55		Set the position where the next read/write will take place. This always
+			the error d0.w = $0002
+	56		Close the file identified by the FID in d1.l This always the error d0.w
+			= $0002 
+	57		Delete existing file. (a1) points to the null terminated file name.
+			This always returns without error and d0.w = $0000
+
+	Program control
+
+	Task No.	Function
+	--------	--------
+	60		Output the registers. The registers are output in four lines in a
+			similar layout to that used by Sim68K
+	61		Disassemble the instruction at (a1). The opcode at (a1) is disassembled
+			and output and a1 is returned pointing to the next opcode. If, on entry,
+			a1 is odd then 'Address error' will be output and a1 will remain the
+			same.
+	62		Task 60 then task 61
+	63		Execute user code from (a1). a1 is saved as the user program counter,
+			the trace and supervisor bits are cleared in the saved status word. The
+			saved register values are restored and the code is run from the current
+			saved program counter. This code may return to the BIOS monitor using
+			task 9 (see above).
+	64		Execute user code. The trace and supervisor bits are cleared in the
+			saved status word, the saved register values are restored and the code
+			is run from the current saved program counter.
+	65		Continue user code. the saved status word is left unchanged, the saved
+			register values are restored and the code is run from the current saved
+			program counter.
+	66		Trace user code from (a1). The same as task 63 except the trace bit is
+			set causing a return to the BIOS monitor after only one instruction has
+			been executed.
+	67		Trace user code. As task 64 except only one instruction is executed.
+	68		Set supervisor mode. Sets the S bit in the status register.
+
+	Sound I/O
+
+	Task No.	Function
+	--------	--------
+	70		Play a .wav file. No sound is played, returns without error and with
+			d0.w = FFFF
+	72		Play sound from sound memory. No sound is played, returns without error
+			and with d0.w = FFFF
+
+	Graphics I/O
+
+	Task No.	Function
+	--------	--------
+	83		Return the pixel colour at X,Y in d1.l. Always returns d1.l = 00000000
+
+ Monitor messages
+
+	There are a few times when BIOS messages will appear, these are usually the result
+ of some error or other like not initialising values or registers. In a real 68000
+ system the memory and registers may not be initialised to some predetermined value as
+ they are in the simulator.
+
+	<B>Bus error</B>
+
+			Real 680x0 systems don't have the whole address range filled with
+		memory so if you try to use some area that doesn't decode to memory or some
+		I/O device this is usually the result.
+
+	<B>Address error</B>
+
+			An attempt was made to access a word or longword operand or an
+		instruction at an odd address and this is the result. This will also
+		happen if a stack operation is attempted with the stack pointer at an
+		odd value as all stack actions are word or longword in size, even byte
+		actions.
+
+	<B>Illegal instruction at $xxxxxxxx</B>
+
+			An attempt was made to execute an opcode that is not a valid
+		instruction. The $xxxxxxxx is the address of the offending opcode.
+
+	<B>Divide by zero error</B>
+
+			A signed divide, DIVS, or unsigned divide, DIVU instruction will
+		cause this if a division operation is attempted with a divisor of zero.
+
+	<B>CHK exception error</B>
+
+			The register tested in the CHK instruction was outide the range of
+		0 to &lt;ea&gt;.
+
+	<B>TRAPV exception error</B>
+
+			A TRAPV instruction was executed with the overflow bit set.
+
+	<B>Privilage violation error</B>
+
+			All the code 'run' under the BIOS monitor, as well as the monitor
+		itself, is always run in user mode. This means some instructions are
+		unavailable such as STOP and RESET.
+
+	<B>Uninitialized interrupt error</B>
+
+			An interrupt has been generated but the address for the corresponding
+		interrupt vector has not been set yet. This could also occur because an
+		attempt has been made to use a vector from a device that has not had it's
+		vector register initialised.
+
+	<B>Spurious interrupt error</B>
+
+			A bus error was encountered while trying to respond to an interrupt.
+		This is most likely caused by setting a vector to an address that doesn't
+		exist.
+
+	<B>Line A exception error</B>
+
+			An attempt was made to execute an opcode that starts with the
+		patterm $Axxx
+
+	<B>Line F exception error</B>
+
+			An attempt was made to execute an opcode that starts with the
+		patterm $Fxxx. Codes beginning with this pattern are implemented in the
+		MC68020 and beyond as coprocessor instructions. This vector allows the
+		unimplemented instructions to be emulated in software.
+
+	<B>Reserved exception error</B>
+
+			An interrupt has been generated but has ended up using on of the
+		reserved vectors and that vector has not been set yet. There is nothing
+		to stop the use of the reserved vectors but your code may break on other
+		processors in the 680x0 family.
+
+	<B>Aborted</B>
+
+			The abort button was pressed and the code has been aborted and
+		control returned to the monitor. If you press abort while in the monitor
+		the saved user registers will be overwritten by the current register
+		values.
+
+ Things to remember when running Sim68K code
+
+	You're running on a real 68008 that only has so much real memory some of which is
+ needed by the BIOS. Your code should be set so that it starts clear of the BIOS memory
+ and that it sets it's stack pointer on entry. The easiest way is with startup code like
+ this ..<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+	ORG	$1000			* clear of BIOS area and stack
+
+startup
+	LEA	startup(pc),sp		* the stack grows down from startup	
+</PRE>
+</TD></TR></TABLE></BLOCKQUOTE>
+	Your code will be running in user mode so some instructions will not be available.
+ Some programs use STOP to halt the program at the end but this is one of the privilaged
+ instructions not available, instead use TRAP #15 task 9 to return to the monitor like
+ this ..<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+exit_code
+	MOVEQ	#9,d0			* terminate the program			
+	TRAP	#15			* do I/O function
+</PRE>
+</TD></TR></TABLE></BLOCKQUOTE>
+</PRE>
+<P ALIGN=JUSTIFY>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 5th March, 2006.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/epac/bios.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:03:58 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

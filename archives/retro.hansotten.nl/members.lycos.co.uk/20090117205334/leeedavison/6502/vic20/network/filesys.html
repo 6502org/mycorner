@@ -1,0 +1,637 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=15ae52f5&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/network/filesys.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:15:30 GMT -->
+<HEAD>
+<TITLE>Vic 20 network interface - software</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=25%><A HREF="source.html#filesys">
+ <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>Vic 20 network - software </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT>
+</TD><TD WIDTH=25%><A HREF="../../../index-2.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Filesystem</U></B>
+<IMG SRC="filesys.png" ALIGN=RIGHT BORDER=1 ALT="Vic 20 web server
+ file system" HSPACE=8>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The filesystem used is mostly the same as the one described <A
+ HREF="../../filesys/index.html">here</A> but the data is a little different and the
+ search routine is developed specifically to serve the files for an HTTP GET command.
+<P ALIGN=JUSTIFY>
+ Additions to the files include two new images, back.png used as the background and
+ up.gif, and the index.html files in both the images and errors directories. These last
+ two files generate an error 403 in each case, a very crude security system!
+<P ALIGN=JUSTIFY>
+ The one file that has been removed is "index" in the root as there is no need for this
+ test file in the web server.
+<P ALIGN=JUSTIFY>
+ For a full description of the file headers, flags and whatnot go see <A
+ HREF="../../filesys/index.html">this</A>.
+<BR CLEAR=ALL>
+ Now the file system part of the web server.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************
+; find file, searches the file system for the filename pointed to by
+; the find name pointer. returns with Cb = 1 and the pointer to the
+; file payload in filesys, if found.
+;
+; file name to search for should be "/[path/[path/]][name]" where path is
+; the directory name followed by a "/". the path may be many deep and
+; both the path and the name may be null. if the name is null then the
+; default_file name will be searched for the path given.
+
+LAB_find
+	LDA	root+$01		; get root payload length low byte
+	STA	lensys_l		; save payload length low byte
+	LDA	root+$02		; get root payload length high byte
+	STA	lensys_h		; save payload length high byte
+
+	LDA	#&lt;root_b		; get root body pointer low byte
+	STA	filesys_l		; set file system pointer low byte
+	LDA	#&gt;root_b		; get root body pointer high byte
+	STA	filesys_h		; set file system pointer high byte
+	LDY	#$00			; clear index
+	LDA	(findname_l),Y		; get first byte of the name to find
+	CMP	#'/'			; compare with separator
+	BNE	LAB_exit_n_found	; exit if not "/" at start
+
+	JSR	LAB_directory		; search the root for the file
+	BVC	LAB_exit_find		; exit if it's a file
+
+	JSR	LAB_find_default	; was a directory so find the default
+LAB_exit_find
+	RTS
+
+; *********************************************************************		
+
+; flag file found and exit
+
+LAB_exit_found
+	BIT	fileflags		; test byte, set Vb for a directory
+	SEC				; flag found
+	RTS
+
+; flag file not found and exit
+
+LAB_exit_n_found
+	CLV				; flag not a directory
+	CLC				; flag not found
+	RTS
+
+; increment filesys to the next file pointer in the directory
+
+LAB_nextfile
+	CLC				; clear carry for add
+	LDA	filesys_l		; get filesys low byte
+	ADC	#$02			; increment to next pointer
+	STA	filesys_l		; save filesys low byte
+	BCC	ni_inc_h		; branch if no rollover
+
+	INC	filesys_h		; else increment filesys high byte
+ni_inc_h
+	SEC				; set carry for subtract
+	LDA	lensys_l		; get remaining length low byte
+	SBC	#$02			; increment to next pointer
+	STA	lensys_l		; save remaining length low byte
+	BCS	LAB_comparefile		; branch if no rollunder
+
+	DEC	lensys_h		; decerment remaining length high byte
+
+LAB_comparefile
+	LDA	lensys_l		; get remaining length low byte
+	ORA	lensys_h		; OR remaining length high byte
+	BEQ	LAB_exit_n_found	; exit if no more directory entries
+
+	LDY	#$00			; clear index
+	LDA	(filesys_l),Y		; get file pointer low byte
+	STA	file_l			; save this file pointer low byte
+	INY				; increment index
+	LDA	(filesys_l),Y		; get file pointer high byte
+	STA	file_h			; save this file pointer high byte
+
+	DEY				; clear index
+	LDA	(file_l),Y		; get file's flags
+	STA	fileflags		; save file's flag byte
+	INY				; point to payload length low byte
+	LDA	(file_l),Y		; get file's payload length low byte
+	STA	length_l		; save file's payload length low byte
+	INY				; point to payload length high byte
+	LDA	(file_l),Y		; get file's payload length high byte
+	STA	length_h		; save file's payload length high byte
+
+	CLC				; clear carry for add
+	LDA	file_l			; get this file pointer low byte
+	ADC	#f_name-f_start		; add offset to the file name
+	STA	file_l			; save this file pointer low byte
+	BCC	nf_inc_h		; branch if no rollover
+
+	INC	file_h			; increment this file pointer high byte
+nf_inc_h
+	LDY	#$FF			; set so first increment clears index
+
+; compare this file's name, pointed to by file, with the find file name
+; pointed to by findname. ends with Y indexed to the next byte in the
+; name if the whole name matched.
+
+LAB_comparename
+	INY				; increment index
+	LDA	(file_l),Y		; get next byte of name to test
+	BEQ	LAB_cnameexit		; exit if end of name (match)
+
+	EOR	(findname_l),Y		; compare next byte of name to find
+	BEQ	LAB_comparename		; loop if character match
+
+	BNE	LAB_nextfile		; branch if not this file
+
+LAB_cnameexit
+	LDA	(findname_l),Y		; get next byte of name to find
+	BEQ	LAB_end_find		; branch if end of name to find
+
+	CMP	#'/'			; compare with separator
+	BNE	LAB_nextfile		; branch if not end of name to find
+
+LAB_end_find
+	PHA				; save next byte of name to find
+
+					; name matched so update lensys
+	LDA	length_l		; get length low byte
+	STA	lensys_l		; save length low byte
+	LDA	length_h		; get length high byte
+	STA	lensys_h		; save length high byte
+
+					; name matched so update filesys
+	SEC				; set carry for add +1, past $00
+	TYA				; copy offset
+	ADC	file_l			; add this file pointer low byte
+	STA	filesys_l		; save as file system pointer low byte
+	LDA	file_h			; get this file pointer high byte
+	ADC	#$00			; add in the carry
+	STA	filesys_h		; save as file system pointer high byte
+
+	PLA				; restore next byte of name to find
+	BEQ	LAB_exit_found		; branch if end of name to find
+
+	BIT	fileflags		; else test the flags byte
+	BVC	LAB_exit_n_found	; branch if not a directory
+
+; searches the directory pointed to by the file system pointer for the
+; filename pointed to by the find name pointer. the routine is entered
+; with filesys pointing to the first directory byte after the file header
+; and lensys holding the remaining directory size
+
+LAB_directory				; ok so far so update findname
+	SEC				; set carry for add +1, past "/" or $00
+	TYA				; copy offset
+	LDY	#$00			; clear index
+	ADC	findname_l		; add offset to findname low byte
+	STA	findname_l		; save findname low byte
+	TYA				; set $00 for add carry
+	ADC	findname_h		; add findname high byte
+	STA	findname_h		; save findname high byte
+
+	LDA	(findname_l),Y		; get next byte of name to find
+	BNE	LAB_comparefile		; go compare file if not null filename
+
+LAB_find_default			; get default file for this directory
+	LDA	#&lt;default_file		; get filename pointer low byte
+	STA	findname_l		; set pointer of name to find low byte
+	LDA	#&gt;default_file		; get filename pointer high byte
+	STA	findname_h		; set pointer of name to find high byte
+	BNE	LAB_comparefile		; go compare file (branch always)
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Below is the definition of the default file name used in the routine above if the HTTP
+ GET request ends in "/". E.g. GET /images/. This can be whatever you wish and does not
+ need to be index.html or any particular name.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; this is the default file in all directories. this will be the target
+; if the path ends in "/" and can be a unique file in each directory
+
+default_file
+	.byte	"index.html",$00	; served instead of "/.../"
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Below is a diagram of the file tree structure and the, unnamed in this case, root file.
+ There is only one root file and it is the only file not explicitly searched for as it
+ is the start point for all searches. The root file should always be a directory, even if
+ there is only one other file, as it is assumed to be such by the search routine.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; this is the data for the filesystem. it is made up of the HTML pages
+; and other files for the Vic 20 mini web server
+
+; structure for this trial is ..
+
+; root+--errors+--index.html		; really error 403 - Forbidden
+;     |        +--404			; error 404 - Not found
+;     |
+;     +--images+--back.png		; background .png image
+;     |        +--e.gif			; small .gif image
+;     |        +--index.html		; really error 403 - Forbidden
+;     |        +--up.gif		; small .gif image
+;     |
+;     +--b.html				; button page
+;     +--index.html			; home page
+;     +--o.html				; other page
+
+; *********************************************************************
+; the root file should always be a directory
+
+root
+	.byte	directory		; flags
+	.word	root_end-root_b		; file payload length
+	.byte	$00			; root name, null in this case
+root_b
+	.word	errors			; errors directory
+	.word	images			; images directory
+					; done directories, now do files
+	.word	b_html			; the button page
+	.word	index_html		; default web page
+	.word	o_html			; other web page
+root_end
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Now come the HTML pages in the root. These are stored along with their HTTP headers (as
+ are all the web files) and a lot of space could be saved by having tokenised them in
+ much the same way as a BASIC program is tokenised. This could be indicated by making use
+ of a bit in the flags byte and expanding the file when it is read out. This idea could be
+ expanded further to include commands and functions within pages that either read system
+ values and present them embedded in the pages, or even execute custom assembly code.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; home page, served for "GET / " and "GET /index.html"
+
+index_html
+	.byte	none			; flags
+	.word	index_end-index_html_b	; file payload length
+	.byte	"index.html",$00	; filename, null terminator
+					; rest is file payload
+index_html_b
+	.byte	"HTTP/1.0 200 OK",$0D,$0A,"Content-Type: text/html"
+	.byte	$0D,$0A,$0D,$0A
+	.byte	"&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Vic 20 WEB Server&lt;/TITLE&gt;&lt;/HEAD&gt;&lt;BODY BACK"
+	.byte	"GROUND=images/back.png&gt;&lt;TABLE WIDTH=100%&gt;&lt;TR&gt;&lt;TD&gt;&lt;IMG SRC=ima"
+	.byte	"ges/up.gif BORDER=0 ALT=Up&gt;&lt;/TD&gt;&lt;TD ALIGN=CENTER&gt;&lt;FONT SIZE=+"
+	.byte	"1&gt;&lt;B&gt;The home page &lt;/FONT&gt;&lt;/B&gt;&lt;FONT SIZE=-1&gt;By Lee Davison&lt;/F"
+	.byte	"ONT&gt;&lt;/TD&gt;&lt;TD&gt;&lt;IMG SRC=images/up.gif ALIGN=RIGHT BORDER=0 ALT="
+	.byte	"Top&gt;&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;&lt;HR&gt;&lt;TABLE ALIGN=CENTER WIDTH=80% HEIGH"
+	.byte	"T=70%&gt;&lt;TR&gt;&lt;TD VALIGN=CENTER&gt;&lt;FONT SIZE=+1&gt;Vic 20 WEB Server &lt;"
+	.byte	"/FONT&gt;- &lt;A HREF=b.html&gt;The button page&lt;/A&gt; - &lt;A HREF=o.html&gt;T"
+	.byte	"he other page&lt;/A&gt;&lt;P&gt;&lt;FONT SIZE=+4&gt;&lt;B&gt;Welcome &lt;/B&gt;&lt;/FONT&gt;&lt;FONT"
+	.byte	" FACE=Courier&gt;to the home page&lt;/FONT&gt;&lt;P&gt;&lt;A HREF=mailto:leeeda"
+	.byte	"vison@lycos.co.uk&gt;&amp;nbsp;e-mail me &lt;IMG SRC=images/e.gif BORDE"
+	.byte	"R=0 ALT=e-mail&gt;&lt;/A&gt;&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;&lt;HR&gt;&lt;FONT SIZE=-1&gt;Last p"
+	.byte	"age update: 29th February, 2004&lt;/FONT&gt;&lt;/BODY&gt;&lt;/HTML&gt;"
+index_end
+ 
+; *********************************************************************
+; other web page, served for "GET /o.html"
+
+o_html
+	.byte	none			; flags
+	.word	o_html_end-o_html_b	; file payload length
+	.byte	"o.html",$00		; filename, null terminator
+					; rest is file payload
+o_html_b
+	.byte	"HTTP/1.0 200 OK",$0D,$0A,"Content-Type: text/html"
+	.byte	$0D,$0A,$0D,$0A
+	.byte	"&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Vic 20 WEB Server&lt;/TITLE&gt;&lt;/HEAD&gt;&lt;BODY BACK"
+	.byte	"GROUND=images/back.png&gt;&lt;TABLE WIDTH=100%&gt;&lt;TR&gt;&lt;TD&gt;&lt;IMG SRC=ima"
+	.byte	"ges/up.gif BORDER=0 ALT=Up&gt;&lt;/TD&gt;&lt;TD ALIGN=CENTER&gt;&lt;FONT SIZE=+"
+	.byte	"1&gt;&lt;B&gt;The other page &lt;/B&gt;&lt;/FONT&gt;&lt;FONT SIZE=-1&gt;By Lee Davison&lt;/"
+	.byte	"FONT&gt;&lt;/TD&gt;&lt;TD&gt;&lt;IMG SRC=images/up.gif ALIGN=RIGHT BORDER=0 ALT"
+	.byte	"=Top&gt;&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;&lt;HR&gt;&lt;TABLE ALIGN=CENTER WIDTH=80% HEIG"
+	.byte	"HT=70%&gt;&lt;TR&gt;&lt;TD VALIGN=CENTER&gt;&lt;FONT SIZE=+1&gt;Vic 20 WEB Server "
+	.byte	"&lt;/FONT&gt;- &lt;A HREF=index.html&gt;The home page&lt;/A&gt; - &lt;A HREF=b.htm"
+	.byte	"l&gt;The button page&lt;/A&gt;&lt;P&gt;&lt;FONT SIZE=+4&gt;&lt;B&gt;Welcome &lt;/B&gt;&lt;/FONT&gt;&lt;"
+	.byte	"FONT FACE=Courier&gt;to the other page&lt;/FONT&gt;&lt;P&gt;&lt;A HREF=mailto:l"
+	.byte	"eeedavison@lycos.co.uk&gt;&amp;nbsp;e-mail me &lt;IMG SRC=images/e.gif "
+	.byte	"BORDER=0 ALT=e-mail&gt;&lt;/A&gt;&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;&lt;HR&gt;&lt;FONT SIZE=-1&gt;L"
+	.byte	"ast page update: 29th February, 2004&lt;/FONT&gt;&lt;/BODY&gt;&lt;/HTML&gt;"
+o_html_end
+
+; *********************************************************************
+; the button page, served for "GET /b.html"
+
+b_html
+	.byte	none			; flags
+	.word	b_html_end-b_html_b	; file payload length
+	.byte	"b.html",$00		; filename, null terminator
+					; rest is file payload
+b_html_b
+	.byte	"HTTP/1.0 200 OK",$0D,$0A,"Content-Type: text/html"
+	.byte	$0D,$0A,$0D,$0A
+	.byte	"&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Vic 20 WEB Server&lt;/TITLE&gt;&lt;/HEAD&gt;&lt;BODY BACK"
+	.byte	"GROUND=images/back.png&gt;&lt;TABLE WIDTH=100%&gt;&lt;TR&gt;&lt;TD&gt;&lt;IMG SRC=ima"
+	.byte	"ges/up.gif BORDER=0 ALT=Up&gt;&lt;/TD&gt;&lt;TD ALIGN=CENTER&gt;&lt;FONT SIZE=+"
+	.byte	"1&gt;&lt;B&gt;The button page &lt;/B&gt;&lt;/FONT&gt;&lt;FONT SIZE=-1&gt;By Lee Davison&lt;"
+	.byte	"/FONT&gt;&lt;/TD&gt;&lt;TD&gt;&lt;IMG SRC=images/up.gif ALIGN=RIGHT BORDER=0 AL"
+	.byte	"T=Top&gt;&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;&lt;HR&gt;&lt;TABLE ALIGN=CENTER WIDTH=80% HEI"
+	.byte	"GHT=70%&gt;&lt;TR&gt;&lt;TD VALIGN=CENTER&gt;&lt;FONT SIZE=+1&gt;Vic 20 WEB Server"
+	.byte	" &lt;/FONT&gt;- &lt;A HREF=index.html&gt;The home page&lt;/A&gt; - &lt;A HREF=o.ht"
+	.byte	"ml&gt;The other page&lt;/A&gt;&lt;P&gt;&lt;FONT SIZE=+4&gt;&lt;B&gt;Welcome &lt;/B&gt;&lt;/FONT&gt;&lt;"
+	.byte	"FONT FACE=Courier&gt;to the button page&lt;/FONT&gt;&lt;P&gt;&lt;A HREF=mailto:"
+	.byte	"leeedavison@lycos.co.uk&gt;&amp;nbsp;e-mail me &lt;IMG SRC=images/e.gif"
+	.byte	" BORDER=0 ALT=e-mail&gt;&lt;/A&gt;&lt;/TD&gt;&lt;TD WIDTH=20% ALIGN=CENTER&gt;Are "
+	.byte	"you easily confused?&lt;FORM METHOD=GET ACTION=b.html&gt;&lt;PRE&gt;yes &lt;"
+	.byte	"INPUT TYPE=RADIO NAME=4 VALUE=0&gt;",$0D,$0A,"no  &lt;INPUT TYPE=RA"
+	.byte	"DIO NAME=4 VALUE=1&gt;",$0D,$0A,"fish&lt;INPUT TYPE=RADIO NAME=4 VA"
+	.byte	"LUE=2 CHECKED&gt;",$0D,$0A,"&lt;INPUT TYPE=SUBMIT VALUE=Submit&gt;&lt;/PR"
+	.byte	"E&gt;&lt;/FORM&gt;&lt;/TD&gt;&lt;/TR&gt;&lt;/TABLE&gt;&lt;HR&gt;&lt;FONT SIZE=-1&gt;Last page update"
+	.byte	": 29th February, 2004&lt;/FONT&gt;&lt;/BODY&gt;&lt;/HTML&gt;"
+b_html_end
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The errors directory is just called such for convenience and could just have easily been
+ called "frabjous". It can be searched for, as can it's files, though the results may seem
+ to the user a little strange. For example if the HTTP GET request for /errors/404 is sent
+ it returns an error 404, file not found, which is the correct file and has been found.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; errors directory
+
+errors
+	.byte	directory		; flags
+	.word	errors_end-errors_b	; file payload length
+	.byte	"errors",$00		; filename, null terminator
+errors_b
+	.word	e_deflt			; default file for errors directory
+	.word	e_404			; error 404, served for not found files
+errors_end
+
+
+; default file for errors directory
+
+e_deflt
+	.byte	none			; flags
+	.word	e_deflt_end-e_deflt_b	; file payload length
+	.byte	"index.html",$00	; filename, null terminator
+					; rest is file payload
+e_deflt_b
+	.byte	"HTTP/1.0 403 Forbidden",$0D,$0A,"Content-Type: text/plain"
+	.byte	$0D,$0A,$0D,$0A
+	.byte	"&lt;H1&gt;Forbidden&lt;/H1&gt;"
+e_deflt_end
+
+; error 404, served for not found files
+
+e_404
+	.byte	none			; flags
+	.word	e_404_end-e_404_b	; file payload length
+	.byte	"404",$00		; filename, null terminator
+					; rest is file payload
+e_404_b
+	.byte	"HTTP/1.0 404 Not Found",$0D,$0A,"Content-Type: text/plain"
+	.byte	$0D,$0A,$0D,$0A
+	.byte	"&lt;H1&gt;File not found&lt;/H1&gt;"
+e_404_end
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Finally the images. A <IMG SRC="../../../up.gif" BORDER=0 ALT="Up"> and a
+ <IMG SRC="../../../eml_sm.png" BORDER=0 alt="mail"> along with a .png for the background
+ all here with their headers.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; images directory
+
+images
+	.byte	directory		; flags
+	.word	images_end-images_b	; file payload length
+	.byte	"images",$00		; filename, null terminator
+images_b
+	.word	b_png			; background image
+	.word	e_gif			; small image
+	.word	i_indx			; default page
+	.word	up_gif			; small image
+images_end
+
+; background image, served for "GET images/back.png"
+
+b_png
+	.byte	none			; flags
+	.word	b_png_end-b_png_b	; file payload length
+	.byte	"back.png",$00		; filename, null terminator
+					; rest is file payload
+b_png_b
+	.byte	"HTTP/1.0 200 OK",$0D,$0A,"Content-type: image/png",$0D,$0A
+	.byte	$0D,$0A
+	.byte	$89,$50,$4E,$47,$0D,$0A,$1A,$0A,$00,$00,$00,$0D,$49,$48,$44,$52
+	.byte	$00,$00,$00,$7F,$00,$00,$00,$A2,$01,$03,$00,$00,$01,$25,$D4,$B0
+	.byte	$37,$00,$00,$00,$06,$50,$4C,$54,$45,$FB,$FB,$FB,$DB,$DB,$DB,$46
+	.byte	$A0,$6D,$A6,$00,$00,$01,$7A,$49,$44,$41,$54,$78,$9C,$ED,$54,$C1
+	.byte	$4A,$C3,$40,$10,$7D,$DB,$36,$54,$50,$4C,$C5,$4B,$0E,$42,$EA,$1F
+	.byte	$F4,$28,$52,$6C,$3D,$F9,$1B,$F9,$0E,$29,$4D,$BF,$C0,$3F,$12,$7A
+	.byte	$F0,$EC,$37,$E4,$20,$1E,$F4,$12,$F0,$60,$0E,$49,$C6,$D9,$EC,$6E
+	.byte	$93,$AC,$D1,$44,$11,$A1,$90,$49,$18,$DE,$BE,$9D,$99,$97,$5D,$26
+	.byte	$83,$8D,$00,$5B,$98,$4B,$3F,$9A,$42,$99,$02,$AB,$AB,$16,$92,$08
+	.byte	$10,$F2,$BD,$BD,$97,$FE,$E0,$5C,$2F,$15,$48,$16,$4D,$64,$91,$AE
+	.byte	$B0,$4C,$2F,$36,$4B,$17,$1C,$69,$14,$46,$6E,$66,$73,$DD,$42,$20
+	.byte	$97,$50,$4B,$22,$A5,$31,$AC,$B8,$25,$70,$88,$45,$4A,$6F,$D5,$8D
+	.byte	$C0,$33,$6E,$C7,$51,$E4,$D3,$7F,$85,$A4,$A8,$58,$E0,$01,$CB,$C0
+	.byte	$1B,$C8,$2F,$35,$21,$F2,$1C,$E6,$30,$D2,$C6,$25,$98,$28,$70,$C3
+	.byte	$60,$0E,$11,$31,$00,$E6,$0E,$83,$71,$43,$70,$48,$29,$04,$D1,$7B
+	.byte	$C3,$16,$54,$7A,$0D,$EC,$6D,$7A,$93,$B9,$94,$F1,$43,$B1,$B9,$B1
+	.byte	$26,$09,$D2,$66,$98,$E3,$4E,$60,$A6,$C0,$63,$09,$80,$0B,$88,$2D
+	.byte	$6F,$F9,$F4,$1A,$67,$21,$DD,$31,$73,$09,$67,$5B,$64,$0D,$30,$42
+	.byte	$1B,$D0,$C1,$44,$2F,$70,$42,$CA,$FB,$F4,$FD,$4C,$8F,$0D,$03,$13
+	.byte	$D3,$02,$74,$30,$B7,$0D,$65,$2A,$5D,$37,$D2,$CC,$6A,$B6,$6F,$1B
+	.byte	$52,$77,$71,$DE,$00,$2C,$5B,$FF,$09,$E1,$6F,$2B,$4B,$91,$AE,$F9
+	.byte	$3C,$FC,$37,$49,$52,$C8,$23,$4C,$D7,$C5,$20,$73,$23,$76,$C3,$84
+	.byte	$5D,$A0,$6A,$B8,$4F,$B8,$C6,$69,$52,$16,$1D,$3F,$E0,$0C,$27,$71
+	.byte	$45,$45,$5E,$CB,$04,$3F,$21,$B8,$06,$76,$35,$36,$4A,$05,$5A,$25
+	.byte	$37,$B2,$B0,$65,$D1,$CB,$F6,$B2,$BD,$6C,$9B,$EC,$B3,$2D,$0B,$3B
+	.byte	$05,$76,$D1,$AE,$C4,$A7,$1A,$35,$95,$FA,$FC,$40,$6C,$4D,$18,$AC
+	.byte	$EA,$33,$E8,$97,$73,$6C,$53,$27,$76,$63,$93,$EC,$39,$FA,$35,$F1
+	.byte	$01,$FD,$CD,$7D,$2F,$89,$09,$9D,$B7,$00,$00,$00,$00,$49,$45,$4E
+	.byte	$44,$AE,$42,$60,$82
+b_png_end
+
+; small image, served for "GET images/e.gif"
+
+e_gif
+	.byte	none			; flags
+	.word	e_gif_end-e_gif_b	; file payload length
+	.byte	"e.gif",$00		; filename, null terminator
+					; rest is file payload
+e_gif_b
+	.byte	"HTTP/1.0 200 OK",$0D,$0A,"Content-Type: image/gif",$0D,$0A
+	.byte	$0D,$0A
+	.byte	$47,$49,$46,$38,$39,$61,$10,$00,$10,$00,$C4,$00,$00,$F7,$00,$5F
+	.byte	$33,$03,$9A,$33,$03,$CA,$03,$03,$83,$5F,$5F,$F7,$33,$63,$FA,$63
+	.byte	$9B,$FB,$63,$CB,$FB,$03,$9B,$CB,$63,$FA,$FA,$FA,$FA,$CB,$97,$00
+	.byte	$00,$CB,$03,$03,$FA,$FA,$FA,$63,$63,$63,$03,$03,$03,$FF,$FF,$FF
+	.byte	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+	.byte	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+	.byte	$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$21,$F9,$04
+	.byte	$01,$00,$00,$10,$00,$2C,$00,$00,$00,$00,$10,$00,$10,$00,$00,$05
+	.byte	$69,$20,$24,$8E,$C6,$91,$24,$63,$9A,$96,$49,$11,$18,$AA,$28,$40
+	.byte	$85,$59,$40,$46,$A0,$3A,$8E,$20,$20,$07,$01,$6F,$38,$7C,$38,$1A
+	.byte	$3F,$84,$40,$C1,$6C,$36,$8D,$C8,$02,$62,$E0,$64,$02,$18,$0A,$E8
+	.byte	$60,$BB,$AD,$32,$16,$D9,$63,$A3,$51,$2D,$43,$C9,$E5,$EA,$B9,$2C
+	.byte	$28,$B8,$A9,$D0,$B4,$42,$70,$82,$3B,$E4,$F3,$7A,$F8,$C1,$EF,$F3
+	.byte	$05,$26,$5B,$7C,$2A,$2F,$10,$02,$25,$37,$03,$31,$10,$04,$01,$05
+	.byte	$06,$06,$37,$8B,$23,$01,$03,$6D,$31,$21,$00,$3B
+e_gif_end
+
+; default .html page for "/images/"
+
+i_indx
+	.byte	none			; flags
+	.word	i_indx_end-i_indx_b	; file payload length
+	.byte	"index.html",$00	; filename, null terminator
+					; rest is file payload
+i_indx_b
+	.byte	"HTTP/1.0 403 Forbidden",$0D,$0A,"Content-Type: text/html"
+	.byte	$0D,$0A,$0D,$0A
+i_indx_end
+
+; small image, served for "GET images/up.gif"
+
+up_gif
+	.byte	none			; flags
+	.word	up_gif_end-up_gif_b	; file payload length
+	.byte	"up.gif",$00		; filename, null terminator
+					; rest is file payload
+up_gif_b
+	.byte	"HTTP/1.0 200 OK",$0D,$0A,"Content-Type: image/gif",$0D,$0A
+	.byte	$0D,$0A
+	.byte	$47,$49,$46,$38,$39,$61,$40,$00,$14,$00,$91,$00,$00,$00,$00,$FF
+	.byte	$BD,$BD,$BD,$00,$00,$00,$FF,$FF,$FF,$21,$F9,$04,$01,$00,$00,$03
+	.byte	$00,$2C,$00,$00,$00,$00,$40,$00,$14,$00,$00,$02,$99,$9C,$8F,$A9
+	.byte	$CB,$ED,$0F,$A3,$9C,$B4,$DA,$8B,$B3,$86,$61,$E7,$4E,$05,$02,$E8
+	.byte	$85,$E3,$24,$0A,$A7,$03,$B4,$C0,$E0,$BE,$57,$BA,$3E,$B4,$4A,$32
+	.byte	$ED,$B1,$CF,$EA,$9F,$5B,$DC,$80,$2C,$19,$4C,$16,$EB,$35,$86,$B8
+	.byte	$E5,$EF,$D9,$D4,$19,$95,$AE,$A3,$31,$C1,$24,$2A,$B2,$CF,$20,$6F
+	.byte	$0A,$FE,$0A,$A1,$E4,$20,$17,$EA,$3D,$8A,$0D,$D4,$AB,$E1,$DC,$3D
+	.byte	$C0,$D1,$8A,$F6,$5A,$8D,$98,$C7,$03,$7C,$3E,$19,$D8,$17,$54,$55
+	.byte	$C5,$B6,$43,$F8,$16,$F8,$87,$13,$98,$A7,$58,$23,$E5,$96,$E4,$70
+	.byte	$96,$36,$40,$79,$A1,$34,$E9,$58,$79,$69,$91,$E9,$A4,$C8,$B9,$E9
+	.byte	$19,$63,$33,$3A,$16,$D8,$F7,$58,$82,$35,$92,$2A,$C2,$99,$C6,$C7
+	.byte	$CA,$30,$BB,$95,$53,$00,$00,$3B
+up_gif_end
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ All this is called from the main code. First the pointers are set up to point to the
+ HTTP GET request string which is null terminated.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; do HTTP GET
+
+LAB_comm_GET
+	LDA	tp_l			; get pointer low byte
+	STA	findname_l		; save to find name pointer low byte
+	LDA	tp_h			; get pointer high byte
+	STA	findname_h		; save to find name pointer high byte
+	JSR	LAB_getline		; null terminate the command line
+	JSR	LAB_22700		; generate HTTP response
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Then the find routine is called. This either returns with a file pointer and length or
+ with no file found. If there was no file found then the pointer and length for file 404
+ in the errors directory is used. There is no reason why this can't be changed to any
+ other file, some data which is not part of the filesystem, or even a completely different
+ routine. It was just done this way for simplicity.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; generate HTTP response
+
+LAB_22700
+	JSR	LAB_find		; go find file
+	BCS	LAB_isfound		; branch if file exists
+
+	LDA	e_404+$01		; get "error 404" length low byte
+	STA	lensys_l		; save length low byte
+	LDA	e_404+$02		; get "error 404" length high byte
+	STA	lensys_h		; save length high byte
+
+	LDA	#&lt;e_404_b		; get "error 404" pointer low byte
+	STA	filesys_l		; save as file system pointer low byte
+	LDA	#&gt;e_404_b		; get "error 404" pointer high byte
+	STA	filesys_h		; save as file system pointer high byte
+
+LAB_isfound
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+<P ALIGN=JUSTIFY>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 7th March, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/network/filesys.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:15:30 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

@@ -1,0 +1,134 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=909e9559&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/shorts/hexascii.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 20:59:56 GMT -->
+<HEAD><TITLE>6502 Shorts - Hex to ASCII</TITLE></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=20%><A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Hex to ASCII. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index-2.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I know you've all done this before but here's a use for decimal mode. Read on....
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The classic way to convert a nibble in A into ASCII is to test if the nibble is greater
+ than nine and, if it is, to add seven before adding the 48 to make the ASCII character.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	CMP	#$0A		; set carry for +1 if >9	
+	BCC	NoAdjust	; branch if <=9
+
+	ADC	#6		; adjust if A to F
+				; (six plus carry = 7!)
+NoAdjust
+	ADC	#"0"		; add ASCII "0"
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ This is eight bytes long and takes seven or eight cycles depending on the nibble.
+<P ALIGN=JUSTIFY>
+ Well here's a way that uses decimal mode addition to do that for you.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	SED			; set decimal mode
+	CMP	#$0A		; set carry for +1 if >9	
+	ADC	#"0"		; add ASCII "0"
+	CLD			; clear decimal mode
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Six bytes and always nine cycles. Or, if you do a number of nibbles and leave decimal
+ mode set throughout, four bytes and five cycles per digit.
+</BLOCKQUOTE>
+<B><U>Another way.</U></B><A NAME=way></A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Following some posts on the classiccmp mailing list this became obvious. It's not fast
+ or short (really too long for this section but I'll let it pass) but it doesn't use
+ branches, decimal mode or other registers or memory.<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#$00		; add 1 if it was  >= $0A
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#$00		; add 1 if it was  >= $0A
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#$00		; add 1 if it was  >= $0A
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#$00		; add 1 if it was  >= $0A
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#$00		; add 1 if it was  >= $0A
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#$00		; add 1 if it was  >= $0A
+	CMP	#$0A		; compare the nibble with $0A
+	ADC	#"0"		; add "0" and 1 if it was  >= $0A
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Twenty eight bytes and twenty eight cycles, only really usefull for a 'convert hex to
+ ASCII without using branches, decimal mode or look up tables' competition.
+</BLOCKQUOTE>
+<B><U>Yet another way.</U></B><A NAME=way></A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Last one, honest. Not the shortest but this must be the fastest way. Starts with the
+ nibble to be converted in X not A<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	LDA	hex_table,X	; get the ASCII character	
+	.
+
+hex_table
+	.byte	"0123456789ABCDEF"
+				; conversion table
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Nineteen bytes, eighteen if the table is in page zero, and only four cycles. Speedy!
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 11th December, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/shorts/hexascii.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 20:59:56 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

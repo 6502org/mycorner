@@ -1,0 +1,383 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=8ecf0a99&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/misc/speeddome/source.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:07:38 GMT -->
+<HEAD><TITLE>SpeedDome - software</TITLE>
+<META name="description" content="Sensormatic SpeedDome RA486LC"></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="software.html#softw"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>SpeedDome - software. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index-2.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+' PTZ Camera driver Ver 1.00 - Quick BASIC 4.5 (c) L.Davison 2005
+
+' Test code to drive SpeedDome or similar PTZ cameras. This should provide control
+' over basic camera movement functions. Press a key to start a motion and the same
+' key again to stop it. Complementary motions stop each other, e.g. there is no need
+' to stop a left pan before starting right pan. The space bar should stop all motion.
+' Use [ALT-Q] to quit.
+
+' some code to print diagnostic information is commented out but remains for
+' reference. comments, suggestions, additions, offers of monetary reward etc to ..
+'
+' leeedavison@lycos.co.uk
+
+DECLARE SUB SendCommand01 (address%, command%)
+DECLARE SUB SendCommand02 (address%, command1%, command2%)
+
+SCREEN 12				' 640 x 480
+
+false% = 0				' easy false
+true% = -1				' easy true
+
+quit% = false%				' don't quit yet
+
+quit$ = CHR$(0) + CHR$(16)		' [ALT-Q] to quit
+camright$ = CHR$(0) + CHR$(77)		' camera right
+camleft$ = CHR$(0) + CHR$(75)		' camera left
+camup$ = CHR$(0) + CHR$(72)		' camera up
+camdown$ = CHR$(0) + CHR$(80)		' camera down
+camzoom$ = "Z"				' camera zoom
+camwide$ = "X"				' camera wide
+camfar$ = "A"				' camera focus far
+camnear$ = "S"				' camera focus near
+camstop$ = " "				' camera stop
+camopen$ = "Q"				' camera iris open
+camclose$ = "W"				' camera iris close
+
+F10$ = CHR$(0) + CHR$(68)		' configuration menu - doesn't seem to work
+'F9$ = CHR$(0) + CHR$(67)		' not used
+'F8$ = CHR$(0) + CHR$(66)		' not used
+'F7$ = CHR$(0) + CHR$(65)		' not used
+'F6$ = CHR$(0) + CHR$(64)		' not used
+'F5$ = CHR$(0) + CHR$(63)		' not used
+F4$ = CHR$(0) + CHR$(62)		' camera AUX port bit 4
+F3$ = CHR$(0) + CHR$(61)		' camera AUX port bit 3
+F2$ = CHR$(0) + CHR$(60)		' camera AUX port bit 2
+F1$ = CHR$(0) + CHR$(59)		' camera AUX port bit 1
+
+configure% = false%			' configure flag
+camright% = false%			' camera moving right
+camleft% = false%			' camera moving left
+camup% = false%				' camera moving up
+camdown% = false%			' camera moving down
+camzoom% = false%			' camera zooming in
+camwide% = false%			' camera zooming out
+camnear% = false%			' camera focusing near
+camfar% = false%			' camera focusing far
+camopen% = false%			' camera iris opening
+camclose% = false%			' camera iris closing
+
+camout0% = false%			' camera output 1
+camout1% = false%			' camera output 2
+camout2% = false%			' camera output 3
+camout3% = false%			' camera output 4
+
+DO
+  CLS
+  INPUT "Camera address "; camaddr%	' get the camera address
+LOOP WHILE (camaddr% < 1) OR (camaddr% > 99)
+					' loop until valid address
+
+OPEN "COM1:4800,N,8,1" FOR RANDOM AS #1 LEN = 256
+					' COM 1, 4800 baud, 8N1
+					' change the COM port to suit your setup
+
+CLS
+
+' print instructions for the user - may not be up to date
+
+PRINT "Keys are:-"
+PRINT ""
+PRINT "Cursor keys - pan and tilt"
+PRINT "          Z - zoom in             X - zoom out"
+PRINT "          A - focus far           S - focus near"
+PRINT "          Q - iris open           W - iris close"
+PRINT ""
+PRINT "F1 to F4    - toggle port bits 1 to 4"
+PRINT ""
+PRINT ""
+PRINT ""
+PRINT ""
+PRINT ""
+PRINT ""
+PRINT ""
+PRINT "F10         - enter configuration menu"
+PRINT ""
+PRINT "Space can be used to halt all movement"
+PRINT ""
+PRINT "Use [ALT-Q] to quit"
+
+DO					' main loop
+  KeyInput$ = INKEY$			' check the keyboard
+  KeyInput% = LEN(KeyInput$)		' get the length, some keys return more than
+					' a single character
+  IF KeyInput% THEN			' if there was a key press
+    tt = TIMER				' get the time
+    IF KeyInput% = 1 THEN		' if single character code key then
+      KeyInput$ = UCASE$(KeyInput$)	'  make it upper case
+    END IF
+    IF KeyInput$ = quit$ THEN		' if the user pressed [ALT-Q]
+      GOSUB CameraStop			' stop any movements
+      quit% = true%			' flag time to quit
+    ELSEIF KeyInput$ = camright$ THEN
+      IF camleft% OR camright% THEN	' if camera panning then
+        SendCommand01 camaddr%, &h83	' pan stop
+        camleft% = false%		' clear left flag
+      END IF
+      IF camright% = false% THEN	' if camera not panning right then
+        SendCommand01 camaddr%, &h82	' pan right
+      END IF
+      camright% = NOT camright%		' toggle right flag
+    ELSEIF KeyInput$ = camleft$ THEN
+      IF camleft% OR camright% THEN	' if camera panning then
+        SendCommand01 camaddr%, &h83	' pan stop
+        camright% = false%		' clear flag
+      END IF
+      IF camleft% = false% THEN		' if camera not panning left then
+        SendCommand01 camaddr%, &h81	' pan left
+      END IF
+      camleft% = NOT camleft%		' toggle left flag
+    ELSEIF KeyInput$ = camup$ THEN
+      IF camup% OR camdown% THEN	' if camera tilting then
+        SendCommand01 camaddr%, &h86	' tilt stop
+        camdown% = false%		' clear down flag
+      END IF
+      IF camup% = false% THEN		' if camera not tilting up then
+        SendCommand01 camaddr%, &h84	' tilt up
+      END IF
+      camup% = NOT camup%		' toggle tilt up flag
+    ELSEIF KeyInput$ = camdown$ THEN
+      IF camup% OR camdown% THEN	' if camera tilting then
+        SendCommand01 camaddr%, &h86	' tilt stop
+        camup% = false%			' clear up flag
+      END IF
+      IF camdown% = false% THEN		' if camera not tilting down then
+        SendCommand01 camaddr%, &h85	' tilt down
+      END IF
+      camdown% = NOT camdown%		' toggle tilt down flag
+    ELSEIF KeyInput$ = camzoom$ THEN
+      IF camzoom% OR camwide% THEN	' if camera zooming then
+        SendCommand01 camaddr%, &h8C	' zoom stop
+        camwide% = false%		' clear wide flag
+      END IF
+      IF camzoom% = false% THEN		' if camera not zooming in then
+        SendCommand01 camaddr%, &h8A	' zoom in
+      END IF
+      camzoom% = NOT camzoom%		' toggle zoom flag
+    ELSEIF KeyInput$ = camwide$ THEN
+      IF camzoom% OR camwide% THEN	' if camera zooming then
+        SendCommand01 camaddr%, &h8C	' zoom stop
+        camzoom% = false%		' clear zoom flag
+      END IF
+      IF camwide% = false% THEN		' if camera not zooming out then
+        SendCommand01 camaddr%, &h8B	' zoom out
+      END IF
+      camwide% = NOT camwide%		' toggle wide flag
+    ELSEIF KeyInput$ = camnear$ THEN
+      IF camnear% OR camfar% THEN	' if camera focusing then
+        SendCommand01 camaddr%, &h89	' focus stop
+        camfar% = false%		' clear far focus flag
+      END IF
+      IF camnear% = false% THEN		' if camera not focusing near then
+        SendCommand01 camaddr%, &h87	' focus near
+      END IF
+      camnear% = NOT camnear%		' toggle near flag
+    ELSEIF KeyInput$ = camfar$ THEN
+      IF camnear% OR camfar% THEN	' if camera focusing then
+        SendCommand01 camaddr%, &h89	' focus stop
+        camnear% = false%		' clear near focus flag
+      END IF
+      IF camfar% = false% THEN		' if camera not focusing far then
+        SendCommand01 camaddr%, &h88	' focus far
+      END IF
+      camfar% = NOT camfar%		' toggle far flag
+    ELSEIF KeyInput$ = camopen$ THEN
+      IF camopen% OR camclose% THEN	' if iris moving then
+        SendCommand01 camaddr%, &h92	' iris stop
+        camclose% = false%		' clear close flag
+      END IF
+      IF camopen% = false% THEN		' if iris not opening then
+        SendCommand01 camaddr%, &h90	' iris open
+      END IF
+      camopen% = NOT camopen%		' toggle open flag
+    ELSEIF KeyInput$ = camclose$ THEN
+      IF camopen% OR camclose% THEN	' if iris moving then
+        SendCommand01 camaddr%, &h92	' iris stop
+        camopen% = false%		' clear open flag
+      END IF
+      IF camclose% = false% THEN	' if iris not closing then
+        SendCommand01 camaddr%, &h91	' iris close
+      END IF
+      camclose% = NOT camclose%		' toggle close flag
+    ELSEIF KeyInput$ = camstop$ THEN
+      GOSUB CameraStop			' stop any movements
+    ELSEIF KeyInput$ = F10$ THEN
+      IF configure% THEN
+        SendCommand02 camaddr%, &hCC, &h02' exit configuration menu
+      ELSE
+        SendCommand02 camaddr%, &hCC, &h01' enter configuration menu
+      END IF
+      configure% = NOT configure%	' toggle configure flag
+    ELSEIF KeyInput$ = F4$ THEN
+      camout3% = NOT camout3%		' toggle bit
+      GOSUB SetPort			' set the port
+    ELSEIF KeyInput$ = F3$ THEN
+      camout2% = NOT camout2%		' toggle bit
+      GOSUB SetPort			' set the port
+    ELSEIF KeyInput$ = F2$ THEN
+      camout1% = NOT camout1%		' toggle bit
+      GOSUB SetPort			' set the port
+    ELSEIF KeyInput$ = F1$ THEN
+      camout0% = NOT camout0%		' toggle bit
+      GOSUB SetPort			' set the port
+'    ELSE				' if the key is unrecognised
+'      LOCATE 22,2
+'      FOR index% = 1 TO KeyInput%
+'        PRINT ASC(MID$(KeyInput$, index%, 1));
+'					' print the key string as numbers
+'      NEXT
+'      PRINT "       ";
+    END IF
+
+    DO : LOOP WHILE (ABS(TIMER - tt) < .05)
+					'  wait for at least 1/20th second
+
+' now look for a response from the camera. if the command was recognised then the
+' camera should have responded with it's address within 25mS
+
+    IF NOT EOF(1) THEN
+      CameraReturn$ = INPUT$(LOC(1), #1)' LOC(1) gives the number of characters waiting
+					' even if you don't want the returned character
+					' to print it you should still do this to flush
+					' the input buffer
+'      PRINT CHR$(13); CameraReturn$; "  ";
+					' print the string
+    END IF
+  END IF
+
+LOOP UNTIL quit%
+
+CLOSE #1				' close the COM port
+END
+
+' set the output port. each of the variables camout0% to canout3% represent the
+' corresponding bits of the output port and can be toggled usin the F1 to F4 keys
+' they are not affected by the camera stop
+
+SetPort:
+  portbyte% = &hE0 OR (camout3% AND 8)_
+                   OR (camout2% AND 4)_
+                   OR (camout1% AND 2)_
+                   OR (camout0% AND 1)
+  SendCommand01 camaddr%, portbyte%	'  port set
+
+RETURN
+
+' stop all camera movements, flag all movements stopped
+
+CameraStop:
+  IF camright% OR camleft% THEN		' if camera panning then
+    SendCommand01 camaddr%, &h83	'  pan stop
+    camright% = false%			'  clear flag
+    camleft% = false%			'  clear flag
+  END IF
+  IF camup% OR camdown% THEN		' if camera tilting then
+    SendCommand01 camaddr%, &h86	'  tilt stop
+    camup% = false%			'  clear flag
+    camdown% = false%			'  clear flag
+  END IF
+  IF camnear% OR camfar% THEN		' if camera focusing then
+    SendCommand01 camaddr%, &h89	'  focus stop
+    camnear% = false%			'  clear flag
+    camfar% = false%			'  clear flag
+  END IF
+  IF camzoom% OR camwide% THEN		' if camera zooming then
+    SendCommand01 camaddr%, &h8C	'  zoom stop
+    camzoom% = false%			'  clear flag
+    camwide% = false%			'  clear flag
+  END IF
+  IF camopen% OR camclose% THEN		' if iris moving then
+    SendCommand01 camaddr%, &h92	'  iris stop
+    camopen% = false%			'  clear flag
+    camclose% = false%			'  clear flag
+  END IF
+RETURN
+
+' send a single byte command to the camera
+
+SUB SendCommand01 (address%, command%)
+  checksum% = (0 - address% - command%) AND &hFF
+'  LOCATE 22,2
+'  PRINT "* ";
+'  PRINT RIGHT$("00" + HEX$(address%), 2); " ";
+'  PRINT RIGHT$("00" + HEX$(command%), 2); " ";
+'  PRINT RIGHT$("00" + HEX$(checksum%), 2); " *    ";
+
+  PRINT #1, CHR$(address%); CHR$(command%); CHR$(checksum%);
+					' print the command string to the COM port
+
+END SUB
+
+' send a double byte command to the camera
+
+SUB SendCommand02 (address%, command1%, command2%)
+  checksum% = (0 - address% - command1% - command2%) AND &hFF
+'  LOCATE 22,2
+'  PRINT "* ";
+'  PRINT RIGHT$("00" + HEX$(address%), 2); " ";
+'  PRINT RIGHT$("00" + HEX$(command1%), 2); " ";
+'  PRINT RIGHT$("00" + HEX$(command2%), 2); " ";
+'  PRINT RIGHT$("00" + HEX$(checksum%), 2); " *";
+
+  PRINT #1, CHR$(address%); CHR$(command1%); CHR$(command2%); CHR$(checksum%);
+					' print the command string to the COM port
+
+END SUB
+</PRE>
+</TD></TR></TABLE>
+<BR clear=all>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 28th January, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/misc/speeddome/source.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:07:38 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

@@ -1,0 +1,94 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=6e8fd93e&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/epac/faster.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:03:53 GMT -->
+<HEAD><TITLE>EPAC 68008.</TITLE><META name="description" content="EPAC 68008, EPAC,
+ 68008, MC68008, single board computer"></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=1><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Turbo EPAC. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index-2.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<IMG SRC="8mhz.jpg" ALIGN=RIGHT ALT="EPAC xtal" BORDER=1 HSPACE=8>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ As it goes 8MHz is a bit pedestrian these days so to have a little fun I thought I'd
+ see just how fast the EPAC could run.
+</BLOCKQUOTE>
+<B><U>How to.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The soldered in 8MHz oscillator was removed and replaced by a turned pin socket. There
+ is only just enough room for this. Next a selection of oscillators was scrounged from
+ the bits bins, all faster than the original, with speeds up to 32MHz.
+<P ALIGN=JUSTIFY>
+ Not much else to say really, some worked, others didn't. Here's the results.
+<BR CLEAR=ALL>
+</BLOCKQUOTE>
+<IMG SRC="14mhz.jpg" ALIGN=LEFT ALT="EPAC 14MHz xtal" BORDER=1 HSPACE=8>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<TABLE BORDER=1 ALIGN=CENTER>
+<TR ALIGN=CENTER><TH>Frequency</TH><TH>Result</TH></TR>
+<TR><TD><PRE>  9.200MHz</TD><TD>&nbsp;Worked</TD></TR>
+<TR><TD><PRE> 12.000MHz</TD><TD>&nbsp;Worked</TD></TR>
+<TR><TD><PRE> 14.318MHz</TD><TD>&nbsp;Worked</TD></TR>
+<TR><TD><PRE> 16.000MHz</TD><TD>&nbsp;Uninitialized interrupt error(s)&nbsp;</TD></TR>
+<TR><TD><PRE> 19.200MHz</TD><TD>&nbsp;Not a thing</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+ At 16MHz all that happened was a constant stream of Uninitialized interrupt errors. At
+ this point I didn't know what was causing that but found out later. See the update below.
+<P ALIGN=JUSTIFY>
+ I've left the 14.318MHz oscillator installed and it's been working for over a week now.
+ The BIOS has been modified for the faster clock, this is only needed to make the system
+ time run correctly and is just one longword that needs changing.
+<BR CLEAR=ALL>
+</BLOCKQUOTE>
+<B><U>Update.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I found out what was causing the 'Uninitialized interrupt error' messages and fixed it,
+ I can now run the EPAC reliably at 16MHz though 19 MHz is still no go. For details on
+ the fix go see the <A HREF="flash.html">flash ROM</A> page.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 20th March, 2006.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/epac/faster.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:03:53 GMT -->
+</HTML>
+
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

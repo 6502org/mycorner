@@ -1,0 +1,149 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=98b350c6&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/network/source.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:05:47 GMT -->
+<HEAD>
+<TITLE>Vic 20 network interface - software</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=25%><A HREF="index.html#source">
+ <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>Vic 20 network - software </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT>
+</TD><TD WIDTH=25%><A HREF="../../../index-2.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Introduction</U></B>
+<IMG SRC="home.jpg" ALIGN=RIGHT BORDER=1 ALT="Vic 20 web server
+ home page" HSPACE=8>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ It would have easily been possible to expand the Vic 20 well beyond it's original
+ specification for this project, but that would have just made it a less able Commodore
+ 64. So, the code as is fits in the 8KB cartridge space from $A000 to $BFFF and only the
+ Vic's internal RAM is used. BASIC is completely ignored, and could be removed, and only
+ the cartridge startup and interrupt vectors are used in the kernal ROM.
+<P ALIGN=JUSTIFY>
+ At the time of writing the .asm file is over 100KB long so only sections will be
+ presented here, if you want to see all the code you can <A
+ HREF="source.zip">download <IMG SRC="../../../zip_sm.png" ALT="Download" border=0></A>
+ it as a .zip file.
+<P ALIGN=JUSTIFY>
+ As there are differences between PAL and NTSC Vic 20s where this makes a difference
+ the PAL code is shown in <B>bold</B> and the NTSC code is shown in <FONT
+ COLOR=#AAAAAA><B>grey</B></FONT>. The PAL code is tested but as I don't have an NTSC
+ machine I'm unable to test those bits. They <I><B>should</B></I> work.
+</BLOCKQUOTE>
+<B><U>Features</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This code provides ARP, TCP/IP and ICMP function enough to be PINGed and enough HTTP
+ ability to serve the web content held in the ROM file system. The TCP implementation
+ is as server only, there is no active open or close wait ability and supports only a
+ single connection at a time, this may change.
+<P ALIGN=JUSTIFY>
+ One of the Vic's VIA timers is used to provide a millisecond clock, this allows the TCP
+ state machine to time out gracefully, and is used to time the animation of the crawling
+ dot in the bottom right of the Vic screen.
+<P ALIGN=JUSTIFY>
+ The first two IP address digits are fixed at 169.254 in the ROM but the last two digits
+ are copied from the MAC address of the card. This means the same ROM code can be used in
+ multiple Vics without changes, each machine getting it's IP address from the hardware
+ without the worry of IP address conflicts.
+<P ALIGN=JUSTIFY>
+ This is not a finished product, it is presented as a starting point and as such is
+ written with that in mind. This means the code could be shortened and sped up in many
+ places but is left as is because the intention is clearer. E.g. adding the final carry
+ back into the 16 bit checksum could be done thus ..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+LAB_21980
+	BCC	LAB_21990		; exit if carry clear
+
+	INC	chksum_l		; increment checksum low byte
+	BNE	LAB_21990		; exit if no overflow
+
+	INC	chksum_h		; increment checksum high byte		
+LAB_21990
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ But the intention is much clearer if it's done like this ..
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+LAB_21980
+	LDA	chksum_l		; get checksum low byte
+	ADC	#$00			; add any carry
+	STA	chksum_l		; save checksum low byte
+	LDA	chksum_h		; get checksum high byte
+	ADC	#$00			; add any carry
+	STA	chksum_h		; save checksum high byte		
+LAB_21990
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+</BLOCKQUOTE>
+<B><U>Listings.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The source is so long that it has been split into different sections. Some of these are
+ more or less complete and unlikely to change, others are still under developement, yet
+ more is not started yet. These sections will be added to and changed as the code
+ progresses.
+<P ALIGN=JUSTIFY>
+<LI><A HREF="startup.html" NAME=startup>Vic startup</A>
+<LI><A HREF="3com.html" NAME=3com>The 3Com card</A>
+<LI><A HREF="interrupt.html" NAME=interrupt>Interrupts</A>
+<LI><A HREF="mainloop.html" NAME=mainloop>Main program loop</A>
+<LI><A HREF="arp.html" NAME=arp>ARP and packet transmit</A>
+<LI><A HREF="filesys.html" NAME=filesys>Web server files</A>
+<P ALIGN=JUSTIFY>
+ Whatever the state of the listings, you can always <A
+ HREF="vic_rom.zip">download <IMG SRC="../../../zip_sm.png" ALT="Download"
+ border=0></A> the most recent binary image.
+<P ALIGN=JUSTIFY>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 29th February, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/network/source.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:05:49 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

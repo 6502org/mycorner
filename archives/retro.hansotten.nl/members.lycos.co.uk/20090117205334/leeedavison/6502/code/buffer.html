@@ -1,0 +1,196 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=4ed846ec&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/code/buffer.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 20:59:55 GMT -->
+<HEAD>
+<TITLE>6502 Code - 256 Byte Data Buffer</TITLE>
+<META name="description" content="6502 assembly program for a 256-byte data buffer.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>256-Byte Data Buffer. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index-2.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<U><B>Introduction.</B></U>
+<BLOCKQUOTE>
+ This routine is an interrupt serviced 256 byte data buffer for serial ports and the like.
+ Very similsr code was used to supply the stepper motor driver routine with line
+ co-ordinate pairs.
+<P>
+ This is not a finished solution, you will need to add your own code to drive the target
+ of the buffer.
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; code for an interrupt serviced data buffer. similar code is used to drive
+; the XY stepper motors on a plotter with new position information every 5mS
+; and also to allow pen up/down movement time of 70mS
+
+; buffer and variables must be in RAM
+
+Buffer				; 256 byte buffer (must start at page edge)
+	.ds	$100
+
+BRindx				; buffer read index
+	.byte	$00
+
+BWindx				; buffer write index
+	.byte	$00
+
+Sendf				; am sending flag
+	.byte	$00
+
+WByte				; temp store for the byte to be sent
+	.byte	$00
+
+; write the data to the buffer a byte at a time and increment the pointer.
+; the routine is called with the byte to write in A. If the interrupt
+; device is idle when this routine is called it will wake it up by doing
+; a BRK before it exits
+
+; destroys the Y register
+
+; can be ROM or RAM
+
+Incwritb
+	STA	WByte		; save byte to write
+	LDA	BRindx		; get read index
+	SEC			; set carry for subtract
+	SBC	BWindx		; subtract write index
+	BEQ	Dowrite		; if equal then buffer empty so do write
+	CMP	#$02		; need at least n+1 bytes to avoid rollover
+	BCC	Incwritb	; loop if no space
+
+
+				; construct and write data to buffer
+Dowrite
+	LDY	BWindx		; get write index
+	LDA	WByte		; get byte to write
+	STA	Buffer,Y	; save it
+	INY			; increment index to next byte
+	STY	BWindx		; save new write index byte
+
+; now see if the interrupt service routine is already running or if it's
+; idle
+
+	LDA	Sendf		; get the sending flag
+	BNE	Doingit		; skip call if running
+	BRK			; software call to interrupt routine
+	NOP			; need this as return from BRK is +1 byte!
+	CLI			; enable the interrupts
+
+Doingit
+	RTS				
+
+; this is the interrupt service routine. takes a byte a time from the
+; buffer and does some thing with it. also sets up the device(s) for
+; the next interrupt
+
+; no registers altered
+
+BuffIRQ
+	PHA			; save A
+	TXA			; copy X
+	PHA			; save X
+	TYA			; copy Y
+	PHA			; save Y
+
+; insert code here to ensure this is the interrupt you want. if it
+; isn't then just exit quietly via ResExit the end of the routine
+
+Getnext
+	JSR	Increadb	; increment pointer and read byte from buffer
+	BCS	ExitIRQ		; branch if no byte to do
+
+; here would be the guts of the routine such as sending the byte to
+; the ACIA or a printer port or some other byte device. it will also
+; ensure the device is set to generate an interrupt when it's completed
+; it's task
+
+	LDA	#$FF		; set byte
+	STA	Sendf		; set sending flag
+	JMP	ResExit		; restore the registers & exit
+
+				; all done, clear the flag restore the
+				; registers & exit
+ExitIRQ
+	LDA	#$00		; clear byte
+	STA	Sendf		; clear sending flag
+
+ResExit
+	PLA			; pull Y
+	TAY			; restore it
+	PLA			; pull X
+	TAX			; restore it
+	PLA			; restore A
+	RTI			; this was an interrupt service request
+				; so exit properly
+
+; get byte from the buffer and increment the pointer. If the buffer is empty
+; then exit with the carry flag set else exit with carry clear and the byte
+; in A
+
+Increadb
+	LDY	BRindx		; get buffer read index
+	CPY	BWindx		; compare write index
+	BEQ	NOktoread	; branch if empty (= sets carry)
+	LDA	Buffer,Y	; get byte from buffer
+	INY			; increment pointer
+	STY	BRindx		; save buffer read index
+	CLC			; clear not ok flag
+
+NOktoread
+	RTS
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 6th June, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/code/buffer.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 20:59:55 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

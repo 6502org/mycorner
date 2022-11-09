@@ -1,0 +1,183 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=142b3233&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/ehbasic/update.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:00:17 GMT -->
+<HEAD><TITLE>Enhanced BASIC, update</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502
+ microprocessor."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_1"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Enhanced BASIC, update </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index-2.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+ <B>New Version 2.xx is here!...</B><P ALIGN=JUSTIFY>
+ Download version 2.09
+ <A HREF="source.zip">source <IMG SRC="../../zip_sm.png" ALT="Download"
+ border=0></A>
+<P ALIGN=JUSTIFY>
+<A NAME=050407></A>
+<B>7th April 2005.</B>
+<BLOCKQUOTE>
+ With no job taking up 40 hours a week you'd think I'd have more time, strange how it
+ seems I have less but I guess that's the way it goes.
+<P ALIGN=JUSTIFY>
+ Lots of changes, some small, some large. How BASIC handles functions internally has
+ changed significantly with some major advantages for me, the code is far more easy to
+ manage, and speed advantages for the user, about seventy cycles per value fetched. This
+ doesn't sound a lot but means about 140 cycles saved for any function that requires a
+ value, and that's most of them.
+<P ALIGN=JUSTIFY>
+ The RND() function has been changed and now uses the Galois method to generate the
+ sequence and, as a consequence, this series has now been extended to a maximal length 32
+ bit series. This is about as good as any 32 bit pseudo ramdom generator can get without
+ using more bits, or more time, and quite a lot of work went into addressing the
+ shortcommings of other generators. It is no co-incidence that this generator now
+ generates exactly the same sequence of numbers as that used in the
+ <A HREF="../../68k/ehbasic/index.html">680x0</A> version of EhBASIC.
+<P ALIGN=JUSTIFY>
+ Some <I>undocumented features</I> were removed and the USR() function has been changed
+ slightly. I really must document that.
+<P ALIGN=JUSTIFY>
+ Included with the source for EhBASIC is a minimal monitor to allow you to run EhBASIC
+ on <A HREF="http://home.pacbell.net/michal_k/">Michal Kowalski's 6502 simulator</A>.
+ This also serves as an example of the minimal support code needed to run EhBASIC on
+ other systems.
+<P ALIGN=JUSTIFY>
+ Lastly, the pre assembled versions have been dropped.
+<P ALIGN=JUSTIFY>
+ Version number is now 2.09
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<A NAME=030714></A>
+<B>14th July 2003.</B>
+<BLOCKQUOTE>
+ Has it really been nearly a year since the last update? Doesn't seem like it. Most of
+ this time has been taken with developing EhBASIC for the <A
+ HREF="../suprchips/index.html">Mitsubishi 740 family</A>, a 65C02 compatable cored
+ microcontroller, and a port for the <A HREF="../../68k/ehbasic/index.html">680x0
+ processor</A>. As it's been so long a couple of version numbers have been skipped,
+ these were never released.
+<P ALIGN=JUSTIFY>
+ The biggest change is that all keyword handling is now done with a dictionary instead
+ of a simple list. The advantage to this is that line parsing and listing are much faster,
+ in some cases nearly 100 times faster, and changes to keywords are now easier to do.
+<P ALIGN=JUSTIFY>
+ Another change is the way the FOR ... NEXT loop operates internally. It no longer looks
+ for current loops with the same loop variable when a FOR is executed. The advantage is
+ faster code in a lot of places, the disadvantage is that if you jump out of a loop the
+ stack space is never recovered. Since that's a no-no anyway I've chosen to leave it like
+ that.
+<P ALIGN=JUSTIFY>
+ Finally EhBASIC now announces the version number at startup. Any other changes are minor
+ and are to improve speed, function or size.
+<P ALIGN=JUSTIFY>
+ Version number is now 1.10
+</BLOCKQUOTE>
+<A NAME=020725></A>
+<B>25th July 2002.</B>
+<BLOCKQUOTE>
+ Just a small update. The addresses where values for HEX$() or BIN$() have been changed.
+ This frees up two bytes in page zero and is this ...
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+nums_1		= $E0		; number to bin/hex string convert MSB
+nums_2		= nums_1+1	; number to bin/hex string convert
+nums_3		= nums_1+2	; number to bin/hex string convert LSB
+</PRE>
+</TD></TR></TABLE>
+</P>
+ ... becomes ...
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+nums_1		= Itempl	; number to bin/hex string convert MSB
+nums_2		= nums_1+1	; number to bin/hex string convert
+nums_3		= nums_1+2	; number to bin/hex string convert LSB
+</PRE>
+</TD></TR></TABLE>
+</P>
+ This is done in version 1.05
+</BLOCKQUOTE>
+<A NAME=020708></A>
+<B>8th July 2002.</B>
+<BLOCKQUOTE>
+ This is a re-write of the <A HREF=language.html#BIN>BIN$()</A> and
+ <A HREF=language.html#HEX>HEX$()</A> functions. This frees up 8 bytes from page zero as
+ well as being a little quicker. The downside is code length which is up slightly to
+ 9600 bytes ($2580 bytes).
+<P ALIGN=JUSTIFY>
+ Examples of the speed increase are ..<P ALIGN=JUSTIFY>
+<TABLE CELLSPACING=0 BORDER=1 BGCOLOR=white>
+<TR><TD>
+<TABLE CELLSPACING=5 BORDER=0 BGCOLOR=white>
+<TR>
+<TD COLSPAN=4 ALIGN=CENTER> Cycle times for <B>HEX$(57005)</B> and <B>BIN$(57005)</B></TD>
+</TR>
+<TR>
+<TD>Function</TD>
+<TD ALIGN=CENTER>Before</TD>
+<TD ALIGN=CENTER>After</TD>
+<TD ALIGN=CENTER>Saving</TD>
+</TR>
+<TR>
+<TD>HEX$()</TD>
+<TD>686 cycles</TD>
+<TD>465 cycles</TD>
+<TD>221 cycles (110uS @ 2MHz - 32%)</TD>
+</TR>
+<TR>
+<TD>BIN$()</TD>
+<TD>1700 cycles</TD>
+<TD>1079 cycles</TD>
+<TD>621 cycles (310uS @ 2MHz - 37%)</TD>
+</TR>
+</TABLE>
+</TR></TD>
+</TABLE>
+<P ALIGN=JUSTIFY>
+ The other change is that both binary and Motorola hex versions are also available for
+ download.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 7th April, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/ehbasic/update.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:00:17 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

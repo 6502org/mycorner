@@ -1,0 +1,140 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=4c5f0189&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/ehbasic/err011218.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:07:06 GMT -->
+<HEAD>
+<TITLE>Enhanced BASIC, errata for 18th December 2001</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="errata.html">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Enhanced BASIC, errata. 18th Dec. 2001 </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="../../index-2.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<U><B>Symptoms</B></U>
+<BLOCKQUOTE>
+ Sometimes, when cold starting, the interpreter would either crash totally or give
+ spurious error messages such as "Out of memory error." or "Syntax error." instead of
+ reporting the ammount of free memory. This was more likely the less memory BASIC had
+ available.
+</BLOCKQUOTE>
+<U><B>Cause</B></U>
+<BLOCKQUOTE>
+ The end of array memory pointer hadn't been set at this point and could cause the print
+ string subroutine, which prints the string created from the bytes free value, to think
+ that no memory was available. Also, as the pointers weren't all set yet, the garbage
+ collection routine could then either fail, causing the "Out of memory" error, or crash
+ causing other errors or even a hung machine.
+</BLOCKQUOTE>
+<U><B>The fix</B></U>
+<BLOCKQUOTE>
+ The fix for this is easy, it just entails moving the "NEW" and "CLEAR" call to before
+ you try to print anything.
+<P>
+ Just after LAB_2E05 was ..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+JSR	LAB_CRLF		; print CR/LF
+LDA	Ememl			; get end of mem low byte
+SEC				; set carry for subtract
+SBC	Smeml			; subtract start of mem low byte
+TAX				; copy to X
+LDA	Ememh			; get end of mem high byte
+SBC	Smemh			; subtract start of mem high byte
+JSR	LAB_295E		; print XA as unsigned integer (bytes free)
+LDA	#<LAB_SMSG		; point to sign-on message (low addr)
+LDY	#>LAB_SMSG		; point to sign-on message (high addr)
+JSR	LAB_18C3		; print null terminated string from memory
+<B>JSR	LAB_1463		; do "NEW" and "CLEAR"</B>
+LDA	#<LAB_1274		; warm start vector low byte
+LDY	#>LAB_1274		; warm start vector high byte
+STA	Wrmjpl			; save warm start vector low byte
+STY	Wrmjph			; save warm start vector high byte
+JMP	(Wrmjpl)		; go do warm start
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+.. and this now becomes ..
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+JSR	LAB_CRLF		; print CR/LF
+<B>JSR	LAB_1463		; do "NEW" and "CLEAR"</B>
+LDA	Ememl			; get end of mem low byte
+SEC				; set carry for subtract
+SBC	Smeml			; subtract start of mem low byte
+TAX				; copy to X
+LDA	Ememh			; get end of mem high byte
+SBC	Smemh			; subtract start of mem high byte
+JSR	LAB_295E		; print XA as unsigned integer (bytes free)
+LDA	#<LAB_SMSG		; point to sign-on message (low addr)
+LDY	#>LAB_SMSG		; point to sign-on message (high addr)
+JSR	LAB_18C3		; print null terminated string from memory
+LDA	#<LAB_1274		; warm start vector low byte
+LDY	#>LAB_1274		; warm start vector high byte
+STA	Wrmjpl			; save warm start vector low byte
+STY	Wrmjph			; save warm start vector high byte
+JMP	(Wrmjpl)		; go do warm start
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+.. This ensures that the "bytes free." message always prints correctly and is done in
+ version 1.01.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 14th July, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%>
+</TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/ehbasic/err011218.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:07:06 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

@@ -1,0 +1,131 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=6e072e08&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/epac/flash.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:03:54 GMT -->
+<HEAD><TITLE>EPAC 68008.</TITLE><META name="description" content="EPAC 68008, EPAC,
+ 68008, MC68008, single board computer"></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=1><TR><TD WIDTH=20%>
+<A HREF="index.html"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Flash ROM. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index-2.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<A HREF="flashin.html"><IMG SRC="flashin_s.jpg" ALIGN=RIGHT ALT="EPAC flash BIOS" BORDER=1
+ HSPACE=8></A>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ With all this extra memory and speed it seemed a bit of a let down that the EPAC had only
+ 64K of EPROM available for it's firmware. I did toy briefly with the idea of just using a
+ bigger EPROM but then wondered how hard would it be to add Flash ROM instead, and thus a
+ plan was born.
+<P ALIGN=JUSTIFY>
+ I had already worked out how to add 32 pin RAM, using the existing 28 pin locations and
+ flying leads, and it didn't seem much more work to do the same to be able to use 32 pin
+ flash ROM in the 28 pin EPROM socket.
+<BR CLEAR=ALL>
+</BLOCKQUOTE>
+<IMG SRC="32flash.png" ALIGN=RIGHT ALT="27C512 & 29C010 fifferences" BORDER=1 HSPACE=8>
+<B><U>The circuit.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Comparing the pinout of a 1Mbit flash ROM with a 512Kbit EPROM there are only five pins
+ which differ and two of those are 'no connect' which can be ignored or connected as
+ needed. <I>(But test it first. While the DIP AT29C010A, pictured above, 'no connect'
+ pins are not connected to anything the PLCC version has pin 30 tied to ground internally,
+ even though the datasheet says 'no internal connection'. I found out the hard way.)</I>
+ One other is Vcc which is already present on the 27C512 socket leaving only A16 and R/W
+ to find
+<P ALIGN=JUSTIFY>
+ In this case Vcc on pin 32 is tied to pin 30, a 'no connect' which now sits in the 28
+ pin Vcc position and  A16 and R/W are connected by flying leads to the A16 and R/W pins
+ underneath the processor. With this done a flash ROM can be used for the BIOS
+<BR CLEAR=ALL>
+</BLOCKQUOTE>
+<IMG SRC="newic7.png" ALIGN=RIGHT ALT="New address decoder" BORDER=1 HSPACE=8>
+<B><U>Reading <I>and</I> writing.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ With the EPROM the output enable was driven by the address decoder and the chip enable
+ was either tied to this or tied to ground. Leaving these pins tied together works for
+ reading the flash as both output enable and chip enable go low but writes to the flash
+ require the chip enable to be low and the output enable to be high. This needs another
+ output, IC2 chip enable, and input, R/W, on the address decoder IC7.
+<P ALIGN=JUSTIFY>
+ Unfortunately there is only one 'spare' pin available, KB on pin 6, so to give more pins
+ IC7 is replaced with a GAL20V8 which, once Vcc and ground are taken care of, gives two
+ more pins to play with.
+<P ALIGN=JUSTIFY>
+ To do this a 24 pin socket is inserted in a 20 pin socket that has had pin 13 removed
+ and a lead connected to go to J1 pin 2, the flash ROM chip select, and this lot goes
+ into the IC7 socket. On the underside of the board pin 13, /AS, is linked to pin 6,
+ which was KB, and another lead goes from R/W on the processor to pin 13 on the new 24
+ pin socket.
+<P ALIGN=JUSTIFY>
+ This allows the new IC7, a GAL20V8A, to provide separate /CS and /OE signals to the
+ flash ROM.
+<BR CLEAR=ALL>
+</BLOCKQUOTE>
+<IMG SRC="newic8.png" ALIGN=RIGHT ALT="New interrupt handler" BORDER=1 HSPACE=8>
+<B><U>If I may ..</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ .. interrupt. One thing remains to be resolved. During an interrupt cycle the processor
+ makes A19 to A4 = 1, puts the interrupt level on A1 to A3, makes FC0, FC1, FC2 = 1 and
+ does a read cycle to acknowledge the interrupt and, if needed, get the vector. The
+ problem here is that if FC0 to FC2 are ignored this looks like a read of the BIOS ROM
+ to the address decoder which means the BIOS outputs a value during the vector fetch
+ possibly causing an uninitialized interrupt error.
+<P ALIGN=JUSTIFY>
+ The solution is to disable BIOS accesses when FC0, FC1, FC2 = 1 but the function code
+ signals only go to IC8 which handles interrupt cycles. To get the needed signal IC8 is
+ replaced by a GAL22V10A in 24 pin socket that has the ground pin, pin 12, linked to pin
+ 10 to provide the ground connection for the GAL. The one free output pin, pin 14,
+ provides an FC0, FC1, FC2 = 1 signal which is fed to the remaining free input pin, pin
+ 13, on the address decoder GAL.
+<BR CLEAR=ALL>
+</BLOCKQUOTE>
+<B><U>GAL files.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Lastly the GAL logic files. Three versions of IC7 are provided, one for 64K RAM, 2 x
+ 32K, one for 256K RAM, 2 x 128K, and one for 896K RAM, 2 x 512K. Only one version of
+ IC8 is needed as this remains the same regardless of RAM size.
+<P ALIGN=JUSTIFY>
+ <LI>IC7 and IC8 <A HREF="gals.zip">logic files<IMG SRC="../../zip_sm.png" ALT="Download"
+ border=0></A>.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 20th March, 2006.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/epac/flash.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:03:56 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

@@ -1,0 +1,132 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=33638239&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/11.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:15:52 GMT -->
+<HEAD>
+<TITLE> Memory Plus manual </TITLE>
+</HEAD>
+<BODY
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="01.html"><IMG SRC="index.png" ALIGN=RIGHT BORDER=0 ALT="Index"></A>
+<B><FONT SIZE=+2>MEMORY PLUS Manual </FONT></B><FONT SIZE=-2>By Lee Davison</FONT>
+<BR CLEAR=all>
+<BR>
+<A HREF="10.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="12.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 11
+</CENTER>
+<BR CLEAR=all>
+<HR>
+ <PRE>
+				EPROM Programming
+
+	The usefulness of the EPROMs on the MEMORY PLUS board is enhanced by the
+	inclusion of on board EPROM programming facilities.  The INTEL 2716 EPROM
+	is electrically programmable and ultraviolet light erasable.  The user can
+	buy or build an ultraviolet light eraser.  MEMORY PLUS provides the parts
+	required for the programming of the EPROMs.  These parts consist of the
+	following items:
+
+	  EPROM Programming Socket:  Socket 79 is a 24 pin socket located toward
+		the lower right hand corner of the board.  The EPROM to be
+		programmed is placed in this socket.
+
+	  +25 Volt Regulator:  +25 volts is required for programming the 2716.
+		This may be provided directly by the user at pin A-22 of the
+		MEMORY PLUS application connector.  Since this voltage is so
+		critical, and since an over voltage can destroy an EPROM, an
+		on board regulator circuit is provided.  This will provide about
+		24.7 volts when supplied with +27 to +30 volts at pin E-3 of the
+		MEMORY PLUS expansion connector.
+
+	  Control Lines:  The EPROM requires eleven (11) address lines, eight (8)
+		data lines, and two (2) control lines.  All but three of these
+		lines are provided by the MEMORY PLUS VIA 6522.  The remaining
+		three lines come from the MICRO port B: PBO, PB1, and PB2.
+
+	  Timing:  EPROM programming requires a 50 millisecond pulse be applied
+		to the EPROM.  The VIA 6522 includes a timer which is used for
+		timing this interval.
+
+	  EPROM Programming Program:  The control of the programming is handled
+		by a program run on the MICRO.  This program is provided in the
+		form of a source listing in this manual and as a cassette tape
+		included in the MEMORY PLUS package.
+
+	The 2716 EPROM may be programmed one location (byte) at a time, or the entire
+	EPROM may be programmed.  The steps required to program the EPROM are:
+
+	  1.	With the power off, insert the EPROM to be programmed into the
+		Programming Socket.
+
+	  2.	Turn on the power and load the data to be copied into the EPROM
+		into any portion of memory.  This may be RAM memory loaded from
+		cassette (or by hand) or may be another EPROM which is going to
+		be copied.
+
+	  3.	Load the EPROM Programming Program from cassette (or by hand)
+		into memory (locations 0000 to 00D8)
+
+	  4.	Make sure the following application connector connections are
+		in place:
+		MICRO A-9 TO MP A-19;
+		MICRO A-10 TO MP A-20;
+		MICRO A-l1 TO MP A-21
+
+
+
+
+ </PRE>
+<BR CLEAR=all>
+<HR>
+<A HREF="10.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="12.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 11
+</CENTER>
+<BR CLEAR=all>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 8th December, 2002.</FONT>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/11.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:15:52 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

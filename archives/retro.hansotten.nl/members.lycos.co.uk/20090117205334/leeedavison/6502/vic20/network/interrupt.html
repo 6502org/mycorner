@@ -1,0 +1,227 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=9221b61b&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/network/interrupt.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:15:30 GMT -->
+<HEAD>
+<TITLE>Vic 20 network interface - software</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=25%><A HREF="source.html#interrupt">
+ <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>Vic 20 network - software </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT>
+</TD><TD WIDTH=25%><A HREF="../../../index-2.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Interrupts</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Without setting about the Vic with a screwdriver there is no way to change the lowest
+ level handling of the Vic interrupts, so some of this code is to deal with the way
+ interrupts are handled by the kernal.
+<P ALIGN=JUSTIFY>
+ Before the interrupts can be used the three vectors for IRQ, NMI and BRK handling need
+ to be set up. This is done during the initialisation by this loop.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	LDX	#$05			; set 6 vector bytes	
+int_loop
+	LDA	i_table,X		; get byte from vector table		
+	STA	IRQ_vec_l,X		; save to vector	
+	DEX				; decrement count
+	BPL	int_loop		; loop if more to do
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ These are the vector words that are copied to the vectors.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; default values for the interrupt vectors
+
+i_table
+	.word	iIRQ			; IRQ routine address
+	.word	iBRK			; BRK routine address
+	.word	iNMI			; NMI routine address
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The NMI routine disables IRQ interrupts and saves any registers used, it could also
+ clear the D flag if needed at this point. The next thing done is to reset the NMI
+ latch, this ensures that longer than the minimum period needed elapses before the NMI
+ line can become active again. After this it reads the status from the network card,
+ the only source of NMI interrupts as set up, and copies any set bits into the interrupt
+ flag byte. Lastly the registers are restored and the routine exits.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; NMI interrupt routine - the NIC /should/ trigger this
+
+iNMI
+	SEI				; disable interrupts
+	PHA				; save A
+
+	LDA	NMI_res			; reset NMI latch
+	LDA	com_reg_l		; read status byte
+	AND	#$FE			; mask wanted bits
+	ORA	IB			; OR with interrupt flag byte
+	STA	IB			; save new interrupt flag byte
+
+	PLA				; restore A
+	RTI
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ This, commented out, code is what goes on in the kernal ROM when either an IRQ or a BRK
+ opcode generate an interrupt. It's included as a reminder of what goes on before code
+ execution gets to our code.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+;; *********************************************************************	
+;; IRQ interrupt routine - this part is in the kernal ROM and is here
+;; only to show what happens before we get to our code.
+;;
+;;IRQ
+;;	PHA				; save A
+;;	TXA				; copy X
+;;	PHA				; save X
+;;	TYA				; copy Y
+;;	PHA				; save Y
+;;	TSX				; copy stack pointer
+;;	LDA	stack+4,X		; get stacked status register	
+;;	AND	#$10			; mask BRK flag
+;;	BEQ	do_IRQ			; branch if not BRK
+;;
+;;	JMP	(BRK_vec_l)		; else do BRK vector (iBRK)
+;;
+;;do_IRQ					
+;;	JMP	(IRQ_vec_l)		; do IRQ vector (iIRQ)
+;;
+;; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ The only IRQ interrupt we expect is the timer implemented with VIA 2's timer 1. If it
+ was timer 1 then a call is made to the countdown routine after which the routine exits.
+ If timer 1 was not the source, or a BRK was the cause of the interrupt, then the routine
+ just exits.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; IRQ interrupt routine
+
+iIRQ
+	LDA	VIA_2+IFR		; check VIA 2 interrupt flags
+	BPL	IRQexit			; exit if wasn't VIA 2
+
+	AND	#$40			; mask timer 1 time-out flagged
+	BEQ	IRQexit			; exit if not timer 1 time-out
+
+	STA	VIA_2+IFR		; clear timer 1 time-out flag
+	JSR	LAB_12000		; do timeout countdowns
+
+; *********************************************************************
+; BRK interrupt routine - does nothing at the moment
+
+iBRK
+IRQexit
+	PLA				; pull byte
+	TAY				; restore Y
+	PLA				; pull byte
+	TAX				; restore X
+	PLA				; restore A
+	RTI
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ This is the system timer code and it implements three independant, re-triggerable,
+ single shot count down timers. At present only the TCP timer and one other is used.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; does the timeout counting down, called on TIMER 1 timeout (1mS)
+; decrement the TCP timeout counter if <> 0
+
+LAB_12000
+	LDA	tcp_toc			; test TCP timeout count
+	BEQ	LAB_12005		; skip decrement if zero
+
+	DEC	tcp_toc			; else decrement it
+LAB_12005
+	LDA	cdtb_l			; get countdown timer b low byte
+	BEQ	LAB_12010		; skip decrement if zero
+
+	DEC	cdtb_l			; else decrement it
+LAB_12010
+	LDA	cdtf_l			; get countdown timer f low byte
+	BEQ	LAB_12015		; skip decrement if zero
+
+	DEC	cdtf_l			; else decrement it
+LAB_12015
+	RTS
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 29th February, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/network/interrupt.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:15:30 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

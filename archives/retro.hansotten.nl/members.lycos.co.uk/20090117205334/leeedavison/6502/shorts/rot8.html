@@ -1,0 +1,105 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=46bb7652&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/shorts/rot8.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:00:12 GMT -->
+<HEAD><TITLE>6502 Shorts - 8 bit rotates</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>8 bit rotates. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index-2.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE>
+ ROR and ROL both rotate a byte through the carry giving, in effect, a nine bit rotate.
+ Sometimes an eight bit rotate is needed, as shown in the diagram below.
+<BR><BR><CENTER>
+<IMG SRC="rot8.png" BORDER=1 ALT="ROL and ROR are really nine bit operations">
+</CENTER><P ALIGN=JUSTIFY>
+ Here is a way to make those rotates effectively eight bit.
+</BLOCKQUOTE>
+<B><U>The code.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ To make ROR an eight bit shift b0 must be duplicated in the carry bit, the easiest way
+ to do this is to shift the byte but that alters it so first make a copy, rotate the
+ byte, restore the copy and do the eight bit rotate thus ..<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	TAX			; save byte
+	ROR	A		; b0 into Cb		
+	TXA			; restore byte
+	ROR	A		; eight bit rotate	
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Not particularly elegant but does have the advantage that it takes the same number of
+ cycles whatever the state of b0 before the rotate. If no register is available the stack
+ can be used instead like this ..<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	PHA			; save byte
+	ROR	A		; b0 into Cb		
+	PLA			; restore byte
+	ROR	A		; eight bit rotate	
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ To make ROL behave like an 8 bit shift the sense of the sign bit must be reflected in
+ the carry bit before the shift is done. this is much easier and can be done thus ..<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+	CMP	#$80		; copy b7 into Cb	
+	ROL	A		; eight bit rotate
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 21st January, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/shorts/rot8.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:00:12 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

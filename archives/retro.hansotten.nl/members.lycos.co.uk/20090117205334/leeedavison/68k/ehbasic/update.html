@@ -1,0 +1,250 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=142b3233&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/ehbasic/update.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:00:17 GMT -->
+<HEAD><TITLE>Enhanced 68k BASIC, update</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 68k microprocessor
+ family."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="index.html#link_1"><IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Update. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../index-2.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+ Download version 3.21 <A HREF="source.zip">source <IMG SRC="../../zip_sm.png"
+ ALT="Download" BORDER=0></A>.
+<P ALIGN=JUSTIFY>
+<A NAME=050217></A>
+<B>17th February 2005.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Just when I think it's safe to relax some undocumented features rear their ugly heads.
+<P ALIGN=JUSTIFY>
+ Firstly, if an attempt was made to access an array with an index value of n where 0 < n <
+ 0.5 then instead of getting element 0 you sometimes got an array bounds error, this has
+ been fixed.
+<P ALIGN=JUSTIFY>
+ Secondly, if you tried to dimension an array bigger than the available memory EhBASIC
+ would curl up it's toes and die, this was due to an incorrect branch type and has now
+ been fixed to give an out of memory error.
+<P ALIGN=JUSTIFY>
+ The version number is now 3.21. Enjoy.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<A NAME=050215></A>
+<B>15th February 2005.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Lots has changed from the last version, this is reflected in the change in major version
+ number from 2.xx to 3.xx.
+<P ALIGN=JUSTIFY>
+ The biggest change is that the code is now pure, this means it is both relocatable and
+ re-entrant so in a multitasking system only one copy of the code needs to be in memory
+ even if multiple instances are run. The planned target to test this is the Amiga but I
+ have not written an Amiga version just yet.
+<P ALIGN=JUSTIFY>
+ Internally there are other big internal changes. The code is now able to handle programs
+ larger than 128K correctly, create and reference arrays bigger than 128K correctly and
+ now generates an error if you try to make an array dimension larger than 65535. This
+ <I>should</I> remove the last of the restrictions that made this an 8 bit interpreter
+ that just growed.
+<P ALIGN=JUSTIFY>
+ Other changes of note ar that the USR() function needs no extra code for null functions,
+ just an RTS will work, and, as EhBASIC's RAM can now be anywhere, the function RAMBASE
+ has been added so that EhBASIC can work out where it's own memory is. This means the code
+ to set the USR() function address is now ..
+<PRE>
+	<B>LOKE RAMBASE+8,address</B>
+</PRE>
+ .. for any instance of EhBASIC68. Also the RND() function now uses a full 32 bit Galois
+ LFSR pseudo random number generator and the scatter array has been removed, this is both
+ faster and smaller. A lot of testing went into modifying this function including running
+ the full sequence to test correct operation and running a number of 64K and 512K
+ sequences to test the ramdomness or the values returned.
+<P ALIGN=JUSTIFY>
+ The version number is now 3.19. Enjoy.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<A NAME=040526></A>
+<B>26th May 2004.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The length of the keyword SWAP was incorrect in the list table. This has been fixed.
+<P ALIGN=JUSTIFY>
+ The version number is now 2.21. Enjoy.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<A NAME=040504></A>
+<B>4th May 2004.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ It's been quite a while since the last update and there are a few changes.
+<P ALIGN=JUSTIFY>
+ Internally there have been big changes in the way that functions are handled. This
+ gives better performance and makes the code easier to change.
+<P ALIGN=JUSTIFY>
+ RND(n) has been changed so that values now are scattered after being generated. This
+ scattering, though limited in range, is truly random. The array used was generated using
+ two hunderd and fifty six peices of numbered paper and a small cyclone generator.
+<P ALIGN=JUSTIFY>
+ LIST [n][-m] now works correctly when the first line in a program is line 0.
+<P ALIGN=JUSTIFY>
+ The version number is now 2.20. Enjoy.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<A NAME=030425></A>
+<B>25th April 2003.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The LIST command has changed internally to use the same tables that are used for
+ tokenising by EhBASIC. This removes the need to keep two tables of keywords maintained.
+ The downside is that the size has increased but the speed of the LIST command is better.
+<P ALIGN=JUSTIFY>
+ There have also been changes to the table orders, all byte sized data tables are now at
+ the end so I no longer have to worry about word and longword tables being correctly
+ aligned. Other small changes have been made to progress the code to becomming pure, i.e.
+ both relocatable and reentrant, for possible use in multitasking systems.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.10. Enjoy.
+</BLOCKQUOTE>
+<A NAME=030416></A>
+<B>16th April 2003.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ A fix to the math routines reduces errors in some cases. This was due to a potential
+ carry being ignored and some results being truncated instead of rounded. The result of
+ this is that ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B>PI * PI / PI / PI - 1</B>
+</BLOCKQUOTE>
+ .. now = 0 instead of -4.65661E-10 and ..
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+<B>COS( 3 * PI / 2 )</B>
+</BLOCKQUOTE>
+ .. now = 0 instead of -1.05849E-5
+<P ALIGN=JUSTIFY>
+ The version number is now 1.09. Enjoy.
+</BLOCKQUOTE>
+<A NAME=030414></A>
+<B>14th April 2003.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Small changes to the way strings are compared which prevents A$="" from failing sometimes
+ even when A$ is null. Also a change to the LOOP command which could sometimes terminate
+ program execution if it was conditional on a string compare.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.08. Enjoy.
+</BLOCKQUOTE>
+<A NAME=030411></A>
+<B>11th April 2003.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Some changes to the way INPUT and READ parse the data stream. This also corrects some
+ inconsistencies in the way different types of data (string, hex integer or floating)
+ were handled.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.07. Enjoy.
+</BLOCKQUOTE>
+<A NAME=030409></A>
+<B>9th April 2003.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Some small changes to the way long integers are handled.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.06. Enjoy.
+</BLOCKQUOTE>
+<A NAME=030328></A>
+<B>28th March 2003.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ An <I>undocumented feature</I> of the SQR() function was that it returned zero for
+ roots in the 0.5 to 0.999999 range. This has been fixed.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.05. Enjoy.
+</BLOCKQUOTE>
+<A NAME=030313></A>
+<B>13th March 2003.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ More internal changes and a fix to DEEK() and LEEK() which I'd managed to break.
+ There has also been an update to the language reference.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.04. Enjoy.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<A NAME=030307></A>
+<B>7th March 2003.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Minor changes to speed critical code and some internal functions modified. Simulator
+ specific code changed to take advantage of updated features.
+<P ALIGN=JUSTIFY>
+ The behaviour of LEFT$(), RIGHT$() and MID$() have been changed. Now if the length of the
+ required string is zero then a null string will be returned. MID$() has been changed so
+ that a starting point beyond the end of the referenced string will return a null string.
+ Also all string function values can now go up to 65535 which is the maximum string
+ length.
+<P ALIGN=JUSTIFY>
+ Weeded out two instances where the result of a calculation could be minus zero. While
+ there may not be much difference numerically, between plus and minus zero, when a
+ function is expecting a positive value it will often choke on minus zero.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.03. Enjoy.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<A NAME=030305></A>
+<B>5th March 2003.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Some small patches to code and a change in the way the power function works. Now if you
+ raise a negative value to an integer power the sign is calculated correctly, also raising
+ a negative number to a fractional power will now give a 'Function call' error.
+<P ALIGN=JUSTIFY>
+ The version number is now 1.02. Enjoy.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<A NAME=030304></A>
+<B>4th March 2003.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Due to a connection problem I never did get the source, mentioned below, uploaded.
+ So to make up for it there are a few less undocumented features in this version. As a
+ result the version is now 1.01. Enjoy.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<A NAME=030303></A>
+<B>3rd March 2003.</B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Just a small update and, as it was only yesterday I released the source there's no
+ version increment for this one.
+<P ALIGN=JUSTIFY>
+ Fixed a small <I>undocumented feature</I> with the <B>LIST</B> command and added ASCII
+ <B>SAVE</B> and <B>LOAD</B> capabilities. To <B>SAVE</B> a program as ASCII just append
+ the <B>SAVE</B> command with <B>,a</B>. For more details see the <A
+ HREF="language.html#SAVE">language reference</A>.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 17th February, 2005.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/ehbasic/update.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:00:17 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

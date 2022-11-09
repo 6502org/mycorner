@@ -1,0 +1,133 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=3c90db4&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/15.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:15:56 GMT -->
+<HEAD>
+<TITLE> Memory Plus manual </TITLE>
+</HEAD>
+<BODY
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="01.html"><IMG SRC="index.png" ALIGN=RIGHT BORDER=0 ALT="Index"></A>
+<B><FONT SIZE=+2>MEMORY PLUS Manual </FONT></B><FONT SIZE=-2>By Lee Davison</FONT>
+<BR CLEAR=all>
+<BR>
+<A HREF="14.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="16.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 15
+</CENTER>
+<BR CLEAR=all>
+<HR>
+ <PRE>
+
+
+  0036	A9 00		ENTER		LDAIM	$00	CLEAR ALL STATUS FLACS
+  0038	48				PHA
+  0039	28				PLP
+  003A	A0 00				LDYIM	$00	ENTRY IF TABLE PRESET
+  003C	A9 C5				LDAIM	INTRPT	GET INTERRUPT POINTER
+  003E	91 0B				STAIY	INTVEC	SETUP IN TABLE
+  0040	A9 00				LDAIM	INTRPT	/
+  0042	C8				INY		BUMP POINTER
+  0043	91 0B				STAIY	INTVEC
+  0045	A9 EC				LDAIM	$EC	SETUP VIA VALUES
+  0047	A0 0C				LDYIM	PCR
+  0049	91 06				STAIY	VIA
+  004B	A0 0E				LDYIM	IER	DISABLE ALL INTERRUPTS
+  004D	A9 7F				LDAIM	$7F
+  004F	91 06				STAIY	VIA
+  0051	A0 0D				LDYIM	IFR
+  0053	A9 FF				LDAIM	$FF	CLEAR INTERRUPT PENDINC
+  0055	91 06				STAIY	VIA
+  0057	A0 0E				LDYIM	IER
+  0059	A9 A0				LDAIM	$A0	ENABLE TIMER TWC
+  005B	91 06				STAIY	VIA
+
+  005D	A2 00		NEXT		LDXIM	$00	INIT X REGISTER
+  005F	A9 FF				LDAIM	$FF	SET DATA DIRECTICN
+  0061	A0 02				LDYIM	DDRB
+  0063	91 06				STAIY	VIA
+  0065	A0 03				LDYIM	DDRA
+  0067	91 06				STAIY	VIA
+  0069	81 0D				STAIX	PBDD
+  006B	A5 02				LDA	PRML0W	OUTPUT NEXT ADDRESS
+  006D	81 06				STAIX	VIA	LOW 8 BITS
+  006F	A5 03				LDA	PRMHGH
+  0071	81 0F				STAIX	PBD	BITS 8, 9, 10
+  0073	A1 00				LDAIX	SAL	SET DATA BYTE
+  0075	A0 01				LDYIM	0RA
+  0077	91 06				STATY	VIA	CUTPUT VIA 0RA
+
+  0079	A9 50		TIMER		LDAIM	$50	SETUP 50 MILLISEC0ND TIMER
+  007B	A0 08				LDYIM	TTW0L
+  007D	91 06				STAIY	VIA	OUTPUT TO TIMER TWO LOW
+  007F	A9 C3				LDAIM	$C3	HIGH BYTE OF TIMER
+  0081	A0 09				LDYIM	TTW0H
+  0083	91 06				STATY	VIA	OUTPUT TO TIMER TWO HIGH
+  0085	A9 CE				LDAIM	$CE	PR0GRAM HIGH, PROGRAM MODE
+  0087	AC 0C				LDYIM	PCR
+  0089	91 06				STAIY	VIA
+
+  008B	C0 0C		WAIT		CPYIM	PCR	TEST FOR INTERRUPT SERVICED
+  008D	F0 FC				BEQ	WAIT	ELSE, WAIT FOR IT
+
+  008F	A9 00		VERIFY		LDAIM	$00	VERIFY PR0GRAMMING
+  0091	A0 03				LDYIM	DDRA	SET ORA FOR INPUT
+  0093	91 06				STATY	VIA
+  0095	A0 01				LDYIM	ORA	SETUP POINTER
+  0097	B1 06				LDAIY	VIA
+
+
+ </PRE>
+<BR CLEAR=all>
+<HR>
+<A HREF="14.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="16.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 15
+</CENTER>
+<BR CLEAR=all>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 8th December, 2002.</FONT>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/15.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:15:56 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

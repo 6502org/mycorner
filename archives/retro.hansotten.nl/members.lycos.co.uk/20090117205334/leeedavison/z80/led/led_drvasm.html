@@ -1,0 +1,751 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=60ac9eb2&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/z80/led/led_drvasm.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:04:02 GMT -->
+<HEAD><TITLE>Z80 LED matrix - Driver assembly source file.</TITLE>
+<META name="description" content="An LED matrix driver for the Z80."></HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#link_1">
+<IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>Driver assembly source. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD>
+<TD WIDTH=20%><A HREF="../../index-2.html">
+<IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="led_drv_asm.zip">Download this file <IMG SRC="../../zip_sm.png" ALT="[Download]"
+ border=0></A>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; This code was written to test some LED matrix displays that were bought
+; cheap at a radio rally. The cards have 240 LEDs in an 8x30 matrix driven
+; by 8 row lines and two 4 bit decoders driving the 30 columns. (column 15
+; and column 31 = all LEDs off.)
+
+; The displays were driven by the uPF IO/M Z80 PIO the address map of which
+; is below. Change these for your own system.
+
+; One interesting routine in this is rand_8 which generates a maximal length
+; 8 bit pseudo random sequence. Read the comments to see how it works.
+
+; uPF Address map
+
+MPortA:		EQU	00h	;Main board 8255 port A
+MPortB:		EQU	01h	;Main board 8255 port B
+MPortC:		EQU	02h	;Main board 8255 port C
+MPPCNT:		EQU	03h	;Main board 8255 control
+
+MCTC0:		EQU	40h	;Main board CTC Channel 0
+MCTC1:		EQU	41h	;Main board CTC Channel 1
+MCTC2:		EQU	42h	;Main board CTC Channel 2
+MCTC3:		EQU	43h	;Main board CTC Channel 3
+
+MPIODA:		EQU	80h	;Main board PIO Port A Data
+MPIOCA:		EQU	82h	;Main board PIO Port A Control
+MPIODB:		EQU	81h	;Main board PIO Port B Data
+MPIOCB:		EQU	83h	;Main board PIO Port B Control
+
+PIODA:		EQU	68h	;IOM PIO Port A Data
+PIOCA:		EQU	6Ah	;IOM PIO Port A Control
+PIODB:		EQU	69h	;IOM PIO Port B Data
+PIOCB:		EQU	6Bh	;IOM PIO Port B Control
+
+URTDA:		EQU	60h	;IOM 8251 Data Port
+URTCNT:		EQU	61h	;IOM 8251 Control Port
+
+CTC0:		EQU	64h	;IOM CTC Channel 0
+CTC1:		EQU	65h	;IOM CTC Channel 1
+CTC2:		EQU	66h	;IOM CTC Channel 2
+CTC3:		EQU	67h	;IOM CTC Channel 3
+
+DIPSW:		EQU	6Ch	;IOM Dip SW
+
+PPortA:		EQU	7Ch	;Programmer 8255 port A
+PPortB:		EQU	7Dh	;Programmer 8255 port B
+PPortC:		EQU	7Eh	;Programmer 8255 port C
+EPPCNT:		EQU	7Fh	;Programmer 8255 control
+
+PPortD:		EQU	70h	;Programmer Vpp select & control
+
+	ORG	1800h
+
+	LD	A,#0Fh		; control word
+	OUT	(PIOCA),A	; port A o/p
+	OUT	(PIOCB),A	; port B o/p
+
+	LD	A,#0Fh		; set OFF address
+	LD	(pat_adr),A	; save it
+	CALL	byte_out	; out to display
+
+	LD	A,#0Ch		; set scans per call
+	LD	(s_count),A	; save it
+
+	LD	A,#29		; scroll end byte
+	LD	(s_end),A	; save it
+
+	LD	A,#00h		; start from 0
+	LD	(pat_adr),A	; save address
+	LD	(index),A	; save index byte
+	LD	(s_start),A	; clear scroll start
+	LD	(1+s_start),A	; clear scroll start (high byte)
+
+; scrolling buffer
+
+main:
+	LD	HL,pattern	; point to bitmap
+	ADD	A,L		; add low
+	LD	L,A		; copy back
+	LD	A,#0		; clear byte
+	ADC	A,H		; add high byte + carry
+	LD	H,A		; save back
+	LD	(pointer),HL	; save it
+	CALL	scan_disp	; go scan the display
+	LD	A,(index)	; get index
+	INC	A		; next
+	LD	(index),A	; save new
+	JR	NZ,main		; loop
+
+; flash 'Reboot' 4 times slowly
+
+	LD	HL,d_buffer	; point to display buffer
+	LD	(pointer),HL	; save it
+
+	LD	HL,xpattern	; point to pattern
+	LD	DE,d_buffer	; point to buffer
+	LD	BC,30		; 30 bytes to do
+	LDIR			; copy block
+
+	LD	A,#80h		; scan count
+	LD	(s_count),A	; save it
+
+	LD	A,#04h		; flash count
+	LD	(d_count),A	; save it
+
+	LD	HL,d_buffer	; point to bitmap 'Reboot'
+
+	CALL	flash_it	; flash display
+
+	LD	A,#08h		; set scans per call
+	LD	(s_count),A	; save it
+
+	LD	A,#01h		; scroll direction (right)
+	LD	(s_dir),A	; save it
+
+	CALL	clear_dis	; scroll clear display
+
+; scroll up test
+
+	CALL	b_clear		; clear buffer
+
+	LD	HL,p_up		; point to pattern
+	LD	DE,p_buffer	; point to buffer
+	LD	BC,30		; 30 bytes to do
+	LDIR			; copy block
+
+	LD	A,#18h		; set scans per call
+	LD	(s_count),A	; save it
+
+	LD	A,#40h		; scroll count
+	LD	(d_count),A	; save it
+
+	LD	A,#29		; scroll end byte
+	LD	(s_end),A	; save it
+	LD	A,#0		; start from 0
+	LD	(s_start),A	; clear scroll start
+	LD	A,#01h		; scroll direction (up)
+	LD	(s_dir),A	; save it
+
+scroll_up:
+	CALL	scan_disp	; go scan the display
+
+	CALL	scroll		; go scroll display
+
+	LD	A,(d_count)	; get scroll count
+	DEC	A		; next
+	LD	(d_count),A	; save new
+	JR	NZ,scroll_up	; loop if not done
+
+; scroll down test
+
+	LD	HL,p_down	; point to pattern
+	LD	DE,p_buffer	; point to buffer
+	LD	BC,30		; 30 bytes to do
+	LDIR			; copy block
+
+	LD	A,#40h		; scroll count
+	LD	(d_count),A	; save it
+
+	LD	A,#00h		; scroll direction (up)
+	LD	(s_dir),A	; save it
+
+scroll_dn:
+	CALL	scan_disp	; go scan the display
+
+	CALL	scroll		; go scroll display
+
+	LD	A,(d_count)	; get scroll count
+	DEC	A		; next
+	LD	(d_count),A	; save new
+	JR	NZ,scroll_dn	; loop if not done
+
+; split scroll test
+
+	LD	HL,p_right	; point to pattern
+	LD	DE,p_buffer	; point to buffer
+	LD	BC,30		; 30 bytes to do
+	LDIR			; copy block
+
+	LD	A,#40h		; scroll count
+	LD	(d_count),A	; save it
+
+scroll_sp:
+	CALL	scan_disp	; go scan the display
+
+	LD	A,#14		; scroll end byte
+	LD	(s_end),A	; save it
+	LD	A,#00h		; start from 0
+	LD	(s_start),A	; clear scroll start
+	LD	(s_dir),A	; and scroll direction
+
+	CALL	scroll		; go scroll display
+
+	LD	A,#29		; scroll end byte
+	LD	(s_end),A	; save it
+	LD	A,#15		; start from 15
+	LD	(s_start),A	; clear scroll start
+	LD	A,#01h		; scroll direction (up)
+	LD	(s_dir),A	; save it
+
+	CALL	scroll		; go scroll display
+
+	LD	A,(d_count)	; get scroll count
+	DEC	A		; next
+	LD	(d_count),A	; save new
+	JR	NZ,scroll_sp	; loop if not done
+
+; scroll column at a time
+
+	LD	HL,p_numb	; point to pattern
+	LD	DE,p_buffer	; point to buffer
+	LD	BC,30		; 30 bytes to do
+	LDIR			; copy block
+
+	LD	A,#00h		; scroll direction (down)
+	LD	(s_dir),A	; save it
+
+	CALL	s_column	; scroll display 1 column at a time
+
+	LD	A,#80h		; scan count
+	LD	(s_count),A	; save it
+
+	LD	A,#04h		; flash count
+	LD	(d_count),A	; save it
+
+	LD	HL,d_buffer	; point to display buffer
+
+	CALL	flash_it	; flash display
+
+; random # test
+
+; don't just dump the word in, put it in p_buffer .....
+
+	LD	HL,p_rand	; point to pattern
+	LD	DE,p_buffer	; point to buffer
+	LD	BC,30		; 30 bytes to do
+	LDIR			; copy block
+
+; ..... and scroll it in
+
+	LD	A,#01h		; scroll direction (up)
+	LD	(s_dir),A	; save it
+
+	CALL	s_column	; scroll display 1 column at a time
+
+; we now have 'Random' in the display
+
+	LD	A,#04h		; scans
+	LD	(b_count),A	; save it
+rand_loop:
+	LD	A,#04h		; set scans per call
+	LD	(s_count),A	; save it
+
+	LD	A,#F0h		; random count (240 LEDs to do)
+	LD	(d_count),A	; save it
+random:
+	CALL	rand_8		; get random byte
+	DEC	A		; change 1-255 to 0-254
+	LD	B,#0		; clear B
+	SRL	A		; bit into carry
+	RL	B		; bit into B
+	SRL	A		; bit into carry
+	RL	B		; bit into B
+	SRL	A		; bit into carry
+	RL	B		; bit into B
+
+	CP	#30		; compare with 30
+	JR	NC,random	; skip if not within display
+
+; A now has column #, B has bit #
+
+	LD	HL,d_buffer	; point to display
+	ADD	A,L		; add to pointer low
+	LD	L,A		; copy back to pointer
+	LD	A,#0		; clear A
+	ADC	A,H		; add carry to H
+	LD	H,A		; back to pointer
+
+	INC	B		; bit is now 1-8
+	SCF			; set carry
+	LD	A,#0		; clear A
+set_bit:
+	RLA			; move bit
+	DJNZ	set_bit		; loop until in position
+
+	XOR	(HL)		; xor in byte
+	LD	(HL),A		; save into buffer
+
+	CALL	scan_disp	; go scan the display
+
+	LD	A,(d_count)	; get scan count
+	DEC	A		; next
+	LD	(d_count),A	; save new
+	JR	NZ,random	; loop if not done
+
+; flash 'Random' 4 times slowly
+
+	LD	A,#80h		; scan count
+	LD	(s_count),A	; save it
+
+	LD	A,#04h		; flash count
+	LD	(d_count),A	; save it
+
+	LD	HL,d_buffer	; point to display buffer
+
+	CALL	flash_it	; flash display
+
+	LD	A,(b_count)	; get scroll count
+	DEC	A		; next
+	LD	(b_count),A	; save new
+	JR	NZ,rand_loop	; loop if not done
+
+	LD	A,#08h		; set scans per call
+	LD	(s_count),A	; save it
+
+	LD	A,#00h		; scroll direction (left)
+	LD	(s_dir),A	; save it
+
+	CALL	clear_dis	; scroll clear display
+
+	LD	A,(index)	; get index
+	JP	main		; loop
+
+; end of main loop .. now the subroutines
+
+; scroll clear display in direction (s_dir)
+; left/right 0/1
+
+clear_dis:
+	LD	A,#30		; column count
+	LD	(b_count),A	; save it
+clear_lp:
+	LD	HL,(pointer)	; pointer to buffer
+	LD	BC,29		; 29 bytes to do
+
+	LD	A,(s_dir)	; get direction
+	BIT	0,A		; test direction bit
+	JR	Z,clear_l	; do scroll clear left
+
+; this bit scrolls the display 1 column right
+
+	LD	DE,29		; offset to buffer end
+	ADD	HL,DE		; add to pointer
+	LD	D,H		; copy high byte
+	LD	E,L		; copy low byte
+	DEC	HL		; -1
+	LDDR			; copy block
+	JR	clr_end		; go do end loop
+
+; this bit scrolls the display 1 column left
+
+clear_l:
+	LD	D,H		; copy high byte
+	LD	E,L		; copy low byte
+	INC	HL		; +1
+	LDIR			; copy block
+clr_end:
+	XOR	A		; clear A
+	LD	(HL),A		; clear end byte
+
+	CALL	scan_disp	; go scan the display
+
+	LD	A,(b_count)	; get column count
+	DEC	A		; next
+	LD	(b_count),A	; save new
+	JR	NZ,clear_lp	; loop if not done
+
+	RET
+
+; scroll display down 1 column at a time in direction (s_dir)
+
+s_column:
+	LD	A,#04h		; scans
+	LD	(s_count),A	; save it
+
+	LD	A,#30		; column count
+	LD	(b_count),A	; save it
+
+scroll_col:
+	LD	A,#08		; bit count
+	LD	(d_count),A	; save it
+
+scroll_bit:
+	CALL	scan_disp	; go scan the display
+
+	LD	A,(b_count)	; get column count
+	NEG			; make -ve
+	ADD	A,#30		; add 30 (range 0-29)
+
+	LD	(s_end),A	; save as end
+	LD	(s_start),A	; save as start
+
+	CALL	scroll		; go scroll display
+
+	LD	A,(d_count)	; get bit count
+	DEC	A		; next
+	LD	(d_count),A	; save new
+	JR	NZ,scroll_bit	; loop if not done
+
+	LD	A,(b_count)	; get column count
+	DEC	A		; next
+	LD	(b_count),A	; save new
+	JR	NZ,scroll_col	; loop if not done
+
+	RET			; done
+
+; scroll display in direction (s_dir) from (s_start) to (s_end) inclusive.
+; no error checking!
+
+scroll:
+	LD	HL,d_buffer	; point to display buffer
+	LD	DE,(s_start)	; get start #
+	ADD	HL,DE		; add to pointer
+
+	LD	DE,30		; get bytes to p_buffer buffer
+	EX	DE,HL		; exchange pointer and distance
+	ADD	HL,DE		; add to give p_buffer pointer in HL
+
+	LD	A,(s_start)	; get start byte #
+	LD	B,A		; copy it
+	LD	A,(s_end)	; get end byte #
+	INC	A		; +1 to give total bytes to do
+	SUB	B		; subtract start gives bytes to do
+	LD	B,A		; copy to loop counter
+
+	LD	A,(s_dir)	; get direction byte
+	BIT	0,A		; test up/down bit
+	JR	NZ,rotate_u	; do up if bit = 1
+
+; rotates B bytes one bit downward. uses d_buffer and p_buffer
+
+rotate_d:
+	LD	A,(HL)		; get byte from pattern
+	SRL	A		; rotate
+	LD	A,(DE)		; get byte from display
+	RRA			; rotate carry in
+	LD	(DE),A		; save it back
+	LD	A,(HL)		; get byte from pattern back
+	RRA			; rotate carry in
+	LD	(HL),A		; save back
+	INC	HL		; increment source
+	INC	DE		; increment destination
+	DJNZ	rotate_d	; loop if not done
+
+	RET			; done
+
+; rotates B bytes one bit upward. uses d_buffer and p_buffer
+
+rotate_u:
+	LD	A,(HL)		; get byte from pattern
+	SLA	A		; rotate carry out
+	LD	A,(DE)		; get byte from display
+	RLA			; rotate carry in
+	LD	(DE),A		; save it
+	LD	A,(HL)		; get byte from pattern back
+	RLA			; rotate carry in
+	LD	(HL),A		; save back
+	INC	HL		; increment source
+	INC	DE		; increment destination
+	DJNZ	rotate_u	; loop if not done
+
+	RET			; done
+
+; clears the pattern buffer
+
+b_clear:
+	LD	HL,d_buffer	; pointer to buffer
+	LD	D,H		; copy high byte
+	LD	E,L		; copy low byte
+	INC	DE		; +1
+	XOR	A		; clear A
+	LD	(HL),A		; clear first byte
+	LD	BC,59		; 59 bytes to do
+	LDIR			; clear block
+	RET			; done
+
+; flash display.
+; HL points to the massage to flash
+; (d_count) is the number of flashes
+; (s_count) is the number of scans per flash
+
+flash_it:
+	LD	(f_point),HL	; save flash pattern pointer
+flash:
+	LD	(pointer),HL	; save it
+	CALL	scan_disp	; go scan the display
+
+	LD	HL,ypattern	; point to bitmap '      '
+	LD	(pointer),HL	; save it
+	CALL	scan_disp	; go scan the display
+
+	LD	HL,(f_point)	; point to flash pattern
+
+	LD	A,(d_count)	; get display count
+	DEC	A		; next
+	LD	(d_count),A	; save new
+	JR	NZ,flash	; loop if not done
+
+	LD	(pointer),HL	; save it
+	CALL	scan_disp	; go scan the display
+	RET			; done
+
+
+; scans the display (s_count) times using the bitamp at (pointer)
+
+scan_disp:
+	LD	A,(s_count)	; get count
+	LD	B,A		; copy to loop counter
+scan_p:
+	LD	HL,(pointer)	; set pointer to bitmap
+scan_it:
+	CALL	byte_out	; out to display
+
+	INC	HL		; next bitmap byte
+	LD	A,(pat_adr)	; get address
+	INC	A		; + 1
+	LD	(pat_adr),A	; save it
+	AND	#0Fh		; mask low address
+	CP	#0Fh		; compare with OFF address
+	JR	NZ,scan_it	; skip if not xFh
+
+	LD	A,(pat_adr)	; get address
+	INC	A		; + 1
+	AND	#1Fh		; mask address bits
+	LD	(pat_adr),A	; save it
+	JR	NZ,scan_it	; skip reset pointer if not at start
+
+	DJNZ	scan_p		; do it all again
+
+	RET			; done
+
+; outputs byte from (HL) to display column (pat_adr).
+; the display is blanked before the byte is sent by setting the address
+; to 0Fh which turns off all the column drivers.
+
+byte_out:
+	LD	A,#0Fh		; OFF address
+	OUT	(PIODB),A	; display off
+	LD	A,(HL)		; get byte
+	OUT	(PIODA),A	; byte to display
+	LD	A,(pat_adr)	; get address
+	OUT	(PIODB),A	; display on
+	RET
+
+; returns pseudo random 8 bit number in A. Only affects A.
+; (r_seed) is the byte from which the number is generated and MUST be
+; initialised to a non zero value or this function will always return
+; zero.
+
+rand_8:
+	LD	A,(r_seed)	; get seed
+	AND	#B8h		; mask non feedback bits
+	SCF			; set carry
+	JP	PO,no_clr	; skip clear if odd
+	CCF			; complement carry (clear it)
+no_clr:
+	LD	A,(r_seed)	; get seed back
+	RLA			; rotate carry into byte
+	LD	(r_seed),A	; save back for next prn
+	RET			; done
+
+r_seed:
+	DB	1		; prng seed byte (must not be zero)
+s_start:	
+	DS	2		; scroll start byte (0-29)
+s_end:
+	DS	1		; scroll end byte (0-29)
+s_dir:
+	DS	1		; scroll direction (0/1 = down/up)
+b_count:
+	DS	1		; display buffer size
+d_count:
+	DS	1		; display flash count
+s_count:
+	DS	1		; scans per call to scan_disp
+pat_adr:
+	DS	1		; pattern address
+index:
+	DS	2		; index offset
+pointer:
+	DS	2		; pointer into bitmap
+f_point:
+	DS	2		; pointer to flash pattern
+pattern:
+	DB	00h,00h,00h,00h,00h,00h		;' '
+	DB	00h,00h,00h,00h,00h,00h		;' '
+	DB	00h,00h,00h,00h,00h,00h		;' '
+	DB	00h,00h,00h,00h,00h,00h		;' '
+	DB	00h,00h,00h,00h,00h,00h		;' '
+
+	DB	64h,92h,92h,92h,4Ch,00h		;'S'
+	DB	30h,0Ah,0Ah,0Ah,3Ch,00h		;'y'
+	DB	12h,2Ah,2Ah,2Ah,04h,00h		;'s'
+	DB	20h,FCh,22h,02h,04h,00h		;'t'
+	DB	1Ch,2Ah,2Ah,2Ah,18h,00h		;'e'
+	DB	3Eh,20h,18h,20h,1Eh,00h		;'m'
+	DB	00h,00h,00h,00h,00h,00h		;' '
+	DB	3Eh,10h,20h,20h,10h,00h		;'r'
+	DB	1Ch,2Ah,2Ah,2Ah,18h,00h		;'e'
+	DB	04h,2Ah,2Ah,2Ah,3Eh,00h		;'a'
+	DB	1Ch,22h,22h,12h,FEh,00h		;'d'
+	DB	30h,0Ah,0Ah,0Ah,3Ch,00h		;'y'
+	DB	06h,06h,00h,00h,00h,00h		;'.'
+	DB	00h,00h,00h,00h,00h,00h		;' '
+	DB	FEh,FEh,06h,06h,06h,06h,00h	;'L'
+	DB	FEh,FEh,D6h,D6h,D6h,C6h,00h	;'E'
+	DB	FEh,FEh,C6h,C6h,7Ch,38h,00h	;'D'
+	DB	00h,00h,00h,00h,00h,00h		;' '
+	DB	3Eh,20h,18h,20h,1Eh,00h		;'m'
+	DB	3Ch,02h,02h,04h,3Eh,00h		;'u'
+	DB	00h,82h,FEh,02h,00h,00h		;'l'
+	DB	20h,FCh,22h,02h,04h,00h		;'t'
+	DB	00h,22h,BEh,02h,00h,00h		;'i'
+	DB	3Eh,28h,28h,28h,10h,00h		;'p'
+	DB	00h,82h,FEh,02h,00h,00h		;'l'
+	DB	1Ch,2Ah,2Ah,2Ah,18h,00h		;'e'
+	DB	22h,14h,08h,14h,22h,00h		;'x'
+	DB	1Ch,2Ah,2Ah,2Ah,18h,00h		;'e'
+	DB	1Ch,22h,22h,12h,FEh,00h		;'d'
+	DB	00h,00h,00h,00h,00h,00h		;' '
+	DB	3Eh,20h,18h,20h,1Eh,00h		;'m'
+	DB	04h,2Ah,2Ah,2Ah,3Eh,00h		;'a'
+	DB	20h,FCh,22h,02h,04h,00h		;'t'
+	DB	3Eh,10h,20h,20h,10h,00h		;'r'
+	DB	00h,22h,BEh,02h,00h,00h		;'i'
+	DB	22h,14h,08h,14h,22h,00h		;'x'
+	DB	06h,06h,00h,00h,00h,00h		;'.'
+
+ypattern:
+	DB	00h,00h,00h,00h,00h,00h		;' '
+	DB	00h,00h,00h,00h,00h,00h		;' '
+	DB	00h,00h,00h,00h,00h,00h		;' '
+	DB	00h,00h,00h,00h,00h,00h		;' '
+	DB	00h,00h,00h,00h,00h,00h		;' '
+
+	DB	00h				; pad byte(s)
+
+p_right:
+	DB	64h,92h,92h,92h,4Ch,00h		;'S'
+	DB	3Eh,28h,28h,28h,10h,00h		;'p'
+	DB	00h,82h,FEh,02h,00h,00h		;'l'
+	DB	00h,22h,BEh,02h,00h,00h		;'i'
+	DB	20h,FCh,22h,02h,04h,00h		;'t'
+
+xpattern:
+	DB	00h,FEh,98h,94h,62h		;'R'
+	DB	00h,1Ch,2Ah,2Ah,18h		;'e'
+	DB	00h,FEh,12h,22h,1Ch		;'b'
+	DB	00h,1Ch,22h,22h,1Ch		;'o'
+	DB	00h,1Ch,22h,22h,1Ch		;'o'
+	DB	20h,FCh,22h,04h,00h		;'t'
+
+p_up:
+	DB	20h,40h,FEh,40h,20h		;' '
+	DB	00h,00h,00h,00h,00h		;' '
+	DB	00h,FCh,02h,02h,FCh		;'U'
+	DB	00h,FEh,90h,90h,60h		;'P'
+	DB	00h,00h,00h,00h,00h		;' '
+	DB	20h,40h,FEh,40h,20h		;' '
+
+p_down:
+	DB	08h,04h,FEh,04h,08h		;' '
+	DB	00h,FEh,82h,82h,7Ch		;'D'
+	DB	00h,1Ch,22h,1Ch,00h		;'o'
+	DB	3Ch,02h,0Ch,02h,3Ch		;'w'
+	DB	00h,1Eh,20h,1Eh,00h		;'n'
+	DB	08h,04h,FEh,04h,08h		;' '
+
+p_rand:
+	DB	00h,7Eh,58h,54h,22h		;'R'
+	DB	04h,2Ah,2Ah,1Eh,00h		;'a'
+	DB	0Eh,10h,0Eh,00h			;'n'
+	DB	0Ch,12h,0Ah,7Eh,00h		;'d'
+	DB	0Ch,12h,12h,0Ch,00h		;'o'
+	DB	1Eh,10h,0Ch,10h,0Eh,00h		;'m'
+
+p_numb:
+	DB	00h,22h,7Eh,02h,00h		;'1'
+	DB	1Ch,2Ah,4Ah,04h,00h		;'6'
+	DB	18h,28h,7Eh,08h,00h		;'4'
+	DB	20h,52h,54h,38h,00h		;'9'
+	DB	74h,52h,52h,4Ch,00h		;'5'
+	DB	2Ch,52h,52h,2Ch,00h		;'8'
+
+d_buffer:
+	DS	30				; display part
+p_buffer:
+	DS	30				; +30 bytes for effects
+
+	END
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 30th July, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/z80/led/led_drvasm.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:04:02 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

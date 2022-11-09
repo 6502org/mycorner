@@ -1,0 +1,195 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=91689376&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/misc/cpld/flash/index.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:04:45 GMT -->
+<HEAD><TITLE>LED flash</TITLE></HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR><TD WIDTH=20%>
+<A HREF="../index.html"><IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER><B><FONT SIZE=+1>LED flash. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT></TD><TD WIDTH=20%><A HREF="../../../index-2.html">
+<IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A></TD></TR></TABLE>
+<HR>
+<A HREF="ledon.html"><IMG SRC="ledon_t.jpg" ALIGN=RIGHT TITLE="The finished device"
+ BORDER=1 HSPACE=8></A>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ I like free things, or at least no money things and, in a deal with my ex-employer that
+ saw the exchange of some <S>old shi</S> quality NOS microprocessors for some
+ programmable logic, I finally got all the bits together to try CPLD programming with the
+ 8 Bit Baby.
+<P ALIGN=JUSTIFY>
+ This circuit, being the first 8 Bit Baby project, is made deliberately simple, mostly so
+ that there is less to go wrong but also because I'm lazy and I wanted something to show
+ for just a little work. Apart from the 8 Bit Baby, the programming lead and software
+ all that's needed is an LED, a resistor and an 8 bit computer to plug it into or,
+ lacking that, an XTAL oscillator and a socket.
+<BR CLEAR=ALL>
+</BLOCKQUOTE>
+<IMG SRC="circuit.png" ALIGN=RIGHT ALT="Circuit diagram" BORDER=1 HSPACE=8>
+<B><U>The circuit.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Yes that's it. Even I can't mess that up<A HREF="messup.html"><B><SUP>1</SUP></B></A>.
+ The circuit works by taking the clock input, which is either Ø2 from the host CPU or
+ one to two MHz from an XTAL oscillator, and divides it by 1048576 to give a roughly
+ one Hz flash rate.
+<P ALIGN=JUSTIFY>
+ As I didn't want to make room on the bench for a Vic 20 or C64 I decided to go with
+ the XTAL oscillator. For this a socket was mounted on the 8 Bit Baby and wired to the
+ +5v, ground and the EPM3064. The LED was fitted and a short bridge soldered between the
+ anode and the +5v and finally the 270 ohm resistor was fitted with one end soldered to
+ the LED cathode and the other to pin 6 on the EPM3064.
+</BLOCKQUOTE>
+<B><U>The design.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The design uses three cascaded 8 bit synchronous counters to make a 20 bit divider. The
+ first counter is enabled continuously and the carry out from that counter is high for
+ one count in every 256 counts. This carry signal is inverted and used to enable the
+ second counter so that it only counts once in every 256 cycles. The carry out from this
+ counter is again inverted and used to enable the third counter, this counter only counts
+ once in every 65536 cycles and the fourth output bit from this counter, that changes
+ state every 524288 cycles, is used to drive the LED output pin giving an overall ratio
+ of 1:1048576
+</BLOCKQUOTE>
+<B><U>Making it work.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ To make the EPM3064 do anything first you have to program it. To do that I use Altera's
+ Max+Plus II software that is available 'free' rrom the Altera website. 'Free' in this
+ case means no money, but you do have to fill in Altera's online registration. Eventually
+ these companies will learn that if you want to have the best selling product then you
+ don't just make the software for that product free, you actively give it away to anyone
+ - even if they may not be interested. Well it worked for
+ <FONT COLOR=red><B>[REMOVED]</B></FONT>.
+</BLOCKQUOTE>
+<B><U>Creating a design.</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Assuming you managed to download Max+Plus II and get it installed what follows is a
+ fairly quick how to guide. Images with borders can be clicked to open the image, full
+ size, in a new window.<P>
+<CENTER><TABLE BORDER=0 CELLPADDING=8>
+<TR ALIGN=CENTER><TD WIDTH=50%><IMG SRC="folders.png" ALT="Create a project folder"></TD>
+<TD WIDTH=50%><IMG SRC="openit.png" ALT="Open a new file"></TD></TR>
+<TR VALIGN=TOP><TD><P ALIGN=JUSTIFY>Create a projects folder and in that a folder for the
+ project</TD>
+<TD><P ALIGN=JUSTIFY>Now start Max+Plus II and select <B><U>F</U>ile</B>,
+ <B><U>N</U>ew...</B></TD></TR>
+<TR ALIGN=CENTER><TD><IMG SRC="newgdf.png" ALT="New Graphics Editor file"></TD>
+<TD><A HREF="guides.png" TARGET=_NEW><IMG SRC="guides.png" HEIGHT=240
+ ALT="Click for bigger image" BORDER=1></A></TD></TR>
+<TR VALIGN=TOP><TD><P ALIGN=JUSTIFY>Select the radio button for <B><U>G</U>raphic Editor
+ file</B> and click <B><U>O</U>K</B></TD>
+<TD><P ALIGN=JUSTIFY>If you want guidelines visible make sure <B><U>O</U>ptions</B> menu
+ <B><U>S</U>how Guidelines</B> is ticked</TD></TR>
+<TR ALIGN=CENTER><TD><IMG SRC="newsym.png" ALT="Right click and select"></TD>
+<TD><A HREF="inputsym.png" TARGET=_NEW><IMG SRC="inputsym.png" HEIGHT=240
+ ALT="Click for bigger image" BORDER=1></A></TD></TR>
+<TR VALIGN=TOP><TD><P ALIGN=JUSTIFY>Either double click, or right click and select
+ <B>Enter Symbol...</B>, to bring up the new symbol dialog box.</TD>
+<TD><P ALIGN=JUSTIFY>In the <B>Symbol <U>N</U>ame</B> field type <B>input</B> and hit
+ Enter.</TD></TR>
+<TR ALIGN=CENTER><TD><A HREF="3count.png" TARGET=_NEW><IMG SRC="3count.png" WIDTH=320
+ ALT="Click for bigger image" BORDER=1></A></TD>
+<TD><A HREF="clickndrag.png" TARGET=_NEW><IMG SRC="clickndrag.png" WIDTH=320
+ ALT="Click for bigger image" BORDER=1></A></TD></TR>
+<TR VALIGN=TOP><TD><P ALIGN=JUSTIFY>Do this for the other symbols, three of <B>8count</B>
+ and <B>vcc</B>, two of <B>not</B>, one <B>gnd</B> and an <B>output</B>.</TD>
+<TD><P ALIGN=JUSTIFY>Symbols can be moved using the left mouse button to click and drag
+ them. Click and drag between pins to connect them.</TD></TR>
+<TR ALIGN=CENTER><TD><A HREF="saveas.png" TARGET=_NEW><IMG SRC="saveas.png" HEIGHT=240
+ ALT="Click for bigger image" BORDER=1></A></TD>
+<TD><A HREF="setproject.png" TARGET=_NEW><IMG SRC="setproject.png" WIDTH=320
+ ALT="Click for bigger image" BORDER=1></A></TD></TR>
+<TR VALIGN=TOP><TD><P ALIGN=JUSTIFY>Save the design in the directory created earlier, use
+ <B><U>F</U>ile</B> menu <B>Save <U>A</U>s...</B></TD>
+<TD><P ALIGN=JUSTIFY>Now the project name can be set with the <B><U>F</U>ile</B> menu
+ <B>Pro<U>j</U>ect</B> -> <B>S<U>e</U>t Project to Current File</B>.</TD></TR>
+<TR ALIGN=CENTER><TD><IMG SRC="assigndev.png" ALT="Assign a device"></TD>
+<TD><A HREF="max3000.png" TARGET=_NEW><IMG SRC="max3000.png" WIDTH=320
+ ALT="Click for bigger image" BORDER=1></A></TD></TR>
+<TR VALIGN=TOP><TD><P ALIGN=JUSTIFY>Now the project is set a device can be assigned</TD>
+<TD><P ALIGN=JUSTIFY>For the 8 Bit Baby it's the <B>MAX3000A</B> family ..</TD></TR>
+<TR ALIGN=CENTER><TD><A HREF="epm3064.png" TARGET=_NEW><IMG SRC="epm3064.png" WIDTH=320
+ ALT="Click for bigger image" BORDER=1></A></TD>
+<TD><IMG SRC="newname.png" ALT="Double click to select"></TD></TR>
+<TR VALIGN=TOP><TD><P ALIGN=JUSTIFY>.. and <B>EPM3064ALC44</B> for the device.</TD>
+<TD><P ALIGN=JUSTIFY>Pin names can be changed by double clicking on them and typing the
+ new name</TD></TR>
+<TR ALIGN=CENTER><TD><IMG SRC="assignpin.png" ALT="Assign a pin number"></TD>
+<TD><A HREF="selpin.png" TARGET=_NEW><IMG SRC="selpin.png" HEIGHT=240
+ ALT="Click for bigger image" BORDER=1></A></TD></TR>
+<TR VALIGN=TOP><TD><P ALIGN=JUSTIFY>To assign a pin number right click on a pin
+ symbol ..</TD>
+<TD><P ALIGN=JUSTIFY>.. and select the number for the pin. Pin 6 for the output in this
+ case.</TD></TR>
+<TR ALIGN=CENTER><TD><A HREF="complete.png" TARGET=_NEW><IMG SRC="complete.png" WIDTH=320
+ ALT="Click for bigger image" BORDER=1></A></TD>
+<TD><A HREF="compiled.png" TARGET=_NEW><IMG SRC="compiled.png" WIDTH=320
+ ALT="Click for bigger image" BORDER=1></A></TD></TR>
+<TR VALIGN=TOP><TD><P ALIGN=JUSTIFY>The completed design should look something like this.
+</TD>
+<TD><P ALIGN=JUSTIFY>From the <B><U>F</U>ile</B> menu select <B>Pro<U>j</U>ect</B> ->
+ <B><U>S</U>ave & Compile</B> and you should get this.</TD></TR>
+<TR><TD COLSPAN=2><HR><P ALIGN=JUSTIFY>Before you try to program the device make sure you
+ have the ByteBlaster MV cable connected and the 8 Bit Baby powered, either in the target
+ system or from an external power supply.<P><HR></TD></TR>
+<TR ALIGN=CENTER><TD><IMG SRC="progmenu.png" ALT="Start the programmer"></TD>
+<TD><A HREF="programmer.png" TARGET=_NEW><IMG SRC="programmer.png" HEIGHT=240
+ ALT="Click for bigger image" BORDER=1></A></TD></TR>
+<TR VALIGN=TOP><TD><P ALIGN=JUSTIFY>Now the device can be programmed</TD>
+<TD><P ALIGN=JUSTIFY>If it's connected you'll see this, so just click
+ <B><U>P</U>rogram</B> </TD></TR>
+<TR ALIGN=CENTER><TD><IMG SRC="progcomplete.png" ALT="It's programmed"></TD>
+<TD><A HREF="progdone.png" TARGET=_NEW><IMG SRC="progdone.png" HEIGHT=240
+ ALT="Click for bigger image" BORDER=1></A></TD></TR>
+<TR VALIGN=TOP><TD><P ALIGN=JUSTIFY>After a second or so you should get one of these
+ ..</TD>
+<TD><P ALIGN=JUSTIFY>.. and a window like this.</TD></TR>
+</TABLE></CENTER>
+<P ALIGN=JUSTIFY>
+ That's it. If everything went to plan, the LED was already connected and it was in the
+ target system or an XTAL oscillator was connected, then the LED should start flashing
+ as soon as the programming is complete. It's Alive!
+<P ALIGN=JUSTIFY>
+ If you can't be bothered to enter the design, or it didn't work for some reason,
+ <A HREF="ledflash.zip">here's <IMG SRC="../../../zip_sm.png" ALT="Download"
+ BORDER=0></A> one I made earlier.
+</BLOCKQUOTE>
+<P ALIGN=JUSTIFY>
+<FONT SIZE=-1> <B>[1]</B> <A HREF="messup.html"><I>Yes I can.</I></FONT></A>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 4th March, 2006.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE></BODY>
+<!-- Mirrored from members.lycos.co.uk/leeedavison/misc/cpld/flash/index.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:04:57 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

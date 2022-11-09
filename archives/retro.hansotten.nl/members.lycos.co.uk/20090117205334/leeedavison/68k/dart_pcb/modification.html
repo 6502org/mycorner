@@ -1,0 +1,100 @@
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/tripodbar/framejs.php?cat=memberpages.other&amp;CC=uk&amp;ord=9b0a7a8f&amp;adpref=&amp;gg_bg=&amp;gg_template="></script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/dart_pcb/modification.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:03:02 GMT -->
+<HEAD>
+<TITLE>68008 Dartboard control pcb, modification.</TITLE>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html">
+ <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Modification. </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="../../index-2.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Modification.</U></B><P>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ Once the board has been prepared there are some modifications that can be made to make
+ the board a little more usefull.
+</BLOCKQUOTE>
+<B><U>Expanding the RAM.</U></B><P>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ As supplied the board comes with 8k of onboard RAM. This can be replaced with a 32k chip
+ by removing the original chip and replacing it with a socket.
+</BLOCKQUOTE>
+<CENTER>
+<B>8k RAM, U2.</B><P>
+ <IMG TITLE="U2 before removal." SRC="u2_01_3.jpg" BORDER=1>
+ <IMG TITLE="U2 replaced by turned pin socket." SRC="u2_03_3.jpg" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ The safest way to remove the RAM is to cut each leg away from the chip, using thin nosed
+ cutters, then desolder each pin in turn cleaning out the holes as you go. However the
+ holes in the board are reasonably large and the chip can be removed intact with a solder
+ sucker and some care.
+<P ALIGN=JUSTIFY>
+ Once the chip is removed it's place is filled with a turned pin socket.
+</BLOCKQUOTE>
+<CENTER>
+<B>Replacing the links.</B><P>
+ <IMG TITLE="RAM, ROM and test links." SRC="links_01_3.jpg" BORDER=1>
+ <IMG TITLE="Links with jumpers fitted." SRC="links_03_3.jpg" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ To enable larger RAM chips to work the LK2 B trace must be cut and the A trace made. This
+ can be done with a wire link or, after the B trace has been cut, a three pin jumper block
+ can be fitted. This is what I chose to do and allows either 8k or 32k RAM chips to be
+ used.
+<P ALIGN=JUSTIFY>
+ At the same time I chose to replace LK1 similarly (cutting trace A first) which allows
+ the use of 32k, as well as 64k, EPROMS and also fit a jumper to the test link.
+<P ALIGN=JUSTIFY>
+<B>Note</B> If the board is used with the smaller capacity devices then the image of each
+ device will echo through the address range of the larger device.<BR>
+ E.g. A 64K EPROM is located at $00000 to $0FFFF, a 32 K EPROM is located at $00000 to
+ $07FFF and again at $08000 to $0FFFF.
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 4th May, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 ALT="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/68k/dart_pcb/modification.html by HTTrack Website Copier/3.x [XR&CO'2007], Sat, 17 Jan 2009 21:03:04 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='0';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=0" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->
