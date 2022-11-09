@@ -135,6 +135,8 @@ class ArchivedFile(object):
                 b'extremetracking',
                 b'lightspeedwebstore',
                 b'nginx',
+                b'webstripper', # TODO files corrupted by webstripper
+                b'WebStripper', # can probably be sanitized
             ):
                 if fragment in data:
                     self.corruption = "Corrupt file: (has fragment %r)" % fragment
