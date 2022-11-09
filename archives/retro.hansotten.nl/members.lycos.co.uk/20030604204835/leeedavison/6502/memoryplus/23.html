@@ -1,0 +1,188 @@
+<script language="javascript">
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/23.html by HTTrack Website Copier/3.x [XR&CO'2002], Fri, 04 Jul 2003 20:49:54 GMT -->
+<HEAD>
+<TITLE> Memory Plus manual </TITLE>
+</HEAD>
+<BODY
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="01.html"><IMG SRC="index.png" ALIGN=RIGHT BORDER=0 ALT="Index"></A>
+<B><FONT SIZE=+2>MEMORY PLUS Manual </FONT></B><FONT SIZE=-2>By Lee Davison</FONT>
+<BR CLEAR=all>
+<BR>
+<A HREF="22.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="24.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 23
+</CENTER>
+<BR CLEAR=all>
+<HR>
+ <PRE>
+
+
+  0091	48				PHA		ON STACK
+  0092	A0 04				LDYIM	$04	SHIFT 4 POSITIONS PER CHARACTER
+  0094	A5 D8				LDAZ	ADATA	GET DATA
+  0096	29 0F				ANDIM	$0F	MASK TO NIBBLE
+  0098	C9 0A				CMPIM	$0A	TEST DECIMAL
+  009A	30 03				BMI	AOKAY	DECIMAL
+  009C	18				CLC		A - F. MUST CONVERT TO
+  009D	69 07				ADCIM	$07	ASCII
+  009F	18		AOKAY		CLC		FINISH CONVERSION
+  00A0	69 B0				ADCIM	$B0	ASCII + AIM FLAG
+  00A2	20 7B EF			JSR	ASCOUT	OUTPUT TO DISPLAY
+  00A5	46 D6		AMOVE		LSRZ	AHICH	MOVE TO NEXT NIBBLE
+  00A7	66 D7				RORZ	ALOW
+  00A9	66 D8				RORZ	ADATA
+  00AB	88				DEY
+  00AC	D0 F7				BNE	AMOVE
+
+  00AE	68				PLA		RESTORE X
+  00AF	AA				TAX
+  00B0	CA				DEX
+  00B1	F0 0E				CPXIM	$0E	DONE?
+  00B3	B0 DB				BCS	ALOOP	NO
+  00B5	90 C9				BCC	AIM	YES. REPEAT
+
+  00B7	20 86 8B	SYM		JSR	ACCESS	ENABLE SYM MOEMORY
+  00BA	A5 D2				LDAZ	POINTH
+  00BC	20 FA 82			JSR	OUTBYT	OUTPUT
+  00BF	A5 D1				LDAZ	POINTL
+  00C1	20 FA 82			JSR	OUTBYT
+  00C4	A0 00				LDYIM	$00
+  00C6	B1 D1				LDAIY	POINTL	GET DATA
+  00C8	20 FA 82			JSR	OUTBYT
+
+  00CB	20 06 89	DISPLY		JSR	SCANDS	SCAN DISPLAY
+  00CE	4C CB 00			JMP	DISPLY	CONTINUE
+
+  00D1	00		POINTL		=	$00
+  00D2	00		POINTH		=	$00
+  00D3	00		FLAG		=	$00
+  00D4	00		FLIP		=	$00
+  00D5	00		PASS		=	$00
+  00D6	00		AHIGH		=	$00
+  00D7	00		ALOW		=	$00
+  00D8	00		ADATA		=	$00
+
+
+
+
+
+
+
+
+
+ </PRE>
+<BR CLEAR=all>
+<HR>
+<A HREF="22.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="24.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 23
+</CENTER>
+<BR CLEAR=all>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 8th December, 2002.</FONT>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/23.html by HTTrack Website Copier/3.x [XR&CO'2002], Fri, 04 Jul 2003 20:49:54 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.4 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="../../../../lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="../../../../ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location);
+        var ref=window.document.referrer;
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "http://members.lycos.co.uk/")) ) {
+                        parent.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else {
+                setCookie("adFrameForcePHP",1,0,"http://members.lycos.co.uk/",location.hostname,0);
+        }
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3f05e939&adpref="></script>

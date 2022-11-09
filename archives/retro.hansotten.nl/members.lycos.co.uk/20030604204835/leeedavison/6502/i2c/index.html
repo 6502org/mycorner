@@ -1,0 +1,303 @@
+<script language="javascript">
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/i2c/index.html by HTTrack Website Copier/3.x [XR&CO'2002], Fri, 04 Jul 2003 20:48:44 GMT -->
+<HEAD>
+<TITLE>
+  I2C Bus interface
+</TITLE>
+<META name="description" content="An I2C bus interface for the 6502.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="http://members.lycos.co.uk/leeedavison/index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>I2C Bus interface </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="../index-2.html">[Back]</A>
+<BR clear=all><P>
+<HR>
+<B><U>Hardware.</U></B><P>
+<CENTER>
+<B>I2C Bus interface circuit.</B>
+<P>
+ <IMG SRC="i2cbus.png" TITLE="I2C bus interface circuit" BORDER=1><P>
+</CENTER>
+<BLOCKQUOTE>
+ The connector on the top left of the diagram is from my own 6502 boards (see <A
+ HREF="../sbc/index.html">sbc project</A>) and is as it is for two reasons. It's easy
+ to wire on a stripboard layout and I have a lot of 26 way ribbon, headers and plugs.
+ All the signals are directly from the 6502 except /SEL0 and /SEL1 which are used to
+ select the block $F1xx with /SEL0 = 1 and /SEL1 = 0.
+<P>
+ There is no socket shown for the I2C bus, this is up to the user.
+<P>
+ The two capacitors are low ESR electrolytics and are placed near the GAL and between
+ the two chips. If you don't have this type to hand you can use standard electrolytics
+ with some low value ceramic capacitor, say 0.1uF, in parallel.
+<P>
+<A NAME=link_1></A>
+ The GAL16V8A is used purely to generate the read and write strobes. Each is a negative
+ going pulse coincident with phase 2. The interface uses just one byte in the address
+ range. For anyone interested the equations for this chip are in <A HREF="i2c_01pld.html">
+ i2c_01.pld</A> and can be compiled with WinCUPL. The fuse file, <A HREF="i2c_01jed.html">
+ i2c_01.jed</A> and the compiler list file <A HREF="i2c_01txt.html"> i2c_01.txt</A> are
+ also included.
+<P>
+ The 74LS74 is used to latch the two lowest bits of the data bus during
+ write access to the interface. The reset line is connected so that both
+ of these outputs are set at startup (this disables the I2C bus until
+ required). This is very similar to my AT keyboard with the exeption that
+ reset sets the opposite state.
+<P>
+ The outputs from the latches are used to drive the enable pins on two of
+ the four buffers from the 74LS125, these are then used to drive the data
+ and clock lines of the I2C bus. The buffers have their inputs tied
+ low so behave like open collector outputs when used like this.
+<P>
+ The other two buffers are used to drive the data bus during read access.
+</BLOCKQUOTE>
+<CENTER>
+<B> The finished board.</B><P>
+ <IMG TITLE="The finished board." SRC="board.jpg" BORDER=1>
+ <IMG TITLE="With the teletext board." SRC="plusteletext.jpg" BORDER=1><P>
+<B> 256k byte memory.</B><P>
+ <IMG TITLE="256k byte memory" SRC="mem.png" BORDER=1>
+</CENTER>
+<P>
+<B><U>Software.</U></B>
+<BLOCKQUOTE>
+The software has a four main routines to handle the I2C bus ...
+<BLOCKQUOTE>
+<TABLE CELLSPACING=0 CELLPADDING=0 BORDER=0>
+<TR>
+<TD><B>
+ SendAddr</B></TD><TD><PRE>	</PRE></TD><TD>Send start and slave address to the I2C bus.</TD>
+</TR>
+<TR>
+<TD><B>
+ SendData</B></TD><TD><PRE>	</PRE></TD><TD>Send data byte(s) to an addressed device.</TD>
+</TR>
+<TR>
+<TD><B>
+ ReadData</B></TD><TD><PRE>	</PRE></TD><TD>Read data byte(s) from an addressed device.</TD>
+</TR>
+<TR>
+<TD><B>
+ StopI2c</B></TD><TD><PRE>	</PRE></TD><TD>generates a stop condition on the i2c bus.</TD>
+</TR>
+</TABLE>
+</BLOCKQUOTE>
+This is a description of all the I2C routines ...
+<BLOCKQUOTE>
+<B>SendAddr</B>
+<BLOCKQUOTE>
+ This routine sends the slave address to the I2C bus. There are a number of locations
+ that need set-up before this routine is called. Each device has an 8 bit address, the
+ lowest bit of which is a read/write bit, this address is set in I2cAddr. Next is the
+ byte count, if you are just addressing the device this can be zero but otherwise it
+ is the byte pair in I2cCountL/H. Lastly, if there is data to be sent, is the buffer
+ pointer TxBuffL/H. This should be set to the start of the data to be sent. If all
+ is well this routine exits with Cb=0 and the bus in an held state, you can then either
+ send data, receive data or just send stop.
+</BLOCKQUOTE>
+<B>ReadData</B>
+<BLOCKQUOTE>
+ This routine reads I2cCountL/H bytes from an already addressed device. It should be
+ entered with RxBuffL/H pointing to a suitable buffer area. On exit Cb=0 if there were
+ no errors and the I2C bus is in a held state, you can then either receive more data or
+ just send stop.
+</BLOCKQUOTE>
+<B>SendData</B>
+<BLOCKQUOTE>
+ The same as ReadData but sends I2cCountL/H bytes to an already addressed device. Again
+ on exit Cb=0 if there were no errors and the I2C bus is in a held state, you can then
+ either send more data or just send stop.
+</BLOCKQUOTE>
+<B>StopI2c</B>
+<BLOCKQUOTE>
+ This routine just generates a stop condition on i2c bus. On entry it is assumed only
+ that the clock is held low.
+</BLOCKQUOTE>
+<B>ByteIn</B>
+<BLOCKQUOTE>
+ Read a byte from the I2C bus, the byte is returned in A. Entry to this routine should
+ be with the bus in a held state and it exits with the bus in the same state. Note there
+ is no timeout on this routine so it could end up waiting for ever. After this routine
+ you should send an ack but if it's the end of what you want you can just send stop.
+</BLOCKQUOTE>
+<B>ByteOut</B>
+<BLOCKQUOTE>
+ Send a byte to the I2C bus, the byte to be sent is in A. Entry to this routine should
+ be with the bus in a held state and it exits with the bus in the same state. Note there
+ is no timeout on this routine so it could end up waiting for ever. Returns with the ack
+ bit in Cb=0.
+</BLOCKQUOTE>
+<B>DoAck</B>
+<BLOCKQUOTE>
+ Send ack bit, the ack bit state to send is in Cb. Entry is with the clock low, then ack
+ needs to be set and then the clock released. The routine then waits for the clock to
+ rise before pulling it low and then exiting.
+</BLOCKQUOTE>
+<B>GetAck</B>
+<BLOCKQUOTE>
+ Get the ack bit, the received ack bit is returned in Cb. Entry is with the clock low,
+ then the data line is released followed by the clock. Then, once the clock rises, the
+ ack bit is read.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<A NAME=link_2></A>
+<B>View the source</B>
+<BLOCKQUOTE>
+<A HREF="i2c_drvasm.html">.asm driver</A><BR>
+<A HREF="teletext.html">EhBASIC teletext</A>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<CENTER>
+<B> The board in use and screen shots.</B><P>
+ <TABLE>
+ <TR>
+ <TD ROWSPAN=3>
+ <IMG TITLE="The board in use." SRC="inuse.jpg" BORDER=1>
+ </TD>
+ <TD>
+ <A HREF="ch5.html">
+ <IMG TITLE="Screen shot." SRC="ch5_sm.jpg" BORDER=1>
+ </A>
+ </TD>
+ <TD>
+ <A HREF="cnn.html">
+ <IMG TITLE="Screen shot." SRC="cnn_sm.jpg" BORDER=1>
+ </A>
+ </TD>
+ <TD>
+ <A HREF="dsny.html">
+ <IMG TITLE="Screen shot." SRC="dsny_sm.jpg" BORDER=1>
+ </A>
+ </TD>
+ </TR>
+ <TR>
+ <TD>
+ <A HREF="mtv.html">
+ <IMG TITLE="Screen shot." SRC="mtv_sm.jpg" BORDER=1>
+ </A>
+ </TD>
+ <TD>
+ <A HREF="nick.html">
+ <IMG TITLE="Screen shot." SRC="nick_sm.jpg" BORDER=1>
+ </A>
+ </TD>
+ <TD>
+ <A HREF="toon.html">
+ <IMG TITLE="Screen shot." SRC="toon_sm.jpg" BORDER=1>
+ </A>
+ </TD>
+ </TR>
+ </TABLE>
+</CENTER>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 28th April, 2002.</FONT>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/i2c/index.html by HTTrack Website Copier/3.x [XR&CO'2002], Fri, 04 Jul 2003 20:48:45 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.4 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="../../../../lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="../../../../ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location);
+        var ref=window.document.referrer;
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "http://members.lycos.co.uk/")) ) {
+                        parent.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else {
+                setCookie("adFrameForcePHP",1,0,"http://members.lycos.co.uk/",location.hostname,0);
+        }
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3f05e8ee&adpref="></script>

@@ -1,0 +1,171 @@
+<script language="javascript">
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/suprchips/lcd/index.html by HTTrack Website Copier/3.x [XR&CO'2002], Fri, 04 Jul 2003 20:49:09 GMT -->
+<HEAD>
+<TITLE>
+  SuprDupr driver for LCD port
+</TITLE>
+<META name="description" content="An LCD driver for the SuprDupr.">
+</HEAD>
+<BODY
+  BACKGROUND="../../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="http://members.lycos.co.uk/leeedavison/index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>LCD port driver </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="../index.html#lcd">[Back]</A>
+<BR clear=all><P>
+<HR>
+<P>
+<IMG SRC="sdpr_lcd.jpg" ALIGN=RIGHT BORDER=1 ALT="SuprDupr with graphics LCD" HSPACE=8>
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE>
+ The SuprDupr has a port wired to enable use of many inteligent LC displays. The
+ display, pictured right, is an LC7980 type though most of the other graphics and
+ text types are similarly driven.
+<P>
+ One change needed to be made to the SuprDupr to use this display and that was to
+ disconnect the earthy end of the contrast pot from 0v and connect it to the -ve
+ charge pump output on the MAX232 chip. This is because the greater multiplex on
+ these graphics displays requires a more -ve bias to maintain the viewing angle.
+<P>
+ A down side to this is that display contrast is effected by the loading on the
+ RS232 port and use of such things as a RS232 line monitor can have an adverse
+ effect on the display. Also if the load from the display is to great then the
+ MAX232 charge pump will not start. However this <I>should</I> not be a problem in
+ normal use.
+<P>
+ Another change made to the SuprDupr was to wire +12v to the spare pin on the LCD
+ port to provide power for the backlight. This could be connected through a PNP
+ transistor and controlled by software via one of the port pins.
+</BLOCKQUOTE>
+<P>
+<B><U>Software.</U></B>
+<BLOCKQUOTE>
+ The software is unfinished and provided as a starting point for anyone who wishes
+ to make their own. It is usable and was used to produce the displays pictured above
+ and below.
+<P>
+</BLOCKQUOTE>
+<A NAME="source"></A>
+<B><U>The source</U></B>
+<BLOCKQUOTE>
+ <A HREF="asm.html">View</A> or <A HREF="asm.zip">download <IMG
+ SRC="../../../zip_sm.png" BORDER=0 alt="[Download]"></A> driver .asm file<BR>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<CENTER>
+<B><U>Example displays</U></B><P>
+<IMG SRC="demo_01.png" BORDER=1 ALT="30 x 5 text" HSPACE=8 VSPACE=8>
+<IMG SRC="demo_02.png" BORDER=1 ALT="34 x 5 text" HSPACE=8 VSPACE=8><BR clear=all>
+<IMG SRC="demo_03.png" BORDER=1 ALT="40 x 5 text" HSPACE=8 VSPACE=8>
+<IMG SRC="demo_04.png" BORDER=1 ALT="240 x 40 graphics" HSPACE=8 VSPACE=8>
+<BR clear=all>
+</CENTER>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 4th June, 2003.</FONT>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/suprchips/lcd/index.html by HTTrack Website Copier/3.x [XR&CO'2002], Fri, 04 Jul 2003 20:49:09 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.4 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="../../../../../lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="../../../../../ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location);
+        var ref=window.document.referrer;
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "http://members.lycos.co.uk/")) ) {
+                        parent.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else {
+                setCookie("adFrameForcePHP",1,0,"http://members.lycos.co.uk/",location.hostname,0);
+        }
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3f05e8f6&adpref="></script>

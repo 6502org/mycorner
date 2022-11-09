@@ -1,0 +1,202 @@
+<script language="javascript">
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/ehbasic/update.html by HTTrack Website Copier/3.x [XR&CO'2002], Fri, 04 Jul 2003 20:49:30 GMT -->
+<HEAD>
+<TITLE>Enhanced BASIC, update</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="http://members.lycos.co.uk/leeedavison/index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>Enhanced BASIC, update  </FONT><FONT SIZE=-1>by Lee Davison</FONT>
+<BR clear=all><A HREF="index.html#link_1">[Back]</A>
+<BR clear=all><P>
+<HR>
+ <B>Not <A HREF=errata.html>undocumented features</A> this time but changes for any other
+ reasons...</B><P>
+ Download version 1.05
+ <A HREF="source.zip">source <IMG SRC="../../zip_sm.png" ALT="[Download]"
+ border=0></A>,
+ <A HREF="binary.zip">binary <IMG SRC="../../zip_sm.png" ALT="[Download]"
+ border=0></A> or
+ <A HREF="hex.zip">Motorola hex <IMG SRC="../../zip_sm.png" ALT="[Download]"
+ border=0></A>.
+<P>
+<A NAME=020725></A>
+<B>25th July 2002.</B>
+<BLOCKQUOTE>
+ Just a small update. The addresses where values for HEX$() or BIN$() have been changed.
+ This frees up two bytes in page zero and is this ...
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+nums_1		= $E0		; number to bin/hex string convert MSB
+nums_2		= nums_1+1	; number to bin/hex string convert
+nums_3		= nums_1+2	; number to bin/hex string convert LSB
+</PRE>
+</TD></TR></TABLE>
+</P>
+ ... becomes ...
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+nums_1		= Itempl	; number to bin/hex string convert MSB
+nums_2		= nums_1+1	; number to bin/hex string convert
+nums_3		= nums_1+2	; number to bin/hex string convert LSB
+</PRE>
+</TD></TR></TABLE>
+</P>
+ This is done in version 1.05.
+</BLOCKQUOTE>
+<A NAME=020708></A>
+<B>8th July 2002.</B>
+<BLOCKQUOTE>
+ This is a re-write of the <A HREF=language.html#BIN>BIN$()</A> and
+ <A HREF=language.html#HEX>HEX$()</A> functions. This frees up 8 bytes from page zero as
+ well as being a little quicker. The downside is code length which is up slightly to
+ 9600 bytes ($2580 bytes).
+<P>
+ Examples of the speed increase are ..<P>
+<TABLE CELLSPACING=0 BORDER=1 BGCOLOR=white>
+<TR><TD>
+<TABLE CELLSPACING=5 BORDER=0 BGCOLOR=white>
+<TR>
+<TD COLSPAN=4 ALIGN=CENTER> Cycle times for <B>HEX$(57005)</B> and <B>BIN$(57005)</B></TD>
+</TR>
+<TR>
+<TD>Function</TD>
+<TD ALIGN=CENTER>Before</TD>
+<TD ALIGN=CENTER>After</TD>
+<TD ALIGN=CENTER>Saving</TD>
+</TR>
+<TR>
+<TD>HEX$()</TD>
+<TD>686 cycles</TD>
+<TD>465 cycles</TD>
+<TD>221 cycles (110uS @ 2MHz - 32%)</TD>
+</TR>
+<TR>
+<TD>BIN$()</TD>
+<TD>1700 cycles</TD>
+<TD>1079 cycles</TD>
+<TD>621 cycles (310uS @ 2MHz - 37%)</TD>
+</TR>
+</TABLE>
+</TR></TD>
+</TABLE>
+<P>
+ The other change is that both binary and Motorola hex versions are also available for
+ download.
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 25th July, 2002.</FONT>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/ehbasic/update.html by HTTrack Website Copier/3.x [XR&CO'2002], Fri, 04 Jul 2003 20:49:30 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.4 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="../../../../lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="../../../../ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location);
+        var ref=window.document.referrer;
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "http://members.lycos.co.uk/")) ) {
+                        parent.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else {
+                setCookie("adFrameForcePHP",1,0,"http://members.lycos.co.uk/",location.hostname,0);
+        }
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3f05e903&adpref="></script>

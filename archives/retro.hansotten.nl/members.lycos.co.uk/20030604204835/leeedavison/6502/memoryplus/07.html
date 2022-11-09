@@ -1,0 +1,191 @@
+<script language="javascript">
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/07.html by HTTrack Website Copier/3.x [XR&CO'2002], Fri, 04 Jul 2003 20:49:48 GMT -->
+<HEAD>
+<TITLE> Memory Plus manual </TITLE>
+</HEAD>
+<BODY
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="01.html"><IMG SRC="index.png" ALIGN=RIGHT BORDER=0 ALT="Index"></A>
+<B><FONT SIZE=+2>MEMORY PLUS Manual </FONT></B><FONT SIZE=-2>By Lee Davison</FONT>
+<BR CLEAR=all>
+<BR>
+<A HREF="06.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="08.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 7
+</CENTER>
+<BR CLEAR=all>
+<HR>
+ <PRE>
+
+	The only other power requirement for the MEMORY PLUS board is +25 volts
+	at 30 milliamps during programming of an EPROM.  This voltage may be
+	provided as either regulated +25 volt or unregulated +28 to +30 volts.
+
+	Regulated +25 Volt Supply.  Programming of the INTEL 2716 EPROM requires
+	+25V.  This may be attached to pin A-22 of the MEMORY PLUS application
+	connector.  Care must be taken to assure that the voltage is within the
+	limits of +24 to +26 volts.  A higher voltage will destroy the EPROM as
+	both the INTEL documentation and my own personal experience can attest.
+
+	Unregulated +27 to +30 Volt Supply.  MEMORY PLUS provides a circuit with
+	a +24 volt regulator and a diode to produce a regulated +24.7 volts from
+	an unregulated +27 to +30 volt supply.  The unregulated supply, which may
+	be three +9 volt transistor radio type batteries, is attached to pin E-3
+	of the MEMORY PLUS expansion connector.  Since the programming voltage is
+	so critical and since an over voltage can destroy an EPROM, use of this
+	on board regulator is recommended.  The three battery clips provided in
+	the Accessory Bag are for the purpose of hooking up three +9 volt batteries.
+
+	Battery Backup.  Since it is often desirable to be able to protect the
+	contents of the RAM memory during a transient power interruption, or for
+	longer periods of time, a provision has been made for battery backup to
+	be connected to the MEMORY PLUS board.  The batteries must be capable of
+	providing between about 3.5 and 14.5 volts.  They are connected to pin E-2
+	of the MEMORY PLUS expansion connector.  There are diodes in the circuit
+	which prevent current from being drawn from the batteries during normal
+	system functioning.  When the power drops, however, the batteries will
+	automatically start supplying the required current.  The amount of current
+	will depend on the basic system configuration.  If the MEMORY PLUS board is
+	being run from +5 volts, then the batteries must supply the entire board.
+	If the board is being run from the +8 to +10 volt regulators, then the battery
+	backup will only run the RAM memory chips.  This will result in a lower
+	current drain on the batteries.  The length of time that the system will
+	retain its RAM contents on battery power will be a function of the configuration
+	and the capacity of the batteries.
+
+
+
+
+				Cassette Loading Instructions
+
+	The cassette tape is recorded in standard KIM format at the normal rate.
+	The programs have been written so that they will run on a KIM-1, SYM-1 or
+	AIM 65 with no modification.
+
+	The MEMORY TEST is the first program on the tape.  It has program ID = 10.
+	It loads into locations 0000 through OOD8.  It is set up to test memory from
+	2000 to 3FFF.  The starting address of the program is 0002.  See pages 21 to
+	23 of this manual for the MEMORY TEST Source Listing and page 20 for instructions
+	on using the program.
+
+	The PROM PROGRAMMER is the second program on the tape.  It has Program ID = 20.
+	It loads into locations 0000 through 00E7.  The programming parameters must be
+	set up in locations 0000 through 0005 as outlined in the section on 'EPROM
+	Programming, pages 11 to 13.  The starting address of the program is 0011.
+	Complete Source Listings are located on pages 14 through 16 of this manual.
+
+ </PRE>
+<BR CLEAR=all>
+<HR>
+<A HREF="06.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="08.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 7
+</CENTER>
+<BR CLEAR=all>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 8th December, 2002.</FONT>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/07.html by HTTrack Website Copier/3.x [XR&CO'2002], Fri, 04 Jul 2003 20:49:48 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.4 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="../../../../lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="../../../../ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location);
+        var ref=window.document.referrer;
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "http://members.lycos.co.uk/")) ) {
+                        parent.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else {
+                setCookie("adFrameForcePHP",1,0,"http://members.lycos.co.uk/",location.hostname,0);
+        }
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3f05e932&adpref="></script>

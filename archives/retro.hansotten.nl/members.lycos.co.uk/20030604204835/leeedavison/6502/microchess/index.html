@@ -1,0 +1,257 @@
+<script language="javascript">
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/microchess/index.html by HTTrack Website Copier/3.x [XR&CO'2002], Fri, 04 Jul 2003 20:48:51 GMT -->
+<HEAD>
+<TITLE>
+  6502 Microchess
+</TITLE>
+</HEAD>
+<BODY
+  BACKGROUND="../../back.png"
+  BGCOLOR="white"
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="http://members.lycos.co.uk/leeedavison/index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="[Return to top]"></A>
+<P>
+<FONT SIZE=+1>6502 Microchess. </FONT><FONT SIZE=-1>By Lee Davison</FONT>
+<BR clear=all><A HREF="../index-2.html">[Back]</A>
+<BR clear=all><P>
+<HR>
+<IMG SRC="microchess.png"
+ ALIGN=RIGHT
+ WIDTH=522
+ HEIGHT=326
+ BORDER=1
+ ALT="Start of a game">
+<B><U>Introduction.</U></B>
+<BLOCKQUOTE>
+ Many years ago, when a 6502 and a few k or RAM were cutting edge in home computing, I
+ tried, and failed, to get the KIM version of MicroChess to run on my Compukit UK101.
+<P>
+ I recently found the source and, in a fit of nostalgia, made this version which runs
+ on Michal Kowalski's <A HREF="http://home.pacbell.net/michal_k/">6502
+ simulator</A>.
+<BR clear=all>
+<P>
+ This version is posted with the permission of Peter Jennings, <A
+ HREF="mailto:peterj@benlo.com"> peterj@benlo.com <IMG SRC="../../eml_sm.png"
+ ALIGN=CENTER BORDER=0 alt="[e-mail]"></A>
+</BLOCKQUOTE>
+<B><U>The program.</U></B>
+<BLOCKQUOTE>
+ Once you have the source (see later) you will need to load it into the simulator,
+ assemble it, and the run it in the debugger.
+</BLOCKQUOTE>
+<IMG SRC="rowncol.png"
+ ALIGN=RIGHT
+ WIDTH=160
+ HEIGHT=200
+ BORDER=1
+ ALT="Rows and columns">
+<B><U>The game.</U></B>
+<BLOCKQUOTE>
+<B><U>Notation.</U></B>
+<BLOCKQUOTE>
+ Each square on the chess board is identified by a two digit number as shown here.
+ The first digit specifies the rank (0x to 7x) from the computer's end of the board.
+ The second digit specifies the file (x0 to x7) from the player's left. Moves are
+ made by the <B>FROM</B> square and the <B>TO</B> square using this notation.
+</BLOCKQUOTE>
+<BR CLEAR=ALL>
+<B><U>Command keys.</U></B>
+<BLOCKQUOTE>
+ Few keys are needed to play. The original KIM had only a hex kaypad and a few command
+ keys. This version has code to interpret standard ASCII codes in their place. Alpha
+ keys can be used in either upper or lower case, both have the same effect.
+</BLOCKQUOTE>
+<P><TABLE BORDER=0 CELLPADDING=8>
+<TR>
+<TD ALIGN=CENTER><B>[C]</B></TD>
+<TD>This key <B>[C]</B>lears the internal chessboard and resets it to begin another
+ game. The board is set up with the computer playing white.<BR>
+ '<B>? Reset &nbsp;&nbsp;&nbsp;00 00</B>' is  displayed instead of a move to indicate
+ that the board has been reset.</TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER><B>[E]</B></TD>
+<TD>This key <B>[E]</B>xchanges the two sets of pieces without the actual position of
+ the board being changed.<BR>
+ '<B>? Exchange 00 00</B>' is displayed instead of a move to
+ indicate that the exchange has been made.<BR>
+ If <B>[C]</B> then <B>[E]</B> is pressed, the board will be set up to begin a game
+ with the computer playing black.<BR>
+ If <B>[P]</B> followed by <B>[E]</B> followed by <B>[P]</B>, and so on, is pressed
+ the computer will play a game against itself.</TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER><B>[P]</B></TD>
+<TD>This key tells the computer to <B>[P]</B>lay its move. While the computer decides
+ on the best move it will flash the <B>'?'</B> character on the move line and, sometimes,
+ display the move it's deciding on.</TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER><B>[ENTER]</B></TD>
+<TD>This key is used to register the player's move. It moves the piece on the <B>FROM</B>
+ square to the <B>TO</B> square. This can be used to move one of the computer's men if
+ desired.</TD>
+</TR>
+</TABLE>
+&nbsp;<P>
+</BLOCKQUOTE>
+<IMG SRC="status.png"
+ ALIGN=RIGHT
+ WIDTH=260
+ HEIGHT=180
+ BORDER=1
+ ALT="Status line">
+<BLOCKQUOTE>
+<B><U>Entering moves.</U></B>
+<BLOCKQUOTE>
+ Your moves are entered into the game numerically using the notation described above. You
+ do not enter piece being moved, just the <B>FROM</B> and <B>TO</B> square locations.
+<P>
+ As move numbers are entered they scroll from right to left through the <B>TO</B> and
+ <B>FROM</B> digits, the <B>FROM</B> square piece is updated after every key. Should
+ you make an error while entering the move just re-enter the move and the display will
+ scroll to the left until the correct move is displayed.
+<P>
+ While you are entering your move the piece located on the <B>FROM</B> square is displayed
+ on the left of the status line after the '<B>?</B>' character. There is no indication
+ of the pieces colour, it is up to you to move only your own pieces.
+<P>
+ When you are sure the move you've entered is the correct one press the <B>[ENTER]</B>
+ key to register the move on the board. Once you have pressed <B>[ENTER]</B> the display
+ confirms the move by showing the piece now in the <B>TO</B> square and the <B>FROM</B>
+ and <B>TO</B> squares.
+<P>
+ You may make as many moves like this as you wish and may move either your own men or the
+ computer's. No check on the legality of the move is carried out. Illegal moves will be
+ executed just as legal moves, so you should be carefull that you do not accidentally
+ make an illegal move. There is no warning if your king is in check, you must be careful
+ not to leave this situation after your move. If you do the computer will usually take
+ your king on its next move if possible.
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>The source.</U></B>
+<BLOCKQUOTE>
+ The source is changed from the original source to use the ASCII input/output of the
+ simulator. This roughly follows the suggestions in the KIM MicroChess programmers
+ manual on teletype I/O.
+<P>
+ Where code has been added it has lower case comments and where code has been changed
+ the original code has usually been commented out, but otherwise left in place. The main
+ strategy and computer play routines are essentially unchanged from the original.
+<P>
+ The OCRed source that I worked from had some transcription errors. Though I found and
+ corrected some, others may remain.
+<P>
+ You can either view the source as <A HREF="source.html">html</A> or download the
+ source as a <A HREF="source.zip">zip<IMG SRC="../../zip_sm.png" ALT="[Download]"
+ border=0></A> archive.
+</BLOCKQUOTE>
+<HR>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 12th December, 2002.</FONT>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/microchess/index.html by HTTrack Website Copier/3.x [XR&CO'2002], Fri, 04 Jul 2003 20:48:51 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<!-- START RedMeasure V4 - Java v1.1  $Revision: 1.4 $ -->
+<!-- COPYRIGHT 2000 Red Sheriff Limited -->
+
+<script language="JavaScript"><!--
+var pCid="uk_lycos-uk_0";
+var w0=1;
+var refR=escape(document.referrer);
+if (refR.length>=252) refR=refR.substring(0,252)+"...";
+//--></script>
+<script language="JavaScript1.1"><!--
+var w0=0;
+//--></script>
+<script language="JavaScript1.1" src="../../../../lycos-eu.imrworldwide.com/a1.js">
+</script>
+<script language="JavaScript"><!--
+if(w0){
+var imgN='<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?ref='+
+	refR+'&cid='+pCid+'" width=1 height=1>';
+if(navigator.userAgent.indexOf('Mac')!=-1){document.write(imgN);
+}else{
+	document.write('<applet code="Measure.class" '+
+	'codebase="http://lycos-eu.imrworldwide.com/"'+'width=1 height=2>'+
+	'<param name="ref" value="'+refR+'">'+'<param name="cid" value="'+pCid+
+	'"><textflow>'+imgN+'</textflow></applet>');
+	}
+}
+document.write("<COMMENT>");
+//-->
+</script>
+<noscript>
+<img src="http://lycos-eu.imrworldwide.com/cgi-bin/count?cid=uk_lycos-uk_0" width=1 height=1>
+</noscript>
+</COMMENT>
+<!-- END RedMeasure V4 --> 
+
+<script language="javascript" src="../../../../ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location);
+        var ref=window.document.referrer;
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "http://members.lycos.co.uk/")) ) {
+                        parent.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.href=ad_url;
+                }
+        }
+        else {
+                setCookie("adFrameForcePHP",1,0,"http://members.lycos.co.uk/",location.hostname,0);
+        }
+</script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=noref&mkw=&CC=uk&ord=3f05e8ef&adpref="></script>
