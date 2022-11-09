@@ -1,0 +1,365 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/ehbasic/internals.html by HTTrack Website Copier/3.x [XR&CO'2006], Sun, 17 Jun 2007 15:38:56 GMT -->
+<HEAD>
+<TITLE>Enhanced BASIC internals</TITLE>
+<META name="description" content="An advanced BASIC interpreter for the 6502 microprocessor.">
+</HEAD>
+<BODY BACKGROUND="../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=20%>
+<A HREF="index.html#link_1">
+  <IMG SRC="../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>Enhanced BASIC internals </FONT></B>
+<FONT SIZE=-1>By Lee Davison.</FONT>
+</TD>
+<TD WIDTH=20%>
+<A HREF="http://members.lycos.co.uk/leeedavison/index.html">
+ <IMG SRC="../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<P>
+<B><U>Floating point numbers.</U></B>
+<BLOCKQUOTE>
+ Floating point numbers are stored in memory in four bytes. The format of the
+ numbers is as follows.
+</BLOCKQUOTE>
+ <CENTER>
+  <TABLE BGCOLOR="white" CELLPADDING=5 CELLSPACING=0 BORDER=2>
+   <TR>
+    <TD>Exponent</TD><TD>S</TD><TD>Mantissa 1</TD><TD>Mantissa 2</TD><TD>Mantissa 3</TD> 
+   </TR>
+  </TABLE>
+ </CENTER>
+<BLOCKQUOTE>
+<B>Exponent</B>
+<BLOCKQUOTE>
+   This is the power of two to which the mantissa is to be raised. This number
+   is biased to +$80 i.e. 2^0 is represented by $80, 2^1 by $81 etc. Zero is a
+   special case and is used to represent the value zero for the whole of the number.
+</BLOCKQUOTE>
+<B>S</B>
+<BLOCKQUOTE>
+   Sign bit. This bit (b7 of mantissa 1) is one if the number is negative.
+</BLOCKQUOTE>
+<B>Mantissa 1/2/3</B>
+<BLOCKQUOTE>
+   This is the 24 bit mantissa of the number and is normalised to make the
+   highest bit (b7 of mantissa 1) always one. So the absolute value of the
+   mantissa varies between 0.5 and 0.9999999403954 . As we know that the highest
+   bit is always one it is replaced by the sign bit in memory.
+</BLOCKQUOTE>
+<B><I><U>Example.</U></I></B>
+<BLOCKQUOTE>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+$82,$49,$0F,$DB = +3.14159274	nearest floating equivalent to pi
+ |   ||  |   |  
+ |   |\--+---+- = 0.785398185	absolute value of mantissa  
+ |   |
+ |   \--------- = +		b7 of mantissa 1 is zero
+ |
+ \------------- = x 2^2 = 4	mantissa to be multiplied by 4
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+   Values represented in this way range between + and - 1.70141173x10^38
+</BLOCKQUOTE>
+<B><U>BASIC program memory use.</U></B>
+<BLOCKQUOTE>
+ A BASIC program is stored in memory from Ram_base upwards. It's format is ..
+<BLOCKQUOTE>
+	$00 Start of program marker byte
+</BLOCKQUOTE>
+ .. then each BASIC program line which is stored as ..
+<BLOCKQUOTE>
+	start of next line pointer low byte
+<BR>  start of next line pointer high byte
+<BR>  line number low byte
+<BR>  line number high byte
+<BR>  code byte(s)
+<BR>  $00 End of line marker byte
+</BLOCKQUOTE>
+ .. and finally ..
+<BLOCKQUOTE>
+	$00 End of program marker byte 1
+<BR>  $00 End of program marker byte 2
+</BLOCKQUOTE>
+ If there is no program in memory only the start and end marker bytes are present.
+</BLOCKQUOTE>
+<B><U>BASIC variables memory use.</U></B>
+<BLOCKQUOTE>
+   After the program come the variables and function references, all six bytes
+   long, which are stored as ..
+<BLOCKQUOTE>
+      1st character of variable or function name (+$80 if FN name)
+<BR>  2nd character of variable or function name (+$80 if string)
+</BLOCKQUOTE>
+ .. then for each type ..
+  <P>
+    <TABLE WIDTH=85% CELLPADDING=2 CELLSPACING=0 BORDER=0>
+      <TR>
+        <TD><B><U><CENTER>Numeric</CENTER></U></B></TD>
+        <TD><B><U><CENTER>String</CENTER></U></B></TD>
+        <TD><B><U><CENTER>Function</CENTER></U></B></TD> 
+      </TR>
+      <TR>
+        <TD>Exponent</TD>
+        <TD>String length</TD>
+        <TD>BASIC execute pointer low byte</TD> 
+      </TR>
+      <TR>
+        <TD>Sign (bit 7) + mantissa 1</TD>
+        <TD>String pointer low byte</TD>
+        <TD>BASIC execute pointer high byte</TD> 
+      </TR>
+      <TR>
+        <TD>Mantissa 2</TD>
+        <TD>String pointer high byte</TD>
+        <TD>Function variable name 1st character</TD> 
+      </TR>
+      <TR>
+        <TD>Mantissa 3</TD>
+        <TD>$00</TD>
+        <TD>Function variable name 2nd character</TD> 
+      </TR>
+    </TABLE>
+  <P>
+ After the variables come the arrays, which are stored as ..
+<BLOCKQUOTE>
+      1st character of variable name
+<BR>  2nd character of variable name (+$80 if string)
+<BR>  array size in bytes low byte (size includes this header)
+<BR>  array size in bytes high byte
+<BR>  number of dimensions
+<BR>  [dimension 3 size high byte] (lowest element is zero)
+<BR>  [dimension 3 size low byte]
+<BR>  [dimension 2 size high byte] (lowest element is zero)
+<BR>  [dimension 2 size low byte]
+<BR>  dimension 1 size high byte (lowest element is zero)
+<BR>  dimension 1 size low byte
+</BLOCKQUOTE>
+ .. and then each element ..
+
+  <P>
+    <TABLE WIDTH=48% CELLPADDING=2 CELLSPACING=0 BORDER=0>
+      <TR>
+        <TD><B><U><CENTER>Numeric</CENTER></U></B></TD>
+        <TD><B><U><CENTER>String</CENTER></U></B></TD>
+      </TR>
+      <TR>
+        <TD>Exponent</TD>
+        <TD>String length</TD>
+      </TR>
+      <TR>
+        <TD>Sign (bit 7) + mantissa 1</TD>
+        <TD>String pointer low byte</TD>
+      </TR>
+      <TR>
+        <TD>Mantissa 2</TD>
+        <TD>String pointer high byte</TD>
+      </TR>
+      <TR>
+        <TD>Mantissa 3</TD>
+        <TD>$00</TD>
+      </TR>
+    </TABLE>
+  <P>
+ The elements of every array are stored in the order ..
+<BLOCKQUOTE>
+      index1 [0-n], index2 [0-n], index3 [0-n]
+</BLOCKQUOTE>
+   i.e. element (1,2,3) in an array of (3,4,5) would be the ..
+<BLOCKQUOTE>
+   1 + 1 + 2*(3+1) + 3*(3+1)*(4+1) = 70th element
+</BLOCKQUOTE>
+<I>(As array dimensions range from 0 to n element n will always be the (n+1)th
+   element in memory.)</I>
+<P>
+</BLOCKQUOTE>
+<B><U>String placement in memory.</U></B>
+<BLOCKQUOTE>
+  Strings are generally stored from the top of available RAM, Ram_top, working
+  down, however if the interpreter encounters a line such as ..
+<PRE>
+	100 A$ = "This is a string"
+</PRE>
+  .. then the high/low pointer in the A$ descriptor will point to the string in
+  program memory and will not make a copy of the string in the string memory.
+</BLOCKQUOTE>
+<B><U>String descriptors in BASIC.</U></B>
+<BLOCKQUOTE>
+ A string descriptor is a three byte table that describes a string, it is of the format ..
+<BLOCKQUOTE>
+      base		= string length
+<BR>  base+1	= string pointer low byte
+<BR>  base+2	= string pointer high byte
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<B><U>Stack use in BASIC.</U></B>
+<BLOCKQUOTE>
+ GOSUB and DO both push on the stack ..
+<BLOCKQUOTE>
+      BASIC execute pointer high byte
+<BR>  BASIC execute pointer low byte
+<BR>  current line high byte
+<BR>  current line low byte
+<BR>  command token (TK_GOSUB or TK_DO)
+</BLOCKQUOTE>
+ FOR pushes on the stack ..
+<BLOCKQUOTE>
+      BASIC execute pointer low byte
+<BR>  BASIC execute pointer high byte
+<BR>  FOR line high byte
+<BR>  FOR line low byte
+<BR>  TO value mantissa3
+<BR>  TO value mantissa2
+<BR>  TO value mantissa1
+<BR>  TO value exponent
+<BR>  STEP sign
+<BR>  STEP value mantissa3
+<BR>  STEP value mantissa2
+<BR>  STEP value mantissa1
+<BR>  STEP value exponent
+<BR>  var pointer for FOR/NEXT high byte
+<BR>  var pointer for FOR/NEXT low byte
+<BR>  token for FOR (TK_FOR)
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 14th July, 2003.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%>
+</TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/ehbasic/internals.html by HTTrack Website Copier/3.x [XR&CO'2006], Sun, 17 Jun 2007 15:38:56 GMT -->
+</HTML>
+
+</pre></xmp></noscript>
+
+<script language="javascript" src="../../../../ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "http://members.lycos.co.uk/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk/")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&amp;mkw=&amp;CC=uk&amp;ord=30f48022&amp;adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

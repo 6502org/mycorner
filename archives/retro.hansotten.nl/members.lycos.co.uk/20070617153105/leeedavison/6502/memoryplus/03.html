@@ -1,0 +1,226 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/03.html by HTTrack Website Copier/3.x [XR&CO'2006], Sun, 17 Jun 2007 15:50:29 GMT -->
+<HEAD>
+<TITLE> Memory Plus manual </TITLE>
+</HEAD>
+<BODY
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="01.html"><IMG SRC="index.png" ALIGN=RIGHT BORDER=0 ALT="Index"></A>
+<B><FONT SIZE=+2>MEMORY PLUS Manual </FONT></B><FONT SIZE=-2>By Lee Davison</FONT>
+<BR CLEAR=all>
+<BR>
+<A HREF="02.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="04.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 3
+</CENTER>
+<BR CLEAR=all>
+<HR>
+ <PRE>
+					Set Up and Check Out
+
+ The quickest way to get your new MEMORY PLUS board "up and running" with your
+ MICRO is to take your time and follow all of the steps outlined below.
+
+  1.	Carefully unpack your MEMORY PLUS board from its individual box,
+	padding, and protective anti-static wrapping.  While none of the
+	components on this board are unusually susceptible to static, any
+	chip can be damaged (destroyed) by a large static shock.  So,
+	take some care about avoiding static buildup.
+
+  2.	Examine the board for any visible damage which may have occurred in
+	shipping.  Push all IC's firmly into their sockets.  Unbend any
+	capacitors which have been bent.
+
+  3.	Read briefly the entire MEMORY PLUS manual.  Pay particular attention
+	to the main sections on "POWER", "RAM Memory", "EPROM Memory", and
+	"VERSATILE INTERFACE ADAPTER", but do not try to memorize everything.
+
+  4.	Build the required connector cables following the wiring list labelled
+	"MEMORY PLUS to MICRO Connections".
+
+  4A	KIM-l ONLY;  If you are only planning to use the RAM memory to start,
+	then only the expansion connector cable is required.  A wire running
+	from pin E-16 of MP to A-K of KIM for the DECODE.  Remember to re-
+	move the wire you currently have between pin A-K of KIM and pin A-1
+	of KIM which grounds the DECODE signal for an unexpanded system.
+
+  5.	Carefully check the cable you built for any errors or bad connections.
+
+  6.	Set up your power for MEMORY PLUS in one of the following ways:
+
+	a.	If you have a single +5V supply which is going to run both the
+		MICRO and MEMORY PLUS (it must be capable of about 3.5 amps),
+		then the following connections should be made:	EDGE OF BOARD
+
+								1 +----------+
+								  | .      . |
+								  | -------- |
+			MP E-21 to MICRO E-21			  | .      . |
+								  | -------- |
+			MP E-Y  to MICRO E-21			  | .      . |
+								  | -------- |
+			MP A-A  to MICRO A-A			  | .      . |
+								  | -------- |
+								  +---------/ 9
+
+		The Header should be positioned with the notch at pin 9.
+
+	b.	If you have a separate +5 regulated supply for MEMORY PLUS,
+		the above connections must not be made.  The header should be
+		positioned with the notch at pin 9.  Attach supply to MP E-21/
+		E-Y.
+
+	c.	If you have a +8 to +10 unregulated supply, then the above
+		connections must not be made.  The header should be positioned
+		with the notch at pin 1.  Attach supply to MP E-19/E-20.
+
+  7.	Connect the MICRO and MEMORY PLUS together via the cables you have made.
+
+  8.	Set the RAM Select Switch to the 2000 position.
+
+
+ </PRE>
+<BR CLEAR=all>
+<HR>
+<A HREF="02.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="04.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 3
+</CENTER>
+<BR CLEAR=all>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 8th December, 2002.</FONT>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/03.html by HTTrack Website Copier/3.x [XR&CO'2006], Sun, 17 Jun 2007 15:50:29 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="../../../../ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "http://members.lycos.co.uk/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk/")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&amp;mkw=&amp;CC=uk&amp;ord=72fea449&amp;adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

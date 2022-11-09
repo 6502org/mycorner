@@ -1,0 +1,220 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/14.html by HTTrack Website Copier/3.x [XR&CO'2006], Sun, 17 Jun 2007 15:50:39 GMT -->
+<HEAD>
+<TITLE> Memory Plus manual </TITLE>
+</HEAD>
+<BODY
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="01.html"><IMG SRC="index.png" ALIGN=RIGHT BORDER=0 ALT="Index"></A>
+<B><FONT SIZE=+2>MEMORY PLUS Manual </FONT></B><FONT SIZE=-2>By Lee Davison</FONT>
+<BR CLEAR=all>
+<BR>
+<A HREF="13.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="15.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 14
+</CENTER>
+<BR CLEAR=all>
+<HR>
+ <PRE>
+			PROM PROGRAMMER  10 FEBRUARY 1979
+			PROM ORG $0000
+         
+			ACCESS		*	$8B86  SYM-1 ACCESS ENTRY
+
+			VIA RECISTER OFFSETS
+
+			ORB		*	$0000	OUTPUT RECISTER B
+			ORA		*	$0001	OUTPUT RECISTER A
+			DDRB		*	$0002	DATA DIRECTION RECISTER B
+			DDRA		*	$0003	DATA DIRECTION RECISTER A
+			ITW0L		*	$0008	TIMER TWO LOW
+			TTW0H		*	$0009	TIMER TWO HICH
+			PCR		*	$000C	PERIPHERAL CONTROL REGISTER
+			IFR		*	$000D	INTERRUPT FLAG RECISTER
+			IER		*	$000E	INTERRUPT ENABLE RECISTER
+
+  0000	00		SAL		=	$00	STARTING ADDRESC LOW
+  0001	00		SAH		=	$00	STARUING ADDRESS HICH
+  0002	00		PRMLOW		=	$00	EPROM LOW ADDRESS
+  0003	00		PRMHGH		=	$00	EPROM HICH ADDRESS
+  0004	00		EAL		=	$00	END ADDRESS LOW
+  0005	00		EAH		=	$00	END ADDRESS HICH
+  0006	00		VIA		=	$00	POINTER TO VIA
+  0007	62				=	$62	NORMALLY AT 6200
+  0008	40		JMPM0N		=	$40	3UMP TO MONITOR
+  0009	00		MONTOR		=	$00	POINTER [0 SYSTEM MONITOR
+  000A	00				=	$00	FOR RETURN FROM PROORAMMER
+  0008	00		INTVEC		=	$00	POINTER [0 INTERRUPT VECTOR
+  0000	00				=	$00
+  0000	00		PBDD		=	$00	PORT B DATA DIRECTION
+  000E	00				=	$00
+  000F	00		PBD		=	$00	PORT B DATA
+  0010	00				=	$00
+
+  0011	A9 D0		BEGIN		LDAIM	$00	CLEAR ALL STATUS FLACS
+  0013	48				PHA
+  0014	28				PLP
+  0015	A2 E0				LDXIM	STABLE	ASSUME SYM
+  0017	AD FD FF			LDA	$FFFD	TEST HIGH BYTE OF INTERRUPT VECTOR
+  00lA	C9 8B				CMPIM	$8B	= 8B FOR SYM-1
+  0010	F0 0A				BEQ	SYM
+  001E	A2 D0				LDXIM	ATABLE	ASSUME AIM 65
+  0020	C9 E0				CMPIM	$E0	E0 FOR AIM 65
+  0022	F0 07				BEQ	MOVE	IT IS THE AIM
+  0024	A2 D8		KIM		LDXIM	KTABLE	ASSUME KIM
+  0026	D0 03				BNE	MOVE
+  0028	20 86 8B	SYM		JSR	ACCESS	SYM REQUIRES ACCESS
+
+  002B	86 30		MOVE		STXZ	TABLE	+01 SETUP POINTER
+  0020	A2 07				LDXIM	$07	MOVE 8 BYTES
+  002F	B5 00		TABLE		LDAX	$00	REPLACED BY TABLE
+  0031	95 09				STAX	MONTOR	MOVE TO MONTOR TABLE
+  0033	CA				DEX
+  0034	10 F9				BPL	TABLE	MOVE UNTIL X = FF
+
+
+ </PRE>
+<BR CLEAR=all>
+<HR>
+<A HREF="13.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="15.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 14
+</CENTER>
+<BR CLEAR=all>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 8th December, 2002.</FONT>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/14.html by HTTrack Website Copier/3.x [XR&CO'2006], Sun, 17 Jun 2007 15:50:39 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="../../../../ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "http://members.lycos.co.uk/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk/")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&amp;mkw=&amp;CC=uk&amp;ord=443d8a92&amp;adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

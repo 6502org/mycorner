@@ -1,0 +1,222 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/isa/isapld.html by HTTrack Website Copier/3.x [XR&CO'2006], Sun, 17 Jun 2007 15:47:56 GMT -->
+<HEAD>
+<TITLE>Vic 20 ISA slot - GAL logic equations file.</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=20%><A HREF="index.html#pld">
+  <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=60% ALIGN=CENTER>
+<B><FONT SIZE=+1>GAL logic equations file </FONT></B><FONT SIZE=-1>by Lee Davison.</FONT>
+</TD><TD WIDTH=20%><A HREF="http://members.lycos.co.uk/leeedavison/index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<A HREF="../vic20_pld.zip">Download this file <IMG SRC="../../../zip_sm.png"
+ ALT="Download" BORDER=0>
+</A>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ This file includes the equations for the RAM/ROM expansion logic as well as the ISA slot
+ logic. Only those lines that are needed for the ISA slot have been rendered in
+ <B>bold</B>.
+<P>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+<B>Name     vic_ISA ;
+PartNo   00 ;
+Date     01/10/03 ;
+Revision 01 ;
+Designer Lee ;
+Company  ;
+Assembly None ;
+Location  ;
+Device   g16v8as ;</B>
+
+/* This is the glue for the vic 20 ISA card & RAM/ROM expansion	*/	
+
+/* Logic minimisations			None			*/
+/* Optimizations			None			*/
+/* Download				JEDEC/POF/PRG		*/
+/* Doc File Options			fuse plot, equations	*/
+/* Output				None			*/
+
+/* INPUT PINS 							*/
+
+<B>PIN	1 = dlp2	;		/* delayed phase 2	*/</B>
+PIN	2 = VRW		;		/* VIC read write	*/
+PIN	3 = !BLK1	;		/* block select		*/
+PIN	4 = !BLK2	;		/* block select		*/
+PIN	5 = !BLK3	;		/* block select		*/
+PIN	6 = !BLK5	;		/* block select		*/
+<B>PIN	7 = CRW		;		/* CPU read write	*/
+PIN	8 = p2		;		/* phase 2		*/
+PIN	9 = !IO3	;		/* I/O access		*/
+PIN	11 = !RES	;		/* reset		*/</B>
+
+/* OUTPUT PINS							*/
+
+PIN  19 = ROM		;		/* 8/16/24/32K ROM	*/ 
+PIN  18 = RAM		;		/* 8/16/24/32K RAM	*/ 
+PIN  17 = ROM_A14	;		/* ROM address line	*/ 
+PIN  16 = A13		;		/* ROM/RAM address line	*/ 
+PIN  15 = RAM_A14	;		/* RAM address line	*/ 
+<B>PIN  14 = ISA_RES	;		/* ISA card reset line	*/ 
+PIN  13 = ISA_IOW	;		/* ISA card I/O write	*/ 
+PIN  12 = ISA_IOR	;		/* ISA card I/O read	*/</B>
+
+/* Output terms							*/
+
+/* comment out the RAM/ROM configuration lines you don't want	*/
+
+/* 24K expansion RAM with 8K ROM in the autostart block		*/
+/* $2000 = RAM	$4000 = RAM	$6000 = RAM	$A000 = ROM	*/
+/*!ROM	= BLK5 ;			/* 8/16/24/32K ROM	*/ 
+/*!RAM	= BLK1 # BLK2 # BLK3 ;		/* 8/16/24/32K RAM	*/ 
+
+/* 16K expansion RAM with 16K autostart game ROM		*/
+/* $2000 = RAM	$4000 = RAM	$6000 = ROM	$A000 = ROM	*/
+!ROM	= BLK3 # BLK5 ;			/* 8/16/24/32K ROM	*/ 
+!RAM	= BLK1 # BLK2 ;			/* 8/16/24/32K RAM	*/ 
+
+!ROM_A14 = BLK1 # BLK5 ;		/* ROM address line	*/ 
+!A13	= BLK2 # BLK5 ;			/* ROM/RAM address line	*/ 
+!RAM_A14 = BLK1 # BLK5 ;		/* RAM address line	*/ 
+<B>ISA_RES	= RES ;				/* ISA card reset line	*/ 
+!ISA_IOW = !CRW & IO3 & p2 & dlp2 ;	/* ISA card I/O write	*/ 
+!ISA_IOR = CRW & IO3 & p2 & dlp2 ;	/* ISA card I/O read	*/</B>
+</PRE>
+</TD></TR></TABLE>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 26th February, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/isa/isapld.html by HTTrack Website Copier/3.x [XR&CO'2006], Sun, 17 Jun 2007 15:47:56 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="../../../../../ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "http://members.lycos.co.uk/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk/")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&amp;mkw=&amp;CC=uk&amp;ord=8038b3&amp;adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

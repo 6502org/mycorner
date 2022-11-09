@@ -1,0 +1,220 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/13.html by HTTrack Website Copier/3.x [XR&CO'2006], Sun, 17 Jun 2007 15:50:53 GMT -->
+<HEAD>
+<TITLE> Memory Plus manual </TITLE>
+</HEAD>
+<BODY
+  TEXT="black"
+  LINK="#0000EE"
+  VLINK="#0000CC" >
+<P>
+<A HREF="01.html"><IMG SRC="index.png" ALIGN=RIGHT BORDER=0 ALT="Index"></A>
+<B><FONT SIZE=+2>MEMORY PLUS Manual </FONT></B><FONT SIZE=-2>By Lee Davison</FONT>
+<BR CLEAR=all>
+<BR>
+<A HREF="12.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="14.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 13
+</CENTER>
+<BR CLEAR=all>
+<HR>
+ <PRE>
+
+
+	The following connections must be made between the MICRO and the MEMORY PLUS
+	board before any EPROM Programming can take place:
+
+		MICRO A-9 to MP A-19	Port B Bit 0 (PB0)  Address Bit 8 for EPROM
+		MICRO A-10 to MP A-20	Port B Bit 1 (PB1)  Address Bit 9 for EPROM
+		MICRO A-11 to MP A-21	Port B Bit 2 (PB2)  Address Bit 10 for EPROM
+
+	If the MEMORY PLUS board is mounted in its normal position, directly below the
+	MICRO, it may be difficult or impossible to get access to the EPROM socket for
+	programming.  There are two ways around this problem.
+
+	  1.	Use a 24 pin header to bring wires directly from the EPROM
+		Programming Socket out to a more accessible location.
+
+	  2.	Attach wires for an additional EPROM Programming Socket directly
+		to the MP application connector.  All of the lines necessary for
+		attaching an external EPROM Programming Socket are available:
+
+		EPROM Socket	MP Application	Function
+				  Connector
+		 1		  A-15		Address bit7 from VIA PB7
+		 2		  A-B		Address bit6 from VIA PB6
+		 3		  A-16		Address bitS from VIA PBS
+		 4		  A-13		Address bit4 from VIA PB4
+		 5		  A-12		Address bit3 from VIA PB3
+		 6		  A-11		Address bit2 from VIA PB2
+		 7		  A-10		Address bit1 from VIA PB1
+		 8		  A-9		Address bit0 from VIA PBO
+		 9		  A-14		Data bit 0 from VIA PA0
+		10		  A-2		Data bit 1 from VIA PA1
+		11		  A-3		Data bit 2 from VIA PA2
+		12		  A-1		Ground
+		13		  A-4		Data bit 3 from VIA PA3
+		14		  A-5		Data bit 4 from VIA PA4
+		15		  A-6		Data bit S from VIA PAS
+		16		  A-7		Data bit 6 from VIA PA6
+		17		  A-8		Data bit 7 from VIA PA7
+		18		  A-18		Program Pulse Inverted from VIA CB2
+		19  (MICRO A-11)  A-21		Address bit 10 from MICRO PB2
+		20		  A-F		Chip Select from VIA CA2
+		21		  A-22		+25V direct or from +27 to +30 regulator
+		22  (MICRO A-10)  A-20		Address bit 9 from MICRO PB1
+		23  (MICRO A-9)	  A-19		Address bit 8 from MICRO PB0
+		24  (MICRO A-A)	  A-A		+5V regulated
+
+	The addressing for the EPROM Socket only consists of eleven (11) bits.  This
+	means that addressing for programming purposes runs from 0000 to 07FF, regardless
+	of the actual address that the EPROM will eventually reside at.  The high order
+	five (5) bits of EPROM address are totally defined by which socket the EPROM is
+	placed in and where the set of EPROMs are switched to: 2000, 4000,..., E000.
+
+
+
+
+
+ </PRE>
+<BR CLEAR=all>
+<HR>
+<A HREF="12.html"><IMG SRC="lastpg.png" ALIGN=LEFT BORDER=0 ALT="Previous page"></A>
+<A HREF="14.html"><IMG SRC="nextpg.png" ALIGN=RIGHT BORDER=0 ALT="Next page"></A>
+<CENTER>
+Page 13
+</CENTER>
+<BR CLEAR=all>
+<CENTER>
+<A HREF="mailto:leeedavison@lycos.co.uk">
+ e-mail me 
+<IMG SRC="../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="[e-mail]">
+</A>
+</CENTER>
+<FONT SIZE=-1>Last page update: 8th December, 2002.</FONT>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/memoryplus/13.html by HTTrack Website Copier/3.x [XR&CO'2006], Sun, 17 Jun 2007 15:50:53 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="../../../../ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "http://members.lycos.co.uk/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk/")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&amp;mkw=&amp;CC=uk&amp;ord=5ebf2a49&amp;adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->

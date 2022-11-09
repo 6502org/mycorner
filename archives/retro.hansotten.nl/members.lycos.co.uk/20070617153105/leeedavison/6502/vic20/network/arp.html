@@ -1,0 +1,298 @@
+<script language="javascript">
+
+myreg=new RegExp("lycos\.co.uk","i");
+if ( !myreg.test("'"+top.location+"'") ) {
+	nwreg=new RegExp ("http://([^/]+)?(/([a-z0-9A-Z\-\_]+)?[^']+)","i");
+	rn=nwreg.exec("'"+self.location+"'");
+	if (parent.frames.length==2) { top.location="http://" + rn[1] + rn[2]; }
+	else { top.location="http://" + rn[1] + "/" + rn[3]; }
+}
+
+if(window == window.top) {
+        var address=window.location;
+        var s='<html><head><title>'+'</title></head>'+
+        '<frameset cols="*,140" frameborder="0" border="0" framespacing="0" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="memberPage" marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+		'<frame src="http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url='+escape(address)+'&gg_bg=&gg_template=&mkw=&cat=memberpages.other" name="LycosAdFrame"  marginwidth="0" marginheight="0" scrolling="auto" noresize>'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+<HTML>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/network/arp.html by HTTrack Website Copier/3.x [XR&CO'2006], Sun, 17 Jun 2007 15:50:17 GMT -->
+<HEAD>
+<TITLE>Vic 20 network interface - software</TITLE>
+</HEAD>
+<BODY BACKGROUND="../../../back.png" LINK="#0000EE" VLINK="#0000CC">
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0>
+<TR><TD WIDTH=25%><A HREF="source.html#arp">
+ <IMG SRC="../../../up.gif" BORDER=0 ALT="Up one"></A></TD>
+<TD WIDTH=50% ALIGN=CENTER>
+<B><FONT SIZE=+1>Vic 20 network - software </FONT></B>
+<FONT SIZE=-1>by Lee Davison</FONT>
+</TD><TD WIDTH=25%><A HREF="http://members.lycos.co.uk/leeedavison/index.html">
+ <IMG SRC="../../../epc.png" ALIGN=RIGHT BORDER=0 ALT="Up to top"></A>
+</TD></TR></TABLE>
+<HR>
+<B><U>Address resolution protocol</U></B>
+<BLOCKQUOTE><P ALIGN=JUSTIFY>
+ If you want to talk IP over an ethernet network this is probably one of the most
+ important protocols to implement. What it does is allow other machines to discover your
+ hardware address automatically and talk to you. It's not absolutely necessary but without
+ it you will need to do a lot of manual configuration.
+<P ALIGN=JUSTIFY>
+
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; construct a reply to an ARP request aimed at us
+; see RFC826 for a description of the ARP packet
+
+LAB_21000
+	LDA	arp_buff+ARP_hrdsp_l	; hardware type - always $01
+	CMP	#$01			; check type
+	BNE	LAB_20350		; exit if incorrect
+
+	LDA	arp_buff+ARP_prtsp_h	; hardware protocol high byte
+	CMP	#$08			; check protocol
+	BNE	LAB_20350		; exit if incorrect
+
+	LDA	arp_buff+ARP_prtsp_l	; hardware protocol low byte
+	BNE	LAB_20350		; exit if incorrect
+
+	LDA	arp_buff+ARP_hrd_len	; hardware (MAC) address length
+	CMP	#$06			; check length
+	BNE	LAB_20350		; exit if incorrect
+
+	LDA	arp_buff+ARP_prt_len	; protocol (IP) address length
+	CMP	#$04			; check length
+	BNE	LAB_20350		; exit if incorrect
+
+	LDA	arp_buff+ARP_code_l	; type of packet
+	CMP	#$01			; check type
+	BNE	LAB_20350		; exit if incorrect
+
+	LDX	#arp_ofs+ARP_dst_ip	; index protocol destination address
+	JSR	match_ip		; compare with our IP address
+	BNE	LAB_20350		; exit if not for us
+
+; we have recognised the packet as correct and the target as us
+; so set up the buffer for transmit
+
+					; do MAC addresses
+	LDX	#$05			; set index/count
+LAB_21050
+	LDA	arp_buff+ARP_src_mac,X	; copy source MAC address byte
+	STA	pk_buff+ET_dst_adr,X	; save destiantion MAC address byte
+	STA	arp_buff+ARP_dst_mac,X	; save destiantion MAC address byte
+	LDA	mac_ours,X		; get our MAC address byte
+	STA	pk_buff+ET_src_adr,X	; save source MAC address byte
+	STA	arp_buff+ARP_src_mac,X	; save source MAC address byte
+	DEX
+	BPL	LAB_21050		; loop if not all done
+
+					; do IP addresses
+	LDX	#$03			; set index/count
+LAB_21055
+	LDA	arp_buff+ARP_src_ip,X	; get source IP address byte
+	STA	arp_buff+ARP_dst_ip,X	; save destination IP address byte
+	LDA	ip_ours,X		; get our IP address byte
+	STA	arp_buff+ARP_src_ip,X	; save source IP address byte
+	DEX				; increment index
+	BPL	LAB_21055		; loop if not all done
+
+					; make it an ARP reply
+	LDA	#$02			; set op type to reply
+	STA	arp_buff+ARP_code_l	; save op type
+
+	LDA	#$2A			; ARP reply length low byte
+	STA	tx_len_l		; set Tx length low byte
+	LDA	#$00			; ARP reply length high byte
+	STA	tx_len_h		; set Tx length high byte
+
+					; packet set up, now Tx it
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+ Constructing the reply leads straight into transmitting the packet. With the 3Com card
+ packets do not have to be padded out to minimum size, this is done by the card, but they
+ do need to be a whole number of longwords (32 bits) in length. To ensure this the
+ routine pads out any short packets with null bytes.
+<P ALIGN=JUSTIFY>
+ This is the routine that is used to transmit all the packets over the network.
+<P ALIGN=JUSTIFY>
+<TABLE CELLPADDING=8 CELLSPACING=0 BORDER=1 BGCOLOR=white><TR><TD>
+<PRE>
+
+; *********************************************************************		
+; Tx ethernet packet, tx_len is the packet length
+
+LAB_21200
+	LDA	tx_len_l		; get Tx length low byte
+	STA	tc_l			; save to temp count
+	STA	data_reg		; save to NIC
+	LDA	tx_len_h		; get Tx length high byte
+	STA	tc_h			; save to temp count
+	ORA	#$80			; generates an interrupt when sent
+	STA	data_reg		; save to NIC
+	LDY	#$00			; clear index
+	STY	data_reg		; save to NIC
+	STY	data_reg		; save to NIC
+
+					; header written, now write data
+	LDA	#&gt;pk_buff		; get buffer pointer high byte
+	STA	tp_h			; save to temp pointer high byte
+	LDA	#&lt;pk_buff		; get IP buffer pointer low byte
+	STA	tp_l			; save to temp pointer low byte
+LAB_22105
+	LDA	(tp_l),Y		; get byte from IP buffer
+	STA	data_reg		; save to NIC
+	INY				; increment index (pointer low byte)
+	BNE	LAB_22110		; branch if no overflow
+
+	INC	tp_h			; else increment pointer high byte
+LAB_22110
+	DEC	tc_l			; decrement count low byte
+	BNE	LAB_22105		; loop if not all done
+
+	DEC	tc_h			; else decrement count high byte
+	BPL	LAB_22105		; loop if not all done
+
+					; now calculate longword remainder
+	LDA	tx_len_l		; get count low byte
+	AND	#$03			; do MOD 4
+	BEQ	LAB_21220		; exit if no remainder
+
+					; else pad to next longword
+	EOR	#$03			; do 3-MOD
+	TAX				; copy to index
+	LDA	#$00			; clear A
+LAB_21215
+	STA	data_reg		; save to NIC
+	DEX				; decrement count
+	BPL	LAB_21215		; loop if not all done
+
+LAB_21220
+	RTS
+
+; *********************************************************************
+</PRE>
+</TD></TR></TABLE>
+<P ALIGN=JUSTIFY>
+<P ALIGN=JUSTIFY>
+</BLOCKQUOTE>
+<HR>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 CELLPADDING=0><TR>
+<TD WIDTH=30%><FONT SIZE=-1>Last page update: 29th February, 2004.</FONT></TD>
+<TD WIDTH=40% ALIGN=CENTER><A HREF="mailto:leeedavison@lycos.co.uk">e-mail me 
+<IMG SRC="../../../eml_sm.png" ALIGN=CENTER BORDER=0 alt="e-mail"></A></TD>
+<TD WIDTH=30%></TD></TR></TABLE>
+</BODY>
+
+<!-- Mirrored from members.lycos.co.uk/leeedavison/6502/vic20/network/arp.html by HTTrack Website Copier/3.x [XR&CO'2006], Sun, 17 Jun 2007 15:50:17 GMT -->
+</HTML>
+</pre></xmp></noscript>
+
+<script language="javascript" src="../../../../../ads.tripod.lycos.co.uk/ad/test_frame_size.js"></script>
+
+<script language="javascript">
+if (!AD_clientWindowSize()) {
+        document.write("<NOSC"+"RIPT>");
+}
+</script>
+
+
+
+<script type="text/javascript">
+        function setCookie(name, value, expires, path, domain, secure) {
+           var curCookie = name + "=" + escape(value) +
+             ((expires) ? "; expires=" + expires.toGMTString() : "") +
+             ((path) ? "; path=" + path : "") +
+             ((domain) ? "; domain=" + domain : "") +
+             ((secure) ? "; secure" : "");
+           document.cookie = curCookie;
+        }
+
+        var ad_url = "http://ads.tripod.lycos.co.uk/ad/google/frame.php?_url="+escape(self.location)+"&gg_bg=&gg_template=&mkw=&cat=memberpages.other";
+        var ref=window.document.referrer;
+
+
+        if(parent.LycosAdFrame) {
+                if(parent.memberPage && parent.memberPage.document.title ) {
+                        parent.document.title=parent.memberPage.document.title;
+                }
+
+                if(parent.LycosAdFrame && parent.LycosAdFrame.location && (ref != "" && (ref+"?" != window.location) && (ref.substr(ref.length-1,1) != "http://members.lycos.co.uk/")) ) {
+                        parent.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                parent.document.body.cols = "*,140";
+        }
+        else if(top.LycosAdFrame && top.LycosAdFrame.location) {
+                if ((ref != "" && (ref+"?" != top.window.location) && (ref.substr(ref.length-1,1) != "?"))) {
+                        top.LycosAdFrame.location.replace(ad_url);
+                }
+                setCookie("adFrameForcePHP",0,0," ");
+                top.document.body.cols = "*,140";
+        }
+        else {
+                if (!window.opener) {
+                        setCookie("adFrameForcePHP",1,0," ");
+                }
+                else {
+                        setCookie("adFrameForcePHP",0,0," ");
+                }
+        }
+	if (window.top.location.href.indexOf("http://members.lycos.co.uk/")!=-1) {
+		ad_frame = 1 ;
+		window.top.document.body.cols="*,140" ;
+	}
+
+function resizeGoogleAdFrame() {
+	window.top.document.body.cols = "*,140";
+}
+
+
+	if (ad_frame == 1 && AD_clientWindowSize()) {
+		setInterval("resizeGoogleAdFrame()", 30);
+	}
+
+</script>
+
+<script language="javascript" src="http://ads.tripod.lycos.co.uk/ad/popunder_lycos_update.php?cat=memberpages.other&amp;CC=uk"></script>
+
+<script type="text/javascript" src="http://ads.tripod.lycos.co.uk/ad/ad.php?cat=memberpages.other&amp;mkw=&amp;CC=uk&amp;ord=c9c9c81&amp;adpref="></script>
+
+<!-- START RedSheriff Measurement V5.01 -->
+<!-- COPYRIGHT 2002 RedSheriff Limited -->
+<script language="JavaScript" type="text/javascript"><!--
+  var _rsCI='lycos-uk';
+  var _rsCG='memberpages.other';
+  var _rsDT=1;
+  var _rsSI=escape(window.location);
+  var _rsLP=location.protocol.indexOf('https')>-1?'https:':'http:';
+  var _rsRP=escape(document.referrer);
+  var _rsND=_rsLP+'//secure-uk.imrworldwide.com/';
+
+  if (parseInt(navigator.appVersion)>=4) {
+    var _rsRD=(new Date()).getTime();
+    var _rsSE=0;
+    var _rsSV='';
+    var _rsSM=0;
+    _rsCL='<scr'+'ipt language="JavaScript" type="text/javascript" src="'+_rsND+'v5.js"><\/scr'+'ipt>';
+  } else {
+    _rsCL='<img src="'+_rsND+'cgi-bin/m?ci='+_rsCI+'&cg='+_rsCG+'&si='+_rsSI+'&rp='+_rsRP+'">';
+  }
+  document.write(_rsCL);
+//--></script>
+<noscript>
+<img src="http://secure-uk.imrworldwide.com/cgi-bin/m?ci=lycos-uk&amp;cg=memberpages.other" alt="">
+</noscript>
+<!-- END RedSheriff Measurement V5 -->
