@@ -173,7 +173,7 @@ class ArchivedFile(object):
         # Footer of most HTML files:
         # b"<FONT SIZE=-1>Last page update: 2nd May, 2002.</FONT>"
         matches = re.findall(
-            br'Last\s+page\s+update:\s+(\d+)(?:nd|rd|st)\s+([a-zA-Z]+)[,\s]+(\d{4})',
+            br'Last\s+page\s+update:\s+(\d+)\w{2}\s+([a-zA-Z]+)[,\s]+(\d{4})',
             self.read_sanitized()
             )
         if matches:
@@ -185,10 +185,18 @@ class ArchivedFile(object):
             year = int(matched_year)
             assert (year > 1998) and (year < 2014), "Invalid year: %r" % matched_year
 
-            month_names = (None, b"Jan", b"Feb", b"Mar", b"Apr", b"May", b"Jun",
-                                 b"Jul", b"Aug", b"Sep", b"Oct", b"Nov", b"Dec")
-            assert matched_month[:3] in month_names, "Invalid month: %r" % matched_month
-            month = month_names.index(matched_month[:3])
+            month_names_to_nums = {
+                b"January": 1, b"February": 2, b"March": 3, b"April": 4, b"May": 5, b"June": 6,
+                b"July": 7, b"August": 8, b"September": 9, b"October": 10, b"November": 11, b"December": 12,
+                # archives/archive.org/members.multimania.co.uk/20101019012340/leeedavison/6502/microchess/index.html
+                b"Februaru": 2,
+                # archives/archive.org/members.lycos.co.uk/20050413225556/leeedavison/68k/simbasic/index.html
+                b'Februauy': 2,
+                # archives/archive.org/members.lycos.co.uk/20030408075752/leeedavison/news.html
+                b"pril": 4,
+            }
+            assert matched_month in month_names_to_nums, "Invalid month: %r" % matched_month
+            month = month_names_to_nums[matched_month]
 
             self.html_footer_updated_at = datetime.datetime(year, month, day)
 
