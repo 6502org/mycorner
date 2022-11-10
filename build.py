@@ -102,9 +102,13 @@ class ArchivedFile(object):
         self.corruption = None
 
         bad_sha1_raws = (
-            # members.lycos.co.uk/20080725160852/leeedavison/6502/vic20/prgread/example.txt
-            # basic is program truncated in the middle of line 10
+            # archives/archive.org/members.lycos.co.uk/20080725160852/leeedavison/6502/vic20/prgread/example.txt
+            # basic program is truncated in the middle of line 10
             "98227581f6201bf8250df2d7964672deb7ea8ce9",
+
+            # archives/retro.hansotten.nl/members.lycos.co.uk/20090811004900/leeedavison/6502/suprchips/lcd/asm.html
+            # assembly listing corrupted by webstripper is not recoverable
+            "e36b24626cd09f4e260de937b5d894b332d9df94",
         )
         assert self.sha1_raw is not None, "SHA-1 must be computed before calling"
         if self.sha1_raw in bad_sha1_raws:
@@ -137,8 +141,6 @@ class ArchivedFile(object):
                 b'extremetracking',
                 b'lightspeedwebstore',
                 b'nginx',
-                b'webstripper', # TODO files corrupted by webstripper
-                b'WebStripper', # can probably be sanitized
             ):
                 if fragment in data:
                     self.corruption = "Corrupt file: (has fragment %r)" % fragment
@@ -193,17 +195,19 @@ class ArchivedFile(object):
     def read_sanitized(self):
         pagedata = self.read_raw()
 
-        if self.filename.endswith('html'):
-            # Remove advertising and tracking scripts outside of <html>.  See:
-            # archives/archive.org/members.lycos.co.uk/20090226165902/leeedavison/misc/vfd/proto.html
-            start_tag = b'<HTML>'
+        if not self.filename.endswith('html'):
+            return pagedata
+
+        # Remove advertising and tracking scripts outside of <html>.  See:
+        # archives/archive.org/members.lycos.co.uk/20090226165902/leeedavison/misc/vfd/proto.html
+        for start_tag in (b'<HTML>', b'<html>'):
             idx = pagedata.find(start_tag)
             if idx != -1:
                 leading_stuff = pagedata[0:idx].decode('utf-8', 'ignore')
                 if re.findall(r'[^\s]', leading_stuff):
                     pagedata = pagedata[idx:]
 
-            end_tag = b'</HTML>'
+        for end_tag in (b'</HTML>', b'</html>'):
             idx = pagedata.find(end_tag)
             if idx != -1:
                 trailing_idx = idx + len(end_tag)
@@ -211,10 +215,32 @@ class ArchivedFile(object):
                 if re.findall(r'[^\s]', trailing_stuff):
                     pagedata = pagedata[:trailing_idx]
 
-            # Remove HTTrack comments. See:
-            # archives/retro.hansotten.nl/members.lycos.co.uk/20090117205334/leeedavison/index.html
-            pagedata = re.sub(b'([\r\n]+<!-- Mirrored from.+HTTrack.*GMT -->[\r\n]+)', b'\n', pagedata)
+        # Remove HTTrack comments. See:
+        # archives/retro.hansotten.nl/members.lycos.co.uk/20090117205334/leeedavison/index.html
+        pagedata = re.sub(b'([\r\n]+<!-- Mirrored from.+HTTrack.*GMT -->[\r\n]+)', b'\n', pagedata)
 
+        # Undo WebStripper changes.  See:
+        # retro.hansotten.nl/members.lycos.co.uk/20090811004900/leeedavison/6502/ehbasic/update.html
+        if b'webstripper' in pagedata:
+            # remove onclick javascript
+            for fullmatch in re.findall(br'(<(?:a|area)[^>]+href\s*=\s*"Dial Protected"[^>]+>)', pagedata):
+                replacement = re.sub(br'(onclick\s*=\s*"[^"]+" )', b'', fullmatch)
+                pagedata = pagedata.replace(fullmatch, replacement)
+
+            # put values in "webstripperwas" and "webstripperlinkwas" back in their original attributes
+            for regexp in (
+                br'(<body\s+background\s*=\s*"([^"]+)".+webstripper(?:was|linkwas)\s*=\s*"([^"]+)".*>)',
+                br'(<a\s+href="([^"]+)".+webstripper(?:was|linkwas)\s*=\s*"([^"]+)".*>)',
+                br'(<img\s+src="([^"]+)".+webstripper(?:was|linkwas)\s*=\s*"([^"]+)".*>)',
+            ):
+                # put link in "webstripperlinkwas" back into its original attribute
+                for fullmatch, orig, webstripperwas in re.findall(regexp, pagedata):
+                    replacement = fullmatch.replace(orig, webstripperwas)
+                    pagedata = pagedata.replace(fullmatch, replacement)
+
+            # remove all "webstripperwas" and "webstripperlinkwas" attributes
+            pagedata = re.sub(br'(\s*webstripper(?:was|linkwas)\s*=\s*"[^"]+)"', b'', pagedata)
+        
         return pagedata
 
 
