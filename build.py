@@ -15,7 +15,7 @@ class ArchivedFile(object):
     A single file from one of the captures, such as:
     mycorner.no-ip.org/20130212062031/6502/memoryplus/index.html
     """
-    def __init__(self, filename, hostname, remote_filename, archived_at,
+    def __init__(self, filename, hostname, remote_filename, archived_at, html_footer_updated_at=None,
                  corruption=None, size_raw=None, sha1_raw=None, size_sanitized=None, sha1_sanitized=None,):
         self.filename = filename
         self.size_raw = size_raw
@@ -25,6 +25,7 @@ class ArchivedFile(object):
         self.hostname = hostname
         self.remote_filename = remote_filename
         self.archived_at = archived_at
+        self.html_footer_updated_at = html_footer_updated_at
         self.corruption = corruption
 
     @staticmethod
@@ -92,6 +93,7 @@ class ArchivedFile(object):
         self.compute_sha1_raw()
         self.size_sanitized = len(self.read_sanitized())
         self.compute_sha1_sanitized()
+        self.parse_html_footer_updated_at()
         self.detect_corruption()
 
     def detect_corruption(self):
@@ -162,6 +164,32 @@ class ArchivedFile(object):
         h.update(self.read_sanitized())
         self.sha1_sanitized = h.hexdigest()
 
+    def parse_html_footer_updated_at(self):
+        if not self.filename.endswith('html'):
+            return
+
+        # Footer of most HTML files:
+        # b"<FONT SIZE=-1>Last page update: 2nd May, 2002.</FONT>"
+        matches = re.findall(
+            br'Last\s+page\s+update:\s+(\d+)(?:nd|rd|st)\s+([a-zA-Z]+)[,\s]+(\d{4})',
+            self.read_sanitized()
+            )
+        if matches:
+            matched_day, matched_month, matched_year = matches[0]
+
+            day = int(matched_day)
+            assert (day > 0) and (day < 32), "Invalid day: %r" % matched_day
+
+            year = int(matched_year)
+            assert (year > 1998) and (year < 2014), "Invalid year: %r" % matched_year
+
+            month_names = (None, b"Jan", b"Feb", b"Mar", b"Apr", b"May", b"Jun",
+                                 b"Jul", b"Aug", b"Sep", b"Oct", b"Nov", b"Dec")
+            assert matched_month[:3] in month_names, "Invalid month: %r" % matched_month
+            month = month_names.index(matched_month[:3])
+
+            self.html_footer_updated_at = datetime.datetime(year, month, day)
+
     def read_sanitized(self):
         pagedata = self.read_raw()
 
@@ -190,7 +218,6 @@ class ArchivedFile(object):
         return pagedata
 
 
-
 class Database(object):
     """
     SQLite database used to find the most recent version of each file.
@@ -216,6 +243,7 @@ class Database(object):
                 size_sanitized INTEGER NOT NULL,
                 sha1_sanitized CHAR(20) NOT NULL,
                 archived_at DATETIME NOT NULL,
+                html_footer_updated_at DATETIME, -- null if unknown or not html
                 corruption TEXT -- null if not corrupt
             )
         """)
@@ -224,14 +252,15 @@ class Database(object):
         sql = """
             INSERT INTO archived_files (
                 filename, hostname, remote_filename,
-                size_raw, sha1_raw, size_sanitized, sha1_sanitized, archived_at, corruption
+                size_raw, sha1_raw, size_sanitized, sha1_sanitized, archived_at,
+                html_footer_updated_at, corruption
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         for af in archived_files:
             values = (af.filename, af.hostname, af.remote_filename,
                       af.size_raw, af.sha1_raw, af.size_sanitized, af.sha1_sanitized,
-                      af.archived_at, af.corruption)
+                      af.archived_at, af.html_footer_updated_at, af.corruption)
             self.cur.execute(sql, values)
         self.con.commit()
 
@@ -293,7 +322,8 @@ class Database(object):
     def _make_archived_file(self, sqlite3_row):
         attrs = dict(sqlite3_row)
         for k in [ k for k in attrs.keys() if k.endswith("_at") ]:
-            attrs[k] = datetime.datetime.strptime(attrs[k], "%Y-%m-%d %H:%M:%S")
+            if attrs[k] is not None:
+                attrs[k] = datetime.datetime.strptime(attrs[k], "%Y-%m-%d %H:%M:%S")
         return ArchivedFile(**attrs)
 
     def find_latest_version_of_each_file(self):
