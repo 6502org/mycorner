@@ -241,9 +241,9 @@ class ArchivedFile(object):
 
             # put values in "webstripperwas" and "webstripperlinkwas" back in their original attributes
             for regexp in (
-                br'(<body\s+background\s*=\s*"([^"]+)".+webstripper(?:was|linkwas)\s*=\s*"([^"]+)".*>)',
-                br'(<a\s+href="([^"]+)".+webstripper(?:was|linkwas)\s*=\s*"([^"]+)".*>)',
-                br'(<img\s+src="([^"]+)".+webstripper(?:was|linkwas)\s*=\s*"([^"]+)".*>)',
+                br'(<body\s+background\s*=\s*"([^"]+)"[^>]+webstripper(?:was|linkwas)\s*=\s*"([^"]+)"[^>]*>)',
+                br'(<a\s+href="([^"]+)"[^>]+webstripper(?:was|linkwas)\s*=\s*"([^"]+)"[^>]*>)',
+                br'(<img\s+src="([^"]+)"[^>]+webstripper(?:was|linkwas)\s*=\s*"([^"]+)"[^>]*>)',
             ):
                 # put link in "webstripperlinkwas" back into its original attribute
                 for fullmatch, orig, webstripperwas in re.findall(regexp, pagedata):
