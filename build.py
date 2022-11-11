@@ -44,6 +44,10 @@ class ArchivedFile(object):
                 # ['archive.org', 'members.lycos.co.uk', '20081010162854', 'leeedavison', '6502', 'eurobeeb', 'score', 'index.html']
                 parts = filename.replace(archives_dir, '').strip(os.path.sep).split(os.path.sep)
 
+                # ignore a README file in the root or under an archive subdir, e.g. "README.md" or "github.com/README.md"
+                if (len(parts) < 3) and parts[-1].lower().startswith("readme"):
+                    continue
+
                 # ignore hidden files like .DS_Store
                 if True in [ part.startswith(".") for part in parts ]:
                     continue
