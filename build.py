@@ -461,12 +461,7 @@ def main():
     for archived_file in db.find_latest_version_of_each_file():
         src_filename = archived_file.filename
 
-        # missing file exists in older archives under a different name
-        rf = archived_file.remote_filename
-        if rf == '6502/project.jpg':
-            rf = '6502/projects.jpg'
-
-        dest_filename = os.path.join(build_dir, rf)
+        dest_filename = os.path.join(build_dir, archived_file.remote_filename)
         dest_dir = os.path.dirname(dest_filename)
         os.makedirs(dest_dir, exist_ok=True)
 
@@ -476,7 +471,7 @@ def main():
         if dest_filename.endswith(".html"):
             pagedata = archived_file.read_sanitized()
 
-            if rf == "index.html":
+            if archived_file.remote_filename == "index.html":
                 pagedata = rewrite_home_page(pagedata)
 
             pagedata = rewrite_mailto_links(pagedata)
@@ -484,6 +479,33 @@ def main():
 
             with open(dest_filename, "wb") as f:
                 f.write(pagedata)
+
+    # substitute missing files with older equivalents
+    new_to_old = {
+        # new                       # old
+        '6502/i2c/i2c01s.jpg':      '6502/i2c/board.jpg',
+        '6502/i2c/i2c02s.jpg':      '6502/i2c/plusteletext.jpg',
+        '6502/i2c/ttx08s.jpg':      '6502/i2c/inuse.jpg',
+        '6502/i2c/ttx01s.jpg':      '6502/i2c/ch5.jpg',
+        '6502/i2c/ttx01.html':      '6502/i2c/ch5.html',
+        '6502/i2c/ttx02s.jpg':      '6502/i2c/cnn.jpg',
+        '6502/i2c/ttx02.html':      '6502/i2c/cnn.html',
+        '6502/i2c/ttx03s.jpg':      '6502/i2c/dsny.jpg',
+        '6502/i2c/ttx03.jpg':       '6502/i2c/dsny.jpg',
+        '6502/i2c/ttx04s.jpg':      '6502/i2c/mtv.jpg',
+        '6502/i2c/ttx04.html':      '6502/i2c/mtv.html',
+        '6502/i2c/ttx05s.jpg':      '6502/i2c/nick.jpg',
+        '6502/i2c/ttx05.html':      '6502/i2c/nick.html',
+        '6502/i2c/ttx06s.jpg':      '6502/i2c/toon.jpg',
+        '6502/i2c/ttx06.html':      '6502/i2c/toon.html',
+        '6502/projects.jpg':        '6502/project.jpg',
+    }
+    for new, old in new_to_old.items():
+        src_filename =  os.path.join(build_dir, old)
+        dest_filename = os.path.join(build_dir, new)
+        if not os.path.exists(dest_filename):
+            print("Substitute: %s -> %s" % (src_filename, dest_filename))
+            shutil.copyfile(src_filename, dest_filename)
 
 if __name__ == '__main__':
     main()
