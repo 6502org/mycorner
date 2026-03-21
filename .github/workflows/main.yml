@@ -11,7 +11,7 @@ jobs:
         python-version: [3.8]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
 
     - name: Install unzip
       run: sudo apt install -y unzip
@@ -28,7 +28,7 @@ jobs:
       run: make 2>&1 | tee build.log
 
     - name: 'Upload build artifacts'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v7
       with:
         name: build-artifacts
         path: |
