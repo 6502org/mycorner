@@ -8,6 +8,7 @@ import shlex
 import shutil
 import sqlite3
 import subprocess
+import textwrap
 
 
 class ArchivedFile(object):
@@ -393,6 +394,139 @@ class Database(object):
             yield (remote_filename, archived_files)
 
 
+def rewrite_page_styles(pagedata):
+    """Inject viewport meta tag and inline stylesheet for mobile support."""
+    inject = (
+        b'<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+        b'<style>\n' + get_modernization_css().encode() + b'</style>\n'
+    )
+
+    # Insert before </HEAD> if present, otherwise before <BODY
+    lowered = pagedata.lower()
+    pos = lowered.find(b'</head>')
+    if pos != -1:
+        pagedata = pagedata[:pos] + inject + pagedata[pos:]
+    else:
+        pos = lowered.find(b'<body')
+        if pos != -1:
+            pagedata = pagedata[:pos] + inject + pagedata[pos:]
+
+    return pagedata
+
+def get_modernization_css():
+    """
+    /* Modernization stylesheet for Lee Davison's website.
+       Preserves the original look and feel while adding mobile support. */
+
+    /* Viewport and box model */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 8px;
+      max-width: 960px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Make images responsive on mobile only */
+
+    /* Keep tables from blowing out on mobile */
+    table {
+      max-width: 100%;
+    }
+
+    /* Add a little breathing room in layout table cells */
+    td {
+      padding: 4px 8px;
+    }
+
+    /* Pre blocks scroll horizontally instead of overflowing */
+    pre {
+      overflow-x: auto;
+      max-width: 100%;
+    }
+
+    /* On small screens, allow layout tables to stack */
+    @media (max-width: 600px) {
+      body {
+        padding: 4px;
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* Let layout table cells stack vertically */
+      table[width="100%"] > tbody > tr > td,
+      table[WIDTH="100%"] > tbody > tr > td {
+        display: block;
+        width: 100% !important;
+      }
+
+      /* Add vertical spacing between stacked cells */
+      table[width="100%"] > tbody > tr > td[align="RIGHT"],
+      table[WIDTH="100%"] > tbody > tr > td[ALIGN="RIGHT"] {
+        margin-top: 1em;
+        margin-bottom: 1em;
+      }
+
+      /* Clear floated images and add spacing below */
+      img[align="RIGHT"], img[ALIGN="RIGHT"],
+      img[align="right"],
+      img[align="LEFT"], img[ALIGN="LEFT"],
+      img[align="left"] {
+        float: none !important;
+        display: block;
+        margin: 0 auto 1em auto;
+      }
+
+      /* Center images that were right/left aligned in layout cells */
+      td[align="RIGHT"] img, td[ALIGN="RIGHT"] img,
+      td[align="right"] img {
+        display: block;
+        margin: 0 auto;
+      }
+
+      /* Don't stack data tables (ones with borders) */
+      table[border="1"] > tbody > tr > td,
+      table[BORDER="1"] > tbody > tr > td {
+        display: table-cell;
+      }
+
+      /* Prevent fixed-width images from overflowing */
+      img[width] {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* Keep blockquotes from adding too much indent */
+      blockquote {
+        margin-left: 1em;
+        margin-right: 0;
+      }
+
+      /* Space out list items for readability */
+      li {
+        margin-bottom: 1em;
+      }
+
+      /* Font size adjustments for readability */
+      font[size="+2"], font[SIZE="+2"] {
+        font-size: 1.3em !important;
+      }
+
+      font[size="+1"], font[SIZE="+1"] {
+        font-size: 1.1em !important;
+      }
+    }
+    """
+    return textwrap.dedent(get_modernization_css.__doc__).strip()    
+
+
 def rewrite_mailto_links(pagedata):
     # see "e-mail me" at the bottom of almost all html pages
     new_link = b"http://forum.6502.org/viewtopic.php?f=5&t=3024"
@@ -423,7 +557,7 @@ def rewrite_home_page(pagedata):
         <p style="background-color: #ffffe0; margin-bottom: 7px; padding: 5px 5px 5px 5px; text-align: center;">
           Lee Davison <a target="_top" href="http://forum.6502.org/viewtopic.php?f=5&t=3024">passed away</a> on September 21, 2013.
           <br clear="all">
-          6502.org hosts this <a target="_top" href="https://github.com/6502org/mycorner">reconstruction</a> of his website to preserve his memory and ensure the resources he created remain available.
+          6502.org hosts this <a target="_top" href="https://github.com/6502org/mycorner">reconstruction</a> of his website to preserve his memory and his work.
         </p>
         <TR><TD COLSPAN=2 ALIGN=CENTER>
         <IMG SRC="view.jpg" BORDER=1 TITLE="View from my Southampton flat">
@@ -476,6 +610,7 @@ def main():
 
             pagedata = rewrite_mailto_links(pagedata)
             pagedata = rewrite_page_links(pagedata)
+            pagedata = rewrite_page_styles(pagedata)
 
             with open(dest_filename, "wb") as f:
                 f.write(pagedata)

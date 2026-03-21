@@ -16,7 +16,9 @@ Lee's website was online for over a decade.  Over the years, it had these hosts:
  - `http://www.geocities.com/leeedavison/`
 
 All available captures of these websites have been downloaded and stored in [`archives/`](./archives)
-in this repository.  A build script indexes all files and then combines them into a single website.  The most recent copy of each file, based on the capture date, is used.  Special preference is given to files from `mycorner.no-ip.org`.  Many truncated or otherwise corrupted files are removed.  Tracking and advertising JavaScript inserted into the pages by the free web hosts is also removed.
+in this repository.
+
+A build script indexes all files and then combines them into a single website. The most recent copy of each file, based on the capture date, is used. Special preference is given to files from mycorner.no-ip.org. During the build, many truncated or otherwise corrupted files are removed. Tracking and advertising JavaScript inserted into the pages by the free web hosts is also removed. Finally, a minimal stylesheet added to the HTML pages to fix issues viewing the website on mobile browsers.
 
 The result is imperfect and many files are still missing.  However, it is the most complete collection of Lee's work that we have.  Files from all the various hosts and years ended up being used.  Lee helpfully put a "Last updated" date in the footer of all pages.
 
