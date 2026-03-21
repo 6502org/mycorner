@@ -24,7 +24,7 @@ The result is imperfect and many files are still missing.  However, it is the mo
 
 ## Build
 
-Building the reconstructed website requires a Unix-like system with GNU Make and Python 3.8 or later.  On Ubuntu 20.04 LTS, this command will install the requirements:
+Building the reconstructed website requires a Unix-like system with GNU Make and Python 3.8 or later.  On Ubuntu 24.04 LTS, this command will install the requirements:
 
 ```text
 sudo apt install build-essential python3
