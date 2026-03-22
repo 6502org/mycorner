@@ -52,4 +52,4 @@ The following captures were used in this project:
 
  - [Phil Pemberton](https://www.philpem.me.uk/) - Published his [capture](https://www.philpem.me.uk/leeedavison/) of Lee's website.  The exact time of capture is unknown.  These files have been given a capture date/time of `20030604000000`, since 2003-06-04 is the most recent date found in the "Last updated" footer of the pages.
 
- - [Wayback Machine](https://archive.org/web/) - Provided many other captures.  Although no captures were complete and many files had silent corruption, it contained some files there were not found anywhere else.
+ - [Wayback Machine](https://archive.org/web/) - Provided many other captures.  Although no captures were complete and many files had silent corruption, it contained some files that were not found anywhere else.
